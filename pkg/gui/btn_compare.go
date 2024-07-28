@@ -2,9 +2,9 @@ package gui
 
 import (
 	"core"
-	"fmt"
 )
 
 func BtnCompare() {
-	fmt.Println(core.XlsmFiles)
+	//fmt.Println(core.XlsmFiles)
+	core.XlsmReader()
 }
