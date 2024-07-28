@@ -12,7 +12,7 @@ all: build run
 build:
 	@echo "Building $(BINARY_NAME)..."
 	@mkdir -p $(BUILD_DIR)
-	@go build -o $(BUILD_DIR)/$(BINARY_NAME) main.go
+	@go build -o $(BUILD_DIR)/$(BINARY_NAME) cmd/$(BINARY_NAME)/main.go
 
 # Run the project
 .PHONY: run
