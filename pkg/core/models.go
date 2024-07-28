@@ -1,7 +1,8 @@
 package core
 
 type XlsmFile struct {
-	Path string
+	Path    string
+	Content [][]string
 }
 
 var XlsmFiles = []XlsmFile{
