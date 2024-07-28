@@ -1,6 +1,8 @@
 package gui
 
-import "github.com/gotk3/gotk3/gtk"
+import (
+	"github.com/gotk3/gotk3/gtk"
+)
 
 func GuiInit() {
 	// Initialize GTK.
@@ -43,16 +45,32 @@ func GuiInit() {
 	// Add both boxes to the horizontal box container.
 	hBox.PackStart(box1, true, true, 0)
 	hBox.PackStart(box2, true, true, 0)
-	// Add the horizontal box container to the window.
-	win.Add(hBox)
+	// Create a vertical box container to hold the horizontal box and the button.
+	vBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 6)
+	if err != nil {
+		panic(err)
+	}
+	// Add the horizontal box container to the vertical box container.
+	vBox.PackStart(hBox, true, true, 0)
+	// Create the button.
+	button, err := gtk.ButtonNewWithLabel("Compare")
+	if err != nil {
+		panic(err)
+	}
+	// Connect the button click event to the BtnCompare function.
+	button.Connect("clicked", BtnCompare)
+	// Add the button to the vertical box container.
+	vBox.PackStart(button, false, false, 0)
+	// Add the vertical box container to the window.
+	win.Add(vBox)
 	// apply style to the boxes.
 	Stylize(box1)
 	Stylize(box2)
 	// Make the window and all its contents visible.
 	win.ShowAll()
 	// Set up drag and drop functionality for both boxes.
-	SetupDragAndDrop(box1)
-	SetupDragAndDrop(box2)
+	SetupDragAndDrop(box1, 1)
+	SetupDragAndDrop(box2, 2)
 	// Connect the destroy signal to the main GTK loop exit.
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
