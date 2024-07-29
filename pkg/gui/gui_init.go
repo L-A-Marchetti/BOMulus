@@ -65,7 +65,6 @@ func GuiInit() {
 	button.Connect("clicked", BtnCompare)
 	// Add the button to the vertical box container.
 	vBox.PackStart(button, false, false, 0)
-
 	// Create a ListStore with 5 columns: 4 for data and 1 for background color
 	resultStore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
 	if err != nil {
@@ -75,7 +74,6 @@ func GuiInit() {
 	if err != nil {
 		panic(err)
 	}
-
 	// Add columns to TreeView
 	for i, title := range []string{"Operation", "Old Row", "New Row", "Content"} {
 		cellRenderer, err := gtk.CellRendererTextNew()
@@ -89,7 +87,6 @@ func GuiInit() {
 		column.AddAttribute(cellRenderer, "background", 4)
 		resultView.AppendColumn(column)
 	}
-
 	// Create a ScrolledWindow, add the TreeView to it, and then add the ScrolledWindow to vBox
 	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
 	if err != nil {
@@ -97,7 +94,7 @@ func GuiInit() {
 	}
 	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 	scrolledWindow.Add(resultView)
-
+	// Add the scrolled window to the vertical box container.
 	vBox.PackStart(scrolledWindow, true, true, 0)
 	// Add the vertical box container to the window.
 	win.Add(vBox)

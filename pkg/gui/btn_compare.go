@@ -9,8 +9,9 @@ import (
 func BtnCompare() {
 	core.XlsmReader()
 	core.XlsmDiff()
+	// Clear the tree store to avoid merging on a second click.
 	resultStore.Clear()
-
+	// Fill the tree with deltas content.
 	for _, row := range core.XlsmDeltas {
 		var operation, oldRow, newRow, content, bgColor string
 		switch row.Operator {
@@ -19,9 +20,8 @@ func BtnCompare() {
 			oldRow = fmt.Sprintf("%d", row.OldRow)
 			newRow = fmt.Sprintf("%d", row.NewRow)
 			content = strings.Join(core.XlsmFiles[1].Content[row.NewRow], "\t")
-			bgColor = "#2c2c2c"
 			iter := resultStore.Append()
-			resultStore.Set(iter, []int{0, 1, 2, 3, 4}, []interface{}{operation, oldRow, newRow, content, bgColor})
+			resultStore.Set(iter, []int{0, 1, 2, 3}, []interface{}{operation, oldRow, newRow, content})
 		case "INSERT":
 			operation = "INSERT"
 			oldRow = ""
@@ -47,7 +47,6 @@ func BtnCompare() {
 			bgColor = "#c94e36"
 			iter := resultStore.Append()
 			resultStore.Set(iter, []int{0, 1, 2, 3, 4}, []interface{}{operation, oldRow, newRow, content, bgColor})
-
 			// Second line for the new row
 			operation = "UPDATE"
 			oldRow = ""
