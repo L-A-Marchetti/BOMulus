@@ -1,12 +1,12 @@
 package gui
 
 import (
-	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
 var resultView *gtk.TreeView
 var resultStore *gtk.ListStore
+var vBox *gtk.Box
 
 func GuiInit() {
 	// Initialize GTK.
@@ -50,7 +50,7 @@ func GuiInit() {
 	hBox.PackStart(box1, true, false, 0)
 	hBox.PackStart(box2, true, false, 0)
 	// Create a vertical box container to hold the horizontal box and the button.
-	vBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 6)
+	vBox, err = gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 6)
 	if err != nil {
 		panic(err)
 	}
@@ -65,44 +65,9 @@ func GuiInit() {
 	button.Connect("clicked", BtnCompare)
 	// Add the button to the vertical box container.
 	vBox.PackStart(button, false, false, 0)
-	// Create a ListStore with 5 columns: 4 for data and 1 for background color
-	resultStore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
-	if err != nil {
-		panic(err)
-	}
-	resultView, err = gtk.TreeViewNewWithModel(resultStore)
-	if err != nil {
-		panic(err)
-	}
-	// Add columns to TreeView
-	for i, title := range []string{"Operation", "Old Row", "New Row", "Content"} {
-		cellRenderer, err := gtk.CellRendererTextNew()
-		if err != nil {
-			panic(err)
-		}
-		// Apply monospace font
-		cellRenderer.Set("font", "monospace 9")
-		column, err := gtk.TreeViewColumnNewWithAttribute(title, cellRenderer, "text", i)
-		if err != nil {
-			panic(err)
-		}
-		column.AddAttribute(cellRenderer, "background", 4)
-		resultView.AppendColumn(column)
-	}
-	// Create a ScrolledWindow, add the TreeView to it, and then add the ScrolledWindow to vBox
-	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-	if err != nil {
-		panic(err)
-	}
-	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-	scrolledWindow.Add(resultView)
-	scrolledWindow.SetVExpand(true)
-	scrolledWindow.SetHExpand(true)
-	// Add the scrolled window to the vertical box container.
-	vBox.PackStart(scrolledWindow, true, true, 0)
 	// Add the vertical box container to the window.
 	win.Add(vBox)
-	// apply style to the boxes.
+	// Apply style to the boxes.
 	Stylize(box1)
 	Stylize(box2)
 	// Make the window and all its contents visible.
