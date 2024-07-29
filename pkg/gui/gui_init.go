@@ -66,8 +66,8 @@ func GuiInit() {
 	// Add the button to the vertical box container.
 	vBox.PackStart(button, false, false, 0)
 
-	// Create a ListStore with 4 columns
-	resultStore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
+	// Create a ListStore with 5 columns: 4 for data and 1 for background color
+	resultStore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
 	if err != nil {
 		panic(err)
 	}
@@ -86,6 +86,7 @@ func GuiInit() {
 		if err != nil {
 			panic(err)
 		}
+		column.AddAttribute(cellRenderer, "background", 4)
 		resultView.AppendColumn(column)
 	}
 
