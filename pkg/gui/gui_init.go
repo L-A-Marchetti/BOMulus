@@ -1,8 +1,12 @@
 package gui
 
 import (
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
+
+var resultView *gtk.TreeView
+var resultStore *gtk.ListStore
 
 func GuiInit() {
 	// Initialize GTK.
@@ -61,6 +65,39 @@ func GuiInit() {
 	button.Connect("clicked", BtnCompare)
 	// Add the button to the vertical box container.
 	vBox.PackStart(button, false, false, 0)
+
+	// Create a ListStore with 4 columns
+	resultStore, err = gtk.ListStoreNew(glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING, glib.TYPE_STRING)
+	if err != nil {
+		panic(err)
+	}
+	resultView, err = gtk.TreeViewNewWithModel(resultStore)
+	if err != nil {
+		panic(err)
+	}
+
+	// Add columns to TreeView
+	for i, title := range []string{"Operation", "Old Row", "New Row", "Content"} {
+		cellRenderer, err := gtk.CellRendererTextNew()
+		if err != nil {
+			panic(err)
+		}
+		column, err := gtk.TreeViewColumnNewWithAttribute(title, cellRenderer, "text", i)
+		if err != nil {
+			panic(err)
+		}
+		resultView.AppendColumn(column)
+	}
+
+	// Create a ScrolledWindow, add the TreeView to it, and then add the ScrolledWindow to vBox
+	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
+	if err != nil {
+		panic(err)
+	}
+	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+	scrolledWindow.Add(resultView)
+
+	vBox.PackStart(scrolledWindow, true, true, 0)
 	// Add the vertical box container to the window.
 	win.Add(vBox)
 	// apply style to the boxes.

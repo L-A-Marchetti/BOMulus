@@ -14,27 +14,18 @@ func XlsmDiff() {
 			if InsertFound(i, j) {
 				delta = XlsmDelta{"INSERT", j, i}
 				XlsmDeltas = append(XlsmDeltas, delta)
-				//fmt.Println("INSERT")
-				//fmt.Println(i, XlsmFiles[1].Content[i])
 				j--
 			} else if DeleteFound(i, j) {
 				delta = XlsmDelta{"DELETE", j, i}
 				XlsmDeltas = append(XlsmDeltas, delta)
-				//fmt.Println("DELETE")
-				//fmt.Println(j, XlsmFiles[0].Content[j])
 				i--
 			} else {
 				delta = XlsmDelta{"UPDATE", j, i}
 				XlsmDeltas = append(XlsmDeltas, delta)
-				//fmt.Println("UPDATE")
-				//fmt.Println(j, XlsmFiles[0].Content[j])
-				//fmt.Println(i, XlsmFiles[1].Content[i])
 			}
 		} else {
 			delta = XlsmDelta{"EQUAL", j, i}
 			XlsmDeltas = append(XlsmDeltas, delta)
-			//fmt.Println("EQUAL")
-			//fmt.Println(j, i, XlsmFiles[1].Content[i])
 		}
 		i++
 		j++
