@@ -80,6 +80,8 @@ func GuiInit() {
 		if err != nil {
 			panic(err)
 		}
+		// Apply monospace font
+		cellRenderer.Set("font", "monospace 10")
 		column, err := gtk.TreeViewColumnNewWithAttribute(title, cellRenderer, "text", i)
 		if err != nil {
 			panic(err)

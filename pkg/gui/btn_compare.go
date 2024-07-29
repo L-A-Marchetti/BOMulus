@@ -9,6 +9,7 @@ import (
 func BtnCompare() {
 	core.XlsmReader()
 	core.XlsmDiff()
+	core.OutputFormat()
 	// Clear the tree store to avoid merging on a second click.
 	resultStore.Clear()
 	// Fill the tree with deltas content.
