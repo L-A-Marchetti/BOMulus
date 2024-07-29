@@ -19,7 +19,7 @@ func GuiInit() {
 	// Set the title of the window.
 	win.SetTitle("BOMulus")
 	// Set the default size of the window.
-	win.SetDefaultSize(800, 600)
+	win.SetDefaultSize(800, 800)
 	// Create labels for boxes.
 	label1, err := gtk.LabelNew("Drag and drop a file here")
 	if err != nil {
@@ -47,15 +47,15 @@ func GuiInit() {
 		panic(err)
 	}
 	// Add both boxes to the horizontal box container.
-	hBox.PackStart(box1, true, true, 0)
-	hBox.PackStart(box2, true, true, 0)
+	hBox.PackStart(box1, true, false, 0)
+	hBox.PackStart(box2, true, false, 0)
 	// Create a vertical box container to hold the horizontal box and the button.
 	vBox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 6)
 	if err != nil {
 		panic(err)
 	}
 	// Add the horizontal box container to the vertical box container.
-	vBox.PackStart(hBox, true, true, 0)
+	vBox.PackStart(hBox, false, false, 0)
 	// Create the button.
 	button, err := gtk.ButtonNewWithLabel("Compare")
 	if err != nil {
@@ -81,7 +81,7 @@ func GuiInit() {
 			panic(err)
 		}
 		// Apply monospace font
-		cellRenderer.Set("font", "monospace 10")
+		cellRenderer.Set("font", "monospace 9")
 		column, err := gtk.TreeViewColumnNewWithAttribute(title, cellRenderer, "text", i)
 		if err != nil {
 			panic(err)
@@ -96,6 +96,8 @@ func GuiInit() {
 	}
 	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 	scrolledWindow.Add(resultView)
+	scrolledWindow.SetVExpand(true)
+	scrolledWindow.SetHExpand(true)
 	// Add the scrolled window to the vertical box container.
 	vBox.PackStart(scrolledWindow, true, true, 0)
 	// Add the vertical box container to the window.

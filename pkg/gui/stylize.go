@@ -11,10 +11,10 @@ func Stylize(widget *gtk.Box) {
 	// Load CSS
 	css := `
 	#box {
-		border: 2px solid black;
+		border: 1px dotted black;
 		border-radius: 5px;
-		padding: 50px;
-		margin: 50px;
+		padding: 30px;
+		margin: 30px;
 	}
 	`
 	cssProvider.LoadFromData(css)
