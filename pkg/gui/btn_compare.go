@@ -44,7 +44,7 @@ func BtnCompare() {
 			oldRow = fmt.Sprintf("%d", row.OldRow)
 			newRow = ""
 			content = strings.Join(core.XlsmFiles[0].Content[row.OldRow], "\t")
-			bgColor = "#c94e36"
+			bgColor = "#a9a528"
 			iter := resultStore.Append()
 			resultStore.Set(iter, []int{0, 1, 2, 3, 4}, []interface{}{operation, oldRow, newRow, content, bgColor})
 			// Second line for the new row
@@ -52,6 +52,7 @@ func BtnCompare() {
 			oldRow = ""
 			newRow = fmt.Sprintf("%d", row.NewRow)
 			content = strings.Join(core.XlsmFiles[1].Content[row.NewRow], "\t")
+			bgColor = "#c2c045"
 			iter = resultStore.Append()
 			resultStore.Set(iter, []int{0, 1, 2, 3, 4}, []interface{}{operation, oldRow, newRow, content, bgColor})
 		}
