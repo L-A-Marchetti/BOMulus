@@ -16,27 +16,6 @@ BOMulus is a Go application with a GTK-based GUI that allows users to compare an
 
 To install BOMulus, download the latest release from the [GitHub Releases page](https://github.com/L-A-Marchetti/BOMulus/releases).
 
-For Linux:
-
-```bash
-wget https://github.com/yourusername/BOMulus/releases/download/v1.0.0/BOMulus-v1.0.0-linux-amd64.tar.gz
-tar -xzvf BOMulus-v1.0.0-linux-amd64.tar.gz
-```
-
-For MacOS:
-
-```bash
-wget https://github.com/L-A-Marchetti/BOMulus/releases/download/v1.0.0/BOMulus-v1.0.0-macos-amd64.zip
-unzip BOMulus-v1.0.0-macos-amd64.zip
-```
-
-For Windows:
-
-```powershell
-curl -LO https://github.com/yourusername/BOMulus/releases/download/v1.0.0/BOMulus-v1.0.0-windows-amd64.zip
-Expand-Archive -Path BOMulus-v1.0.0-windows-amd64.zip -DestinationPath .
-```
-
 ## 🔧 Development
 
 ### 📖 Prerequisites
