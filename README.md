@@ -74,13 +74,9 @@ cd BOMulus
 go get github.com/gotk3/gotk3@v0.6.5-0.20240618185848-ff349ae13f56
 ```
 
-then for every other packages :
-
-```bash
-go mod tidy
-```
-
 ### 🔨 Building
+
+## Linux
 
 Use the provided Makefile to build the project:
 
@@ -91,7 +87,19 @@ make
 This will create the BOMulus binary in the `build` directory and `run` it.
 You can also use `build`, `run` or `clean` after make.
 
+## Windows
+
+Use this command-line in a powershell terminal:
+
+```powershell
+$env:CGO_ENABLED=1; go build -ldflags "-H windowsgui" -o BOMulus.exe cmd/BOMulus/main.go
+```
+
+You can also decide to create the build into a build/windows directory.
+
 ### 🚀 Running
+
+## Linux
 
 To run the application:
 
@@ -103,6 +111,14 @@ Or directly:
 
 ```bash
 ./build/BOMulus
+```
+
+## Windows
+
+You can double click or :
+
+```powershell
+start BOMulus.exe
 ```
 
 ## 🌸 Contributing
