@@ -37,13 +37,6 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 			} else {
 				// If not an .xlsm file, update the label with an error message
 				label.SetText("Please insert an .xlsm file")
-				// Clear the corresponding XlsmFiles entry
-				switch boxIdx {
-				case 1:
-					core.XlsmFiles[0].Path = ""
-				case 2:
-					core.XlsmFiles[1].Path = ""
-				}
 			}
 		}
 	})
