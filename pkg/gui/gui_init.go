@@ -73,8 +73,8 @@ func GuiInit() {
 	// Make the window and all its contents visible.
 	win.ShowAll()
 	// Set up drag and drop functionality for both boxes.
-	SetupDragAndDrop(box1, 1, label1)
-	SetupDragAndDrop(box2, 2, label2)
+	SetupDragAndDrop(box1, 1, label1, button)
+	SetupDragAndDrop(box2, 2, label2, button)
 	// Connect the destroy signal to the main GTK loop exit.
 	win.Connect("destroy", func() {
 		gtk.MainQuit()

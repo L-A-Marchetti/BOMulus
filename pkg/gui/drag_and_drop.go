@@ -9,7 +9,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label) {
+func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk.Button) {
 	// Create a target entry for file URIs.
 	targetEntry, _ := gtk.TargetEntryNew("text/uri-list", gtk.TARGET_OTHER_APP, 0)
 	// Enable drag-and-drop for the widget.
@@ -21,12 +21,10 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label) {
 		if len(uris) > 0 && uris[0] != "" {
 			// Remove the "file://" prefix and any trailing whitespace
 			filename := strings.TrimSpace(strings.TrimPrefix(uris[0], "file://"))
-
 			// Check if the file has .xlsm extension
 			if strings.ToLower(filepath.Ext(filename)) == ".xlsm" {
 				// Update the label with the filename
 				label.SetText(filepath.Base(filename))
-
 				// Update the XlsmFiles slice
 				switch boxIdx {
 				case 1:
@@ -34,10 +32,11 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label) {
 				case 2:
 					core.XlsmFiles[1].Path = filename
 				}
+				// Reset the button label.
+				button.SetLabel("Compare")
 			} else {
 				// If not an .xlsm file, update the label with an error message
 				label.SetText("Please insert an .xlsm file")
-
 				// Clear the corresponding XlsmFiles entry
 				switch boxIdx {
 				case 1:

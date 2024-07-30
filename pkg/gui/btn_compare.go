@@ -9,7 +9,12 @@ import (
 	"github.com/gotk3/gotk3/pango"
 )
 
-func BtnCompare() {
+func BtnCompare(button *gtk.Button) {
+	// Check if there's two files.
+	if core.XlsmFiles[0].Path == "path/to/file1" || core.XlsmFiles[1].Path == "path/to/file2" {
+		button.SetLabel("You need at least 2 files to compare...")
+		return
+	}
 	// Read and store both Xlsm files.
 	core.XlsmReader()
 	// Generate delta data.
