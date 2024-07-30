@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"config"
 	"core"
 	"fmt"
 
@@ -18,28 +19,28 @@ func Output() {
 			oldRow = fmt.Sprintf("%d", row.OldRow)
 			newRow = fmt.Sprintf("%d", row.NewRow)
 			content = core.XlsmFiles[1].Content[row.NewRow]
-			bgColor = ""
+			bgColor = config.EQUAL_BG_COLOR
 		case "INSERT":
 			operation = "INSERT"
 			oldRow = ""
 			newRow = fmt.Sprintf("%d", row.NewRow)
 			content = core.XlsmFiles[1].Content[row.NewRow]
-			bgColor = "#3cb257"
+			bgColor = config.INSERT_BG_COLOR
 		case "DELETE":
 			operation = "DELETE"
 			oldRow = fmt.Sprintf("%d", row.OldRow)
 			newRow = ""
 			content = core.XlsmFiles[0].Content[row.OldRow]
-			bgColor = "#b81717"
+			bgColor = config.DELETE_BG_COLOR
 		case "UPDATE":
 			// First row for the old.
-			appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), "", core.XlsmFiles[0].Content[row.OldRow], "#a9a528")
+			appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), "", core.XlsmFiles[0].Content[row.OldRow], config.OLD_UPDATE_BG_COLOR)
 			// Second row for the new.
 			operation = "UPDATE"
 			oldRow = ""
 			newRow = fmt.Sprintf("%d", row.NewRow)
 			content = core.XlsmFiles[1].Content[row.NewRow]
-			bgColor = "#c2c045"
+			bgColor = config.NEW_UPDATE_BG_COLOR
 		}
 		if bgColor != "" {
 			appendRow(resultStore, operation, oldRow, newRow, content, bgColor)

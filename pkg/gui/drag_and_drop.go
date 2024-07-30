@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"config"
 	"core"
 	"path/filepath"
 	"strings"
@@ -20,9 +21,9 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 		uris := strings.Split(string(data), "\n")
 		if len(uris) > 0 && uris[0] != "" {
 			// Remove the "file://" prefix and any trailing whitespace
-			filename := strings.TrimSpace(strings.TrimPrefix(uris[0], "file://"))
+			filename := strings.TrimSpace(strings.TrimPrefix(uris[0], config.FILE_PREFIX))
 			// Check if the file has .xlsm extension
-			if strings.ToLower(filepath.Ext(filename)) == ".xlsm" {
+			if strings.ToLower(filepath.Ext(filename)) == config.FILE_EXT {
 				// Update the label with the filename
 				label.SetText(filepath.Base(filename))
 				// Update the XlsmFiles slice
@@ -33,10 +34,10 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 					core.XlsmFiles[1].Path = filename
 				}
 				// Reset the button label.
-				button.SetLabel("Compare")
+				button.SetLabel(config.INIT_BUTTON_LABEL)
 			} else {
 				// If not an .xlsm file, update the label with an error message
-				label.SetText("Please insert an .xlsm file")
+				label.SetText(config.WRONG_EXT_MSG)
 			}
 		}
 	})

@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"config"
 	"core"
 
 	"github.com/gotk3/gotk3/glib"
@@ -10,8 +11,8 @@ import (
 
 func BtnCompare(button *gtk.Button) {
 	// Check if there's two files.
-	if core.XlsmFiles[0].Path == "path/to/file1" || core.XlsmFiles[1].Path == "path/to/file2" {
-		button.SetLabel("You need at least 2 files to compare...")
+	if core.XlsmFiles[0].Path == config.INIT_FILE_PATH_1 || core.XlsmFiles[1].Path == config.INIT_FILE_PATH_2 {
+		button.SetLabel(config.ONE_FILE_MSG)
 		return
 	}
 	// Read and store both Xlsm files.
@@ -43,10 +44,10 @@ func BtnCompare(button *gtk.Button) {
 			panic(err)
 		}
 		// Apply monospace font.
-		cellRenderer.Set("font", "monospace 9")
+		cellRenderer.Set("font", config.OUTPUT_FONT)
 		// Enable word wrap
 		cellRenderer.Set("wrap-mode", pango.WRAP_WORD_CHAR)
-		cellRenderer.Set("wrap-width", 400)
+		cellRenderer.Set("wrap-width", config.WRAP_WIDTH)
 
 		column, err := gtk.TreeViewColumnNewWithAttribute(title, cellRenderer, "text", i)
 		if err != nil {
@@ -54,7 +55,7 @@ func BtnCompare(button *gtk.Button) {
 		}
 		column.AddAttribute(cellRenderer, "background", maxColumns+3) // Index of the background color column
 		// Determine a minimum cell size to avoid negative content width.
-		column.SetMinWidth(20)
+		column.SetMinWidth(config.CELLS_MIN_WIDTH)
 		// Make the column resizable
 		column.SetResizable(true)
 		// Set the column to expand to fill available space

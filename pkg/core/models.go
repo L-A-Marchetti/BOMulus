@@ -1,5 +1,7 @@
 package core
 
+import "config"
+
 type XlsmFile struct {
 	Path    string
 	Content [][]string
@@ -12,8 +14,8 @@ type XlsmDelta struct {
 }
 
 var XlsmFiles = []XlsmFile{
-	{Path: "path/to/file1"},
-	{Path: "path/to/file2"},
+	{Path: config.INIT_FILE_PATH_1},
+	{Path: config.INIT_FILE_PATH_2},
 }
 
 var XlsmDeltas []XlsmDelta

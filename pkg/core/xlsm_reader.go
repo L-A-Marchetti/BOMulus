@@ -1,6 +1,7 @@
 package core
 
 import (
+	"config"
 	"log"
 	"net/url"
 	"strings"
@@ -11,7 +12,7 @@ import (
 func XlsmReader() {
 	for i := range XlsmFiles {
 		// Trim decode and clean the file path.
-		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, "file://")))
+		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, config.FILE_PREFIX)))
 		if err != nil {
 			log.Fatal(err)
 		}

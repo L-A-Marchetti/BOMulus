@@ -1,6 +1,8 @@
 package gui
 
 import (
+	"config"
+
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -17,15 +19,15 @@ func GuiInit() {
 		panic(err)
 	}
 	// Set the title of the window.
-	win.SetTitle("BOMulus")
+	win.SetTitle(config.TITLE)
 	// Set the default size of the window.
-	win.SetDefaultSize(800, 800)
+	win.SetDefaultSize(config.WIN_WIDTH, config.WIN_HEIGHT)
 	// Create labels for boxes.
-	label1, err := gtk.LabelNew("Drag and drop a file here")
+	label1, err := gtk.LabelNew(config.INIT_BOX_MSG)
 	if err != nil {
 		panic(err)
 	}
-	label2, err := gtk.LabelNew("Drag and drop a file here")
+	label2, err := gtk.LabelNew(config.INIT_BOX_MSG)
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +59,7 @@ func GuiInit() {
 	// Add the horizontal box container to the vertical box container.
 	vBox.PackStart(hBox, false, false, 0)
 	// Create the button.
-	button, err := gtk.ButtonNewWithLabel("Compare")
+	button, err := gtk.ButtonNewWithLabel(config.INIT_BUTTON_LABEL)
 	if err != nil {
 		panic(err)
 	}
