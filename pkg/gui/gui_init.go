@@ -2,6 +2,7 @@ package gui
 
 import (
 	"config"
+	"os"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -17,6 +18,10 @@ func GuiInit() {
 	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
 		panic(err)
+	}
+	iconPath := "assets/logo.png"
+	if _, err := os.Stat(iconPath); err == nil {
+		win.SetIconFromFile(iconPath)
 	}
 	// Set the title of the window.
 	win.SetTitle(config.TITLE)
