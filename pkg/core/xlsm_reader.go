@@ -4,6 +4,7 @@ import (
 	"config"
 	"log"
 	"net/url"
+	"runtime"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -15,6 +16,11 @@ func XlsmReader() {
 		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, config.FILE_PREFIX)))
 		if err != nil {
 			log.Fatal(err)
+		}
+		// Check if the operating system is Windows.
+		if runtime.GOOS == "windows" {
+			// Added line for Windows file path.
+			filePath = strings.TrimPrefix(filePath, "/")
 		}
 		// Open xlsm file.
 		f, err := excelize.OpenFile(filePath)
