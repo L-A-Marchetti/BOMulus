@@ -16,3 +16,20 @@ func Stylize(widget *gtk.Box) {
 	// Set the CSS name of the widget
 	widget.SetName(config.BOXES_CLASS_NAME)
 }
+
+// Apply css to enlarge scrollbars.
+func EnlargeSb() {
+	provider, err := gtk.CssProviderNew()
+	if err != nil {
+		panic(err)
+	}
+	err = provider.LoadFromData(config.SCROLLBAR_CSS)
+	if err != nil {
+		panic(err)
+	}
+	screen, err := gdk.ScreenGetDefault()
+	if err != nil {
+		panic(err)
+	}
+	gtk.AddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+}

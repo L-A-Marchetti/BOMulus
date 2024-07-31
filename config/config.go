@@ -1,5 +1,7 @@
 package config
 
+import "github.com/gotk3/gotk3/gtk"
+
 const (
 	TITLE               string = "BOMulus"
 	WIN_WIDTH           int    = 800
@@ -29,4 +31,11 @@ const (
 	}
 	`
 	BOXES_CLASS_NAME string = "box"
+	SCROLLBAR_POLICY        = gtk.POLICY_ALWAYS // Replace by gtk.POLICY_AUTOMATIC if needed.
+	SCROLLBAR_CSS    string = `
+	scrollbar slider {
+	    min-width: 15px;
+	    min-height: 15px;
+	}
+	`
 )

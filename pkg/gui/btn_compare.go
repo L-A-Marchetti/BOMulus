@@ -68,10 +68,12 @@ func BtnCompare(button *gtk.Button) {
 	if err != nil {
 		panic(err)
 	}
-	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+	scrolledWindow.SetPolicy(config.SCROLLBAR_POLICY, config.SCROLLBAR_POLICY)
 	scrolledWindow.Add(resultView)
 	scrolledWindow.SetVExpand(true)
 	scrolledWindow.SetHExpand(true)
+	// Enlarge scrollbars.
+	EnlargeSb()
 	// Remove any existing TreeView from vBox and add the new one
 	children := vBox.GetChildren()
 	for l := children; l != nil; l = l.Next() {
