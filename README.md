@@ -76,6 +76,18 @@ $env:CGO_ENABLED=1; go build -ldflags "-H windowsgui" -o BOMulus.exe cmd/BOMulus
 
 You can also decide to create the build into a build/windows directory.
 
+To deploy the build you'll also need to copy dll's into the .exe folder:
+
+```powershell
+cp /tools/msys64/mingw64/bin/*.dll "C:\Users\<username>\Documents\BOMulus\BOMulus-win-v0.0.1-alpha"
+```
+
+or maybe
+
+```powershell
+cp /msys64/mingw64/bin/*.dll "C:\Users\<username>\Documents\BOMulus\BOMulus-win-v0.0.1-alpha"
+```
+
 ### 🚀 Running
 
 ## Linux
