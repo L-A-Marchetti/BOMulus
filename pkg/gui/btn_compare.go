@@ -17,6 +17,8 @@ func BtnCompare(button *gtk.Button) {
 	core.XlsmReader()
 	// Generate delta data.
 	core.XlsmDiff()
+	// Generate labels for diff summary.
+	diffSummaryLabel := DiffSummary()
 	// Determine the maximum number of columns.
 	maxColumns := core.MaxCol()
 	// Generate a ListStore and a TreeView.
@@ -40,6 +42,7 @@ func BtnCompare(button *gtk.Button) {
 			vBox.Remove(sw)
 		}
 	}
+	vBox.PackStart(diffSummaryLabel, false, false, 0)
 	vBox.PackStart(scrolledWindow, true, true, 0)
 	vBox.ShowAll()
 	Output()

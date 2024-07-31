@@ -38,4 +38,5 @@ const (
 	    min-height: 15px;
 	}
 	`
+	SUMMARY_SPACING string = "              "
 )
