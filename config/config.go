@@ -18,10 +18,10 @@ const (
 	INIT_BUTTON_LABEL   string = "Compare"
 	WRONG_EXT_MSG       string = "Please insert an .xlsm file"
 	EQUAL_BG_COLOR      string = ""
-	INSERT_BG_COLOR     string = "#3cb257"
-	DELETE_BG_COLOR     string = "#b81717"
-	OLD_UPDATE_BG_COLOR string = "#a9a528"
-	NEW_UPDATE_BG_COLOR string = "#c2c045"
+	INSERT_BG_COLOR     string = "#49c973"
+	DELETE_BG_COLOR     string = "#ff5c8a"
+	OLD_UPDATE_BG_COLOR string = "#c89dfc"
+	NEW_UPDATE_BG_COLOR string = "#b67cfc"
 	BOXES_CSS           string = `
 	#box {
 		border: 1px dotted black;
