@@ -15,7 +15,7 @@ func CheckBoxes() *gtk.Box {
 	}
 	// Generate each checkbox
 	checkboxes := []*gtk.CheckButton{}
-	labels := []string{"EQUAL", "DELETE", "INSERT", "UPDATE"}
+	labels := []string{"EQUAL", "DELETE", "INSERT", "UPDATE", "SWAP"}
 
 	for i, label := range labels {
 		cb, err := gtk.CheckButtonNewWithLabel(label)
