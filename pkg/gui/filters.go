@@ -22,32 +22,8 @@ func CheckBoxes() *gtk.Box {
 		if err != nil {
 			log.Fatal(err)
 		}
-		switch i {
-		case 0:
-			if core.Filters.Equal {
-				cb.SetActive(true)
-			} else {
-				cb.SetActive(false)
-			}
-		case 1:
-			if core.Filters.Delete {
-				cb.SetActive(true)
-			} else {
-				cb.SetActive(false)
-			}
-		case 2:
-			if core.Filters.Insert {
-				cb.SetActive(true)
-			} else {
-				cb.SetActive(false)
-			}
-		case 3:
-			if core.Filters.Update {
-				cb.SetActive(true)
-			} else {
-				cb.SetActive(false)
-			}
-		}
+		// Initialize checkboxes.
+		cb = core.InitFilters(i, cb)
 		checkboxes = append(checkboxes, cb)
 	}
 	// Add a flexible space at the beginning
@@ -63,42 +39,10 @@ func CheckBoxes() *gtk.Box {
 	// Connect all checkboxes
 	for _, cb := range checkboxes {
 		cb.Connect("toggled", func() {
-			SetFilters(checkboxes)
+			// If a checkbox is toggled change the filters.
+			core.SetFilters(checkboxes)
 			UpdateView()
 		})
 	}
-	SetFilters(checkboxes)
 	return checkboxesHBox
-}
-
-func SetFilters(checkboxes []*gtk.CheckButton) {
-	for _, cb := range checkboxes {
-		label, _ := cb.GetLabel()
-		switch label {
-		case "EQUAL":
-			if cb.GetActive() {
-				core.Filters.Equal = true
-			} else {
-				core.Filters.Equal = false
-			}
-		case "DELETE":
-			if cb.GetActive() {
-				core.Filters.Delete = true
-			} else {
-				core.Filters.Delete = false
-			}
-		case "INSERT":
-			if cb.GetActive() {
-				core.Filters.Insert = true
-			} else {
-				core.Filters.Insert = false
-			}
-		case "UPDATE":
-			if cb.GetActive() {
-				core.Filters.Update = true
-			} else {
-				core.Filters.Update = false
-			}
-		}
-	}
 }
