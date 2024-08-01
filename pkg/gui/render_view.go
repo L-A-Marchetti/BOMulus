@@ -11,7 +11,7 @@ import (
 // Generate a ListStore and a TreeView.
 func RenderView(maxColumns int) {
 	// Create a list of types for ListStore.
-	columnTypes := make([]glib.Type, maxColumns+4) // +4 for Operation, OldRow, NewRow, and background color.
+	columnTypes := make([]glib.Type, (maxColumns+3)*2) // +4 for Operation, OldRow, NewRow, and background color.
 	for i := range columnTypes {
 		columnTypes[i] = glib.TYPE_STRING
 	}

@@ -54,7 +54,7 @@ func ColumnProperties(title string, maxColumns, i int, cellRenderer *gtk.CellRen
 	if err != nil {
 		panic(err)
 	}
-	column.AddAttribute(cellRenderer, "background", maxColumns+3) // Index of the background color column
+	column.AddAttribute(cellRenderer, "background", maxColumns+3+i) // Index of the background color column
 	column.SetMinWidth(config.CELLS_MIN_WIDTH)
 	column.SetResizable(true)
 	column.SetExpand(true)
