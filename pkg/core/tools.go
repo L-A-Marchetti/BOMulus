@@ -65,6 +65,18 @@ func SetFilters(checkboxes []*gtk.CheckButton) {
 			} else {
 				Filters.Update = false
 			}
+		case "SWAP":
+			if cb.GetActive() {
+				Filters.Swap = true
+			} else {
+				Filters.Swap = false
+			}
+			//Swap Xlsms.
+			XlsmFiles[0], XlsmFiles[1] = XlsmFiles[1], XlsmFiles[0]
+			// Read and store both Xlsm files.
+			XlsmReader()
+			// Generate delta data.
+			XlsmDiff()
 		}
 	}
 }
@@ -92,6 +104,12 @@ func InitFilters(i int, cb *gtk.CheckButton) *gtk.CheckButton {
 		}
 	case 3:
 		if Filters.Update {
+			cb.SetActive(true)
+		} else {
+			cb.SetActive(false)
+		}
+	case 4:
+		if Filters.Swap {
 			cb.SetActive(true)
 		} else {
 			cb.SetActive(false)
