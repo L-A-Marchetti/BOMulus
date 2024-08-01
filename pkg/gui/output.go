@@ -12,47 +12,25 @@ import (
 func Output() {
 	// Fill the tree with deltas content.
 	for _, row := range core.XlsmDeltas {
-		var operation, oldRow, newRow, bgColor string
-		var content []string
 		switch row.Operator {
 		case "EQUAL":
 			if core.Filters.Equal {
-				operation = ""
-				oldRow = fmt.Sprintf("%d", row.OldRow)
-				newRow = fmt.Sprintf("%d", row.NewRow)
-				content = core.XlsmFiles[1].Content[row.NewRow]
-				bgColor = config.EQUAL_BG_COLOR
-				appendRowWoBg(resultStore, operation, oldRow, newRow, content)
+				appendRowWoBg(resultStore, "", fmt.Sprintf("%d", row.OldRow), fmt.Sprintf("%d", row.NewRow), core.XlsmFiles[1].Content[row.NewRow])
 			}
 		case "INSERT":
 			if core.Filters.Insert {
-				operation = "INSERT"
-				oldRow = ""
-				newRow = fmt.Sprintf("%d", row.NewRow)
-				content = core.XlsmFiles[1].Content[row.NewRow]
-				bgColor = config.INSERT_BG_COLOR
-				appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
+				appendRow(resultStore, "INSERT", "", fmt.Sprintf("%d", row.NewRow), core.XlsmFiles[1].Content[row.NewRow], config.INSERT_BG_COLOR)
 			}
 		case "DELETE":
 			if core.Filters.Delete {
-				operation = "DELETE"
-				oldRow = fmt.Sprintf("%d", row.OldRow)
-				newRow = ""
-				content = core.XlsmFiles[0].Content[row.OldRow]
-				bgColor = config.DELETE_BG_COLOR
-				appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
+				appendRow(resultStore, "DELETE", fmt.Sprintf("%d", row.OldRow), "", core.XlsmFiles[0].Content[row.OldRow], config.DELETE_BG_COLOR)
 			}
 		case "UPDATE":
 			if core.Filters.Update {
 				// First row for the old.
 				appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), fmt.Sprintf("%d", row.NewRow), core.XlsmFiles[0].Content[row.OldRow], config.OLD_UPDATE_BG_COLOR)
 				// Second row for the new.
-				operation = "UPDATE"
-				oldRow = ""
-				newRow = fmt.Sprintf("%d", row.NewRow)
-				content = core.XlsmFiles[1].Content[row.NewRow]
-				bgColor = config.NEW_UPDATE_BG_COLOR
-				appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
+				appendRow(resultStore, "UPDATE", fmt.Sprintf("%d", row.OldRow), fmt.Sprintf("%d", row.NewRow), core.XlsmFiles[1].Content[row.NewRow], config.NEW_UPDATE_BG_COLOR)
 			}
 		}
 	}
@@ -63,7 +41,11 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 	iter := store.Append()
 	values := make([]interface{}, (len(content)+3)*2)
 	values[0] = operation
-	values[1] = oldRow
+	if operation != "UPDATE" {
+		values[1] = oldRow
+	} else {
+		values[1] = ""
+	}
 	if operation != "" {
 		values[2] = newRow
 	} else {
@@ -75,7 +57,7 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 		idx++
 	}
 	storeCells := []int{}
-	if operation == "" {
+	if operation == "" || operation == "UPDATE" {
 		oRow, _ := strconv.Atoi(oldRow)
 		nRow, _ := strconv.Atoi(newRow)
 		for i := range core.XlsmFiles[0].Content[oRow] {
@@ -86,12 +68,15 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 	}
 	for j := idx; j < len(values); j++ {
 		if core.ContainsInteger(storeCells, j-idx-3) {
-			values[j] = config.DELETE_BG_COLOR
+			if operation == "" {
+				values[j] = config.OLD_UPDATE_DIFF_BG_COLOR
+			} else if operation == "UPDATE" {
+				values[j] = config.NEW_UPDATE_DIFF_BG_COLOR
+			}
 		} else {
 			values[j] = bgColor
 		}
 	}
-	//fmt.Println(values)
 	err := store.Set(iter, core.MakeRange(0, len(values)), values)
 	if err != nil {
 		panic(err)
