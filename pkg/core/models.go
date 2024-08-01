@@ -27,7 +27,7 @@ var XlsmFiles = []XlsmFile{
 
 var XlsmDeltas []XlsmDelta
 
-var Filters Filter
+var Filters = Filter{true, true, true, true}
 
 func ResetContent() {
 	XlsmFiles[0].Content = nil

@@ -7,7 +7,10 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-var scrolledVBox *gtk.Box
+var (
+	scrolledVBox     *gtk.Box
+	diffSummaryLabel *gtk.Label
+)
 
 func BtnCompare(button *gtk.Button) {
 	// Check if there are two files.
@@ -19,8 +22,13 @@ func BtnCompare(button *gtk.Button) {
 	core.XlsmReader()
 	// Generate delta data.
 	core.XlsmDiff()
+	// Update the view
+	UpdateView()
+}
+
+func UpdateView() {
 	// Generate labels for diff summary.
-	diffSummaryLabel := DiffSummary()
+	diffSummaryLabel = DiffSummary()
 	// Generate checkboxes for filtering.
 	checkboxesHBox := CheckBoxes()
 	// Determine the maximum number of columns.

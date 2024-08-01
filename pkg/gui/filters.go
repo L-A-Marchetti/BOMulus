@@ -17,12 +17,37 @@ func CheckBoxes() *gtk.Box {
 	checkboxes := []*gtk.CheckButton{}
 	labels := []string{"EQUAL", "DELETE", "INSERT", "UPDATE"}
 
-	for _, label := range labels {
+	for i, label := range labels {
 		cb, err := gtk.CheckButtonNewWithLabel(label)
 		if err != nil {
 			log.Fatal(err)
 		}
-		cb.SetActive(true)
+		switch i {
+		case 0:
+			if core.Filters.Equal {
+				cb.SetActive(true)
+			} else {
+				cb.SetActive(false)
+			}
+		case 1:
+			if core.Filters.Delete {
+				cb.SetActive(true)
+			} else {
+				cb.SetActive(false)
+			}
+		case 2:
+			if core.Filters.Insert {
+				cb.SetActive(true)
+			} else {
+				cb.SetActive(false)
+			}
+		case 3:
+			if core.Filters.Update {
+				cb.SetActive(true)
+			} else {
+				cb.SetActive(false)
+			}
+		}
 		checkboxes = append(checkboxes, cb)
 	}
 	// Add a flexible space at the beginning
@@ -35,6 +60,13 @@ func CheckBoxes() *gtk.Box {
 	// Add a flexible space at the end
 	spacerEnd, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerEnd, true, true, 0)
+	// Connect all checkboxes
+	for _, cb := range checkboxes {
+		cb.Connect("toggled", func() {
+			SetFilters(checkboxes)
+			UpdateView()
+		})
+	}
 	SetFilters(checkboxes)
 	return checkboxesHBox
 }
