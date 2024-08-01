@@ -4,6 +4,7 @@ import (
 	"config"
 	"core"
 	"fmt"
+	"strconv"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -44,7 +45,7 @@ func Output() {
 		case "UPDATE":
 			if core.Filters.Update {
 				// First row for the old.
-				appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), "", core.XlsmFiles[0].Content[row.OldRow], config.OLD_UPDATE_BG_COLOR)
+				appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), fmt.Sprintf("%d", row.NewRow), core.XlsmFiles[0].Content[row.OldRow], config.OLD_UPDATE_BG_COLOR)
 				// Second row for the new.
 				operation = "UPDATE"
 				oldRow = ""
@@ -63,14 +64,28 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 	values := make([]interface{}, (len(content)+3)*2)
 	values[0] = operation
 	values[1] = oldRow
-	values[2] = newRow
+	if operation != "" {
+		values[2] = newRow
+	} else {
+		values[2] = ""
+	}
 	idx := 3
 	for i, v := range content {
 		values[i+3] = v
 		idx++
 	}
+	storeCells := []int{}
+	if operation == "" {
+		oRow, _ := strconv.Atoi(oldRow)
+		nRow, _ := strconv.Atoi(newRow)
+		for i := range core.XlsmFiles[0].Content[oRow] {
+			if core.XlsmFiles[0].Content[oRow][i] != core.XlsmFiles[1].Content[nRow][i] {
+				storeCells = append(storeCells, i)
+			}
+		}
+	}
 	for j := idx; j < len(values); j++ {
-		if j == idx+1 {
+		if core.ContainsInteger(storeCells, j-idx-3) {
 			values[j] = config.DELETE_BG_COLOR
 		} else {
 			values[j] = bgColor

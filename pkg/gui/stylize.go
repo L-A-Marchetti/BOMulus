@@ -2,7 +2,6 @@ package gui
 
 import (
 	"config"
-	"fmt"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
@@ -55,7 +54,6 @@ func ColumnProperties(title string, maxColumns, i int, cellRenderer *gtk.CellRen
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(i, maxColumns+3+i)
 	column.AddAttribute(cellRenderer, "background", maxColumns+3+i) // Index of the background color column
 	column.SetMinWidth(config.CELLS_MIN_WIDTH)
 	column.SetResizable(true)

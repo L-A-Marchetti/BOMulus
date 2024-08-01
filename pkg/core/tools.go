@@ -117,3 +117,13 @@ func InitFilters(i int, cb *gtk.CheckButton) *gtk.CheckButton {
 	}
 	return cb
 }
+
+// Function to now if []int contains i.
+func ContainsInteger(slice []int, i int) bool {
+	for _, v := range slice {
+		if v == i {
+			return true
+		}
+	}
+	return false
+}
