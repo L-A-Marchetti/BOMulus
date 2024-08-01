@@ -19,3 +19,12 @@ var XlsmFiles = []XlsmFile{
 }
 
 var XlsmDeltas []XlsmDelta
+
+func ResetContent() {
+	XlsmFiles[0].Content = nil
+	XlsmFiles[1].Content = nil
+}
+
+func ResetDeltas() {
+	XlsmDeltas = nil
+}

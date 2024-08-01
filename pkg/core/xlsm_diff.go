@@ -6,6 +6,7 @@ import (
 
 // Diff algo with an UPDATE function added.
 func XlsmDiff() {
+	ResetDeltas()
 	var delta XlsmDelta
 	i := 0
 	j := 0
