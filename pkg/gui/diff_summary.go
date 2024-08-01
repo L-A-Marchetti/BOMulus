@@ -31,5 +31,6 @@ func DiffSummary() *gtk.Label {
 		log.Fatal("Unable to create label:", err)
 	}
 	diffSummaryLabel.SetMarkup(diffSummaryText)
+	diffSummaryLabel.SetMarginBottom(10)
 	return diffSummaryLabel
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-var scrolledVBox *gtk.Box // Déclaration globale pour conserver la référence de la nouvelle vBox
+var scrolledVBox *gtk.Box
 
 func BtnCompare(button *gtk.Button) {
 	// Check if there are two files.
@@ -21,6 +21,8 @@ func BtnCompare(button *gtk.Button) {
 	core.XlsmDiff()
 	// Generate labels for diff summary.
 	diffSummaryLabel := DiffSummary()
+	// Generate checkboxes for filtering.
+	checkboxesHBox := CheckBoxes()
 	// Determine the maximum number of columns.
 	maxColumns := core.MaxCol()
 	// Generate a ListStore and a TreeView.
@@ -36,22 +38,21 @@ func BtnCompare(button *gtk.Button) {
 	scrolledWindow.SetHExpand(true)
 	// Enlarge scrollbars.
 	EnlargeSb()
-
 	// Remove the existing scrolledVBox if it exists
 	if scrolledVBox != nil {
 		vBox.Remove(scrolledVBox)
 	}
-
 	// Create a new vBox for the ScrolledWindow
 	scrolledVBox, err = gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
 	if err != nil {
 		panic(err)
 	}
+	// Add the diff summary and the resultview to the scrolledVBox.
 	scrolledVBox.PackStart(diffSummaryLabel, false, false, 0)
+	checkboxesHBox.SetMarginBottom(10)
+	scrolledVBox.PackStart(checkboxesHBox, false, false, 0)
 	scrolledVBox.PackStart(scrolledWindow, true, true, 0)
-
 	// Add the new elements
-	//vBox.PackStart(diffSummaryLabel, false, false, 0)
 	vBox.PackStart(scrolledVBox, true, true, 0)
 	vBox.ShowAll()
 	Output()

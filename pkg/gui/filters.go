@@ -1,0 +1,38 @@
+package gui
+
+import (
+	"log"
+
+	"github.com/gotk3/gotk3/gtk"
+)
+
+func CheckBoxes() *gtk.Box {
+	// Create a new hBox for the checkboxes.
+	checkboxesHBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10) // Add some spacing between checkboxes
+	if err != nil {
+		panic(err)
+	}
+	// Generate each checkbox
+	checkboxes := []*gtk.CheckButton{}
+	labels := []string{"EQUAL", "DELETE", "INSERT", "UPDATE"}
+
+	for _, label := range labels {
+		cb, err := gtk.CheckButtonNewWithLabel(label)
+		if err != nil {
+			log.Fatal(err)
+		}
+		cb.SetActive(true)
+		checkboxes = append(checkboxes, cb)
+	}
+	// Add a flexible space at the beginning
+	spacerStart, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	checkboxesHBox.PackStart(spacerStart, true, true, 0)
+	// Add checkboxes
+	for _, cb := range checkboxes {
+		checkboxesHBox.PackStart(cb, false, false, 0)
+	}
+	// Add a flexible space at the end
+	spacerEnd, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	checkboxesHBox.PackStart(spacerEnd, true, true, 0)
+	return checkboxesHBox
+}
