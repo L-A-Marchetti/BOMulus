@@ -60,15 +60,23 @@ func Output() {
 // Append row to the result store when there's an operator.
 func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content []string, bgColor string) {
 	iter := store.Append()
-	values := make([]interface{}, len(content)+4)
+	values := make([]interface{}, (len(content)+3)*2)
 	values[0] = operation
 	values[1] = oldRow
 	values[2] = newRow
+	idx := 3
 	for i, v := range content {
 		values[i+3] = v
+		idx++
 	}
-	values[len(values)-1] = bgColor
-
+	for j := idx; j < len(values); j++ {
+		if j == idx+1 {
+			values[j] = config.DELETE_BG_COLOR
+		} else {
+			values[j] = bgColor
+		}
+	}
+	//fmt.Println(values)
 	err := store.Set(iter, core.MakeRange(0, len(values)), values)
 	if err != nil {
 		panic(err)
