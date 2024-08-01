@@ -11,6 +11,7 @@ import (
 )
 
 func XlsmReader() {
+	ResetContent()
 	for i := range XlsmFiles {
 		// Trim decode and clean the file path.
 		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, config.FILE_PREFIX)))

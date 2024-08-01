@@ -13,9 +13,27 @@ type XlsmDelta struct {
 	NewRow   int
 }
 
+type Filter struct {
+	Equal  bool
+	Delete bool
+	Insert bool
+	Update bool
+}
+
 var XlsmFiles = []XlsmFile{
 	{Path: config.INIT_FILE_PATH_1},
 	{Path: config.INIT_FILE_PATH_2},
 }
 
 var XlsmDeltas []XlsmDelta
+
+var Filters = Filter{true, true, true, true}
+
+func ResetContent() {
+	XlsmFiles[0].Content = nil
+	XlsmFiles[1].Content = nil
+}
+
+func ResetDeltas() {
+	XlsmDeltas = nil
+}
