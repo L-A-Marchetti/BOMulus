@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"core"
 	"log"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -34,5 +35,38 @@ func CheckBoxes() *gtk.Box {
 	// Add a flexible space at the end
 	spacerEnd, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerEnd, true, true, 0)
+	SetFilters(checkboxes)
 	return checkboxesHBox
+}
+
+func SetFilters(checkboxes []*gtk.CheckButton) {
+	for _, cb := range checkboxes {
+		label, _ := cb.GetLabel()
+		switch label {
+		case "EQUAL":
+			if cb.GetActive() {
+				core.Filters.Equal = true
+			} else {
+				core.Filters.Equal = false
+			}
+		case "DELETE":
+			if cb.GetActive() {
+				core.Filters.Delete = true
+			} else {
+				core.Filters.Delete = false
+			}
+		case "INSERT":
+			if cb.GetActive() {
+				core.Filters.Insert = true
+			} else {
+				core.Filters.Insert = false
+			}
+		case "UPDATE":
+			if cb.GetActive() {
+				core.Filters.Update = true
+			} else {
+				core.Filters.Update = false
+			}
+		}
+	}
 }

@@ -15,37 +15,44 @@ func Output() {
 		var content []string
 		switch row.Operator {
 		case "EQUAL":
-			operation = ""
-			oldRow = fmt.Sprintf("%d", row.OldRow)
-			newRow = fmt.Sprintf("%d", row.NewRow)
-			content = core.XlsmFiles[1].Content[row.NewRow]
-			bgColor = config.EQUAL_BG_COLOR
+			if core.Filters.Equal {
+				operation = ""
+				oldRow = fmt.Sprintf("%d", row.OldRow)
+				newRow = fmt.Sprintf("%d", row.NewRow)
+				content = core.XlsmFiles[1].Content[row.NewRow]
+				bgColor = config.EQUAL_BG_COLOR
+				appendRowWoBg(resultStore, operation, oldRow, newRow, content)
+			}
 		case "INSERT":
-			operation = "INSERT"
-			oldRow = ""
-			newRow = fmt.Sprintf("%d", row.NewRow)
-			content = core.XlsmFiles[1].Content[row.NewRow]
-			bgColor = config.INSERT_BG_COLOR
+			if core.Filters.Insert {
+				operation = "INSERT"
+				oldRow = ""
+				newRow = fmt.Sprintf("%d", row.NewRow)
+				content = core.XlsmFiles[1].Content[row.NewRow]
+				bgColor = config.INSERT_BG_COLOR
+				appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
+			}
 		case "DELETE":
-			operation = "DELETE"
-			oldRow = fmt.Sprintf("%d", row.OldRow)
-			newRow = ""
-			content = core.XlsmFiles[0].Content[row.OldRow]
-			bgColor = config.DELETE_BG_COLOR
+			if core.Filters.Delete {
+				operation = "DELETE"
+				oldRow = fmt.Sprintf("%d", row.OldRow)
+				newRow = ""
+				content = core.XlsmFiles[0].Content[row.OldRow]
+				bgColor = config.DELETE_BG_COLOR
+				appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
+			}
 		case "UPDATE":
-			// First row for the old.
-			appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), "", core.XlsmFiles[0].Content[row.OldRow], config.OLD_UPDATE_BG_COLOR)
-			// Second row for the new.
-			operation = "UPDATE"
-			oldRow = ""
-			newRow = fmt.Sprintf("%d", row.NewRow)
-			content = core.XlsmFiles[1].Content[row.NewRow]
-			bgColor = config.NEW_UPDATE_BG_COLOR
-		}
-		if bgColor != "" {
-			appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
-		} else {
-			appendRowWoBg(resultStore, operation, oldRow, newRow, content)
+			if core.Filters.Update {
+				// First row for the old.
+				appendRow(resultStore, "", fmt.Sprintf("%d", row.OldRow), "", core.XlsmFiles[0].Content[row.OldRow], config.OLD_UPDATE_BG_COLOR)
+				// Second row for the new.
+				operation = "UPDATE"
+				oldRow = ""
+				newRow = fmt.Sprintf("%d", row.NewRow)
+				content = core.XlsmFiles[1].Content[row.NewRow]
+				bgColor = config.NEW_UPDATE_BG_COLOR
+				appendRow(resultStore, operation, oldRow, newRow, content, bgColor)
+			}
 		}
 	}
 }
