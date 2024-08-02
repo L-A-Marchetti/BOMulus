@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"io"
+	"os"
 )
 
 // Determine the maximum number of columns.
@@ -42,4 +44,36 @@ func ContainsInteger(slice []int, i int) bool {
 		}
 	}
 	return false
+}
+
+// Function to determine max width of column for export.
+func MaxColWidth(i int) float64 {
+	maxWidth := 0.0
+	for _, row := range XlsmFiles[1].Content {
+		for j, cell := range row {
+			if i == j && float64(len(cell)) > maxWidth {
+				maxWidth = float64(len(cell))
+			}
+		}
+	}
+	return maxWidth
+}
+
+// Function to duplicate a file.
+func CopyFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+	destinationFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destinationFile.Close()
+	_, err = io.Copy(destinationFile, sourceFile)
+	if err != nil {
+		return err
+	}
+	return destinationFile.Sync()
 }
