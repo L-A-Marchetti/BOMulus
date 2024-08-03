@@ -15,7 +15,7 @@ func ExportOptions() {
 		log.Fatal(err)
 	}
 	exportWindow.SetTitle("Export")
-	exportWindow.SetDefaultSize(300, 150)
+	exportWindow.SetDefaultSize(300, 200) // Adjusted size to fit checkboxes
 	// Create a vertical box container for the window
 	vbox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 10)
 	if err != nil {
@@ -41,6 +41,38 @@ func ExportOptions() {
 	}
 	entry.SetPlaceholderText("Enter filename")
 	vbox.PackStart(entry, false, false, 0)
+	// Create a label for checkboxes
+	displayLabel, err := gtk.LabelNew("Display:")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(displayLabel, false, false, 0)
+	// Create a horizontal box for checkboxes
+	hbox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10)
+	if err != nil {
+		log.Fatal(err)
+	}
+	hbox.SetHAlign(gtk.ALIGN_CENTER) // Center the hbox horizontally
+	vbox.PackStart(hbox, false, false, 0)
+	// Create checkboxes
+	deleteCheckbox, err := gtk.CheckButtonNewWithLabel("DELETE")
+	if err != nil {
+		log.Fatal(err)
+	}
+	deleteCheckbox.SetActive(true) // Set checked by default
+	hbox.PackStart(deleteCheckbox, false, false, 0)
+	insertCheckbox, err := gtk.CheckButtonNewWithLabel("INSERT")
+	if err != nil {
+		log.Fatal(err)
+	}
+	insertCheckbox.SetActive(true) // Set checked by default
+	hbox.PackStart(insertCheckbox, false, false, 0)
+	updateCheckbox, err := gtk.CheckButtonNewWithLabel("UPDATE")
+	if err != nil {
+		log.Fatal(err)
+	}
+	updateCheckbox.SetActive(true) // Set checked by default
+	hbox.PackStart(updateCheckbox, false, false, 0)
 	// Create the "OK" button
 	okButton, err := gtk.ButtonNewWithLabel("OK")
 	if err != nil {
@@ -81,8 +113,12 @@ func ExportOptions() {
 			showMessageDialog(exportWindow, "Error", "Please enter a file name.")
 			return
 		}
-		// Call the export function with the full path
-		export.Export(selectedPath+"/", fileName)
+		// Get the states of the checkboxes
+		deleteChecked := deleteCheckbox.GetActive()
+		insertChecked := insertCheckbox.GetActive()
+		updateChecked := updateCheckbox.GetActive()
+		// Call the export function with the full path and checkbox states
+		export.Export(selectedPath+"/", fileName, deleteChecked, insertChecked, updateChecked)
 		// Notify the user of successful export
 		showMessageDialog(exportWindow, "Success", "File exported")
 		exportWindow.Destroy() // Close the window after exporting

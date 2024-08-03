@@ -12,7 +12,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func Export(selectedPath, fileName string) {
+func Export(selectedPath, fileName string, deleteChecked, insertChecked, updateChecked bool) {
 	originalFile := [2]string{}
 	for i := range originalFile {
 		// Generate paths for the original and the copied files.
@@ -57,7 +57,7 @@ func Export(selectedPath, fileName string) {
 	oldSheetName := fOld.GetSheetName(0)
 	rowsAdded := 0
 	for i, delta := range core.XlsmDeltas {
-		if delta.Operator == "INSERT" {
+		if delta.Operator == "INSERT" && insertChecked {
 			for j := range core.XlsmFiles[1].Content[delta.NewRow] {
 				// Convert x y coordinates into cell name.
 				cell, _ := excelize.CoordinatesToCellName(j+1, i+1+rowsAdded)
@@ -92,7 +92,7 @@ func Export(selectedPath, fileName string) {
 					return
 				}
 			}
-		} else if delta.Operator == "DELETE" {
+		} else if delta.Operator == "DELETE" && deleteChecked {
 			// Insert a new row into the copied file.
 			err = f.InsertRows(sheetName, i+1+rowsAdded, 1)
 			if err != nil {
@@ -164,7 +164,7 @@ func Export(selectedPath, fileName string) {
 					return
 				}
 			}
-		} else if delta.Operator == "UPDATE" {
+		} else if delta.Operator == "UPDATE" && updateChecked {
 			storeCells := []int{}
 			for i := range core.XlsmFiles[0].Content[delta.OldRow] {
 				if core.XlsmFiles[0].Content[delta.OldRow][i] != core.XlsmFiles[1].Content[delta.NewRow][i] {
