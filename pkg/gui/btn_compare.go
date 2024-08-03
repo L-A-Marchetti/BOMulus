@@ -3,7 +3,6 @@ package gui
 import (
 	"config"
 	"core"
-	"export"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -65,5 +64,4 @@ func UpdateView() {
 	vBox.PackStart(scrolledVBox, true, true, 0)
 	vBox.ShowAll()
 	Output()
-	export.Export()
 }
