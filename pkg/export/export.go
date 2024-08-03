@@ -12,7 +12,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func Export(fileName string) {
+func Export(selectedPath, fileName string) {
 	originalFile := [2]string{}
 	for i := range originalFile {
 		// Generate paths for the original and the copied files.
@@ -299,7 +299,7 @@ func Export(fileName string) {
 		}
 	}
 	// Save copied and modified file.
-	err = f.SaveAs(copiedFile)
+	err = f.SaveAs(selectedPath + copiedFile)
 	if err != nil {
 		fmt.Println(err)
 		return
