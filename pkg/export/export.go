@@ -13,16 +13,19 @@ import (
 )
 
 func Export() {
-	// Generate paths for the original and the copied files.
-	originalFile, _ := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(core.XlsmFiles[1].Path, config.FILE_PREFIX)))
-	// Check if the operating system is Windows.
-	if runtime.GOOS == "windows" {
-		// Added line for Windows file path.
-		originalFile = strings.TrimPrefix(originalFile, "/")
+	originalFile := [2]string{}
+	for i := range originalFile {
+		// Generate paths for the original and the copied files.
+		originalFile[i], _ = url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(core.XlsmFiles[i].Path, config.FILE_PREFIX)))
+		// Check if the operating system is Windows.
+		if runtime.GOOS == "windows" {
+			// Added line for Windows file path.
+			originalFile[i] = strings.TrimPrefix(originalFile[i], "/")
+		}
 	}
-	copiedFile := "BOMulus" + filepath.Base(originalFile)
+	copiedFile := "BOMulus" + filepath.Base(originalFile[1])
 	// Copy original file.
-	err := core.CopyFile(originalFile, copiedFile)
+	err := core.CopyFile(originalFile[1], copiedFile)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -38,8 +41,20 @@ func Export() {
 			fmt.Println(err)
 		}
 	}()
+	// Open old file.
+	fOld, err := excelize.OpenFile(originalFile[0])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func() {
+		if err := fOld.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 	// Sheet name.
 	sheetName := f.GetSheetName(0)
+	oldSheetName := fOld.GetSheetName(0)
 	for i, delta := range core.XlsmDeltas {
 		if delta.Operator == "INSERT" {
 			for j := range core.XlsmFiles[1].Content[delta.NewRow] {
@@ -71,6 +86,87 @@ func Export() {
 				}
 				// Apply it.
 				err = f.SetCellStyle(sheetName, cell, cell, newStyle)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
+		} else if delta.Operator == "DELETE" {
+			// Insérer une nouvelle ligne dans le fichier copié
+			err = f.InsertRows(sheetName, i+1, 1)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			// Copier la hauteur de la ligne
+			rowHeight, err := fOld.GetRowHeight(oldSheetName, delta.OldRow+1)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			err = f.SetRowHeight(sheetName, i+1, rowHeight)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			for j := range core.XlsmFiles[0].Content[delta.OldRow] {
+				// Convertir les coordonnées x, y en nom de cellule
+				oldCell, _ := excelize.CoordinatesToCellName(j+1, delta.OldRow+1)
+				newCell, _ := excelize.CoordinatesToCellName(j+1, i+1)
+
+				// Copier le contenu de l'ancienne cellule vers la nouvelle
+				cellValue, err := fOld.GetCellValue(oldSheetName, oldCell)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				f.SetCellValue(sheetName, newCell, cellValue)
+
+				// Copier la largeur de la colonne
+				colName, _, _ := excelize.SplitCellName(newCell)
+				colWidth, err := fOld.GetColWidth(oldSheetName, colName)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				err = f.SetColWidth(sheetName, colName, colName, colWidth)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+
+				// Obtenir le style existant de l'ancienne cellule
+				existingStyle, err := fOld.GetCellStyle(oldSheetName, oldCell)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+
+				// Obtenir les détails du style existant
+				styleDetails, err := fOld.GetStyle(existingStyle)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+
+				// Modifier le style pour implémenter une couleur de fond
+				styleDetails.Fill = excelize.Fill{
+					Type:    "pattern",
+					Color:   []string{config.DELETE_BG_COLOR},
+					Pattern: 1,
+				}
+
+				// Créer un nouveau style basé sur l'ancien
+				newStyle, err := f.NewStyle(styleDetails)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+
+				// Appliquer le nouveau style
+				err = f.SetCellStyle(sheetName, newCell, newCell, newStyle)
 				if err != nil {
 					fmt.Println(err)
 					return
