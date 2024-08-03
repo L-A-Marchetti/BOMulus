@@ -12,7 +12,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func Export() {
+func Export(fileName string) {
 	originalFile := [2]string{}
 	for i := range originalFile {
 		// Generate paths for the original and the copied files.
@@ -23,7 +23,7 @@ func Export() {
 			originalFile[i] = strings.TrimPrefix(originalFile[i], "/")
 		}
 	}
-	copiedFile := "BOMulus" + filepath.Base(originalFile[1])
+	copiedFile := "BOMulus-" + fileName + filepath.Ext(originalFile[1])
 	// Copy original file.
 	err := core.CopyFile(originalFile[1], copiedFile)
 	if err != nil {

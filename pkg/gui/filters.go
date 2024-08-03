@@ -2,7 +2,6 @@ package gui
 
 import (
 	"core"
-	"export"
 	"log"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -46,7 +45,7 @@ func CheckBoxes() *gtk.Box {
 
 	// Connect the button to the export function
 	exportButton.Connect("clicked", func() {
-		export.Export() // Appelle la fonction d'exportation
+		ExportOptions()
 	})
 
 	// Add the button to the hBox
