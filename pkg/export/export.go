@@ -232,7 +232,6 @@ func Export() {
 					fmt.Println(err)
 					return
 				}
-
 				// Modifier le style pour implémenter une couleur de fond
 				styleDetails.Fill = excelize.Fill{
 					Type:    "pattern",
@@ -259,14 +258,6 @@ func Export() {
 			for j := range core.XlsmFiles[1].Content[delta.NewRow] {
 				// Convertir les coordonnées x, y en nom de cellule
 				newCell, _ := excelize.CoordinatesToCellName(j+1, i+1+rowsAdded)
-
-				// Copier le contenu de la nouvelle cellule
-				cellValue, err := f.GetCellValue(sheetName, newCell)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-				f.SetCellValue(sheetName, newCell, cellValue)
 
 				// Obtenir le style existant de la nouvelle cellule
 				existingStyle, err := f.GetCellStyle(sheetName, newCell)
