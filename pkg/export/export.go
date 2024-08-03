@@ -174,6 +174,12 @@ func Export() {
 				}
 			}
 		} else if delta.Operator == "UPDATE" {
+			storeCells := []int{}
+			for i := range core.XlsmFiles[0].Content[delta.OldRow] {
+				if core.XlsmFiles[0].Content[delta.OldRow][i] != core.XlsmFiles[1].Content[delta.NewRow][i] {
+					storeCells = append(storeCells, i)
+				}
+			}
 			// Insérer une nouvelle ligne pour afficher l'ancienne ligne
 			err = f.InsertRows(sheetName, i+1+rowsAdded, 1)
 			if err != nil {
@@ -232,11 +238,20 @@ func Export() {
 					fmt.Println(err)
 					return
 				}
-				// Modifier le style pour implémenter une couleur de fond
-				styleDetails.Fill = excelize.Fill{
-					Type:    "pattern",
-					Color:   []string{config.OLD_UPDATE_BG_COLOR},
-					Pattern: 1,
+				if core.ContainsInteger(storeCells, j) {
+					// Modifier le style pour implémenter une couleur de fond
+					styleDetails.Fill = excelize.Fill{
+						Type:    "pattern",
+						Color:   []string{config.OLD_UPDATE_DIFF_BG_COLOR},
+						Pattern: 1,
+					}
+				} else {
+					// Modifier le style pour implémenter une couleur de fond
+					styleDetails.Fill = excelize.Fill{
+						Type:    "pattern",
+						Color:   []string{config.OLD_UPDATE_BG_COLOR},
+						Pattern: 1,
+					}
 				}
 
 				// Créer un nouveau style basé sur l'ancien
@@ -273,11 +288,20 @@ func Export() {
 					return
 				}
 
-				// Modifier le style pour implémenter une couleur de fond
-				styleDetails.Fill = excelize.Fill{
-					Type:    "pattern",
-					Color:   []string{config.NEW_UPDATE_BG_COLOR},
-					Pattern: 1,
+				if core.ContainsInteger(storeCells, j) {
+					// Modifier le style pour implémenter une couleur de fond
+					styleDetails.Fill = excelize.Fill{
+						Type:    "pattern",
+						Color:   []string{config.NEW_UPDATE_DIFF_BG_COLOR},
+						Pattern: 1,
+					}
+				} else {
+					// Modifier le style pour implémenter une couleur de fond
+					styleDetails.Fill = excelize.Fill{
+						Type:    "pattern",
+						Color:   []string{config.NEW_UPDATE_BG_COLOR},
+						Pattern: 1,
+					}
 				}
 
 				// Créer un nouveau style basé sur l'ancien
