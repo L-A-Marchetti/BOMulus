@@ -13,6 +13,7 @@ func CheckBoxes() *gtk.Box {
 	if err != nil {
 		panic(err)
 	}
+
 	// Generate each checkbox
 	checkboxes := []*gtk.CheckButton{}
 	labels := []string{"EQUAL", "DELETE", "INSERT", "UPDATE", "SWAP"}
@@ -26,16 +27,33 @@ func CheckBoxes() *gtk.Box {
 		cb = core.InitFilters(i, cb)
 		checkboxes = append(checkboxes, cb)
 	}
+
 	// Add a flexible space at the beginning
 	spacerStart, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerStart, true, true, 0)
+
 	// Add checkboxes
 	for _, cb := range checkboxes {
 		checkboxesHBox.PackStart(cb, false, false, 0)
 	}
+
+	// Create the export button
+	exportButton, err := gtk.ButtonNewWithLabel("Export")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Connect the button to the export function
+	exportButton.Connect("clicked", func() {
+		ExportOptions()
+	})
+
+	// Add the button to the hBox
+	checkboxesHBox.PackStart(exportButton, false, false, 0)
 	// Add a flexible space at the end
 	spacerEnd, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerEnd, true, true, 0)
+
 	// Connect all checkboxes
 	for _, cb := range checkboxes {
 		cb.Connect("toggled", func() {
@@ -44,5 +62,6 @@ func CheckBoxes() *gtk.Box {
 			UpdateView()
 		})
 	}
+
 	return checkboxesHBox
 }

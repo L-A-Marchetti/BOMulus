@@ -4,5 +4,6 @@ use (
 	./cmd/BOMulus
 	./config
 	./pkg/core
+	./pkg/export
 	./pkg/gui
 )
