@@ -46,6 +46,7 @@ func ContainsInteger(slice []int, i int) bool {
 	return false
 }
 
+/*
 // Function to determine max width of column for export.
 func MaxColWidth(i int) float64 {
 	maxWidth := 0.0
@@ -58,6 +59,7 @@ func MaxColWidth(i int) float64 {
 	}
 	return maxWidth
 }
+*/
 
 // Function to duplicate a file.
 func CopyFile(src, dst string) error {
