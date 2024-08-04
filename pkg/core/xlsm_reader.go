@@ -2,8 +2,11 @@ package core
 
 import (
 	"config"
+	"fmt"
 	"log"
 	"net/url"
+	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -12,37 +15,42 @@ import (
 
 func XlsmReader() {
 	ResetContent()
+	// Define the path of the os tmp dir.
+	tempDir := os.TempDir()
+	var tempFiles []string
+	defer func() {
+		// Clean up temporary files
+		for _, file := range tempFiles {
+			os.Remove(file)
+		}
+	}()
 	for i := range XlsmFiles {
-		// Trim decode and clean the file path.
 		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, config.FILE_PREFIX)))
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Check if the operating system is Windows.
 		if runtime.GOOS == "windows" {
-			// Added line for Windows file path.
 			filePath = strings.TrimPrefix(filePath, "/")
 		}
-		// Open xlsm file.
-		f, err := excelize.OpenFile(filePath)
+		// Create a temporary copy of the file
+		tempFile := filepath.Join(tempDir, fmt.Sprintf("temp_%d.xlsm", i))
+		err = CopyFile(filePath, tempFile)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer func() {
-			if err := f.Close(); err != nil {
-				log.Fatal(err)
-			}
-		}()
-		// Read every used rows.
+		tempFiles = append(tempFiles, tempFile)
+		// Open the temporary file
+		f, err := excelize.OpenFile(tempFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+		// Read every used row
 		rows, err := f.GetRows(f.GetSheetName(0))
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Convert data into a string matrice.
-		for _, row := range rows {
-			var rowSlice []string
-			rowSlice = append(rowSlice, row...)
-			XlsmFiles[i].Content = append(XlsmFiles[i].Content, rowSlice)
-		}
+		// Convert data into a string matrix
+		XlsmFiles[i].Content = append(XlsmFiles[i].Content, rows...)
 	}
 }
