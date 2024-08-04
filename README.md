@@ -1,6 +1,6 @@
 # BOMulus
 
-![BOMulus](assets/logo.png)
+![BOMulus](assets/logo.ico)
 
 BOMulus is a Go application with a GTK-based GUI that allows users to compare and analyze Bill of Materials (BOM) files. It provides version control functionality to identify added, deleted, and updated lines between two BOMs.
 
