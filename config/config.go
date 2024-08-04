@@ -41,4 +41,5 @@ const (
 	}
 	`
 	SUMMARY_SPACING string = "              "
+	LOGO_PATH       string = "assets/logo.ico"
 )

@@ -1,4 +1,4 @@
-# USAGE : .\copy_files.ps1 -version "1.0.0"
+# USAGE : .\win-build.ps1 -version "1.0.0"
 param (
     [string]$version
 )
@@ -17,7 +17,7 @@ $iconsDestination = "$buildDir\share\icons"
 $assetsDestination = "$buildDir\assets"
 
 # Execute Go build.
-$env:CGO_ENABLED=1 go build -ldflags "-H windowsgui" -o "$buildDir\BOMulus.exe" cmd\BOMulus\main.go
+$env:CGO_ENABLED=1; go build -ldflags "-H windowsgui" -o "$buildDir\BOMulus.exe" cmd\BOMulus\main.go
 
 # Check if compilation succeed.
 if ($LASTEXITCODE -ne 0) {
@@ -29,6 +29,6 @@ if ($LASTEXITCODE -ne 0) {
 robocopy "\tools\msys64\mingw64\bin" $binDestination *dll
 robocopy "\tools\msys64\mingw64\share\glib-2.0" $glibDestination /E
 robocopy "\tools\msys64\mingw64\share\icons" $iconsDestination /E
-robocopy "\assets\" $assetsDestination /E
+robocopy "assets\" $assetsDestination /E
 
 Write-Host "Compilation and copying completed successfully for version $version."

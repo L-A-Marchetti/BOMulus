@@ -68,24 +68,10 @@ You can also use `build`, `run` or `clean` after make.
 
 ## Windows
 
-Use this command-line in a powershell terminal:
+You can use the `win-build.ps1` script to automate the build and the dependencies copying:
 
 ```powershell
-$env:CGO_ENABLED=1; go build -ldflags "-H windowsgui" -o build/BOMulus-win-<version>/BOMulus.exe cmd/BOMulus/main.go
-```
-
-You can also decide to create the build into a build/windows directory.
-
-To deploy the build you'll also need to copy dll's into the .exe folder:
-
-```powershell
-robocopy "\tools\msys64\mingw64\bin" "build\BOMulus-win-<version>\bin" *dll
-```
-```powershell
-robocopy "\tools\msys64\mingw64\share\glib-2.0" "build\BOMulus-win-<version>\share\glib-2.0" /E
-```
-```powershell
-robocopy "\tools\msys64\mingw64\share\icons" "build\BOMulus-win-<version>\share\icons" /E
+.\win-build.ps1 -version "<version>"
 ```
 
 ### 🚀 Running
@@ -101,7 +87,7 @@ make run
 Or directly:
 
 ```bash
-./build/BOMulus
+./BOMulus
 ```
 
 ## Windows
