@@ -19,7 +19,7 @@ func GuiInit() {
 	if err != nil {
 		panic(err)
 	}
-	iconPath := "assets/logo.png"
+	iconPath := config.LOGO_PATH
 	if _, err := os.Stat(iconPath); err == nil {
 		win.SetIconFromFile(iconPath)
 	}
