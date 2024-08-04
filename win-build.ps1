@@ -25,7 +25,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Exécute les commandes robocopy
+# Execute dependecies copying.
 robocopy "\tools\msys64\mingw64\bin" $binDestination *dll
 robocopy "\tools\msys64\mingw64\share\glib-2.0" $glibDestination /E
 robocopy "\tools\msys64\mingw64\share\icons" $iconsDestination /E
