@@ -23,7 +23,7 @@ func Export(selectedPath, fileName string, deleteChecked, insertChecked, updateC
 			originalFile[i] = strings.TrimPrefix(originalFile[i], "/")
 		}
 	}
-	copiedFile := "BOMulus-" + fileName + filepath.Ext(originalFile[1])
+	copiedFile := selectedPath + "BOMulus-" + fileName + filepath.Ext(originalFile[1])
 	// Copy original file.
 	err := core.CopyFile(originalFile[1], copiedFile)
 	if err != nil {
@@ -299,7 +299,7 @@ func Export(selectedPath, fileName string, deleteChecked, insertChecked, updateC
 		}
 	}
 	// Save copied and modified file.
-	err = f.SaveAs(selectedPath + copiedFile)
+	err = f.SaveAs(copiedFile)
 	if err != nil {
 		fmt.Println(err)
 		return
