@@ -1,4 +1,4 @@
-# USAGE : .\win-build.ps1 -version "1.0.0"
+# USAGE : .\win-build.ps1 -version "<version>"
 param (
     [string]$version
 )

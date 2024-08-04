@@ -74,6 +74,18 @@ You can use the `win-build.ps1` script to automate the build and the dependencie
 .\win-build.ps1 -version "<version>"
 ```
 
+You won't be able to launch the script if Execution_Policies are not set correctly:
+
+```powershell
+Get-ExecutionPolicy
+```
+
+if it's `Restricted`:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
 ### 🚀 Running
 
 ## Linux
