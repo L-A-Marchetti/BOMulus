@@ -90,8 +90,15 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 You can build easily the Windows installer by using the `.iss` script `win-installer-setup.iss` or you can simply follow these steps:
 
+Set the version as an env variable:
+
 ```powershell
-set APP_VERSION=<version>
+$env:APP_VERSION = "<version>"
+```
+
+Then execute the installer compilation (you'll probably need to add iscc to your system env path):
+
+```powershell
 iscc win-installer-setup.iss
 ```
 
