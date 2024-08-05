@@ -86,6 +86,15 @@ if it's `Restricted`:
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
+## Build the Windows installer
+
+You can build easily the Windows installer by using the `.iss` script `win-installer-setup.iss` or you can simply follow these steps:
+
+```powershell
+set APP_VERSION=<version>
+iscc win-installer-setup.iss
+```
+
 ### 🚀 Running
 
 ## Linux
