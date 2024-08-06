@@ -55,7 +55,7 @@ func Export(selectedPath, fileName string, deleteChecked, insertChecked, updateC
 	// Sheet name.
 	sheetName := f.GetSheetName(0)
 	oldSheetName := fOld.GetSheetName(0)
-	rowsAdded := 0
+	rowsAdded := 0 + core.Filters.Header
 	for i, delta := range core.XlsmDeltas {
 		if delta.Operator == "INSERT" && insertChecked {
 			for j := range core.XlsmFiles[1].Content[delta.NewRow] {
