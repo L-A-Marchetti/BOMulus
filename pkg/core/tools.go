@@ -23,7 +23,11 @@ func MaxCol() int {
 func GetColumnTitles(count int) []string {
 	titles := make([]string, count)
 	for i := 0; i < count; i++ {
-		titles[i] = fmt.Sprintf("Column %d", i+1)
+		if XlsmDeltas[0].NewRow-1 < 0 {
+			titles[i] = fmt.Sprintf("Column %d", i+1)
+		} else if i < len(XlsmFiles[1].Content[XlsmDeltas[0].NewRow-1]) {
+			titles[i] = XlsmFiles[1].Content[XlsmDeltas[0].NewRow-1][i]
+		}
 	}
 	return titles
 }
