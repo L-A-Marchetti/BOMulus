@@ -50,6 +50,22 @@ func CheckBoxes() *gtk.Box {
 
 	// Add the button to the hBox
 	checkboxesHBox.PackStart(exportButton, false, false, 0)
+	// Create a new SpinButton
+	spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Set default value
+	spinButton.SetValue(0)
+
+	// Connect the "value-changed" signal
+	spinButton.Connect("value-changed", func() {
+		value := spinButton.GetValue()
+		log.Printf("SpinButton value changed to: %.2f", value)
+	})
+	// Add the spinButton to the hBox
+	checkboxesHBox.PackStart(spinButton, false, false, 0)
 	// Add a flexible space at the end
 	spacerEnd, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerEnd, true, true, 0)
