@@ -8,8 +8,8 @@ import (
 func XlsmDiff() {
 	ResetDeltas()
 	var delta XlsmDelta
-	i := 0
-	j := 0
+	i := Filters.Header
+	j := Filters.Header
 	for i < len(XlsmFiles[1].Content) && j < len(XlsmFiles[0].Content) {
 		if !reflect.DeepEqual(XlsmFiles[1].Content[i], XlsmFiles[0].Content[j]) {
 			if InsertFound(i, j) {

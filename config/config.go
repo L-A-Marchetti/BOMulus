@@ -39,6 +39,15 @@ const (
 	    min-width: 15px;
 	    min-height: 15px;
 	}
+	spinbutton button {
+    min-width: 15px;
+    min-height: 15px;
+    padding: 1px;
+	}
+	spinbutton entry {
+    min-width: 9px;
+    min-height: 15px;
+	}
 	`
 	SUMMARY_SPACING string = "              "
 	LOGO_PATH       string = "assets/logo.png"

@@ -50,6 +50,33 @@ func CheckBoxes() *gtk.Box {
 
 	// Add the button to the hBox
 	checkboxesHBox.PackStart(exportButton, false, false, 0)
+	// Create the header label.
+	headerLabel, err := gtk.LabelNew("Header:")
+	if err != nil {
+		panic(err)
+	}
+	// Add the headerLabel to the hBox
+	checkboxesHBox.PackStart(headerLabel, false, false, 0)
+	// Create a new SpinButton
+	spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// If needed we can orientate spinbuttons vertically.
+	// spinButton.SetOrientation(gtk.ORIENTATION_VERTICAL)
+	// Set default value
+	spinButton.SetValue(float64(core.Filters.Header))
+
+	// Connect the "value-changed" signal
+	spinButton.Connect("value-changed", func() {
+		value := spinButton.GetValue()
+		core.Filters.Header = int(value)
+		// Generate delta data.
+		core.XlsmDiff()
+		UpdateView()
+	})
+	// Add the spinButton to the hBox
+	checkboxesHBox.PackStart(spinButton, false, false, 0)
 	// Add a flexible space at the end
 	spacerEnd, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerEnd, true, true, 0)
