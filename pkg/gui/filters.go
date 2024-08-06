@@ -50,6 +50,13 @@ func CheckBoxes() *gtk.Box {
 
 	// Add the button to the hBox
 	checkboxesHBox.PackStart(exportButton, false, false, 0)
+	// Create the header label.
+	headerLabel, err := gtk.LabelNew("Header:")
+	if err != nil {
+		panic(err)
+	}
+	// Add the headerLabel to the hBox
+	checkboxesHBox.PackStart(headerLabel, false, false, 0)
 	// Create a new SpinButton
 	spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
 	if err != nil {
