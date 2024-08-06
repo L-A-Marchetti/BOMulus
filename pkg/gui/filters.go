@@ -58,12 +58,15 @@ func CheckBoxes() *gtk.Box {
 	// If needed we can orientate spinbuttons vertically.
 	// spinButton.SetOrientation(gtk.ORIENTATION_VERTICAL)
 	// Set default value
-	spinButton.SetValue(0)
+	spinButton.SetValue(float64(core.Filters.Header))
 
 	// Connect the "value-changed" signal
 	spinButton.Connect("value-changed", func() {
 		value := spinButton.GetValue()
-		log.Printf("SpinButton value changed to: %.2f", value)
+		core.Filters.Header = int(value)
+		// Generate delta data.
+		core.XlsmDiff()
+		UpdateView()
 	})
 	// Add the spinButton to the hBox
 	checkboxesHBox.PackStart(spinButton, false, false, 0)

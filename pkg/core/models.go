@@ -19,6 +19,7 @@ type Filter struct {
 	Insert bool
 	Update bool
 	Swap   bool
+	Header int
 }
 
 var XlsmFiles = []XlsmFile{
@@ -28,7 +29,7 @@ var XlsmFiles = []XlsmFile{
 
 var XlsmDeltas []XlsmDelta
 
-var Filters = Filter{true, true, true, true, false}
+var Filters = Filter{true, true, true, true, false, 0}
 
 func ResetContent() {
 	XlsmFiles[0].Content = nil
