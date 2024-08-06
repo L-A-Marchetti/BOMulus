@@ -55,7 +55,8 @@ func CheckBoxes() *gtk.Box {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	// If needed we can orientate spinbuttons vertically.
+	// spinButton.SetOrientation(gtk.ORIENTATION_VERTICAL)
 	// Set default value
 	spinButton.SetValue(0)
 
