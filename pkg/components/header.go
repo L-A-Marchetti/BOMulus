@@ -2,7 +2,6 @@ package components
 
 import (
 	"core"
-	"fmt"
 	"strings"
 )
 
@@ -23,5 +22,4 @@ func HeaderDetection() {
 		}
 	}
 	core.Filters.Header = header + 1
-	fmt.Println(core.Filters.Quantity, core.Filters.Mpn)
 }

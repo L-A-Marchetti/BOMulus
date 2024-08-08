@@ -23,6 +23,8 @@ func BtnCompare(button *gtk.Button) {
 	core.XlsmReader()
 	// Try to detect automatically the header.
 	components.HeaderDetection()
+	// Try to dedect components.
+	components.ComponentsDetection()
 	// Generate delta data.
 	core.XlsmDiff()
 	// Update the view
