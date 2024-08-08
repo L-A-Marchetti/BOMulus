@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"components"
 	"config"
 	"core"
 
@@ -20,6 +21,10 @@ func BtnCompare(button *gtk.Button) {
 	}
 	// Read and store both Xlsm files.
 	core.XlsmReader()
+	// Try to detect automatically the header.
+	components.HeaderDetection()
+	// Try to dedect components.
+	components.ComponentsDetection()
 	// Generate delta data.
 	core.XlsmDiff()
 	// Update the view

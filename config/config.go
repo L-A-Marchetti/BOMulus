@@ -52,3 +52,28 @@ const (
 	SUMMARY_SPACING string = "              "
 	LOGO_PATH       string = "assets/logo.png"
 )
+
+var (
+	HEADER_KEYWORDS = []string{
+		"Designator",
+		"Part Number",
+		"Description",
+		"Quantity",
+		"Manufacturer",
+		"Manufacturer Part Number",
+		"Value",
+		"Footprint",
+		"Supplier",
+		"Supplier Part Number",
+		"Package",
+		"Tolerance",
+		"Voltage Rating",
+		"Power Rating",
+		"Temperature Coefficient",
+		"Lifecycle Status",
+		"RoHS Status",
+		"Lead Time",
+		"Cost",
+		"Min Order Quantity",
+	}
+)

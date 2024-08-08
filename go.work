@@ -3,6 +3,7 @@ go 1.22.5
 use (
 	./cmd/BOMulus
 	./config
+	./pkg/components
 	./pkg/core
 	./pkg/export
 	./pkg/gui

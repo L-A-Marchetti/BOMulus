@@ -14,12 +14,20 @@ type XlsmDelta struct {
 }
 
 type Filter struct {
-	Equal  bool
-	Delete bool
-	Insert bool
-	Update bool
-	Swap   bool
-	Header int
+	Equal    bool
+	Delete   bool
+	Insert   bool
+	Update   bool
+	Swap     bool
+	Header   int
+	Quantity int
+	Mpn      int
+}
+
+// As a starting point.
+type Component struct {
+	Quantity int
+	Mpn      string
 }
 
 var XlsmFiles = []XlsmFile{
@@ -29,7 +37,9 @@ var XlsmFiles = []XlsmFile{
 
 var XlsmDeltas []XlsmDelta
 
-var Filters = Filter{true, true, true, true, false, 0}
+var Filters = Filter{true, true, true, true, false, 0, 0, 0}
+
+var Components = []Component{}
 
 func ResetContent() {
 	XlsmFiles[0].Content = nil

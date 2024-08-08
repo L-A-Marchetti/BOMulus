@@ -1,9 +1,11 @@
 package core
 
 import (
+	"config"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 // Determine the maximum number of columns.
@@ -50,20 +52,18 @@ func ContainsInteger(slice []int, i int) bool {
 	return false
 }
 
-/*
-// Function to determine max width of column for export.
-func MaxColWidth(i int) float64 {
-	maxWidth := 0.0
-	for _, row := range XlsmFiles[1].Content {
-		for j, cell := range row {
-			if i == j && float64(len(cell)) > maxWidth {
-				maxWidth = float64(len(cell))
-			}
+// Function to now if keywords contains s.
+// Maybe add a tolower filter...
+func ContainsKeywords(s string) bool {
+	normalizedInput := strings.ToLower(strings.ReplaceAll(s, " ", ""))
+	for _, keyword := range config.HEADER_KEYWORDS {
+		normalizedKeyword := strings.ToLower(strings.ReplaceAll(keyword, " ", ""))
+		if normalizedKeyword == normalizedInput {
+			return true
 		}
 	}
-	return maxWidth
+	return false
 }
-*/
 
 // Function to duplicate a file.
 func CopyFile(src, dst string) error {
