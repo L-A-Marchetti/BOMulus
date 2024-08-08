@@ -1,1 +1,5 @@
 package components
+
+func ComponentsDetection() {
+
+}

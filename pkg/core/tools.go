@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 // Determine the maximum number of columns.
@@ -52,9 +53,12 @@ func ContainsInteger(slice []int, i int) bool {
 }
 
 // Function to now if keywords contains s.
+// Maybe add a tolower filter...
 func ContainsKeywords(s string) bool {
+	normalizedInput := strings.ToLower(strings.ReplaceAll(s, " ", ""))
 	for _, keyword := range config.HEADER_KEYWORDS {
-		if keyword == s {
+		normalizedKeyword := strings.ToLower(strings.ReplaceAll(keyword, " ", ""))
+		if normalizedKeyword == normalizedInput {
 			return true
 		}
 	}

@@ -1,16 +1,27 @@
 package components
 
-import "core"
+import (
+	"core"
+	"fmt"
+	"strings"
+)
 
 // Detect automatically the header row.
 func HeaderDetection() {
 	header := 0
 	for i, row := range core.XlsmFiles[1].Content {
-		for _, col := range row {
+		for j, col := range row {
 			if core.ContainsKeywords(col) {
+				switch strings.ToLower(strings.ReplaceAll(col, " ", "")) {
+				case "quantity":
+					core.Filters.Quantity = j
+				case "manufacturerpartnumber":
+					core.Filters.Mpn = j
+				}
 				header = i
 			}
 		}
 	}
 	core.Filters.Header = header + 1
+	fmt.Println(core.Filters.Quantity, core.Filters.Mpn)
 }
