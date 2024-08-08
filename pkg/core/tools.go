@@ -1,6 +1,7 @@
 package core
 
 import (
+	"config"
 	"fmt"
 	"io"
 	"os"
@@ -50,20 +51,15 @@ func ContainsInteger(slice []int, i int) bool {
 	return false
 }
 
-/*
-// Function to determine max width of column for export.
-func MaxColWidth(i int) float64 {
-	maxWidth := 0.0
-	for _, row := range XlsmFiles[1].Content {
-		for j, cell := range row {
-			if i == j && float64(len(cell)) > maxWidth {
-				maxWidth = float64(len(cell))
-			}
+// Function to now if keywords contains s.
+func ContainsKeywords(s string) bool {
+	for _, keyword := range config.HEADER_KEYWORDS {
+		if keyword == s {
+			return true
 		}
 	}
-	return maxWidth
+	return false
 }
-*/
 
 // Function to duplicate a file.
 func CopyFile(src, dst string) error {
