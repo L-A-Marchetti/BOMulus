@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"components"
 	"config"
 	"core"
 	"fmt"
@@ -23,8 +24,8 @@ func DiffSummary() *gtk.Label {
 	}
 	// Create a label with a formatted text.
 	diffSummaryText := fmt.Sprintf(
-		"<span foreground='%s'>--- DELETES   %d</span>%s<span foreground='%s'>+++ INSERTS   %d</span>%s<span foreground='%s'>-+- UPDATES   %d</span>",
-		config.DELETE_BG_COLOR, deleteCount, config.SUMMARY_SPACING, config.INSERT_BG_COLOR, insertCount, config.SUMMARY_SPACING, config.OLD_UPDATE_BG_COLOR, updateCount,
+		"<span foreground='%s'>--- DELETES   %d</span>%s<span foreground='%s'>+++ INSERTS   %d</span>%s<span foreground='%s'>-+- UPDATES   %d</span>%s<span>∑ COMPONENTS   %d</span>",
+		config.DELETE_BG_COLOR, deleteCount, config.SUMMARY_SPACING, config.INSERT_BG_COLOR, insertCount, config.SUMMARY_SPACING, config.OLD_UPDATE_BG_COLOR, updateCount, config.SUMMARY_SPACING, components.CompTotalQuantity(),
 	)
 	diffSummaryLabel, err := gtk.LabelNew("")
 	if err != nil {
