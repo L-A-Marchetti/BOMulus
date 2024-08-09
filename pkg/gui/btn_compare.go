@@ -25,6 +25,8 @@ func BtnCompare(button *gtk.Button) {
 	components.HeaderDetection()
 	// Try to dedect components.
 	components.ComponentsDetection()
+	// Prototyping API request section.
+	components.APIRequest()
 	// Generate delta data.
 	core.XlsmDiff()
 	// Update the view

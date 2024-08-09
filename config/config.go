@@ -51,6 +51,7 @@ const (
 	`
 	SUMMARY_SPACING string = "              "
 	LOGO_PATH       string = "assets/logo.png"
+	API_URL         string = "https://api.mouser.com/api/v1/search/partnumber"
 )
 
 var (
