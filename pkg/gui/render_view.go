@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"config"
 	"core"
 	"fmt"
 
@@ -34,6 +35,7 @@ func RenderView(maxColumns int) {
 	for i, title := range titles {
 		var column *gtk.TreeViewColumn
 		if i == 3 {
+
 			// Add an icon-based button to the third column
 			buttonRenderer, _ := gtk.CellRendererPixbufNew()
 			column, _ = gtk.TreeViewColumnNewWithAttribute(title, buttonRenderer, "icon-name", i)
@@ -41,9 +43,10 @@ func RenderView(maxColumns int) {
 
 			// Render and setup cells.
 			cellRenderer := CellsProperties()
+			// Change font size for the btn char.
+			cellRenderer.Set("font", config.INFO_BTN_CHAR_FONT)
 			// Render and setup columns.
 			column = ColumnProperties(title, maxColumns, i, cellRenderer)
-
 			// Connect the "button-press-event" for single click
 			resultView.Connect("button-press-event", func(tv *gtk.TreeView, event *gdk.Event) bool {
 				buttonEvent := gdk.EventButtonNewFromEvent(event)
@@ -57,7 +60,7 @@ func RenderView(maxColumns int) {
 							// Get iter.
 							iter, err := resultStore.GetIter(path)
 							if err != nil {
-								fmt.Println("Erreur lors de l'obtention de l'itérateur:", err)
+								fmt.Println(err)
 								return false
 							}
 							// Get col 1 & 2 values.
@@ -107,6 +110,37 @@ func RenderView(maxColumns int) {
 				return true
 			}
 		}
+		return false
+	})
+	// Variable to track the last hovered path in column 3
+	var lastHoveredPath *gtk.TreePath
+
+	resultView.Connect("motion-notify-event", func(tv *gtk.TreeView, event *gdk.Event) bool {
+		motionEvent := gdk.EventMotionNewFromEvent(event)
+		x, y := motionEvent.MotionVal()
+		path, column, _, _, _ := tv.GetPathAtPos(int(x), int(y))
+
+		if path != nil && column != nil && column.GetTitle() == "☑" {
+			// Mouse is in column 3
+			if lastHoveredPath == nil || lastHoveredPath.String() != path.String() {
+				// New cell or entering column 3
+				if lastHoveredPath != nil {
+					// Reset the old cell if it exists
+					iter, _ := resultStore.GetIter(lastHoveredPath)
+					resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
+				}
+				// Update the new cell
+				iter, _ := resultStore.GetIter(path)
+				resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR_HOVER)
+				lastHoveredPath, _ = path.Copy()
+			}
+		} else if lastHoveredPath != nil {
+			// Mouse is outside column 3, reset the last hovered cell
+			iter, _ := resultStore.GetIter(lastHoveredPath)
+			resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
+			lastHoveredPath = nil
+		}
+
 		return false
 	})
 }
