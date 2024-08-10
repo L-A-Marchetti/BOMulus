@@ -11,7 +11,7 @@ import (
 // Generate a ListStore and a TreeView.
 func RenderView(maxColumns int) {
 	// Create a list of types for ListStore.
-	columnTypes := make([]glib.Type, (maxColumns+3)*2) // +4 for Operation, OldRow, NewRow, and background color.
+	columnTypes := make([]glib.Type, (maxColumns+4)*2) // +4 for Operation, OldRow, NewRow, and Analyze.
 	for i := range columnTypes {
 		columnTypes[i] = glib.TYPE_STRING
 	}
@@ -29,7 +29,7 @@ func RenderView(maxColumns int) {
 	selection, _ := resultView.GetSelection()
 	selection.SetMode(gtk.SELECTION_NONE)
 	// Add columns to the TreeView
-	titles := append([]string{"Operation", "Old Row", "New Row"}, core.GetColumnTitles(maxColumns)...)
+	titles := append([]string{"≠", "◌", "●", "☑"}, core.GetColumnTitles(maxColumns)...)
 	for i, title := range titles {
 		// Render and setup cells.
 		cellRenderer := CellsProperties()

@@ -49,3 +49,7 @@ func ResetContent() {
 func ResetDeltas() {
 	XlsmDeltas = nil
 }
+
+func ResetComponents() {
+	Components = []Component{}
+}
