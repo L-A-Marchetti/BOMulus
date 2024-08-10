@@ -51,7 +51,7 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 	} else {
 		values[2] = ""
 	}
-	values[3] = ""
+	values[3] = "※"
 	idx := 4
 	for i, v := range content {
 		values[i+4] = v
@@ -91,7 +91,7 @@ func appendRowWoBg(store *gtk.ListStore, operation, oldRow, newRow string, conte
 	values[0] = operation
 	values[1] = oldRow
 	values[2] = newRow
-	values[3] = ""
+	values[3] = "※"
 	for i, v := range content {
 		values[i+4] = v
 	}

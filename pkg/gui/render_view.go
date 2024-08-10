@@ -2,6 +2,8 @@ package gui
 
 import (
 	"core"
+	"fmt"
+	"strconv"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
@@ -31,21 +33,54 @@ func RenderView(maxColumns int) {
 	// Add columns to the TreeView
 	titles := append([]string{"≠", "◌", "●", "☑"}, core.GetColumnTitles(maxColumns)...)
 	for i, title := range titles {
-		// Render and setup cells.
-		cellRenderer := CellsProperties()
-		// Render and setup columns.
-		column := ColumnProperties(title, maxColumns, i, cellRenderer)
+		var column *gtk.TreeViewColumn
+		if i == 3 {
+			// Add an icon-based button to the third column
+			buttonRenderer, _ := gtk.CellRendererPixbufNew()
+			column, _ = gtk.TreeViewColumnNewWithAttribute(title, buttonRenderer, "icon-name", i)
+			column.SetClickable(true) // Make the column clickable
+
+			// Render and setup cells.
+			cellRenderer := CellsProperties()
+			// Render and setup columns.
+			column = ColumnProperties(title, maxColumns, i, cellRenderer)
+
+			// Connect the "button-press-event" for single click
+			resultView.Connect("button-press-event", func(tv *gtk.TreeView, event *gdk.Event) bool {
+				buttonEvent := gdk.EventButtonNewFromEvent(event)
+				if buttonEvent.Button() == gdk.BUTTON_PRIMARY && buttonEvent.Type() == gdk.EVENT_BUTTON_PRESS {
+					x := int(buttonEvent.X())
+					y := int(buttonEvent.Y())
+					path, column, _, _, _ := resultView.GetPathAtPos(x, y)
+					if path != nil && column != nil {
+						if column.GetTitle() == "☑" {
+							pathString := path.String()
+							rowIndex, _ := strconv.Atoi(pathString)
+							fmt.Println("Button clicked on path:", rowIndex+core.Filters.Header)
+							return true
+						}
+					}
+				}
+				return false
+			})
+		} else {
+			// Render and setup cells.
+			cellRenderer := CellsProperties()
+			// Render and setup columns.
+			column = ColumnProperties(title, maxColumns, i, cellRenderer)
+			// Connect the edited signal to update the model
+			cellRenderer.Connect("edited", func(renderer *gtk.CellRendererText, path string, newText string) {
+				iter, err := resultStore.GetIterFromString(path)
+				if err != nil {
+					panic(err)
+				}
+				resultStore.SetValue(iter, i, newText)
+			})
+		}
 		// Append column to the result view.
 		resultView.AppendColumn(column)
-		// Connect the edited signal to update the model
-		cellRenderer.Connect("edited", func(renderer *gtk.CellRendererText, path string, newText string) {
-			iter, err := resultStore.GetIterFromString(path)
-			if err != nil {
-				panic(err)
-			}
-			resultStore.SetValue(iter, i, newText)
-		})
 	}
+
 	// Handle editing manually with a double-click
 	resultView.Connect("button-press-event", func(tv *gtk.TreeView, event *gdk.Event) bool {
 		buttonEvent := gdk.EventButtonNewFromEvent(event)
