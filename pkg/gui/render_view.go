@@ -3,7 +3,6 @@ package gui
 import (
 	"core"
 	"fmt"
-	"strconv"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
@@ -52,11 +51,26 @@ func RenderView(maxColumns int) {
 					x := int(buttonEvent.X())
 					y := int(buttonEvent.Y())
 					path, column, _, _, _ := resultView.GetPathAtPos(x, y)
+
 					if path != nil && column != nil {
 						if column.GetTitle() == "☑" {
-							pathString := path.String()
-							rowIndex, _ := strconv.Atoi(pathString)
-							fmt.Println("Button clicked on path:", rowIndex+core.Filters.Header)
+							// Get iter.
+							iter, err := resultStore.GetIter(path)
+							if err != nil {
+								fmt.Println("Erreur lors de l'obtention de l'itérateur:", err)
+								return false
+							}
+							// Get col 1 & 2 values.
+							col1Pointer, _ := resultStore.GetValue(iter, 1)
+							col2Pointer, _ := resultStore.GetValue(iter, 2)
+							// Get values from pointers.
+							col1Value, _ := col1Pointer.GetString()
+							col2Value, _ := col2Pointer.GetString()
+							if col2Value == "" {
+								fmt.Println("Col1 value:", col1Value)
+							} else {
+								fmt.Println("Col2 value:", col2Value)
+							}
 							return true
 						}
 					}
