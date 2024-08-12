@@ -10,3 +10,13 @@ func CompTotalQuantity() int {
 	}
 	return total
 }
+
+// To find a component with a row reference.
+func FindComponentRowId(i int) core.Component {
+	for _, component := range core.Components {
+		if component.NewRow == i {
+			return component
+		}
+	}
+	return core.Component{}
+}

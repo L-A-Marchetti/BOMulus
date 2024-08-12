@@ -26,8 +26,9 @@ type Filter struct {
 
 // As a starting point.
 type Component struct {
-	Quantity int
-	Mpn      string
+	OldRow, NewRow int
+	Quantity       int
+	Mpn            string
 }
 
 var XlsmFiles = []XlsmFile{

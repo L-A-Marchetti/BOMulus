@@ -4,6 +4,7 @@ import (
 	"config"
 	"core"
 	"fmt"
+	"strconv"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
@@ -73,6 +74,8 @@ func RenderView(maxColumns int) {
 								fmt.Println("Col1 value:", col1Value)
 							} else {
 								fmt.Println("Col2 value:", col2Value)
+								convCol2Value, _ := strconv.Atoi(col2Value)
+								ShowComponent(convCol2Value)
 							}
 							return true
 						}
