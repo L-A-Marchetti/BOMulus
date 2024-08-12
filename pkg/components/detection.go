@@ -2,7 +2,6 @@ package components
 
 import (
 	"core"
-	"fmt"
 	"math"
 	"strconv"
 )
@@ -24,5 +23,4 @@ func ComponentsDetection() {
 			core.Components = append(core.Components, component)
 		}
 	}
-	fmt.Println(core.Components)
 }

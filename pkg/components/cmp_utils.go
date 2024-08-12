@@ -1,6 +1,8 @@
 package components
 
-import "core"
+import (
+	"core"
+)
 
 // Calculate total quantity of components.
 func CompTotalQuantity() int {
@@ -12,11 +14,11 @@ func CompTotalQuantity() int {
 }
 
 // To find a component with a row reference.
-func FindComponentRowId(i int) core.Component {
-	for _, component := range core.Components {
-		if component.NewRow == i {
-			return component
+func FindComponentRowId(idx int) int {
+	for i, component := range core.Components {
+		if component.NewRow == idx {
+			return i
 		}
 	}
-	return core.Component{}
+	return 0
 }

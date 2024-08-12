@@ -3,6 +3,7 @@ package components
 import (
 	"bytes"
 	"config"
+	"core"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,11 +11,16 @@ import (
 	"net/http"
 )
 
-func APIRequest() {
+func APIRequest(i int) {
+	// Check if a MPN was found.
+	if core.Components[i].Mpn == "" {
+		core.Components[i].Mpn = "MPN not found."
+		return
+	}
 	// Create the request payload
 	payload := RequestPayload{
 		SearchByPartRequest: SearchByPartRequest{
-			MouserPartNumber:  "BAT-HLD-001",
+			MouserPartNumber:  core.Components[i].Mpn,
 			PartSearchOptions: "2", // 1: several matching results 2: Exact result.
 		},
 	}
@@ -51,7 +57,10 @@ func APIRequest() {
 	if err != nil {
 		log.Fatalf("Failed to unmarshal JSON: %v", err)
 	}
-	// Print the parsed data for prototyping purpose.
+	// Add some infos to the component.
+	core.Components[i].ImagePath = apiResponse.SearchResults.Parts[0].ImagePath
+	core.Components[i].Availability = apiResponse.SearchResults.Parts[0].Availability
+	/* Print the parsed data for prototyping purpose.
 	if len(apiResponse.Errors) > 0 {
 		fmt.Println("Errors:")
 		for _, e := range apiResponse.Errors {
@@ -62,5 +71,5 @@ func APIRequest() {
 		for _, part := range apiResponse.SearchResults.Parts {
 			fmt.Printf("Part Number: %s, Description: %s\n", part.ManufacturerPartNumber, part.Description)
 		}
-	}
+	}*/
 }

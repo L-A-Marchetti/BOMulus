@@ -29,6 +29,8 @@ type Component struct {
 	OldRow, NewRow int
 	Quantity       int
 	Mpn            string
+	ImagePath      string
+	Availability   string
 }
 
 var XlsmFiles = []XlsmFile{
