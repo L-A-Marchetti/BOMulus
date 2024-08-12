@@ -3,6 +3,7 @@ package gui
 import (
 	"components"
 	"core"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,6 +31,10 @@ func ShowComponent(i int) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	vbox.SetMarginBottom(20)
+	vbox.SetMarginTop(20)
+	vbox.SetMarginStart(20)
+	vbox.SetMarginEnd(20)
 	componentWindow.Add(vbox)
 	// Create an img.
 	image, _ := gtk.ImageNew()
@@ -54,19 +59,71 @@ func ShowComponent(i int) {
 	}
 	vbox.PackStart(image, false, false, 0)
 	// Create labels for basic infos.
-	availabilityLabel, err := gtk.LabelNew(core.Components[idx].Availability)
+	availability := core.Components[idx].Availability
+	if availability == "" {
+		availability = "Out of stock"
+	}
+	availabilityLabel, err := gtk.LabelNew(availability)
 	if err != nil {
 		log.Fatal(err)
 	}
 	vbox.PackStart(availabilityLabel, false, false, 0)
+	status := core.Components[idx].LifecycleStatus
+	if status == "" {
+		status = "Active"
+	}
+	lifecycleStatusLabel, err := gtk.LabelNew("Lifecycle Status: " + status)
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(lifecycleStatusLabel, false, false, 0)
+	rohsLabel, err := gtk.LabelNew(core.Components[idx].ROHSStatus)
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(rohsLabel, false, false, 0)
+	suggestion := core.Components[idx].SuggestedReplacement
+	if suggestion != "" {
+		replacementLabel, err := gtk.LabelNew("Suggested Replacement: " + suggestion)
+		if err != nil {
+			log.Fatal(err)
+		}
+		vbox.PackStart(replacementLabel, false, false, 0)
+	}
+	// Create a grid for price breaks.
+	grid, err := gtk.GridNew()
+	if err != nil {
+		log.Fatal(err)
+	}
+	grid.SetColumnSpacing(10)
+	grid.SetRowSpacing(5)
+	// Grid headers.
+	quantityHeader, _ := gtk.LabelNew("Quantity")
+	priceHeader, _ := gtk.LabelNew("Price")
+	grid.Attach(quantityHeader, 0, 0, 1, 1)
+	grid.Attach(priceHeader, 1, 0, 1, 1)
+	// Append price breaks to the grid.
+	for i, pb := range core.Components[idx].PriceBreaks {
+		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", pb.Quantity))
+		priceLabel, _ := gtk.LabelNew(pb.Price)
+		grid.Attach(quantityLabel, 0, i+1, 1, 1)
+		grid.Attach(priceLabel, 1, i+1, 1, 1)
+	}
+	centerBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	centerBox.PackStart(grid, true, false, 0)
+	vbox.PackStart(centerBox, false, false, 0)
+	// Create the Data sheet button.
 	dataSheetButton, err := gtk.ButtonNewWithLabel("Open Data Sheet")
 	if err != nil {
-		log.Printf("Erreur lors de la création du bouton: %v", err)
+		log.Print(err)
 	} else {
 		dataSheetButton.Connect("clicked", func() {
 			err := open.Run(core.Components[idx].DataSheetUrl)
 			if err != nil {
-				log.Printf("Erreur lors de l'ouverture du fichier: %v", err)
+				log.Print(err)
 			}
 		})
 		vbox.PackStart(dataSheetButton, false, false, 0)

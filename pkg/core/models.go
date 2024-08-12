@@ -26,12 +26,22 @@ type Filter struct {
 
 // As a starting point.
 type Component struct {
-	OldRow, NewRow int
-	Quantity       int
-	Mpn            string
-	ImagePath      string
-	Availability   string
-	DataSheetUrl   string
+	OldRow, NewRow       int
+	Quantity             int
+	Mpn                  string
+	ImagePath            string
+	Availability         string
+	DataSheetUrl         string
+	LifecycleStatus      string
+	ROHSStatus           string
+	SuggestedReplacement string
+	PriceBreaks          []PriceBreak
+}
+
+type PriceBreak struct {
+	Quantity int    `json:"Quantity"`
+	Price    string `json:"Price"`
+	Currency string `json:"Currency"`
 }
 
 var XlsmFiles = []XlsmFile{
