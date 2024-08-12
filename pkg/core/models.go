@@ -31,6 +31,7 @@ type Component struct {
 	Mpn            string
 	ImagePath      string
 	Availability   string
+	DataSheetUrl   string
 }
 
 var XlsmFiles = []XlsmFile{

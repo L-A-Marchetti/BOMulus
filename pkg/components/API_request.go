@@ -60,6 +60,7 @@ func APIRequest(i int) {
 	// Add some infos to the component.
 	core.Components[i].ImagePath = apiResponse.SearchResults.Parts[0].ImagePath
 	core.Components[i].Availability = apiResponse.SearchResults.Parts[0].Availability
+	core.Components[i].DataSheetUrl = apiResponse.SearchResults.Parts[0].DataSheetUrl
 	/* Print the parsed data for prototyping purpose.
 	if len(apiResponse.Errors) > 0 {
 		fmt.Println("Errors:")

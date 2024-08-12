@@ -9,6 +9,7 @@ import (
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/skratchdot/open-golang/open"
 )
 
 // Function to open the export window
@@ -58,6 +59,18 @@ func ShowComponent(i int) {
 		log.Fatal(err)
 	}
 	vbox.PackStart(availabilityLabel, false, false, 0)
+	dataSheetButton, err := gtk.ButtonNewWithLabel("Open Data Sheet")
+	if err != nil {
+		log.Printf("Erreur lors de la création du bouton: %v", err)
+	} else {
+		dataSheetButton.Connect("clicked", func() {
+			err := open.Run(core.Components[idx].DataSheetUrl)
+			if err != nil {
+				log.Printf("Erreur lors de l'ouverture du fichier: %v", err)
+			}
+		})
+		vbox.PackStart(dataSheetButton, false, false, 0)
+	}
 	// Create the "OK" button
 	okButton, err := gtk.ButtonNewWithLabel("OK")
 	if err != nil {
