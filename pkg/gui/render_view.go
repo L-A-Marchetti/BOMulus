@@ -36,12 +36,10 @@ func RenderView(maxColumns int) {
 	for i, title := range titles {
 		var column *gtk.TreeViewColumn
 		if i == 3 {
-
 			// Add an icon-based button to the third column
 			buttonRenderer, _ := gtk.CellRendererPixbufNew()
 			column, _ = gtk.TreeViewColumnNewWithAttribute(title, buttonRenderer, "icon-name", i)
 			column.SetClickable(true) // Make the column clickable
-
 			// Render and setup cells.
 			cellRenderer := CellsProperties()
 			// Change font size for the btn char.
@@ -55,13 +53,19 @@ func RenderView(maxColumns int) {
 					x := int(buttonEvent.X())
 					y := int(buttonEvent.Y())
 					path, column, _, _, _ := resultView.GetPathAtPos(x, y)
-
 					if path != nil && column != nil {
 						if column.GetTitle() == "☑" {
 							// Get iter.
 							iter, err := resultStore.GetIter(path)
 							if err != nil {
 								fmt.Println(err)
+								return false
+							}
+							// Check the value of column 3
+							col3Pointer, _ := resultStore.GetValue(iter, 3)
+							col3Value, _ := col3Pointer.GetString()
+							if col3Value == "" {
+								// If the value is empty, do nothing
 								return false
 							}
 							// Get col 1 & 2 values.
@@ -122,8 +126,21 @@ func RenderView(maxColumns int) {
 		motionEvent := gdk.EventMotionNewFromEvent(event)
 		x, y := motionEvent.MotionVal()
 		path, column, _, _, _ := tv.GetPathAtPos(int(x), int(y))
-
 		if path != nil && column != nil && column.GetTitle() == "☑" {
+			// Get iter.
+			iter, err := resultStore.GetIter(path)
+			if err != nil {
+				fmt.Println(err)
+				return false
+			}
+			// Check the value of column 3
+			col3Pointer, _ := resultStore.GetValue(iter, 3)
+			col3Value, _ := col3Pointer.GetString()
+
+			if col3Value == "" {
+				// If the value is empty, do nothing
+				return false
+			}
 			// Mouse is in column 3
 			if lastHoveredPath == nil || lastHoveredPath.String() != path.String() {
 				// New cell or entering column 3

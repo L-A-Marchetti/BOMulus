@@ -20,5 +20,5 @@ func FindComponentRowId(idx int) int {
 			return i
 		}
 	}
-	return 0
+	return -1
 }
