@@ -137,13 +137,14 @@ func runAnalysis(progressBar *gtk.ProgressBar, analyzeButton *gtk.Button, contai
 			log.Print(err)
 			continue
 		}
+		fmt.Println(core.Components[i].NewRow)
 		components.APIRequest(i)
 		glib.IdleAdd(func() {
 			fraction := float64(i+1) / float64(totalComponents)
 			progressBar.SetFraction(fraction)
 			progressBar.SetText(fmt.Sprintf("%d / %d", i+1, totalComponents))
 		})
-		updateTableRow()
+		updateTableRow() // It may be more safe in the IdleAdd ?
 	}
 	glib.IdleAdd(func() {
 		container.Remove(progressBar)
@@ -160,24 +161,45 @@ func updateTableRow() {
 	}
 
 	for {
-		value, err := resultStore.GetValue(iter, 2) // Colonne du NewRow
+		value, err := resultStore.GetValue(iter, 2) // Column for NewRow
 		if err != nil {
 			log.Printf("Error getting value: %v", err)
-			break
+			if !resultStore.IterNext(iter) {
+				break
+			}
+			continue
 		}
+
 		newRow, err := value.GoValue()
 		if err != nil {
 			log.Printf("Error converting value: %v", err)
-			break
+			if !resultStore.IterNext(iter) {
+				break
+			}
+			continue
 		}
-		intNewRow, err := strconv.Atoi(newRow.(string))
+
+		// Check if the value is an empty string
+		strNewRow, ok := newRow.(string)
+		if !ok || strNewRow == "" {
+			// Move to the next row if the value is empty or not a string
+			if !resultStore.IterNext(iter) {
+				break
+			}
+			continue
+		}
+
+		intNewRow, err := strconv.Atoi(strNewRow)
 		if err != nil {
 			log.Printf("Error converting to int: %v", err)
-			break
+			if !resultStore.IterNext(iter) {
+				break
+			}
+			continue
 		}
 
 		compIdx := components.FindComponentRowId(intNewRow)
-		if core.Components[compIdx].Analyzed {
+		if compIdx >= 0 && compIdx < len(core.Components) && core.Components[compIdx].Analyzed {
 			err = resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
 			if err != nil {
 				log.Printf("Error setting value: %v", err)
@@ -188,4 +210,11 @@ func updateTableRow() {
 			break
 		}
 	}
+
+	// Force the user interface to refresh
+	glib.IdleAdd(func() {
+		if treeView, err := gtk.TreeViewNew(); err == nil {
+			treeView.QueueDraw()
+		}
+	})
 }

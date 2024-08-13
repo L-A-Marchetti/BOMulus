@@ -57,7 +57,9 @@ func APIRequest(i int) {
 	if err != nil {
 		log.Fatalf("Failed to unmarshal JSON: %v", err)
 	}
-	fmt.Println(apiResponse)
+	if apiResponse.SearchResults.NumberOfResult == 0 {
+		return
+	}
 	// Add some infos to the component.
 	core.Components[i].ImagePath = apiResponse.SearchResults.Parts[0].ImagePath
 	core.Components[i].Availability = apiResponse.SearchResults.Parts[0].Availability
