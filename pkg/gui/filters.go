@@ -2,10 +2,12 @@ package gui
 
 import (
 	"components"
+	"config"
 	"context"
 	"core"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gotk3/gotk3/glib"
@@ -141,6 +143,7 @@ func runAnalysis(progressBar *gtk.ProgressBar, analyzeButton *gtk.Button, contai
 			progressBar.SetFraction(fraction)
 			progressBar.SetText(fmt.Sprintf("%d / %d", i+1, totalComponents))
 		})
+		updateTableRow()
 	}
 	glib.IdleAdd(func() {
 		container.Remove(progressBar)
@@ -148,4 +151,41 @@ func runAnalysis(progressBar *gtk.ProgressBar, analyzeButton *gtk.Button, contai
 		container.Add(analyzeButton)
 		container.ShowAll()
 	})
+}
+
+func updateTableRow() {
+	iter, ok := resultStore.GetIterFirst()
+	if !ok {
+		return
+	}
+
+	for {
+		value, err := resultStore.GetValue(iter, 2) // Colonne du NewRow
+		if err != nil {
+			log.Printf("Error getting value: %v", err)
+			break
+		}
+		newRow, err := value.GoValue()
+		if err != nil {
+			log.Printf("Error converting value: %v", err)
+			break
+		}
+		intNewRow, err := strconv.Atoi(newRow.(string))
+		if err != nil {
+			log.Printf("Error converting to int: %v", err)
+			break
+		}
+
+		compIdx := components.FindComponentRowId(intNewRow)
+		if core.Components[compIdx].Analyzed {
+			err = resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
+			if err != nil {
+				log.Printf("Error setting value: %v", err)
+			}
+		}
+
+		if !resultStore.IterNext(iter) {
+			break
+		}
+	}
 }

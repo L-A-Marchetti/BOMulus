@@ -53,7 +53,8 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 		values[2] = ""
 	}
 	intNewRow, _ := strconv.Atoi(newRow)
-	if components.FindComponentRowId(intNewRow) != -1 {
+	compIdx := components.FindComponentRowId(intNewRow)
+	if compIdx != -1 && core.Components[compIdx].Analyzed {
 		values[3] = config.INFO_BTN_CHAR
 	} else {
 		values[3] = ""
@@ -98,7 +99,8 @@ func appendRowWoBg(store *gtk.ListStore, operation, oldRow, newRow string, conte
 	values[1] = oldRow
 	values[2] = newRow
 	intNewRow, _ := strconv.Atoi(newRow)
-	if components.FindComponentRowId(intNewRow) != -1 {
+	compIdx := components.FindComponentRowId(intNewRow)
+	if compIdx != -1 && core.Components[compIdx].Analyzed {
 		values[3] = config.INFO_BTN_CHAR
 	} else {
 		values[3] = ""
