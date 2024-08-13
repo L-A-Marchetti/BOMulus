@@ -57,6 +57,7 @@ func APIRequest(i int) {
 	if err != nil {
 		log.Fatalf("Failed to unmarshal JSON: %v", err)
 	}
+	fmt.Println(apiResponse)
 	// Add some infos to the component.
 	core.Components[i].ImagePath = apiResponse.SearchResults.Parts[0].ImagePath
 	core.Components[i].Availability = apiResponse.SearchResults.Parts[0].Availability
@@ -67,16 +68,4 @@ func APIRequest(i int) {
 	for _, priceBreak := range apiResponse.SearchResults.Parts[0].PriceBreaks {
 		core.Components[i].PriceBreaks = append(core.Components[i].PriceBreaks, core.PriceBreak(priceBreak))
 	}
-	/* Print the parsed data for prototyping purpose.
-	if len(apiResponse.Errors) > 0 {
-		fmt.Println("Errors:")
-		for _, e := range apiResponse.Errors {
-			fmt.Printf("Code: %s, Message: %s\n", e.Code, e.Message)
-		}
-	} else {
-		fmt.Printf("Number of Results: %d\n", apiResponse.SearchResults.NumberOfResult)
-		for _, part := range apiResponse.SearchResults.Parts {
-			fmt.Printf("Part Number: %s, Description: %s\n", part.ManufacturerPartNumber, part.Description)
-		}
-	}*/
 }

@@ -18,7 +18,7 @@ func ShowComponent(i int) {
 	// Find the specifig component.
 	idx := components.FindComponentRowId(i)
 	// Request the API (for now to avoid several calls during prototyping)
-	components.APIRequest(idx)
+	//components.APIRequest(idx)
 	// Create a new window for showing a component.
 	componentWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {

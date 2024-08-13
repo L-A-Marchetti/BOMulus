@@ -4,7 +4,7 @@ import (
 	"core"
 )
 
-// Calculate total quantity of components.
+// Calculate total quantity of components. (still need to specify only new row)
 func CompTotalQuantity() int {
 	total := 0
 	for _, component := range core.Components {
