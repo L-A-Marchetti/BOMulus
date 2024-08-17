@@ -15,6 +15,15 @@ import (
 	"golang.org/x/time/rate"
 )
 
+type AnalysisState struct {
+	InProgress bool
+	Progress   float64
+	Total      int
+	Current    int
+}
+
+var analysisState AnalysisState
+
 func CheckBoxes() *gtk.Box {
 	// Create a new hBox for the checkboxes.
 	checkboxesHBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10) // Add some spacing between checkboxes
@@ -59,31 +68,58 @@ func CheckBoxes() *gtk.Box {
 	// Add the button to the hBox
 	checkboxesHBox.PackStart(exportButton, false, false, 0)
 	// Create the analyze button and the progress bar.
-	analyzeButton, err := gtk.ButtonNewWithLabel("Analyze")
-	if err != nil {
-		log.Fatal(err)
-	}
 	analyzeButtonBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
-	analyzeButtonBox.PackStart(analyzeButton, false, false, 0)
-	checkboxesHBox.PackStart(analyzeButtonBox, false, false, 0)
 
-	analyzeButton.Connect("clicked", func() {
+	if analysisState.InProgress {
 		progressBar, err := gtk.ProgressBarNew()
 		if err != nil {
 			log.Fatal(err)
 		}
 		progressBar.SetShowText(true)
-		progressBar.SetText("0 / 0")
-		progressBar.SetSizeRequest(20, -1) // Set width to 100 pixels, keep default height
-
-		analyzeButtonBox.Remove(analyzeButton)
+		progressBar.SetFraction(analysisState.Progress)
+		progressBar.SetText(fmt.Sprintf("%d / %d", analysisState.Current, analysisState.Total))
+		progressBar.SetSizeRequest(20, -1)
 		analyzeButtonBox.Add(progressBar)
-		analyzeButtonBox.ShowAll()
-		go runAnalysis(progressBar, analyzeButton, analyzeButtonBox)
-	})
+
+		// Update periodically the progressbar.
+		glib.TimeoutAdd(100, func() bool {
+			progressBar.SetFraction(analysisState.Progress)
+			progressBar.SetText(fmt.Sprintf("%d / %d", analysisState.Current, analysisState.Total))
+			return analysisState.InProgress
+		})
+	} else {
+		analyzeButton, err := gtk.ButtonNewWithLabel("Analyze")
+		if err != nil {
+			log.Fatal(err)
+		}
+		analyzeButtonBox.Add(analyzeButton)
+
+		analyzeButton.Connect("clicked", func() {
+			analysisState.InProgress = true
+			analysisState.Total = len(core.Components)
+			analysisState.Current = 0
+			analysisState.Progress = 0.0
+
+			progressBar, err := gtk.ProgressBarNew()
+			if err != nil {
+				log.Fatal(err)
+			}
+			progressBar.SetShowText(true)
+			progressBar.SetText("0 / 0")
+			progressBar.SetSizeRequest(20, -1)
+
+			analyzeButtonBox.Remove(analyzeButton)
+			analyzeButtonBox.Add(progressBar)
+			analyzeButtonBox.ShowAll()
+			go runAnalysis()
+			UpdateView()
+		})
+	}
+
+	checkboxesHBox.PackStart(analyzeButtonBox, false, false, 0)
 	// Create the header label.
 	headerLabel, err := gtk.LabelNew("Header:")
 	if err != nil {
@@ -127,9 +163,8 @@ func CheckBoxes() *gtk.Box {
 	return checkboxesHBox
 }
 
-func runAnalysis(progressBar *gtk.ProgressBar, analyzeButton *gtk.Button, container *gtk.Box) {
+func runAnalysis() {
 	totalComponents := len(core.Components)
-	// Create a rate limiter to avoid too much calls per minutes (30/minutes for mouser)
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 	for i := 0; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())
@@ -137,20 +172,18 @@ func runAnalysis(progressBar *gtk.ProgressBar, analyzeButton *gtk.Button, contai
 			log.Print(err)
 			continue
 		}
-		fmt.Println(core.Components[i].NewRow)
 		components.APIRequest(i)
+
 		glib.IdleAdd(func() {
-			fraction := float64(i+1) / float64(totalComponents)
-			progressBar.SetFraction(fraction)
-			progressBar.SetText(fmt.Sprintf("%d / %d", i+1, totalComponents))
+			analysisState.Current = i + 1
+			analysisState.Progress = float64(i+1) / float64(totalComponents)
 		})
-		updateTableRow() // It may be more safe in the IdleAdd ?
+
+		updateTableRow()
 	}
+
 	glib.IdleAdd(func() {
-		container.Remove(progressBar)
-		analyzeButton.SetLabel("✓")
-		container.Add(analyzeButton)
-		container.ShowAll()
+		analysisState.InProgress = false
 	})
 }
 

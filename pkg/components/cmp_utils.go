@@ -22,3 +22,14 @@ func FindComponentRowId(idx int) int {
 	}
 	return -1
 }
+
+// Determine number of components analyzed by the API.
+func CmpAnalyzed() int {
+	c := 0
+	for _, component := range core.Components {
+		if component.Analyzed {
+			c++
+		}
+	}
+	return c
+}
