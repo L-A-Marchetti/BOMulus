@@ -54,9 +54,23 @@ func ColumnProperties(title string, maxColumns, i int, cellRenderer *gtk.CellRen
 	if err != nil {
 		panic(err)
 	}
-	column.AddAttribute(cellRenderer, "background", maxColumns+3+i) // Index of the background color column
+	column.AddAttribute(cellRenderer, "background", maxColumns+4+i) // Index of the background color column
 	column.SetMinWidth(config.CELLS_MIN_WIDTH)
 	column.SetResizable(true)
 	column.SetExpand(true)
 	return column
+}
+
+// Convert operations into special characters.
+func StylizeOperation(s string) string {
+	char := ""
+	switch s {
+	case "DELETE":
+		char = "D"
+	case "INSERT":
+		char = "I"
+	case "UPDATE":
+		char = "U"
+	}
+	return char
 }

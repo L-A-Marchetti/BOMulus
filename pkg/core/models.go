@@ -26,8 +26,24 @@ type Filter struct {
 
 // As a starting point.
 type Component struct {
-	Quantity int
-	Mpn      string
+	Operator             string
+	OldRow, NewRow       int
+	Quantity             int
+	Mpn                  string
+	ImagePath            string
+	Availability         string
+	DataSheetUrl         string
+	LifecycleStatus      string
+	ROHSStatus           string
+	SuggestedReplacement string
+	PriceBreaks          []PriceBreak
+	Analyzed             bool
+}
+
+type PriceBreak struct {
+	Quantity int    `json:"Quantity"`
+	Price    string `json:"Price"`
+	Currency string `json:"Currency"`
 }
 
 var XlsmFiles = []XlsmFile{
@@ -48,4 +64,8 @@ func ResetContent() {
 
 func ResetDeltas() {
 	XlsmDeltas = nil
+}
+
+func ResetComponents() {
+	Components = []Component{}
 }

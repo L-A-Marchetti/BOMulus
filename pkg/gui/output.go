@@ -39,8 +39,8 @@ func Output() {
 // Append row to the result store when there's an operator.
 func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content []string, bgColor string) {
 	iter := store.Append()
-	values := make([]interface{}, (len(content)+3)*2)
-	values[0] = operation
+	values := make([]interface{}, (len(content)+4)*2)
+	values[0] = StylizeOperation(operation)
 	if operation != "UPDATE" {
 		values[1] = oldRow
 	} else {
@@ -51,9 +51,10 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 	} else {
 		values[2] = ""
 	}
-	idx := 3
+	values[3] = ""
+	idx := 4
 	for i, v := range content {
-		values[i+3] = v
+		values[i+4] = v
 		idx++
 	}
 	storeCells := []int{}
@@ -67,7 +68,7 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 		}
 	}
 	for j := idx; j < len(values); j++ {
-		if core.ContainsInteger(storeCells, j-idx-3) {
+		if core.ContainsInteger(storeCells, j-idx-4) {
 			if operation == "" {
 				values[j] = config.OLD_UPDATE_DIFF_BG_COLOR
 			} else if operation == "UPDATE" {
@@ -86,12 +87,13 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 // Append row to the result store when there's no bg color.
 func appendRowWoBg(store *gtk.ListStore, operation, oldRow, newRow string, content []string) {
 	iter := store.Append()
-	values := make([]interface{}, len(content)+3)
+	values := make([]interface{}, len(content)+4)
 	values[0] = operation
 	values[1] = oldRow
 	values[2] = newRow
+	values[3] = ""
 	for i, v := range content {
-		values[i+3] = v
+		values[i+4] = v
 	}
 	err := store.Set(iter, core.MakeRange(0, len(values)), values)
 	if err != nil {

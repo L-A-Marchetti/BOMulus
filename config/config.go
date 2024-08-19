@@ -49,8 +49,12 @@ const (
     min-height: 15px;
 	}
 	`
-	SUMMARY_SPACING string = "              "
-	LOGO_PATH       string = "assets/logo.png"
+	SUMMARY_SPACING     string = "              "
+	LOGO_PATH           string = "assets/logo.png"
+	API_URL             string = "https://api.mouser.com/api/v1/search/partnumber"
+	INFO_BTN_CHAR       string = "◨"
+	INFO_BTN_CHAR_HOVER string = "◧"
+	INFO_BTN_CHAR_FONT  string = "monospace 15"
 )
 
 var (
