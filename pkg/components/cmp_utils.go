@@ -14,9 +14,11 @@ func CompTotalQuantity() int {
 }
 
 // To find a component with a row reference.
-func FindComponentRowId(idx int) int {
+func FindComponentRowId(idx int, isOld bool) int {
 	for i, component := range core.Components {
-		if component.NewRow == idx {
+		if isOld && component.OldRow == idx {
+			return i
+		} else if !isOld && component.NewRow == idx {
 			return i
 		}
 	}

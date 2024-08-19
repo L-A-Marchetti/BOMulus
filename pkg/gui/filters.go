@@ -194,7 +194,7 @@ func updateTableRow() {
 	}
 
 	for {
-		value, err := resultStore.GetValue(iter, 2) // Column for NewRow
+		newRowValue, err := resultStore.GetValue(iter, 2) // Column for NewRow
 		if err != nil {
 			log.Printf("Error getting value: %v", err)
 			if !resultStore.IterNext(iter) {
@@ -203,7 +203,25 @@ func updateTableRow() {
 			continue
 		}
 
-		newRow, err := value.GoValue()
+		oldRowValue, err := resultStore.GetValue(iter, 1) // Column for NewRow
+		if err != nil {
+			log.Printf("Error getting value: %v", err)
+			if !resultStore.IterNext(iter) {
+				break
+			}
+			continue
+		}
+
+		newRow, err := newRowValue.GoValue()
+		if err != nil {
+			log.Printf("Error converting value: %v", err)
+			if !resultStore.IterNext(iter) {
+				break
+			}
+			continue
+		}
+
+		oldRow, err := oldRowValue.GoValue()
 		if err != nil {
 			log.Printf("Error converting value: %v", err)
 			if !resultStore.IterNext(iter) {
@@ -213,30 +231,45 @@ func updateTableRow() {
 		}
 
 		// Check if the value is an empty string
-		strNewRow, ok := newRow.(string)
-		if !ok || strNewRow == "" {
-			// Move to the next row if the value is empty or not a string
-			if !resultStore.IterNext(iter) {
-				break
-			}
-			continue
-		}
+		strNewRow, _ := newRow.(string)
+		strOldRow, _ := oldRow.(string)
 
-		intNewRow, err := strconv.Atoi(strNewRow)
-		if err != nil {
-			log.Printf("Error converting to int: %v", err)
-			if !resultStore.IterNext(iter) {
-				break
-			}
-			continue
-		}
-
-		compIdx := components.FindComponentRowId(intNewRow)
-		if compIdx >= 0 && compIdx < len(core.Components) && core.Components[compIdx].Analyzed {
-			err = resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
+		if strNewRow != "" {
+			intNewRow, err := strconv.Atoi(strNewRow)
 			if err != nil {
-				log.Printf("Error setting value: %v", err)
+				log.Printf("Error converting to int: %v", err)
+				if !resultStore.IterNext(iter) {
+					break
+				}
+				continue
 			}
+
+			compIdx := components.FindComponentRowId(intNewRow, false)
+			if compIdx >= 0 && compIdx < len(core.Components) && core.Components[compIdx].Analyzed {
+				err = resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
+				if err != nil {
+					log.Printf("Error setting value: %v", err)
+				}
+			}
+
+		} else if strOldRow != "" {
+			intOldRow, err := strconv.Atoi(strOldRow)
+			if err != nil {
+				log.Printf("Error converting to int: %v", err)
+				if !resultStore.IterNext(iter) {
+					break
+				}
+				continue
+			}
+
+			compIdx := components.FindComponentRowId(intOldRow, true)
+			if compIdx >= 0 && compIdx < len(core.Components) && core.Components[compIdx].Analyzed {
+				err = resultStore.SetValue(iter, 3, config.INFO_BTN_CHAR)
+				if err != nil {
+					log.Printf("Error setting value: %v", err)
+				}
+			}
+
 		}
 
 		if !resultStore.IterNext(iter) {
