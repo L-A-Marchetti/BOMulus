@@ -26,6 +26,7 @@ type Filter struct {
 
 // As a starting point.
 type Component struct {
+	Operator             string
 	OldRow, NewRow       int
 	Quantity             int
 	Mpn                  string

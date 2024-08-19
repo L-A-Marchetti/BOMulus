@@ -8,9 +8,26 @@ import (
 func CompTotalQuantity() int {
 	total := 0
 	for _, component := range core.Components {
-		total += component.Quantity
+		if component.NewRow != -1 {
+			total += component.Quantity
+		}
 	}
 	return total
+}
+
+// Calculate components quantities diff between old and new BOM
+func CompQuantityDiff() int {
+	oldDiff := 0
+	newDiff := 0
+	for _, component := range core.Components {
+		if component.OldRow != -1 && component.Operator != "EQUAL" {
+			oldDiff += component.Quantity
+		} else if component.NewRow != -1 && component.Operator != "EQUAL" {
+			newDiff += component.Quantity
+		}
+	}
+	diff := newDiff - oldDiff
+	return diff
 }
 
 // To find a component with a row reference.

@@ -14,13 +14,24 @@ func ComponentsDetection() {
 		if int(colSafety) < len(core.XlsmFiles[1].Content[delta.NewRow]) {
 			switch delta.Operator {
 			case "EQUAL":
-				fallthrough
+				quantity, err := strconv.Atoi(core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Quantity])
+				if err != nil {
+					return
+				}
+				component := core.Component{
+					Operator: "EQUAL",
+					NewRow:   delta.NewRow,
+					OldRow:   -1,
+					Quantity: quantity,
+					Mpn:      core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Mpn]}
+				core.Components = append(core.Components, component)
 			case "INSERT":
 				quantity, err := strconv.Atoi(core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Quantity])
 				if err != nil {
 					return
 				}
 				component := core.Component{
+					Operator: "INSERT",
 					NewRow:   delta.NewRow,
 					OldRow:   -1,
 					Quantity: quantity,
@@ -32,6 +43,7 @@ func ComponentsDetection() {
 					return
 				}
 				component := core.Component{
+					Operator: "DELETE",
 					OldRow:   delta.OldRow,
 					NewRow:   -1,
 					Quantity: quantity,
@@ -43,6 +55,7 @@ func ComponentsDetection() {
 					return
 				}
 				oldComponent := core.Component{
+					Operator: "UPDATE",
 					OldRow:   delta.OldRow,
 					NewRow:   -1,
 					Quantity: oldQuantity,
@@ -53,6 +66,7 @@ func ComponentsDetection() {
 					return
 				}
 				newComponent := core.Component{
+					Operator: "UPDATE",
 					NewRow:   delta.NewRow,
 					OldRow:   -1,
 					Quantity: newQuantity,

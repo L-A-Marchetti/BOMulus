@@ -22,10 +22,12 @@ func DiffSummary() *gtk.Label {
 			updateCount++
 		}
 	}
+	// Try to dedect components.
+	components.ComponentsDetection()
 	// Create a label with a formatted text.
 	diffSummaryText := fmt.Sprintf(
-		"<span foreground='%s'>--- DELETES   %d</span>%s<span foreground='%s'>+++ INSERTS   %d</span>%s<span foreground='%s'>-+- UPDATES   %d</span>%s<span>∑ COMPONENTS   %d</span>",
-		config.DELETE_BG_COLOR, deleteCount, config.SUMMARY_SPACING, config.INSERT_BG_COLOR, insertCount, config.SUMMARY_SPACING, config.OLD_UPDATE_BG_COLOR, updateCount, config.SUMMARY_SPACING, components.CompTotalQuantity(),
+		"<span foreground='%s'>--- DELETES   %d</span>%s<span foreground='%s'>+++ INSERTS   %d</span>%s<span foreground='%s'>-+- UPDATES   %d</span>%s<span>∑   %d</span>%s<span>Δ   %d</span>",
+		config.DELETE_BG_COLOR, deleteCount, config.SUMMARY_SPACING, config.INSERT_BG_COLOR, insertCount, config.SUMMARY_SPACING, config.OLD_UPDATE_BG_COLOR, updateCount, config.SUMMARY_SPACING, components.CompTotalQuantity(), config.SUMMARY_SPACING, components.CompQuantityDiff(),
 	)
 	diffSummaryLabel, err := gtk.LabelNew("")
 	if err != nil {
