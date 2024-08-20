@@ -89,7 +89,7 @@ func CheckBoxes() *gtk.Box {
 		analyzeButtonBox.Add(analyzeButton)
 
 		analyzeButton.Connect("clicked", func() {
-			fmt.Println("ok")
+			ShowReport()
 		})
 	} else {
 		analyzeButton, err := gtk.ButtonNewWithLabel("Analyze")
@@ -164,7 +164,7 @@ func CheckBoxes() *gtk.Box {
 }
 
 func runAnalysis() {
-	totalComponents := len(core.Components) / 10
+	totalComponents := (len(core.Components) / 10)
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 	for i := 0; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())

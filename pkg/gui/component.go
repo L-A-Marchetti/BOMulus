@@ -13,7 +13,7 @@ import (
 	"github.com/skratchdot/open-golang/open"
 )
 
-// Function to open the export window
+// Function to open the component window
 func ShowComponent(i int, isOld bool) {
 	// Find the specifig component.
 	idx := components.FindComponentRowId(i, isOld)
