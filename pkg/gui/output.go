@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"components"
 	"config"
 	"core"
 	"fmt"
@@ -51,7 +52,21 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 	} else {
 		values[2] = ""
 	}
-	values[3] = ""
+	isOld := false
+	intRow := 0
+	if oldRow != "" {
+		isOld = true
+		intRow, _ = strconv.Atoi(oldRow)
+	} else if newRow != "" {
+		isOld = false
+		intRow, _ = strconv.Atoi(newRow)
+	}
+	compIdx := components.FindComponentRowId(intRow, isOld)
+	if compIdx != -1 && core.Components[compIdx].Analyzed {
+		values[3] = config.INFO_BTN_CHAR
+	} else {
+		values[3] = ""
+	}
 	idx := 4
 	for i, v := range content {
 		values[i+4] = v
@@ -91,7 +106,13 @@ func appendRowWoBg(store *gtk.ListStore, operation, oldRow, newRow string, conte
 	values[0] = operation
 	values[1] = oldRow
 	values[2] = newRow
-	values[3] = ""
+	intNewRow, _ := strconv.Atoi(newRow)
+	compIdx := components.FindComponentRowId(intNewRow, false)
+	if compIdx != -1 && core.Components[compIdx].Analyzed {
+		values[3] = config.INFO_BTN_CHAR
+	} else {
+		values[3] = ""
+	}
 	for i, v := range content {
 		values[i+4] = v
 	}

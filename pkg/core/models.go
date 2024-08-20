@@ -69,3 +69,13 @@ func ResetDeltas() {
 func ResetComponents() {
 	Components = []Component{}
 }
+
+type AnalysisStatus struct {
+	InProgress bool
+	Completed  bool
+	Progress   float64
+	Total      int
+	Current    int
+}
+
+var AnalysisState AnalysisStatus

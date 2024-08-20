@@ -17,7 +17,6 @@ import (
 func ShowComponent(i int, isOld bool) {
 	// Find the specifig component.
 	idx := components.FindComponentRowId(i, isOld)
-	fmt.Println(idx)
 	// Request the API (for now to avoid several calls during prototyping)
 	//components.APIRequest(idx)
 	// Create a new window for showing a component.
