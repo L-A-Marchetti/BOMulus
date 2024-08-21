@@ -159,14 +159,13 @@ func CheckBoxes() *gtk.Box {
 			UpdateView()
 		})
 	}
-
 	return checkboxesHBox
 }
 
 func runAnalysis() {
-	totalComponents := (len(core.Components) / 10) // Divided for prototyping.
+	totalComponents := (len(core.Components) / 10) + 120 // Divided for prototyping.
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-	for i := 0; i < totalComponents; i++ {
+	for i := 120; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())
 		if err != nil {
 			log.Print(err)

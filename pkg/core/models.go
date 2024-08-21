@@ -37,6 +37,7 @@ type Component struct {
 	ROHSStatus           string
 	SuggestedReplacement string
 	PriceBreaks          []PriceBreak
+	InfoMessages         []string
 	Analyzed             bool
 }
 

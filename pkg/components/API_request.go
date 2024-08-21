@@ -70,6 +70,7 @@ func APIRequest(i int) {
 	for _, priceBreak := range apiResponse.SearchResults.Parts[0].PriceBreaks {
 		core.Components[i].PriceBreaks = append(core.Components[i].PriceBreaks, core.PriceBreak(priceBreak))
 	}
+	core.Components[i].InfoMessages = append(core.Components[i].InfoMessages, apiResponse.SearchResults.Parts[0].InfoMessages...)
 	// Validate the analysis
 	if len(apiResponse.Errors) == 0 {
 		core.Components[i].Analyzed = true

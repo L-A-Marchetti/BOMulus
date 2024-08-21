@@ -29,3 +29,16 @@ func RiskyLSSComp() ([]core.Component, []int) {
 	}
 	return riskylss, compIdx
 }
+
+// Function to find manufacturer messages.
+func ManufacturerMessages() ([]core.Component, []int) {
+	ManufacturerMessages := []core.Component{}
+	compIdx := []int{}
+	for i, component := range core.Components {
+		if len(component.InfoMessages) != 0 && component.OldRow == -1 && component.Analyzed {
+			ManufacturerMessages = append(ManufacturerMessages, component)
+			compIdx = append(compIdx, i)
+		}
+	}
+	return ManufacturerMessages, compIdx
+}

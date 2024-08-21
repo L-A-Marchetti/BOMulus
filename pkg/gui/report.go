@@ -14,6 +14,7 @@ func ShowReport() {
 	// Prototyping Report functions.
 	oosComponents, oosCompIdx := report.OutOfStockComp()
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
+	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
 	// Create a new window for showing the report.
 	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -134,6 +135,58 @@ func ShowReport() {
 	}
 	rlsscenterBox.PackStart(riskylssGris, true, false, 0)
 	vbox.PackStart(rlsscenterBox, false, false, 0)
+	mMsgsLabel, err := gtk.LabelNew("---------- Manufacturer Messages ----------")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(mMsgsLabel, false, false, 0)
+	// Create a grid for Manufacturer components.
+	mMsgsGrid, err := gtk.GridNew()
+	if err != nil {
+		log.Fatal(err)
+	}
+	mMsgsGrid.SetColumnSpacing(10)
+	mMsgsGrid.SetRowSpacing(5)
+	// mMsgsGrid headers.
+	mMsgslineHeader, _ := gtk.LabelNew("Line")
+	mMsgsquantityHeader, _ := gtk.LabelNew("Quantity")
+	mMsgsmpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
+	mMsgsmoreHeader, _ := gtk.LabelNew(config.INFO_BTN_CHAR)
+	mMsgsHeader, _ := gtk.LabelNew("Messages")
+	mMsgsGrid.Attach(mMsgslineHeader, 0, 0, 1, 1)
+	mMsgsGrid.Attach(mMsgsquantityHeader, 1, 0, 1, 1)
+	mMsgsGrid.Attach(mMsgsmpnHeader, 2, 0, 1, 1)
+	mMsgsGrid.Attach(mMsgsmoreHeader, 3, 0, 1, 1)
+	mMsgsGrid.Attach(mMsgsHeader, 4, 0, 1, 1)
+	// Append components to the mMsgsGrid.
+	for i, mMsgComponent := range manufacturerMessages {
+		rowCount := 0
+		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mMsgComponent.NewRow))
+		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mMsgComponent.Quantity))
+		mpnLabel, _ := gtk.LabelNew(mMsgComponent.Mpn)
+		moreButton, err := gtk.ButtonNewWithLabel(config.INFO_BTN_CHAR)
+		if err != nil {
+			log.Fatal(err)
+		}
+		moreButton.Connect("clicked", func() {
+			ShowComponent(manufacturerMsgCompIdx[i], -1, false)
+		})
+		mMsgsGrid.Attach(lineLabel, 0, i+1+rowCount, 1, 1)
+		mMsgsGrid.Attach(quantityLabel, 1, i+1+rowCount, 1, 1)
+		mMsgsGrid.Attach(mpnLabel, 2, i+1+rowCount, 1, 1)
+		mMsgsGrid.Attach(moreButton, 3, i+1+rowCount, 1, 1)
+		for j, mMsg := range mMsgComponent.InfoMessages {
+			msgLabel, _ := gtk.LabelNew(mMsg)
+			mMsgsGrid.Attach(msgLabel, 4, i+1+j+rowCount, 1, 1)
+		}
+		rowCount += len(mMsgComponent.InfoMessages) - 1
+	}
+	mMsgsCenterBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mMsgsCenterBox.PackStart(mMsgsGrid, true, false, 0)
+	vbox.PackStart(mMsgsCenterBox, false, false, 0)
 	suggestionsLabel, err := gtk.LabelNew("---------- Suggestions ----------")
 	if err != nil {
 		log.Fatal(err)
