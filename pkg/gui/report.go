@@ -13,6 +13,7 @@ import (
 func ShowReport() {
 	// Prototyping Report functions.
 	oosComponents, oosCompIdx := report.OutOfStockComp()
+	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
 	// Create a new window for showing the report.
 	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -85,6 +86,54 @@ func ShowReport() {
 	}
 	centerBox.PackStart(oosGrid, true, false, 0)
 	vbox.PackStart(centerBox, false, false, 0)
+	riskylssLabel, err := gtk.LabelNew("---------- Risky Life Cycle Status components ----------")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(riskylssLabel, false, false, 0)
+	// Create a grid for risky life cycle status components.
+	riskylssGris, err := gtk.GridNew()
+	if err != nil {
+		log.Fatal(err)
+	}
+	riskylssGris.SetColumnSpacing(10)
+	riskylssGris.SetRowSpacing(5)
+	// riskylss grid headers.
+	rlsslineHeader, _ := gtk.LabelNew("Line")
+	rlssquantityHeader, _ := gtk.LabelNew("Quantity")
+	rlssmpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
+	rlssHeader, _ := gtk.LabelNew("Life Cycle Status")
+	rlssmoreHeader, _ := gtk.LabelNew(config.INFO_BTN_CHAR)
+	riskylssGris.Attach(rlsslineHeader, 0, 0, 1, 1)
+	riskylssGris.Attach(rlssquantityHeader, 1, 0, 1, 1)
+	riskylssGris.Attach(rlssmpnHeader, 2, 0, 1, 1)
+	riskylssGris.Attach(rlssHeader, 3, 0, 1, 1)
+	riskylssGris.Attach(rlssmoreHeader, 4, 0, 1, 1)
+	// Append risky lss components to the riskylss grid.
+	for i, rlssComponent := range riskylssComponents {
+		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", rlssComponent.NewRow))
+		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", rlssComponent.Quantity))
+		mpnLabel, _ := gtk.LabelNew(rlssComponent.Mpn)
+		lssLabel, _ := gtk.LabelNew(rlssComponent.LifecycleStatus)
+		moreButton, err := gtk.ButtonNewWithLabel(config.INFO_BTN_CHAR)
+		if err != nil {
+			log.Fatal(err)
+		}
+		moreButton.Connect("clicked", func() {
+			ShowComponent(riskylssCompIdx[i], -1, false)
+		})
+		riskylssGris.Attach(lineLabel, 0, i+1, 1, 1)
+		riskylssGris.Attach(quantityLabel, 1, i+1, 1, 1)
+		riskylssGris.Attach(mpnLabel, 2, i+1, 1, 1)
+		riskylssGris.Attach(lssLabel, 3, i+1, 1, 1)
+		riskylssGris.Attach(moreButton, 4, i+1, 1, 1)
+	}
+	rlsscenterBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	rlsscenterBox.PackStart(riskylssGris, true, false, 0)
+	vbox.PackStart(rlsscenterBox, false, false, 0)
 	suggestionsLabel, err := gtk.LabelNew("---------- Suggestions ----------")
 	if err != nil {
 		log.Fatal(err)

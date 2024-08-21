@@ -164,7 +164,7 @@ func CheckBoxes() *gtk.Box {
 }
 
 func runAnalysis() {
-	totalComponents := (len(core.Components) / 8)
+	totalComponents := (len(core.Components) / 10) // Divided for prototyping.
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 	for i := 0; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())
