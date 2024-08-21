@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"config"
 	"fmt"
 	"log"
 	"report"
@@ -11,7 +12,7 @@ import (
 // Function to open the report window
 func ShowReport() {
 	// Prototyping Report functions.
-	oosComponents := report.OutOfStockComp()
+	oosComponents, oosCompIdx := report.OutOfStockComp()
 	// Create a new window for showing the report.
 	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -53,16 +54,30 @@ func ShowReport() {
 	oosGrid.SetColumnSpacing(10)
 	oosGrid.SetRowSpacing(5)
 	// oosGrid headers.
+	lineHeader, _ := gtk.LabelNew("Line")
 	quantityHeader, _ := gtk.LabelNew("Quantity")
 	mpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
-	oosGrid.Attach(quantityHeader, 0, 0, 1, 1)
-	oosGrid.Attach(mpnHeader, 1, 0, 1, 1)
-	// Append price breaks to the oosGrid.
+	moreHeader, _ := gtk.LabelNew(config.INFO_BTN_CHAR)
+	oosGrid.Attach(lineHeader, 0, 0, 1, 1)
+	oosGrid.Attach(quantityHeader, 1, 0, 1, 1)
+	oosGrid.Attach(mpnHeader, 2, 0, 1, 1)
+	oosGrid.Attach(moreHeader, 3, 0, 1, 1)
+	// Append oos components to the oosGrid.
 	for i, oosComponent := range oosComponents {
+		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", oosComponent.NewRow))
 		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", oosComponent.Quantity))
 		mpnLabel, _ := gtk.LabelNew(oosComponent.Mpn)
-		oosGrid.Attach(quantityLabel, 0, i+1, 1, 1)
-		oosGrid.Attach(mpnLabel, 1, i+1, 1, 1)
+		moreButton, err := gtk.ButtonNewWithLabel(config.INFO_BTN_CHAR)
+		if err != nil {
+			log.Fatal(err)
+		}
+		moreButton.Connect("clicked", func() {
+			ShowComponent(oosCompIdx[i], -1, false)
+		})
+		oosGrid.Attach(lineLabel, 0, i+1, 1, 1)
+		oosGrid.Attach(quantityLabel, 1, i+1, 1, 1)
+		oosGrid.Attach(mpnLabel, 2, i+1, 1, 1)
+		oosGrid.Attach(moreButton, 3, i+1, 1, 1)
 	}
 	centerBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	if err != nil {

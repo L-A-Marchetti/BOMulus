@@ -76,10 +76,10 @@ func RenderView(maxColumns int) {
 							col2Value, _ := col2Pointer.GetString()
 							if col2Value == "" {
 								convCol1Value, _ := strconv.Atoi(col1Value)
-								ShowComponent(convCol1Value, true)
+								ShowComponent(-1, convCol1Value, true)
 							} else {
 								convCol2Value, _ := strconv.Atoi(col2Value)
-								ShowComponent(convCol2Value, false)
+								ShowComponent(-1, convCol2Value, false)
 							}
 							return true
 						}

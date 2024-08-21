@@ -14,9 +14,11 @@ import (
 )
 
 // Function to open the component window
-func ShowComponent(i int, isOld bool) {
+func ShowComponent(idx, i int, isOld bool) {
 	// Find the specifig component.
-	idx := components.FindComponentRowId(i, isOld)
+	if idx == -1 {
+		idx = components.FindComponentRowId(i, isOld)
+	}
 	// Request the API (for now to avoid several calls during prototyping)
 	//components.APIRequest(idx)
 	// Create a new window for showing a component.
