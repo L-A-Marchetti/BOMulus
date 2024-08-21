@@ -15,6 +15,7 @@ func ShowReport() {
 	oosComponents, oosCompIdx := report.OutOfStockComp()
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
 	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
+	minPrice, maxPrice := report.MinMaxPrice()
 	// Create a new window for showing the report.
 	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -38,6 +39,16 @@ func ShowReport() {
 		log.Fatal(err)
 	}
 	vbox.PackStart(infosLabel, false, false, 0)
+	priceLabel, err := gtk.LabelNew("---------- Price ----------")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(priceLabel, false, false, 0)
+	minMaxPriceLabel, err := gtk.LabelNew("Min:\t" + fmt.Sprintf("%.4f", minPrice) + "€\t\tMax:\t" + fmt.Sprintf("%.4f", maxPrice) + "€")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(minMaxPriceLabel, false, false, 0)
 	manufacturingLabel, err := gtk.LabelNew("---------- Ordering/Manufacturing ----------")
 	if err != nil {
 		log.Fatal(err)

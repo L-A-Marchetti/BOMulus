@@ -2,6 +2,8 @@ package report
 
 import (
 	"core"
+	"strconv"
+	"strings"
 )
 
 // Function to find Out of Stock components.
@@ -41,4 +43,19 @@ func ManufacturerMessages() ([]core.Component, []int) {
 		}
 	}
 	return ManufacturerMessages, compIdx
+}
+
+// Function to calculate min and max total price.
+func MinMaxPrice() (float64, float64) {
+	max := 0.0
+	min := 0.0
+	for _, component := range core.Components {
+		if component.Analyzed && len(component.PriceBreaks) != 0 {
+			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
+			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
+			max += maxPrice
+			min += minPrice
+		}
+	}
+	return min, max
 }
