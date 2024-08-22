@@ -17,6 +17,7 @@ func ShowReport() {
 	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
 	minPrice, maxPrice, minPriceDiff, maxPriceDiff := report.MinMaxPrice()
 	mismatchComponents := report.MismatchMpn()
+	mismatchCompDescription, mismatchCompDesIdx := report.MismatchDescription()
 	// Create a new window for showing the report.
 	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -86,6 +87,58 @@ func ShowReport() {
 	}
 	mmcenterBox.PackStart(mmGrid, true, false, 0)
 	vbox.PackStart(mmcenterBox, false, false, 0)
+	mdLabel, err := gtk.LabelNew("---------- Mismatching Descriptions ----------")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(mdLabel, false, false, 0)
+	// Create a grid for mismatching descriptions.
+	mdGrid, err := gtk.GridNew()
+	if err != nil {
+		log.Fatal(err)
+	}
+	mdGrid.SetColumnSpacing(10)
+	mdGrid.SetRowSpacing(5)
+	// mdGrid headers.
+	mdlineHeader, _ := gtk.LabelNew("Line")
+	mdquantityHeader, _ := gtk.LabelNew("Quantity")
+	mdmpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
+	mduserdesHeader, _ := gtk.LabelNew("User Description")
+	mdsuppdesHeader, _ := gtk.LabelNew("Supplier Description")
+	mdmoreHeader, _ := gtk.LabelNew(config.INFO_BTN_CHAR)
+	mdGrid.Attach(mdlineHeader, 0, 0, 1, 1)
+	mdGrid.Attach(mdquantityHeader, 1, 0, 1, 1)
+	mdGrid.Attach(mdmpnHeader, 2, 0, 1, 1)
+	mdGrid.Attach(mduserdesHeader, 3, 0, 1, 1)
+	mdGrid.Attach(mdsuppdesHeader, 4, 0, 1, 1)
+	mdGrid.Attach(mdmoreHeader, 5, 0, 1, 1)
+	// Append mismatching descriptions to the mdGrid.
+	for i, mismatchComDes := range mismatchCompDescription {
+		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mismatchComDes.NewRow))
+		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mismatchComDes.Quantity))
+		mpnLabel, _ := gtk.LabelNew(mismatchComDes.Mpn)
+		userdesLabel, _ := gtk.LabelNew(mismatchComDes.UserDescription)
+		suppdesLabel, _ := gtk.LabelNew(mismatchComDes.SupplierDescription)
+		moreButton, err := gtk.ButtonNewWithLabel(config.INFO_BTN_CHAR)
+		if err != nil {
+			log.Fatal(err)
+		}
+		moreButton.Connect("clicked", func() {
+			ShowComponent(mismatchCompDesIdx[i], -1, false)
+		})
+		mdGrid.Attach(lineLabel, 0, i+1, 1, 1)
+		mdGrid.Attach(quantityLabel, 1, i+1, 1, 1)
+		mdGrid.Attach(mpnLabel, 2, i+1, 1, 1)
+		mdGrid.Attach(userdesLabel, 3, i+1, 1, 1)
+		mdGrid.Attach(suppdesLabel, 4, i+1, 1, 1)
+		mdGrid.Attach(moreButton, 5, i+1, 1, 1)
+	}
+	mdcenterBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mdcenterBox.PackStart(mdGrid, true, false, 0)
+	vbox.PackStart(mdcenterBox, false, false, 0)
 	priceLabel, err := gtk.LabelNew("---------- Price ----------")
 	if err != nil {
 		log.Fatal(err)

@@ -86,3 +86,18 @@ func MismatchMpn() []core.Component {
 	}
 	return mismatchComp
 }
+
+// Function to find mismatching descriptions between user and supplier.
+func MismatchDescription() ([]core.Component, []int) {
+	mismatchComp := []core.Component{}
+	compIdx := []int{}
+	for i, component := range core.Components {
+		if component.Analyzed && component.OldRow == -1 && component.SupplierDescription != "" {
+			if component.UserDescription != component.SupplierDescription {
+				mismatchComp = append(mismatchComp, component)
+				compIdx = append(compIdx, i)
+			}
+		}
+	}
+	return mismatchComp, compIdx
+}

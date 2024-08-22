@@ -72,6 +72,7 @@ func APIRequest(i int) {
 			core.Components[i].PriceBreaks = append(core.Components[i].PriceBreaks, core.PriceBreak(priceBreak))
 		}
 		core.Components[i].InfoMessages = append(core.Components[i].InfoMessages, apiResponse.SearchResults.Parts[0].InfoMessages...)
+		core.Components[i].SupplierDescription = apiResponse.SearchResults.Parts[0].Description
 	} else {
 		for _, part := range apiResponse.SearchResults.Parts {
 			alternativeMpn := core.Component{}
@@ -79,7 +80,6 @@ func APIRequest(i int) {
 			alternativeMpn.SupplierDescription = part.Description
 			core.Components[i].MismatchMpn = append(core.Components[i].MismatchMpn, alternativeMpn)
 		}
-		fmt.Println(core.Components[i])
 	}
 	// Validate the analysis
 	if len(apiResponse.Errors) == 0 {
