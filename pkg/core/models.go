@@ -39,6 +39,7 @@ type Component struct {
 	PriceBreaks          []PriceBreak
 	InfoMessages         []string
 	Analyzed             bool
+	MismatchMpn          []Component
 }
 
 type PriceBreak struct {

@@ -16,6 +16,7 @@ func ShowReport() {
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
 	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
 	minPrice, maxPrice, minPriceDiff, maxPriceDiff := report.MinMaxPrice()
+	mismatchComponents := report.MismatchMpn()
 	// Create a new window for showing the report.
 	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -39,6 +40,46 @@ func ShowReport() {
 		log.Fatal(err)
 	}
 	vbox.PackStart(infosLabel, false, false, 0)
+	mmLabel, err := gtk.LabelNew("---------- Mismatching Manufacturer Part Number ----------")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vbox.PackStart(mmLabel, false, false, 0)
+	// Create a grid for mismatching manufacturer part number.
+	mmGrid, err := gtk.GridNew()
+	if err != nil {
+		log.Fatal(err)
+	}
+	mmGrid.SetColumnSpacing(10)
+	mmGrid.SetRowSpacing(5)
+	// mmGrid headers.
+	mmlineHeader, _ := gtk.LabelNew("Line")
+	mmquantityHeader, _ := gtk.LabelNew("Quantity")
+	mmmpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
+	mmGrid.Attach(mmlineHeader, 0, 0, 1, 1)
+	mmGrid.Attach(mmquantityHeader, 1, 0, 1, 1)
+	mmGrid.Attach(mmmpnHeader, 2, 0, 1, 1)
+	// Append oos components to the mmGrid.
+	for i, mmComp := range mismatchComponents {
+		rowCount := 0
+		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.NewRow))
+		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.Quantity))
+		mpnLabel, _ := gtk.LabelNew(mmComp.Mpn)
+		mmGrid.Attach(lineLabel, 0, i+1, 1, 1)
+		mmGrid.Attach(quantityLabel, 1, i+1, 1, 1)
+		mmGrid.Attach(mpnLabel, 2, i+1, 1, 1)
+		for j, mpn := range mmComp.MismatchMpn {
+			mpnLabel, _ := gtk.LabelNew(mpn.Mpn)
+			mmGrid.Attach(mpnLabel, 2, i+2+j+rowCount, 1, 1)
+		}
+		rowCount += len(mmComp.MismatchMpn) - 1
+	}
+	mmcenterBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	mmcenterBox.PackStart(mmGrid, true, false, 0)
+	vbox.PackStart(mmcenterBox, false, false, 0)
 	priceLabel, err := gtk.LabelNew("---------- Price ----------")
 	if err != nil {
 		log.Fatal(err)

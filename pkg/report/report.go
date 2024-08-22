@@ -75,3 +75,14 @@ func MinMaxPrice() (float64, float64, float64, float64) {
 	maxPriceDiff := newMax - oldMax
 	return newMin, newMax, minPriceDiff, maxPriceDiff
 }
+
+// Function to find components with not 100% matching manufacturer part number.
+func MismatchMpn() []core.Component {
+	mismatchComp := []core.Component{}
+	for _, component := range core.Components {
+		if len(component.MismatchMpn) != 0 && component.OldRow == -1 {
+			mismatchComp = append(mismatchComp, component)
+		}
+	}
+	return mismatchComp
+}
