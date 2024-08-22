@@ -46,16 +46,32 @@ func ManufacturerMessages() ([]core.Component, []int) {
 }
 
 // Function to calculate min and max total price.
-func MinMaxPrice() (float64, float64) {
-	max := 0.0
-	min := 0.0
+func MinMaxPrice() (float64, float64, float64, float64) {
+	newMax := 0.0
+	newMin := 0.0
+	oldMax := 0.0
+	oldMin := 0.0
 	for _, component := range core.Components {
-		if component.Analyzed && len(component.PriceBreaks) != 0 {
+		if component.Analyzed && component.Operator == "EQUAL" && len(component.PriceBreaks) != 0 {
 			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
 			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			max += maxPrice
-			min += minPrice
+			newMax += maxPrice
+			newMin += minPrice
+			oldMax += maxPrice
+			oldMin += minPrice
+		} else if component.Analyzed && component.Operator != "EQUAL" && component.OldRow == -1 && len(component.PriceBreaks) != 0 {
+			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
+			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
+			newMax += maxPrice
+			newMin += minPrice
+		} else if component.Analyzed && component.Operator != "EQUAL" && component.NewRow == -1 && len(component.PriceBreaks) != 0 {
+			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
+			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
+			oldMax += maxPrice
+			oldMin += minPrice
 		}
 	}
-	return min, max
+	minPriceDiff := newMin - oldMin
+	maxPriceDiff := newMax - oldMax
+	return newMin, newMax, minPriceDiff, maxPriceDiff
 }
