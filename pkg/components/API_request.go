@@ -81,6 +81,7 @@ func APIRequest(i int) {
 			core.Components[i].MismatchMpn = append(core.Components[i].MismatchMpn, alternativeMpn)
 		}
 	}
+
 	// Validate the analysis
 	if len(apiResponse.Errors) == 0 {
 		core.Components[i].Analyzed = true

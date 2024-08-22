@@ -24,7 +24,13 @@ func ShowReport() {
 		log.Fatal(err)
 	}
 	reportWindow.SetTitle("Analysis Report")
-	reportWindow.SetDefaultSize(300, 200)
+	reportWindow.SetDefaultSize(300, 900)
+	// Create a ScrolledWindow
+	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	scrolledWindow.SetPolicy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 	// Create a vertical box container for the window
 	vbox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 10)
 	if err != nil {
@@ -34,7 +40,8 @@ func ShowReport() {
 	vbox.SetMarginTop(20)
 	vbox.SetMarginStart(20)
 	vbox.SetMarginEnd(20)
-	reportWindow.Add(vbox)
+	scrolledWindow.Add(vbox)
+	reportWindow.Add(scrolledWindow)
 	// Create labels to categorize infos.
 	infosLabel, err := gtk.LabelNew("---------- Infos Summary ----------")
 	if err != nil {
