@@ -14,14 +14,15 @@ type XlsmDelta struct {
 }
 
 type Filter struct {
-	Equal    bool
-	Delete   bool
-	Insert   bool
-	Update   bool
-	Swap     bool
-	Header   int
-	Quantity int
-	Mpn      int
+	Equal       bool
+	Delete      bool
+	Insert      bool
+	Update      bool
+	Swap        bool
+	Header      int
+	Quantity    int
+	Mpn         int
+	Description int
 }
 
 // As a starting point.
@@ -40,6 +41,8 @@ type Component struct {
 	InfoMessages         []string
 	Analyzed             bool
 	MismatchMpn          []Component
+	UserDescription      string
+	SupplierDescription  string
 }
 
 type PriceBreak struct {
@@ -55,7 +58,7 @@ var XlsmFiles = []XlsmFile{
 
 var XlsmDeltas []XlsmDelta
 
-var Filters = Filter{true, true, true, true, false, 0, 0, 0}
+var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0}
 
 var Components = []Component{}
 

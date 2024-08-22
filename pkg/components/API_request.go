@@ -76,6 +76,7 @@ func APIRequest(i int) {
 		for _, part := range apiResponse.SearchResults.Parts {
 			alternativeMpn := core.Component{}
 			alternativeMpn.Mpn = part.ManufacturerPartNumber
+			alternativeMpn.SupplierDescription = part.Description
 			core.Components[i].MismatchMpn = append(core.Components[i].MismatchMpn, alternativeMpn)
 		}
 		fmt.Println(core.Components[i])

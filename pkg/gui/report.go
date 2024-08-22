@@ -56,21 +56,27 @@ func ShowReport() {
 	mmlineHeader, _ := gtk.LabelNew("Line")
 	mmquantityHeader, _ := gtk.LabelNew("Quantity")
 	mmmpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
+	mmdescriptionHeader, _ := gtk.LabelNew("Description")
 	mmGrid.Attach(mmlineHeader, 0, 0, 1, 1)
 	mmGrid.Attach(mmquantityHeader, 1, 0, 1, 1)
 	mmGrid.Attach(mmmpnHeader, 2, 0, 1, 1)
+	mmGrid.Attach(mmdescriptionHeader, 3, 0, 1, 1)
 	// Append oos components to the mmGrid.
 	for i, mmComp := range mismatchComponents {
 		rowCount := 0
 		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.NewRow))
 		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.Quantity))
 		mpnLabel, _ := gtk.LabelNew(mmComp.Mpn)
-		mmGrid.Attach(lineLabel, 0, i+1, 1, 1)
-		mmGrid.Attach(quantityLabel, 1, i+1, 1, 1)
-		mmGrid.Attach(mpnLabel, 2, i+1, 1, 1)
+		descriptionLabel, _ := gtk.LabelNew(mmComp.UserDescription)
+		mmGrid.Attach(lineLabel, 0, i+1+rowCount, 1, 1)
+		mmGrid.Attach(quantityLabel, 1, i+1+rowCount, 1, 1)
+		mmGrid.Attach(mpnLabel, 2, i+1+rowCount, 1, 1)
+		mmGrid.Attach(descriptionLabel, 3, i+1+rowCount, 1, 1)
 		for j, mpn := range mmComp.MismatchMpn {
 			mpnLabel, _ := gtk.LabelNew(mpn.Mpn)
+			descriptionLabel, _ := gtk.LabelNew(mpn.SupplierDescription)
 			mmGrid.Attach(mpnLabel, 2, i+2+j+rowCount, 1, 1)
+			mmGrid.Attach(descriptionLabel, 3, i+2+j+rowCount, 1, 1)
 		}
 		rowCount += len(mmComp.MismatchMpn) - 1
 	}

@@ -16,6 +16,8 @@ func HeaderDetection() {
 					core.Filters.Quantity = j
 				case "manufacturerpartnumber":
 					core.Filters.Mpn = j
+				case "description":
+					core.Filters.Description = j
 				}
 				header = i
 			}
