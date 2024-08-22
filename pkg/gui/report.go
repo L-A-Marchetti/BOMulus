@@ -24,13 +24,13 @@ func ShowReport() {
 		log.Fatal(err)
 	}
 	reportWindow.SetTitle("Analysis Report")
-	reportWindow.SetDefaultSize(300, 900)
+	reportWindow.SetDefaultSize(1000, 900)
 	// Create a ScrolledWindow
 	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	scrolledWindow.SetPolicy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 	// Create a vertical box container for the window
 	vbox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 10)
 	if err != nil {
@@ -70,8 +70,8 @@ func ShowReport() {
 	mmGrid.Attach(mmmpnHeader, 2, 0, 1, 1)
 	mmGrid.Attach(mmdescriptionHeader, 3, 0, 1, 1)
 	// Append oos components to the mmGrid.
+	rowCount := 0
 	for i, mmComp := range mismatchComponents {
-		rowCount := 0
 		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.NewRow))
 		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.Quantity))
 		mpnLabel, _ := gtk.LabelNew(mmComp.Mpn)
@@ -86,7 +86,7 @@ func ShowReport() {
 			mmGrid.Attach(mpnLabel, 2, i+2+j+rowCount, 1, 1)
 			mmGrid.Attach(descriptionLabel, 3, i+2+j+rowCount, 1, 1)
 		}
-		rowCount += len(mmComp.MismatchMpn) - 1
+		rowCount += len(mmComp.MismatchMpn)
 	}
 	mmcenterBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	if err != nil {
@@ -277,8 +277,8 @@ func ShowReport() {
 	mMsgsGrid.Attach(mMsgsmoreHeader, 3, 0, 1, 1)
 	mMsgsGrid.Attach(mMsgsHeader, 4, 0, 1, 1)
 	// Append components to the mMsgsGrid.
+	rowCount = 0
 	for i, mMsgComponent := range manufacturerMessages {
-		rowCount := 0
 		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mMsgComponent.NewRow))
 		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mMsgComponent.Quantity))
 		mpnLabel, _ := gtk.LabelNew(mMsgComponent.Mpn)
