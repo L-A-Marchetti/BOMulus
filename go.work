@@ -7,4 +7,5 @@ use (
 	./pkg/core
 	./pkg/export
 	./pkg/gui
+	./pkg/report
 )

@@ -22,8 +22,10 @@ func DiffSummary() *gtk.Label {
 			updateCount++
 		}
 	}
-	// Try to dedect components.
-	components.ComponentsDetection()
+	// Try to dedect components (only before analysis is launched).
+	if !core.AnalysisState.InProgress && !core.AnalysisState.Completed {
+		components.ComponentsDetection()
+	}
 	// Create a label with a formatted text.
 	diffSummaryText := fmt.Sprintf(
 		"<span foreground='%s'>--- DELETES   %d</span>%s<span foreground='%s'>+++ INSERTS   %d</span>%s<span foreground='%s'>-+- UPDATES   %d</span>%s<span>∑   %d</span>%s<span>Δ   %d</span>",

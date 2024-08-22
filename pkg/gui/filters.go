@@ -15,15 +15,6 @@ import (
 	"golang.org/x/time/rate"
 )
 
-type AnalysisState struct {
-	InProgress bool
-	Progress   float64
-	Total      int
-	Current    int
-}
-
-var analysisState AnalysisState
-
 func CheckBoxes() *gtk.Box {
 	// Create a new hBox for the checkboxes.
 	checkboxesHBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10) // Add some spacing between checkboxes
@@ -73,22 +64,32 @@ func CheckBoxes() *gtk.Box {
 		log.Fatal(err)
 	}
 
-	if analysisState.InProgress {
+	if core.AnalysisState.InProgress {
 		progressBar, err := gtk.ProgressBarNew()
 		if err != nil {
 			log.Fatal(err)
 		}
 		progressBar.SetShowText(true)
-		progressBar.SetFraction(analysisState.Progress)
-		progressBar.SetText(fmt.Sprintf("%d / %d", analysisState.Current, analysisState.Total))
+		progressBar.SetFraction(core.AnalysisState.Progress)
+		progressBar.SetText(fmt.Sprintf("%d / %d", core.AnalysisState.Current, core.AnalysisState.Total))
 		progressBar.SetSizeRequest(20, -1)
 		analyzeButtonBox.Add(progressBar)
 
 		// Update periodically the progressbar.
 		glib.TimeoutAdd(100, func() bool {
-			progressBar.SetFraction(analysisState.Progress)
-			progressBar.SetText(fmt.Sprintf("%d / %d", analysisState.Current, analysisState.Total))
-			return analysisState.InProgress
+			progressBar.SetFraction(core.AnalysisState.Progress)
+			progressBar.SetText(fmt.Sprintf("%d / %d", core.AnalysisState.Current, core.AnalysisState.Total))
+			return core.AnalysisState.InProgress
+		})
+	} else if core.AnalysisState.Completed {
+		analyzeButton, err := gtk.ButtonNewWithLabel("Report")
+		if err != nil {
+			log.Fatal(err)
+		}
+		analyzeButtonBox.Add(analyzeButton)
+
+		analyzeButton.Connect("clicked", func() {
+			ShowReport()
 		})
 	} else {
 		analyzeButton, err := gtk.ButtonNewWithLabel("Analyze")
@@ -98,11 +99,10 @@ func CheckBoxes() *gtk.Box {
 		analyzeButtonBox.Add(analyzeButton)
 
 		analyzeButton.Connect("clicked", func() {
-			analysisState.InProgress = true
-			analysisState.Total = len(core.Components)
-			analysisState.Current = 0
-			analysisState.Progress = 0.0
-
+			core.AnalysisState.InProgress = true
+			core.AnalysisState.Total = len(core.Components)
+			core.AnalysisState.Current = 0
+			core.AnalysisState.Progress = 0.0
 			progressBar, err := gtk.ProgressBarNew()
 			if err != nil {
 				log.Fatal(err)
@@ -159,7 +159,6 @@ func CheckBoxes() *gtk.Box {
 			UpdateView()
 		})
 	}
-
 	return checkboxesHBox
 }
 
@@ -175,15 +174,16 @@ func runAnalysis() {
 		components.APIRequest(i)
 
 		glib.IdleAdd(func() {
-			analysisState.Current = i + 1
-			analysisState.Progress = float64(i+1) / float64(totalComponents)
+			core.AnalysisState.Current = i + 1
+			core.AnalysisState.Progress = float64(i+1) / float64(totalComponents)
+			updateTableRow()
 		})
-
-		updateTableRow()
 	}
 
 	glib.IdleAdd(func() {
-		analysisState.InProgress = false
+		core.AnalysisState.InProgress = false
+		core.AnalysisState.Completed = true
+		UpdateView()
 	})
 }
 
