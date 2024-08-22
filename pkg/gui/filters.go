@@ -163,7 +163,7 @@ func CheckBoxes() *gtk.Box {
 }
 
 func runAnalysis() {
-	totalComponents := len(core.Components) / 10
+	totalComponents := len(core.Components)
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 	for i := 0; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())
@@ -176,9 +176,8 @@ func runAnalysis() {
 		glib.IdleAdd(func() {
 			core.AnalysisState.Current = i + 1
 			core.AnalysisState.Progress = float64(i+1) / float64(totalComponents)
+			updateTableRow()
 		})
-
-		updateTableRow()
 	}
 
 	glib.IdleAdd(func() {
