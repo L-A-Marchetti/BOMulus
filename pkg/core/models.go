@@ -81,6 +81,7 @@ type AnalysisStatus struct {
 	Progress   float64
 	Total      int
 	Current    int
+	KeyIsValid bool
 }
 
 var AnalysisState AnalysisStatus

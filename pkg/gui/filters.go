@@ -99,23 +99,26 @@ func CheckBoxes() *gtk.Box {
 		analyzeButtonBox.Add(analyzeButton)
 
 		analyzeButton.Connect("clicked", func() {
-			core.AnalysisState.InProgress = true
-			core.AnalysisState.Total = len(core.Components)
-			core.AnalysisState.Current = 0
-			core.AnalysisState.Progress = 0.0
-			progressBar, err := gtk.ProgressBarNew()
-			if err != nil {
-				log.Fatal(err)
+			if core.AnalysisState.KeyIsValid {
+				core.AnalysisState.InProgress = true
+				core.AnalysisState.Total = len(core.Components)
+				core.AnalysisState.Current = 0
+				core.AnalysisState.Progress = 0.0
+				progressBar, err := gtk.ProgressBarNew()
+				if err != nil {
+					log.Fatal(err)
+				}
+				progressBar.SetShowText(true)
+				progressBar.SetText("0 / 0")
+				progressBar.SetSizeRequest(20, -1)
+				analyzeButtonBox.Remove(analyzeButton)
+				analyzeButtonBox.Add(progressBar)
+				analyzeButtonBox.ShowAll()
+				go runAnalysis()
+				UpdateView()
+			} else {
+				UserApiKey()
 			}
-			progressBar.SetShowText(true)
-			progressBar.SetText("0 / 0")
-			progressBar.SetSizeRequest(20, -1)
-
-			analyzeButtonBox.Remove(analyzeButton)
-			analyzeButtonBox.Add(progressBar)
-			analyzeButtonBox.ShowAll()
-			go runAnalysis()
-			UpdateView()
 		})
 	}
 
@@ -136,7 +139,6 @@ func CheckBoxes() *gtk.Box {
 	// spinButton.SetOrientation(gtk.ORIENTATION_VERTICAL)
 	// Set default value
 	spinButton.SetValue(float64(core.Filters.Header))
-
 	// Connect the "value-changed" signal
 	spinButton.Connect("value-changed", func() {
 		value := spinButton.GetValue()
