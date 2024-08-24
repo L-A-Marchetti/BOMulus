@@ -11,6 +11,9 @@ import (
 )
 
 func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk.Button) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("SetupDragAndDrop()", true).Stop()
+	}
 	// Create a target entry for file URIs.
 	targetEntry, _ := gtk.TargetEntryNew("text/uri-list", gtk.TARGET_OTHER_APP, 0)
 	// Enable drag-and-drop for the widget.
