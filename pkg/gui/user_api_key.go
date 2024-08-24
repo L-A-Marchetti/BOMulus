@@ -29,6 +29,10 @@ func UserApiKey() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	box.SetMarginBottom(20)
+	box.SetMarginTop(20)
+	box.SetMarginStart(20)
+	box.SetMarginEnd(20)
 	win.Add(box)
 
 	// Create and add a label
@@ -46,7 +50,7 @@ func UserApiKey() {
 	box.PackStart(entry, false, false, 0)
 
 	// Create and add a button
-	button, err := gtk.ButtonNewWithLabel("OK")
+	button, err := gtk.ButtonNewWithLabel("Test the API Key...")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,6 +58,7 @@ func UserApiKey() {
 
 	// Connect the button to a handler
 	button.Connect("clicked", func() {
+		unmarshalValidity := true
 		apiKey, err := entry.GetText()
 		if err != nil {
 			log.Println(err)
@@ -70,14 +75,14 @@ func UserApiKey() {
 		// Encode the payload to JSON
 		jsonData, err := json.Marshal(payload)
 		if err != nil {
-			log.Fatalf("Failed to marshal JSON: %v", err)
+			unmarshalValidity = false
 		}
 		// Construct the full URL with the API key
 		fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, config.USER_API_KEY)
 		// Create a new HTTP POST request
 		req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
 		if err != nil {
-			log.Fatalf("Failed to create request: %v", err)
+			unmarshalValidity = false
 		}
 		// Add headers
 		req.Header.Add("Content-Type", "application/json")
@@ -86,20 +91,18 @@ func UserApiKey() {
 		client := &http.Client{}
 		response, err := client.Do(req)
 		if err != nil {
-			log.Fatalf("Failed to make request: %v", err)
+			unmarshalValidity = false
 		}
 		defer response.Body.Close()
 		// Read the response body
 		body, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			log.Fatalf("Failed to read response body: %v", err)
+			unmarshalValidity = false
 		}
 		// Unmarshal the JSON data into the ApiResponse struct
 		var apiResponse components.ApiResponse
 		err = json.Unmarshal(body, &apiResponse)
-		unmarshalValidity := true
 		if err != nil {
-			//log.Fatalf("Failed to unmarshal JSON: %v", err)
 			unmarshalValidity = false
 		}
 		if len(apiResponse.Errors) == 0 && unmarshalValidity {
