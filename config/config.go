@@ -55,6 +55,7 @@ const (
 	INFO_BTN_CHAR       string = "◨"
 	INFO_BTN_CHAR_HOVER string = "◧"
 	INFO_BTN_CHAR_FONT  string = "monospace 15"
+	DEBUGGING           bool   = true
 )
 
 var (

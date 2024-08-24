@@ -42,3 +42,25 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 		}
 	})
 }
+
+func createDragAndDropBoxes(button *gtk.Button) *gtk.Box {
+	// Create labels for boxes.
+	label1, label2 := createLabel(config.INIT_BOX_MSG), createLabel(config.INIT_BOX_MSG)
+	// Create the depot boxes.
+	box1, box2 := createBox(gtk.ORIENTATION_VERTICAL, 6), createBox(gtk.ORIENTATION_VERTICAL, 6)
+	// Add labels to boxes.
+	box1.Add(label1)
+	box2.Add(label2)
+	// Create a horizontal box container to hold both boxes side by side.
+	hBox := createBox(gtk.ORIENTATION_HORIZONTAL, 6)
+	// Add both boxes to the horizontal box container.
+	hBox.PackStart(box1, true, false, 0)
+	hBox.PackStart(box2, true, false, 0)
+	// Apply style to the boxes.
+	Stylize(box1)
+	Stylize(box2)
+	// Set up drag and drop functionality for both boxes.
+	SetupDragAndDrop(box1, 1, label1, button)
+	SetupDragAndDrop(box2, 2, label2, button)
+	return hBox
+}
