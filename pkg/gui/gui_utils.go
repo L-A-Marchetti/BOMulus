@@ -57,3 +57,24 @@ func createButton(s string) *gtk.Button {
 	core.ErrorsHandler(err)
 	return button
 }
+
+func createCheckBoxes(labels ...string) []*gtk.CheckButton {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("createCheckBoxes()", false).Stop()
+	}
+	checkboxes := []*gtk.CheckButton{}
+	for i, label := range labels {
+		cb, err := gtk.CheckButtonNewWithLabel(label)
+		core.ErrorsHandler(err)
+		// Initialize checkboxes.
+		cb = core.InitFilters(i, cb)
+		checkboxes = append(checkboxes, cb)
+		// Connect all checkboxes.
+		cb.Connect("toggled", func() {
+			// If a checkbox is toggled change the filters.
+			core.SetFilters(checkboxes)
+			UpdateView()
+		})
+	}
+	return checkboxes
+}

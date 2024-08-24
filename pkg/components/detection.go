@@ -1,6 +1,7 @@
 package components
 
 import (
+	"config"
 	"core"
 	"math"
 	"strconv"
@@ -8,6 +9,9 @@ import (
 
 // Detect components, can be updated with more specs.
 func ComponentsDetection() {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("ComponentsDetection()", false).Stop()
+	}
 	core.ResetComponents()
 	colSafety := math.Max(math.Max(float64(core.Filters.Quantity), float64(core.Filters.Mpn)), float64(core.Filters.Description))
 	for _, delta := range core.XlsmDeltas {

@@ -67,19 +67,16 @@ func ContainsKeywords(s string) bool {
 
 // Function to duplicate a file.
 func CopyFile(src, dst string) error {
-	sourceFile, err := os.Open(src)
-	if err != nil {
-		return err
+	if config.DEBUGGING {
+		defer StartBenchmark("CopyFile()", false).Stop()
 	}
+	sourceFile, err := os.Open(src)
+	ErrorsHandler(err)
 	defer sourceFile.Close()
 	destinationFile, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
+	ErrorsHandler(err)
 	defer destinationFile.Close()
 	_, err = io.Copy(destinationFile, sourceFile)
-	if err != nil {
-		return err
-	}
+	ErrorsHandler(err)
 	return destinationFile.Sync()
 }

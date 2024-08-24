@@ -14,6 +14,9 @@ var (
 )
 
 func BtnCompare(button *gtk.Button) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("BtnCompare()", true).Stop()
+	}
 	// Check if there are two files.
 	if core.XlsmFiles[0].Path == config.INIT_FILE_PATH_1 || core.XlsmFiles[1].Path == config.INIT_FILE_PATH_2 {
 		button.SetLabel(config.ONE_FILE_MSG)
@@ -23,8 +26,6 @@ func BtnCompare(button *gtk.Button) {
 	core.XlsmReader()
 	// Try to detect automatically the header.
 	components.HeaderDetection()
-	// Prototyping API request section.
-	//components.APIRequest()
 	// Generate delta data.
 	core.XlsmDiff()
 	// Update the view
@@ -32,6 +33,9 @@ func BtnCompare(button *gtk.Button) {
 }
 
 func UpdateView() {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("UpdateView()", true).Stop()
+	}
 	// Generate labels for diff summary.
 	diffSummaryLabel = DiffSummary()
 	// Generate checkboxes for filtering.
@@ -42,9 +46,7 @@ func UpdateView() {
 	RenderView(maxColumns)
 	// Create a ScrolledWindow and add the TreeView
 	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-	if err != nil {
-		panic(err)
-	}
+	core.ErrorsHandler(err)
 	scrolledWindow.SetPolicy(config.SCROLLBAR_POLICY, config.SCROLLBAR_POLICY)
 	scrolledWindow.Add(resultView)
 	scrolledWindow.SetVExpand(true)
@@ -57,9 +59,7 @@ func UpdateView() {
 	}
 	// Create a new vBox for the ScrolledWindow
 	scrolledVBox, err = gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 0)
-	if err != nil {
-		panic(err)
-	}
+	core.ErrorsHandler(err)
 	// Add the diff summary and the resultview to the scrolledVBox.
 	scrolledVBox.PackStart(diffSummaryLabel, false, false, 0)
 	checkboxesHBox.SetMarginBottom(10)

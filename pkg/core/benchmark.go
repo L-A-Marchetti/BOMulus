@@ -36,10 +36,16 @@ func StartBenchmark(name string, isVital bool) *BenchmarkTimer {
 func (b *BenchmarkTimer) Stop() {
 	duration := time.Since(b.startTime)
 	if b.isVital {
+		if vitalCount < 1 {
+			vitalCount = 1
+		}
 		tab := strings.Repeat("│\t", vitalCount-1)
 		fmt.Printf("%s◻ =====> \033[4mTotal execution time of %s: %v\n\033[0m", tab, b.name, duration)
 		vitalCount--
 	} else {
+		if vitalCount < 1 {
+			vitalCount = 1
+		}
 		tab := strings.Repeat("│\t", vitalCount-1)
 		if vitalCount == 1 {
 			fmt.Printf("├──%s: %v\n", b.name, duration)
