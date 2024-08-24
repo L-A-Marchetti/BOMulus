@@ -15,6 +15,12 @@ import (
 	"golang.org/x/time/rate"
 )
 
+var TriggerAnalyze func()
+
+func SetupTriggerAnalyze(analyzeFunc func()) {
+	TriggerAnalyze = analyzeFunc
+}
+
 func CheckBoxes() *gtk.Box {
 	// Create a new hBox for the checkboxes.
 	checkboxesHBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10) // Add some spacing between checkboxes
@@ -98,25 +104,31 @@ func CheckBoxes() *gtk.Box {
 		}
 		analyzeButtonBox.Add(analyzeButton)
 
-		analyzeButton.Connect("clicked", func() {
-			core.AnalysisState.InProgress = true
-			core.AnalysisState.Total = len(core.Components)
-			core.AnalysisState.Current = 0
-			core.AnalysisState.Progress = 0.0
-			progressBar, err := gtk.ProgressBarNew()
-			if err != nil {
-				log.Fatal(err)
+		analyzeFunc := func() {
+			if core.AnalysisState.KeyIsValid {
+				core.AnalysisState.InProgress = true
+				core.AnalysisState.Total = len(core.Components)
+				core.AnalysisState.Current = 0
+				core.AnalysisState.Progress = 0.0
+				progressBar, err := gtk.ProgressBarNew()
+				if err != nil {
+					log.Fatal(err)
+				}
+				progressBar.SetShowText(true)
+				progressBar.SetText("0 / 0")
+				progressBar.SetSizeRequest(20, -1)
+				analyzeButtonBox.Remove(analyzeButton)
+				analyzeButtonBox.Add(progressBar)
+				analyzeButtonBox.ShowAll()
+				go runAnalysis()
+				UpdateView()
+			} else {
+				UserApiKey()
 			}
-			progressBar.SetShowText(true)
-			progressBar.SetText("0 / 0")
-			progressBar.SetSizeRequest(20, -1)
+		}
 
-			analyzeButtonBox.Remove(analyzeButton)
-			analyzeButtonBox.Add(progressBar)
-			analyzeButtonBox.ShowAll()
-			go runAnalysis()
-			UpdateView()
-		})
+		analyzeButton.Connect("clicked", analyzeFunc)
+		SetupTriggerAnalyze(analyzeFunc)
 	}
 
 	checkboxesHBox.PackStart(analyzeButtonBox, false, false, 0)
@@ -136,7 +148,6 @@ func CheckBoxes() *gtk.Box {
 	// spinButton.SetOrientation(gtk.ORIENTATION_VERTICAL)
 	// Set default value
 	spinButton.SetValue(float64(core.Filters.Header))
-
 	// Connect the "value-changed" signal
 	spinButton.Connect("value-changed", func() {
 		value := spinButton.GetValue()

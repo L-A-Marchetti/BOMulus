@@ -30,7 +30,7 @@ func APIRequest(i int) {
 		log.Fatalf("Failed to marshal JSON: %v", err)
 	}
 	// Construct the full URL with the API key
-	fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, config.API_KEY)
+	fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, config.USER_API_KEY)
 	// Create a new HTTP POST request
 	req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
 	if err != nil {

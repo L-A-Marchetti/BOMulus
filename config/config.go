@@ -80,4 +80,5 @@ var (
 		"Cost",
 		"Min Order Quantity",
 	}
+	USER_API_KEY string = ""
 )
