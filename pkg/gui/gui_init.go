@@ -16,7 +16,7 @@ var (
 func GuiInit() {
 	var guiInitBenchmark *core.BenchmarkTimer
 	if config.DEBUGGING {
-		guiInitBenchmark = core.StartBenchmark("GuiInit()")
+		guiInitBenchmark = core.StartBenchmark("GuiInit()", true)
 	}
 	// Initialize GTK.
 	gtk.Init(nil)

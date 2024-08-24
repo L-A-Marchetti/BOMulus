@@ -44,6 +44,9 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 }
 
 func createDragAndDropBoxes(button *gtk.Button) *gtk.Box {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("createDragAndDropBoxes()", true).Stop()
+	}
 	// Create labels for boxes.
 	label1, label2 := createLabel(config.INIT_BOX_MSG), createLabel(config.INIT_BOX_MSG)
 	// Create the depot boxes.
