@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -109,6 +110,13 @@ func UserApiKey() {
 			showMessageDialog(win, "Valid API Key", "Your API key is valid...")
 			win.Close()
 			core.AnalysisState.KeyIsValid = true
+
+			// Trigger the analyze button click
+			glib.IdleAdd(func() {
+				if TriggerAnalyze != nil {
+					TriggerAnalyze()
+				}
+			})
 		} else {
 			showMessageDialog(win, "Wrong API Key", "Your API key is wrong...")
 		}

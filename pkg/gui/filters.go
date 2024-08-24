@@ -15,6 +15,12 @@ import (
 	"golang.org/x/time/rate"
 )
 
+var TriggerAnalyze func()
+
+func SetupTriggerAnalyze(analyzeFunc func()) {
+	TriggerAnalyze = analyzeFunc
+}
+
 func CheckBoxes() *gtk.Box {
 	// Create a new hBox for the checkboxes.
 	checkboxesHBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10) // Add some spacing between checkboxes
@@ -98,7 +104,7 @@ func CheckBoxes() *gtk.Box {
 		}
 		analyzeButtonBox.Add(analyzeButton)
 
-		analyzeButton.Connect("clicked", func() {
+		analyzeFunc := func() {
 			if core.AnalysisState.KeyIsValid {
 				core.AnalysisState.InProgress = true
 				core.AnalysisState.Total = len(core.Components)
@@ -119,7 +125,10 @@ func CheckBoxes() *gtk.Box {
 			} else {
 				UserApiKey()
 			}
-		})
+		}
+
+		analyzeButton.Connect("clicked", analyzeFunc)
+		SetupTriggerAnalyze(analyzeFunc)
 	}
 
 	checkboxesHBox.PackStart(analyzeButtonBox, false, false, 0)
