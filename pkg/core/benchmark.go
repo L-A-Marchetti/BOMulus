@@ -43,14 +43,18 @@ func (b *BenchmarkTimer) Stop() {
 		fmt.Printf("%s◻ =====> \033[4mTotal execution time of %s: %v\n\033[0m", tab, b.name, duration)
 		vitalCount--
 	} else {
+		textDuration := fmt.Sprintf("%v", duration)
+		if duration >= time.Millisecond {
+			textDuration = fmt.Sprintf("\033[1;31m%v\033[0m", duration)
+		}
 		if vitalCount < 1 {
 			vitalCount = 1
 		}
 		tab := strings.Repeat("│\t", vitalCount-1)
 		if vitalCount == 1 {
-			fmt.Printf("├──%s: %v\n", b.name, duration)
+			fmt.Printf("├──%s: %s\n", b.name, textDuration)
 		} else {
-			fmt.Printf("%s├──%s: %v\n", tab, b.name, duration)
+			fmt.Printf("%s├──%s: %s\n", tab, b.name, textDuration)
 		}
 	}
 }

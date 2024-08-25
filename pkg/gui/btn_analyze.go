@@ -11,7 +11,7 @@ var TriggerAnalyze func()
 
 func btnAnalyze(analyzeButtonBox *gtk.Box) {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("btnAnalyze()", true).Stop()
+		defer core.StartBenchmark("gui.btnAnalyze()", false).Stop()
 	}
 	if core.AnalysisState.InProgress {
 		// Create the progress bar.

@@ -12,7 +12,7 @@ import (
 
 func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk.Button) {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("SetupDragAndDrop()", false).Stop()
+		defer core.StartBenchmark("gui.SetupDragAndDrop()", false).Stop()
 	}
 	// Create a target entry for file URIs.
 	targetEntry, _ := gtk.TargetEntryNew("text/uri-list", gtk.TARGET_OTHER_APP, 0)
@@ -48,7 +48,7 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 
 func createDragAndDropBoxes(button *gtk.Button) *gtk.Box {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createDragAndDropBoxes()", true).Stop()
+		defer core.StartBenchmark("gui.createDragAndDropBoxes()", true).Stop()
 	}
 	// Create labels for boxes.
 	label1, label2 := createLabel(config.INIT_BOX_MSG), createLabel(config.INIT_BOX_MSG)

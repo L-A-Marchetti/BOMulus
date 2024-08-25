@@ -11,7 +11,7 @@ import (
 
 func DiffSummary() *gtk.Label {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("DiffSummary()", true).Stop()
+		defer core.StartBenchmark("gui.DiffSummary()", false).Stop()
 	}
 	deleteCount, insertCount, updateCount := 0, 0, 0
 	for _, delta := range core.XlsmDeltas {

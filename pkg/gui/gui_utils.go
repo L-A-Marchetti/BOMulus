@@ -12,7 +12,7 @@ import (
 
 func createWindow(title string, width, height int) *gtk.Window {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createWindow() ("+title+")", false).Stop()
+		defer core.StartBenchmark("gui.createWindow() ("+title+")", false).Stop()
 	}
 	// Create a new top-level window.
 	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
@@ -26,7 +26,7 @@ func createWindow(title string, width, height int) *gtk.Window {
 
 func setWindowIcon(win *gtk.Window) {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("setWindowIcon()", false).Stop()
+		defer core.StartBenchmark("gui.setWindowIcon()", false).Stop()
 	}
 	if _, err := os.Stat(config.LOGO_PATH); err == nil {
 		win.SetIconFromFile(config.LOGO_PATH)
@@ -35,7 +35,7 @@ func setWindowIcon(win *gtk.Window) {
 
 func createLabel(s string) *gtk.Label {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createLabel() ("+s+")", false).Stop()
+		defer core.StartBenchmark("gui.createLabel() ("+s+")", false).Stop()
 	}
 	label, err := gtk.LabelNew(s)
 	core.ErrorsHandler(err)
@@ -44,7 +44,7 @@ func createLabel(s string) *gtk.Label {
 
 func createBox(orientation gtk.Orientation, spacing int) *gtk.Box {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createBox()", false).Stop()
+		defer core.StartBenchmark("gui.createBox()", false).Stop()
 	}
 	box, err := gtk.BoxNew(orientation, spacing)
 	core.ErrorsHandler(err)
@@ -53,7 +53,7 @@ func createBox(orientation gtk.Orientation, spacing int) *gtk.Box {
 
 func createButton(s string) *gtk.Button {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createButton() ("+s+")", false).Stop()
+		defer core.StartBenchmark("gui.createButton() ("+s+")", false).Stop()
 	}
 	button, err := gtk.ButtonNewWithLabel(s)
 	core.ErrorsHandler(err)
@@ -62,7 +62,7 @@ func createButton(s string) *gtk.Button {
 
 func createCheckBoxes(labels ...string) []*gtk.CheckButton {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createCheckBoxes()", false).Stop()
+		defer core.StartBenchmark("gui.createCheckBoxes()", false).Stop()
 	}
 	checkboxes := []*gtk.CheckButton{}
 	for i, label := range labels {
@@ -83,7 +83,7 @@ func createCheckBoxes(labels ...string) []*gtk.CheckButton {
 
 func createProgressBar() *gtk.ProgressBar {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("createProgressBar()", false).Stop()
+		defer core.StartBenchmark("gui.createProgressBar()", false).Stop()
 	}
 	progressBar, err := gtk.ProgressBarNew()
 	core.ErrorsHandler(err)
@@ -98,4 +98,38 @@ func createProgressBar() *gtk.ProgressBar {
 		return core.AnalysisState.InProgress
 	})
 	return progressBar
+}
+
+func createSpinButton() *gtk.SpinButton {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createSpinButton()", false).Stop()
+	}
+	spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
+	core.ErrorsHandler(err)
+	// Set default value
+	spinButton.SetValue(float64(core.Filters.Header))
+	// Connect the "value-changed" signal
+	spinButton.Connect("value-changed", func() {
+		value := spinButton.GetValue()
+		core.Filters.Header = int(value)
+		// Generate delta data.
+		core.XlsmDiff()
+		UpdateView()
+	})
+	return spinButton
+}
+
+func createScrolledWindow() *gtk.ScrolledWindow {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createScrolledWindow()", false).Stop()
+	}
+	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
+	core.ErrorsHandler(err)
+	scrolledWindow.SetPolicy(config.SCROLLBAR_POLICY, config.SCROLLBAR_POLICY)
+	scrolledWindow.Add(resultView)
+	scrolledWindow.SetVExpand(true)
+	scrolledWindow.SetHExpand(true)
+	// Enlarge scrollbars.
+	EnlargeSb()
+	return scrolledWindow
 }
