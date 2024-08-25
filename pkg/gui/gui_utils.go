@@ -3,8 +3,10 @@ package gui
 import (
 	"config"
 	"core"
+	"fmt"
 	"os"
 
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -77,4 +79,23 @@ func createCheckBoxes(labels ...string) []*gtk.CheckButton {
 		})
 	}
 	return checkboxes
+}
+
+func createProgressBar() *gtk.ProgressBar {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("createProgressBar()", false).Stop()
+	}
+	progressBar, err := gtk.ProgressBarNew()
+	core.ErrorsHandler(err)
+	progressBar.SetShowText(true)
+	progressBar.SetFraction(core.AnalysisState.Progress)
+	progressBar.SetText(fmt.Sprintf("%d / %d", core.AnalysisState.Current, core.AnalysisState.Total))
+	progressBar.SetSizeRequest(20, -1)
+	// Update periodically the progressbar.
+	glib.TimeoutAdd(100, func() bool {
+		progressBar.SetFraction(core.AnalysisState.Progress)
+		progressBar.SetText(fmt.Sprintf("%d / %d", core.AnalysisState.Current, core.AnalysisState.Total))
+		return core.AnalysisState.InProgress
+	})
+	return progressBar
 }

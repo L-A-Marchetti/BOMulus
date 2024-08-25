@@ -43,15 +43,13 @@ func SetFilters(checkboxes []*gtk.CheckButton) {
 				Filters.Swap = true
 				//Swap Xlsms.
 				XlsmFiles[0], XlsmFiles[1] = XlsmFiles[1], XlsmFiles[0]
+				XlsmDiff()
 			} else if !cb.GetActive() && Filters.Swap {
 				Filters.Swap = false
 				//Swap Xlsms.
 				XlsmFiles[0], XlsmFiles[1] = XlsmFiles[1], XlsmFiles[0]
+				XlsmDiff()
 			}
-			// Read and store both Xlsm files.
-			XlsmReader()
-			// Generate delta data.
-			XlsmDiff()
 		}
 	}
 }

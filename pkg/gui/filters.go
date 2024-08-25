@@ -5,7 +5,6 @@ import (
 	"config"
 	"context"
 	"core"
-	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -14,12 +13,6 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"golang.org/x/time/rate"
 )
-
-var TriggerAnalyze func()
-
-func SetupTriggerAnalyze(analyzeFunc func()) {
-	TriggerAnalyze = analyzeFunc
-}
 
 func CheckBoxes() *gtk.Box {
 	if config.DEBUGGING {
@@ -30,93 +23,24 @@ func CheckBoxes() *gtk.Box {
 	// Generate each checkbox.
 	checkboxes := createCheckBoxes("EQUAL", "DELETE", "INSERT", "UPDATE", "SWAP")
 	// Add a flexible space at the beginning
-	spacerStart, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
+	spacerStart := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
 	checkboxesHBox.PackStart(spacerStart, true, true, 0)
 	// Add checkboxes
 	for _, cb := range checkboxes {
 		checkboxesHBox.PackStart(cb, false, false, 0)
 	}
-
 	// Create the export button
-	exportButton, err := gtk.ButtonNewWithLabel("Export")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	exportButton := createButton("Export")
 	// Connect the button to the export function
 	exportButton.Connect("clicked", func() {
 		ExportOptions()
 	})
-
 	// Add the button to the hBox
 	checkboxesHBox.PackStart(exportButton, false, false, 0)
 	// Create the analyze button and the progress bar.
-	analyzeButtonBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if core.AnalysisState.InProgress {
-		progressBar, err := gtk.ProgressBarNew()
-		if err != nil {
-			log.Fatal(err)
-		}
-		progressBar.SetShowText(true)
-		progressBar.SetFraction(core.AnalysisState.Progress)
-		progressBar.SetText(fmt.Sprintf("%d / %d", core.AnalysisState.Current, core.AnalysisState.Total))
-		progressBar.SetSizeRequest(20, -1)
-		analyzeButtonBox.Add(progressBar)
-
-		// Update periodically the progressbar.
-		glib.TimeoutAdd(100, func() bool {
-			progressBar.SetFraction(core.AnalysisState.Progress)
-			progressBar.SetText(fmt.Sprintf("%d / %d", core.AnalysisState.Current, core.AnalysisState.Total))
-			return core.AnalysisState.InProgress
-		})
-	} else if core.AnalysisState.Completed {
-		analyzeButton, err := gtk.ButtonNewWithLabel("Report")
-		if err != nil {
-			log.Fatal(err)
-		}
-		analyzeButtonBox.Add(analyzeButton)
-
-		analyzeButton.Connect("clicked", func() {
-			ShowReport()
-		})
-	} else {
-		analyzeButton, err := gtk.ButtonNewWithLabel("Analyze")
-		if err != nil {
-			log.Fatal(err)
-		}
-		analyzeButtonBox.Add(analyzeButton)
-
-		analyzeFunc := func() {
-			if core.AnalysisState.KeyIsValid {
-				core.AnalysisState.InProgress = true
-				core.AnalysisState.Total = len(core.Components)
-				core.AnalysisState.Current = 0
-				core.AnalysisState.Progress = 0.0
-				progressBar, err := gtk.ProgressBarNew()
-				if err != nil {
-					log.Fatal(err)
-				}
-				progressBar.SetShowText(true)
-				progressBar.SetText("0 / 0")
-				progressBar.SetSizeRequest(20, -1)
-				analyzeButtonBox.Remove(analyzeButton)
-				analyzeButtonBox.Add(progressBar)
-				analyzeButtonBox.ShowAll()
-				go runAnalysis()
-				UpdateView()
-			} else {
-				UserApiKey()
-			}
-		}
-
-		analyzeButton.Connect("clicked", analyzeFunc)
-		SetupTriggerAnalyze(analyzeFunc)
-	}
-
+	analyzeButtonBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	// Create the metamorph analyze button.
+	btnAnalyze(analyzeButtonBox)
 	checkboxesHBox.PackStart(analyzeButtonBox, false, false, 0)
 	// Create the header label.
 	headerLabel, err := gtk.LabelNew("Header:")
