@@ -37,13 +37,12 @@ func ShowReport() {
 	infosLabel := createLabel("---------- Infos Summary ----------")
 	vbox.PackStart(infosLabel, false, false, 0)
 	//			︵‿︵‿︵‿︵‿︵MISMATCHING MANUFACTURER PART NUMBER︵‿︵‿︵‿︵‿︵
-	mmLabel := createLabel("---------- Mismatching Manufacturer Part Number ----------")
-	vbox.PackStart(mmLabel, false, false, 0)
-	// Create a grid for mismatching manufacturer part number.
+	mmExpander, _ := gtk.ExpanderNew("Mismatching Manufacturer Part Number ⚐ " + fmt.Sprintf("%d", len(mismatchComponents)))
+	// Create a grid for the mismatching manufacturer part numbers
 	mmGrid := createGrid()
 	// mmGrid headers.
 	createGridHeaders([]string{"Line", "Quantity", "Manufacturer Part Number", "Description"}, mmGrid)
-	// Append oos components to the mmGrid.
+	// Add components to mmGrid
 	rowCount := 0
 	for i, mmComp := range mismatchComponents {
 		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.NewRow))
@@ -62,12 +61,10 @@ func ShowReport() {
 		}
 		rowCount += len(mmComp.MismatchMpn)
 	}
-	mmcenterBox, err := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
-	if err != nil {
-		log.Fatal(err)
-	}
-	mmcenterBox.PackStart(mmGrid, true, false, 0)
-	vbox.PackStart(mmcenterBox, false, false, 0)
+	mmCenterBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	mmCenterBox.PackStart(mmGrid, true, false, 0)
+	mmExpander.Add(mmCenterBox)
+	vbox.PackStart(mmExpander, false, false, 0)
 	//			︵‿︵‿︵‿︵‿︵MISMATCHING DESCRIPTIONS︵‿︵‿︵‿︵‿︵
 	mdLabel, err := gtk.LabelNew("---------- Mismatching Descriptions ----------")
 	if err != nil {
