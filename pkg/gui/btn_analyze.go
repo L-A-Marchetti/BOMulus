@@ -37,7 +37,6 @@ func btnAnalyze(analyzeButtonBox *gtk.Box) {
 				analyzeButtonBox.Add(progressBar)
 				analyzeButtonBox.ShowAll()
 				go runAnalysis()
-				UpdateView()
 			} else {
 				// Ask for the API key and check the validity.
 				UserApiKey()

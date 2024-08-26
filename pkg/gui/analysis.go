@@ -12,9 +12,9 @@ import (
 )
 
 func runAnalysis() {
-	totalComponents := len(core.Components)
+	totalComponents := (len(core.Components) / 10) + 60
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-	for i := 0; i < totalComponents; i++ {
+	for i := 60; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())
 		if err != nil {
 			log.Print(err)
@@ -32,7 +32,9 @@ func runAnalysis() {
 	glib.IdleAdd(func() {
 		core.AnalysisState.InProgress = false
 		core.AnalysisState.Completed = true
-		//TODO: replace UpdateView() by a click emit.
+		avoidDuplicate()
+		filtersHBox := filters()
+		vBox.Add(filtersHBox)
 		UpdateView()
 	})
 }

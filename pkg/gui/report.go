@@ -2,6 +2,7 @@ package gui
 
 import (
 	"config"
+	"core"
 	"fmt"
 	"log"
 	"report"
@@ -11,6 +12,9 @@ import (
 
 // Function to open the report window
 func ShowReport() {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.ShowReport()", true).Stop()
+	}
 	// Prototyping Report functions.
 	oosComponents, oosCompIdx := report.OutOfStockComp()
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
@@ -19,56 +23,26 @@ func ShowReport() {
 	mismatchComponents := report.MismatchMpn()
 	mismatchCompDescription, mismatchCompDesIdx := report.MismatchDescription()
 	// Create a new window for showing the report.
-	reportWindow, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	reportWindow.SetTitle("Analysis Report")
-	reportWindow.SetDefaultSize(1000, 900)
+	reportWindow := createWindow("Analysis Report", 1000, 900)
 	// Create a ScrolledWindow
-	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+	scrolledWindow := createCommonScrolledWindow()
 	// Create a vertical box container for the window
-	vbox, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 10)
-	if err != nil {
-		log.Fatal(err)
-	}
-	vbox.SetMarginBottom(20)
-	vbox.SetMarginTop(20)
-	vbox.SetMarginStart(20)
-	vbox.SetMarginEnd(20)
+	vbox := createBox(gtk.ORIENTATION_VERTICAL, 10)
+	addBoxMargin(vbox)
 	scrolledWindow.Add(vbox)
 	reportWindow.Add(scrolledWindow)
-	// Create labels to categorize infos.
-	infosLabel, err := gtk.LabelNew("---------- Infos Summary ----------")
-	if err != nil {
-		log.Fatal(err)
-	}
+	//			╔ ————————————————————————————————————————————— ╗
+	//							   INFOS SUMMARY
+	//			╚ ————————————————————————————————————————————— ╝
+	infosLabel := createLabel("---------- Infos Summary ----------")
 	vbox.PackStart(infosLabel, false, false, 0)
-	mmLabel, err := gtk.LabelNew("---------- Mismatching Manufacturer Part Number ----------")
-	if err != nil {
-		log.Fatal(err)
-	}
+	//			︵‿︵‿︵‿︵‿︵MISMATCHING MANUFACTURER PART NUMBER︵‿︵‿︵‿︵‿︵
+	mmLabel := createLabel("---------- Mismatching Manufacturer Part Number ----------")
 	vbox.PackStart(mmLabel, false, false, 0)
 	// Create a grid for mismatching manufacturer part number.
-	mmGrid, err := gtk.GridNew()
-	if err != nil {
-		log.Fatal(err)
-	}
-	mmGrid.SetColumnSpacing(10)
-	mmGrid.SetRowSpacing(5)
+	mmGrid := createGrid()
 	// mmGrid headers.
-	mmlineHeader, _ := gtk.LabelNew("Line")
-	mmquantityHeader, _ := gtk.LabelNew("Quantity")
-	mmmpnHeader, _ := gtk.LabelNew("Manufacturer Part Number")
-	mmdescriptionHeader, _ := gtk.LabelNew("Description")
-	mmGrid.Attach(mmlineHeader, 0, 0, 1, 1)
-	mmGrid.Attach(mmquantityHeader, 1, 0, 1, 1)
-	mmGrid.Attach(mmmpnHeader, 2, 0, 1, 1)
-	mmGrid.Attach(mmdescriptionHeader, 3, 0, 1, 1)
+	createGridHeaders([]string{"Line", "Quantity", "Manufacturer Part Number", "Description"}, mmGrid)
 	// Append oos components to the mmGrid.
 	rowCount := 0
 	for i, mmComp := range mismatchComponents {
@@ -94,6 +68,7 @@ func ShowReport() {
 	}
 	mmcenterBox.PackStart(mmGrid, true, false, 0)
 	vbox.PackStart(mmcenterBox, false, false, 0)
+	//			︵‿︵‿︵‿︵‿︵MISMATCHING DESCRIPTIONS︵‿︵‿︵‿︵‿︵
 	mdLabel, err := gtk.LabelNew("---------- Mismatching Descriptions ----------")
 	if err != nil {
 		log.Fatal(err)
@@ -156,6 +131,9 @@ func ShowReport() {
 		log.Fatal(err)
 	}
 	vbox.PackStart(minMaxPriceLabel, false, false, 0)
+	//			╔ ————————————————————————————————————————————— ╗
+	//						  ORDERING/MANUFACTURING
+	//			╚ ————————————————————————————————————————————— ╝
 	manufacturingLabel, err := gtk.LabelNew("---------- Ordering/Manufacturing ----------")
 	if err != nil {
 		log.Fatal(err)
@@ -305,6 +283,9 @@ func ShowReport() {
 	}
 	mMsgsCenterBox.PackStart(mMsgsGrid, true, false, 0)
 	vbox.PackStart(mMsgsCenterBox, false, false, 0)
+	//			╔ ————————————————————————————————————————————— ╗
+	//							   SUGGESTIONS
+	//			╚ ————————————————————————————————————————————— ╝
 	suggestionsLabel, err := gtk.LabelNew("---------- Suggestions ----------")
 	if err != nil {
 		log.Fatal(err)

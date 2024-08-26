@@ -134,6 +134,16 @@ func createScrolledWindow() *gtk.ScrolledWindow {
 	return scrolledWindow
 }
 
+func createCommonScrolledWindow() *gtk.ScrolledWindow {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
+	}
+	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
+	core.ErrorsHandler(err)
+	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+	return scrolledWindow
+}
+
 func addBoxMargin(box *gtk.Box) {
 	box.SetMarginBottom(20)
 	box.SetMarginTop(20)
@@ -210,4 +220,27 @@ func showMessageDialog(parent *gtk.Window, title string, message string) {
 	msgDialog.SetTitle(title)
 	msgDialog.Run()     // Show the dialog
 	msgDialog.Destroy() // Destroy the dialog after use
+}
+
+func createGrid() *gtk.Grid {
+	grid, err := gtk.GridNew()
+	core.ErrorsHandler(err)
+	grid.SetColumnSpacing(10)
+	grid.SetRowSpacing(5)
+	return grid
+}
+
+func createGridHeaders(headers []string, grid *gtk.Grid) {
+	for i, header := range headers {
+		headerLabel := createLabel(header)
+		grid.Attach(headerLabel, i, 0, 1, 1)
+	}
+}
+
+func avoidDuplicate() {
+	children := vBox.GetChildren()
+	childName, _ := children.Last().Data().(*gtk.Widget).GetName()
+	if childName == "GtkBox" {
+		vBox.Remove(children.Last().Previous().Data().(*gtk.Widget))
+	}
 }
