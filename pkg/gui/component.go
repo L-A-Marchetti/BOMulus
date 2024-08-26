@@ -24,7 +24,7 @@ func ShowComponent(idx, i int, isOld bool) {
 	vbox := createBox(gtk.ORIENTATION_VERTICAL, 10)
 	addBoxMargin(vbox)
 	componentWindow.Add(vbox)
-	// Create an img.
+	// display img.
 	image, _ := gtk.ImageNew()
 	if core.Components[idx].Img != nil {
 		image.SetFromPixbuf(core.Components[idx].Img)

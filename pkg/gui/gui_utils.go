@@ -141,35 +141,6 @@ func addBoxMargin(box *gtk.Box) {
 	box.SetMarginEnd(20)
 }
 
-/*
-func imgFromUrl(idx int) *gtk.Image {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.imgFromUrl()", false).Stop()
-	}
-	image, _ := gtk.ImageNew()
-	// Request with a user-agent.
-	req, err := http.NewRequest("GET", core.Components[idx].ImagePath, nil)
-	if err == nil {
-		req.Header.Set("User-Agent", "BOMulus")
-		// Http client to execute the req.
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err == nil {
-			defer resp.Body.Close()
-			loader, _ := gdk.PixbufLoaderNew()
-			defer loader.Close()
-			_, err = io.Copy(loader, resp.Body)
-			if err == nil {
-				loader.Close()
-				pixbuf, _ := loader.GetPixbuf()
-				image.SetFromPixbuf(pixbuf)
-			}
-		}
-	}
-	return image
-}
-*/
-
 func componentLabels(idx int, box *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.componentLabels()", true).Stop()
@@ -218,4 +189,13 @@ func componentPricesGrid(idx int, box *gtk.Box) {
 	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
 	centerBox.PackStart(grid, true, false, 0)
 	box.PackStart(centerBox, false, false, 0)
+}
+
+func createEntry() *gtk.Entry {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createEntry()", false).Stop()
+	}
+	entry, err := gtk.EntryNew()
+	core.ErrorsHandler(err)
+	return entry
 }
