@@ -23,6 +23,9 @@ func BtnCompare(button *gtk.Button) {
 	components.HeaderDetection()
 	// Generate delta data.
 	core.XlsmDiff()
+	// Generate the filters box.
+	filtersHBox := filters()
+	vBox.Add(filtersHBox)
 	// Update the view
 	UpdateView()
 }

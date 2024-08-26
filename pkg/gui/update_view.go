@@ -18,8 +18,6 @@ func UpdateView() {
 	}
 	// Generate labels for diff summary.
 	diffSummaryLabel = DiffSummary()
-	// Generate the filters box.
-	filtersHBox := filters()
 	// Determine the maximum number of columns.
 	maxColumns := core.MaxCol()
 	// Generate a ListStore and a TreeView.
@@ -34,8 +32,6 @@ func UpdateView() {
 	scrolledVBox = createBox(gtk.ORIENTATION_VERTICAL, 0)
 	// Add the diff summary and the resultview to the scrolledVBox.
 	scrolledVBox.PackStart(diffSummaryLabel, false, false, 0)
-	filtersHBox.SetMarginBottom(10)
-	scrolledVBox.PackStart(filtersHBox, false, false, 0)
 	scrolledVBox.PackStart(scrolledWindow, true, true, 0)
 	// Add the new elements
 	vBox.PackStart(scrolledVBox, true, true, 0)

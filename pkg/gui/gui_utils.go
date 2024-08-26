@@ -4,8 +4,11 @@ import (
 	"config"
 	"core"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -132,4 +135,88 @@ func createScrolledWindow() *gtk.ScrolledWindow {
 	// Enlarge scrollbars.
 	EnlargeSb()
 	return scrolledWindow
+}
+
+func addBoxMargin(box *gtk.Box) {
+	box.SetMarginBottom(20)
+	box.SetMarginTop(20)
+	box.SetMarginStart(20)
+	box.SetMarginEnd(20)
+}
+
+func imgFromUrl(idx int) *gtk.Image {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.imgFromUrl()", false).Stop()
+	}
+	image, _ := gtk.ImageNew()
+	// Request with a user-agent.
+	req, err := http.NewRequest("GET", core.Components[idx].ImagePath, nil)
+	if err == nil {
+		req.Header.Set("User-Agent", "BOMulus")
+		// Http client to execute the req.
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err == nil {
+			defer resp.Body.Close()
+			loader, _ := gdk.PixbufLoaderNew()
+			defer loader.Close()
+			_, err = io.Copy(loader, resp.Body)
+			if err == nil {
+				loader.Close()
+				pixbuf, _ := loader.GetPixbuf()
+				image.SetFromPixbuf(pixbuf)
+			}
+		}
+	}
+	return image
+}
+
+func componentLabels(idx int, box *gtk.Box) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.componentLabels()", true).Stop()
+	}
+	availability := core.Components[idx].Availability
+	if availability == "" {
+		availability = "Out of stock"
+	}
+	status := core.Components[idx].LifecycleStatus
+	if status == "" {
+		status = "Active"
+	}
+	availabilityLabel := createLabel(availability)
+	lifecycleStatusLabel := createLabel("Lifecycle Status: " + status)
+	rohsLabel := createLabel(core.Components[idx].ROHSStatus)
+	box.PackStart(availabilityLabel, false, false, 0)
+	box.PackStart(lifecycleStatusLabel, false, false, 0)
+	box.PackStart(rohsLabel, false, false, 0)
+	suggestion := core.Components[idx].SuggestedReplacement
+	if suggestion != "" {
+		replacementLabel := createLabel("Suggested Replacement: " + suggestion)
+		box.PackStart(replacementLabel, false, false, 0)
+	}
+}
+
+func componentPricesGrid(idx int, box *gtk.Box) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.componentPricesGrid()", true).Stop()
+	}
+	grid, err := gtk.GridNew()
+	core.ErrorsHandler(err)
+	grid.SetColumnSpacing(10)
+	grid.SetRowSpacing(5)
+	// Grid headers.
+	quantityHeader := createLabel("Quantity")
+	priceHeader := createLabel("Price")
+	grid.Attach(quantityHeader, 0, 0, 1, 1)
+	grid.Attach(priceHeader, 1, 0, 1, 1)
+	// Append price breaks to the grid.
+	for i, pb := range core.Components[idx].PriceBreaks {
+		quantityLabel := createLabel(fmt.Sprintf("%d", pb.Quantity))
+		priceLabel := createLabel(pb.Price)
+		grid.Attach(quantityLabel, 0, i+1, 1, 1)
+		grid.Attach(priceLabel, 1, i+1, 1, 1)
+	}
+	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	centerBox.PackStart(grid, true, false, 0)
+	box.PackStart(centerBox, false, false, 0)
 }
