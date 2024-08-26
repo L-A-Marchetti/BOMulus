@@ -199,3 +199,15 @@ func createEntry() *gtk.Entry {
 	core.ErrorsHandler(err)
 	return entry
 }
+
+// Function to show a message dialog
+func showMessageDialog(parent *gtk.Window, title string, message string) {
+	msgDialog := gtk.MessageDialogNew(parent,
+		gtk.DIALOG_MODAL,
+		gtk.MESSAGE_INFO,
+		gtk.BUTTONS_OK,
+		message)
+	msgDialog.SetTitle(title)
+	msgDialog.Run()     // Show the dialog
+	msgDialog.Destroy() // Destroy the dialog after use
+}
