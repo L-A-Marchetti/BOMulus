@@ -81,6 +81,8 @@ func APIRequest(i int) {
 			core.Components[i].MismatchMpn = append(core.Components[i].MismatchMpn, alternativeMpn)
 		}
 	}
+	// Load img in the buffer.
+	imgFromUrl(i)
 
 	// Validate the analysis
 	if len(apiResponse.Errors) == 0 {

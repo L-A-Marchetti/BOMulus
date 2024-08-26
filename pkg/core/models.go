@@ -1,6 +1,10 @@
 package core
 
-import "config"
+import (
+	"config"
+
+	"github.com/gotk3/gotk3/gdk"
+)
 
 type XlsmFile struct {
 	Path    string
@@ -25,7 +29,6 @@ type Filter struct {
 	Description int
 }
 
-// As a starting point.
 type Component struct {
 	Operator             string
 	OldRow, NewRow       int
@@ -43,6 +46,7 @@ type Component struct {
 	MismatchMpn          []Component
 	UserDescription      string
 	SupplierDescription  string
+	Img                  *gdk.Pixbuf
 }
 
 type PriceBreak struct {

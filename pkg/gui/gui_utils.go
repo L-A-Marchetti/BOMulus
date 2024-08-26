@@ -4,11 +4,8 @@ import (
 	"config"
 	"core"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 
-	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -144,6 +141,7 @@ func addBoxMargin(box *gtk.Box) {
 	box.SetMarginEnd(20)
 }
 
+/*
 func imgFromUrl(idx int) *gtk.Image {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.imgFromUrl()", false).Stop()
@@ -170,6 +168,7 @@ func imgFromUrl(idx int) *gtk.Image {
 	}
 	return image
 }
+*/
 
 func componentLabels(idx int, box *gtk.Box) {
 	if config.DEBUGGING {

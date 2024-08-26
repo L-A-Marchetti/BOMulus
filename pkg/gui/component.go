@@ -25,7 +25,10 @@ func ShowComponent(idx, i int, isOld bool) {
 	addBoxMargin(vbox)
 	componentWindow.Add(vbox)
 	// Create an img.
-	image := imgFromUrl(idx)
+	image, _ := gtk.ImageNew()
+	if core.Components[idx].Img != nil {
+		image.SetFromPixbuf(core.Components[idx].Img)
+	}
 	vbox.PackStart(image, false, false, 0)
 	// Create labels for basic infos.
 	componentLabels(idx, vbox)
