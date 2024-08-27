@@ -1,9 +1,16 @@
 package core
 
-import "github.com/gotk3/gotk3/gtk"
+import (
+	"config"
+
+	"github.com/gotk3/gotk3/gtk"
+)
 
 // If a checkbox is toggled change the filters.
 func SetFilters(checkboxes []*gtk.CheckButton) {
+	if config.DEBUGGING {
+		defer StartBenchmark("SetFilters()", false).Stop()
+	}
 	for _, cb := range checkboxes {
 		label, _ := cb.GetLabel()
 		switch label {
@@ -36,21 +43,22 @@ func SetFilters(checkboxes []*gtk.CheckButton) {
 				Filters.Swap = true
 				//Swap Xlsms.
 				XlsmFiles[0], XlsmFiles[1] = XlsmFiles[1], XlsmFiles[0]
+				XlsmDiff()
 			} else if !cb.GetActive() && Filters.Swap {
 				Filters.Swap = false
 				//Swap Xlsms.
 				XlsmFiles[0], XlsmFiles[1] = XlsmFiles[1], XlsmFiles[0]
+				XlsmDiff()
 			}
-			// Read and store both Xlsm files.
-			XlsmReader()
-			// Generate delta data.
-			XlsmDiff()
 		}
 	}
 }
 
 // Initialize checkboxes.
 func InitFilters(i int, cb *gtk.CheckButton) *gtk.CheckButton {
+	if config.DEBUGGING {
+		defer StartBenchmark("InitFilters()", false).Stop()
+	}
 	switch i {
 	case 0:
 		if Filters.Equal {

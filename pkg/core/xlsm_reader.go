@@ -3,7 +3,6 @@ package core
 import (
 	"config"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -14,6 +13,9 @@ import (
 )
 
 func XlsmReader() {
+	if config.DEBUGGING {
+		defer StartBenchmark("XlsmReader()", true).Stop()
+	}
 	ResetContent()
 	// Define the path of the os tmp dir.
 	tempDir := os.TempDir()
@@ -26,30 +28,22 @@ func XlsmReader() {
 	}()
 	for i := range XlsmFiles {
 		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, config.FILE_PREFIX)))
-		if err != nil {
-			log.Fatal(err)
-		}
+		ErrorsHandler(err)
 		if runtime.GOOS == "windows" {
 			filePath = strings.TrimPrefix(filePath, "/")
 		}
 		// Create a temporary copy of the file
 		tempFile := filepath.Join(tempDir, fmt.Sprintf("temp_%d.xlsm", i))
 		err = CopyFile(filePath, tempFile)
-		if err != nil {
-			log.Fatal(err)
-		}
+		ErrorsHandler(err)
 		tempFiles = append(tempFiles, tempFile)
 		// Open the temporary file
 		f, err := excelize.OpenFile(tempFile)
-		if err != nil {
-			log.Fatal(err)
-		}
+		ErrorsHandler(err)
 		defer f.Close()
 		// Read every used row
 		rows, err := f.GetRows(f.GetSheetName(0))
-		if err != nil {
-			log.Fatal(err)
-		}
+		ErrorsHandler(err)
 		// Convert data into a string matrix
 		XlsmFiles[i].Content = append(XlsmFiles[i].Content, rows...)
 	}

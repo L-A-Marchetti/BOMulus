@@ -16,48 +16,36 @@ import (
 )
 
 func UserApiKey() {
-	// Create a new window
-	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
-	if err != nil {
-		log.Fatal(err)
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.UserApiKey()", true).Stop()
 	}
-	win.SetTitle("User API Key")
+	// Create a new window.
+	win := createWindow("User API Key", 300, 100)
 	win.Connect("destroy", func() {
 		win.Destroy()
 	})
-	// Create a vertical box
-	box, err := gtk.BoxNew(gtk.ORIENTATION_VERTICAL, 5)
-	if err != nil {
-		log.Fatal(err)
-	}
-	box.SetMarginBottom(20)
-	box.SetMarginTop(20)
-	box.SetMarginStart(20)
-	box.SetMarginEnd(20)
+	// Create a vertical box.
+	box := createBox(gtk.ORIENTATION_VERTICAL, 5)
+	addBoxMargin(box)
 	win.Add(box)
-
-	// Create and add a label
-	label, err := gtk.LabelNew("Enter your personal Mouser's API key: ")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Create and add a label.
+	label := createLabel("Enter your personal Mouser's API key: ")
 	box.PackStart(label, false, false, 0)
-
-	// Create and add an entry
-	entry, err := gtk.EntryNew()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Create and add an entry.
+	entry := createEntry()
 	box.PackStart(entry, false, false, 0)
-
-	// Create and add a button
-	button, err := gtk.ButtonNewWithLabel("Test the API Key...")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Create and add a button.
+	button := createButton("Test the API Key...")
 	box.PackStart(button, false, false, 0)
+	// Test the API key.
+	testAPIKey(win, button, entry)
+	win.ShowAll()
+}
 
-	// Connect the button to a handler
+func testAPIKey(win *gtk.Window, button *gtk.Button, entry *gtk.Entry) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.testAPIKey()", false).Stop()
+	}
 	button.Connect("clicked", func() {
 		unmarshalValidity := true
 		apiKey, err := entry.GetText()
@@ -110,7 +98,6 @@ func UserApiKey() {
 			showMessageDialog(win, "Valid API Key", "Your API key is valid...")
 			win.Close()
 			core.AnalysisState.KeyIsValid = true
-
 			// Trigger the analyze button click
 			glib.IdleAdd(func() {
 				if TriggerAnalyze != nil {
@@ -121,8 +108,4 @@ func UserApiKey() {
 			showMessageDialog(win, "Wrong API Key", "Your API key is wrong...")
 		}
 	})
-
-	// Set window size and show all widgets
-	win.SetDefaultSize(300, 100)
-	win.ShowAll()
 }

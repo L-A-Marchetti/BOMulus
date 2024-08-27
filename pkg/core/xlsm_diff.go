@@ -1,11 +1,15 @@
 package core
 
 import (
+	"config"
 	"reflect"
 )
 
 // Diff algo with an UPDATE function added.
 func XlsmDiff() {
+	if config.DEBUGGING {
+		defer StartBenchmark("XlsmDiff()", false).Stop()
+	}
 	ResetDeltas()
 	var delta XlsmDelta
 	i := Filters.Header

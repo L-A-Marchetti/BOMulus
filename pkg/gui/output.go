@@ -11,6 +11,9 @@ import (
 )
 
 func Output() {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.Output()", false).Stop()
+	}
 	// Fill the tree with deltas content.
 	for _, row := range core.XlsmDeltas {
 		switch row.Operator {
@@ -94,9 +97,7 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 		}
 	}
 	err := store.Set(iter, core.MakeRange(0, len(values)), values)
-	if err != nil {
-		panic(err)
-	}
+	core.ErrorsHandler(err)
 }
 
 // Append row to the result store when there's no bg color.
@@ -117,7 +118,5 @@ func appendRowWoBg(store *gtk.ListStore, operation, oldRow, newRow string, conte
 		values[i+4] = v
 	}
 	err := store.Set(iter, core.MakeRange(0, len(values)), values)
-	if err != nil {
-		panic(err)
-	}
+	core.ErrorsHandler(err)
 }

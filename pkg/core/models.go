@@ -1,6 +1,13 @@
 package core
 
-import "config"
+import (
+	"config"
+	"time"
+
+	"github.com/gotk3/gotk3/gdk"
+)
+
+/*╔══════════════ FILES MODELS ══════════════╗*/
 
 type XlsmFile struct {
 	Path    string
@@ -12,6 +19,17 @@ type XlsmDelta struct {
 	OldRow   int
 	NewRow   int
 }
+
+var XlsmFiles = []XlsmFile{
+	{Path: config.INIT_FILE_PATH_1},
+	{Path: config.INIT_FILE_PATH_2},
+}
+
+var XlsmDeltas []XlsmDelta
+
+/*╚══════════════════════════════════════════╝*/
+
+/*╔══════════════ FILTER MODEL ══════════════╗*/
 
 type Filter struct {
 	Equal       bool
@@ -25,7 +43,12 @@ type Filter struct {
 	Description int
 }
 
-// As a starting point.
+var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0}
+
+/*╚══════════════════════════════════════════╝*/
+
+/*╔══════════════ COMPONENT MODELS ══════════════╗*/
+
 type Component struct {
 	Operator             string
 	OldRow, NewRow       int
@@ -43,6 +66,7 @@ type Component struct {
 	MismatchMpn          []Component
 	UserDescription      string
 	SupplierDescription  string
+	Img                  *gdk.Pixbuf
 }
 
 type PriceBreak struct {
@@ -51,16 +75,11 @@ type PriceBreak struct {
 	Currency string `json:"Currency"`
 }
 
-var XlsmFiles = []XlsmFile{
-	{Path: config.INIT_FILE_PATH_1},
-	{Path: config.INIT_FILE_PATH_2},
-}
-
-var XlsmDeltas []XlsmDelta
-
-var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0}
-
 var Components = []Component{}
+
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ RESET FUNCTIONS ══════════════╗*/
 
 func ResetContent() {
 	XlsmFiles[0].Content = nil
@@ -75,6 +94,10 @@ func ResetComponents() {
 	Components = []Component{}
 }
 
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ ANALYSIS STATUS MODEL ══════════════╗*/
+
 type AnalysisStatus struct {
 	InProgress bool
 	Completed  bool
@@ -85,3 +108,43 @@ type AnalysisStatus struct {
 }
 
 var AnalysisState AnalysisStatus
+
+/*╚═══════════════════════════════════════════════════╝*/
+
+/*╔══════════════ REPORT GRID MODEL ══════════════╗*/
+
+type ReportGrid struct {
+	ExpanderName       string
+	Headers            []string
+	RowsAttributes     []ComponentMethod
+	AttachmentsIter    ComponentMethodIter
+	AttachmentsIterMsg ComponentMethodIterMsg
+	Attachments        []Attachment
+	Jump               int
+	Components         []Component
+	ButtonIdx          []int
+	Msg                bool
+}
+
+type Attachment struct {
+	Attribute    ComponentMethod
+	AttributeMsg ComponentMethodMsg
+	Column       int
+}
+
+type ComponentMethod func(c *Component) string
+type ComponentMethodMsg func(s string) string
+type ComponentMethodIter func(c *Component) []Component
+type ComponentMethodIterMsg func(c *Component) []string
+
+/*╚════════════════════════════════════════════════╝*/
+
+/*╔══════════════ BENCHMARK MODEL ══════════════╗*/
+
+type BenchmarkTimer struct {
+	startTime time.Time
+	name      string
+	isVital   bool
+}
+
+/*╚═════════════════════════════════════════════╝*/
