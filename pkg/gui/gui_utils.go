@@ -134,15 +134,17 @@ func createScrolledWindow() *gtk.ScrolledWindow {
 	return scrolledWindow
 }
 
-func createCommonScrolledWindow() *gtk.ScrolledWindow {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
+/*
+	func createCommonScrolledWindow() *gtk.ScrolledWindow {
+		if config.DEBUGGING {
+			defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
+		}
+		scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
+		core.ErrorsHandler(err)
+		scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		return scrolledWindow
 	}
-	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-	core.ErrorsHandler(err)
-	scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-	return scrolledWindow
-}
+*/
 
 func addBoxMargin(box *gtk.Box) {
 	box.SetMarginBottom(20)
@@ -246,6 +248,9 @@ func avoidDuplicate() {
 }
 
 func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createGridSection()", true).Stop()
+	}
 	expander, _ := gtk.ExpanderNew(reportGrid.ExpanderName)
 	grid := createGrid()
 	createGridHeaders(reportGrid.Headers, grid)
@@ -255,14 +260,31 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 			label := createLabel(method(&component))
 			grid.Attach(label, k, i+1+rowCount, 1, 1)
 		}
+		if len(reportGrid.ButtonIdx) != 0 {
+			button := createButton(config.INFO_BTN_CHAR)
+			button.Connect("clicked", func() {
+				ShowComponent(reportGrid.ButtonIdx[i], -1, false)
+			})
+			grid.Attach(button, len(reportGrid.RowsAttributes)+1, i+1+rowCount, 1, 1)
+		}
 		if len(reportGrid.Attachments) != 0 {
-			for j, iter := range reportGrid.AttachmentsIter(&component) {
-				for _, attachment := range reportGrid.Attachments {
-					label := createLabel(attachment.Attribute(&iter))
-					grid.Attach(label, attachment.Column, i+reportGrid.Jump+j+rowCount, 1, 1)
+			if reportGrid.Msg {
+				for j, iter := range reportGrid.AttachmentsIterMsg(&component) {
+					for _, attachment := range reportGrid.Attachments {
+						label := createLabel(attachment.AttributeMsg(iter))
+						grid.Attach(label, attachment.Column, i+reportGrid.Jump+j+rowCount, 1, 1)
+					}
 				}
+				rowCount += len(reportGrid.AttachmentsIterMsg(&component)) - 1
+			} else {
+				for j, iter := range reportGrid.AttachmentsIter(&component) {
+					for _, attachment := range reportGrid.Attachments {
+						label := createLabel(attachment.Attribute(&iter))
+						grid.Attach(label, attachment.Column, i+reportGrid.Jump+j+rowCount, 1, 1)
+					}
+				}
+				rowCount += len(reportGrid.AttachmentsIter(&component))
 			}
-			rowCount += len(reportGrid.AttachmentsIter(&component))
 		}
 	}
 	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
