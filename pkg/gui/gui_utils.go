@@ -244,3 +244,29 @@ func avoidDuplicate() {
 		vBox.Remove(children.Last().Previous().Data().(*gtk.Widget))
 	}
 }
+
+func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
+	expander, _ := gtk.ExpanderNew(reportGrid.ExpanderName)
+	grid := createGrid()
+	createGridHeaders(reportGrid.Headers, grid)
+	rowCount := 0
+	for i, component := range reportGrid.Components {
+		for k, method := range reportGrid.RowsAttributes {
+			label := createLabel(method(&component))
+			grid.Attach(label, k, i+1+rowCount, 1, 1)
+		}
+		if len(reportGrid.Attachments) != 0 {
+			for j, iter := range reportGrid.AttachmentsIter(&component) {
+				for _, attachment := range reportGrid.Attachments {
+					label := createLabel(attachment.Attribute(&iter))
+					grid.Attach(label, attachment.Column, i+reportGrid.Jump+j+rowCount, 1, 1)
+				}
+			}
+			rowCount += len(reportGrid.AttachmentsIter(&component))
+		}
+	}
+	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	centerBox.PackStart(grid, true, false, 0)
+	expander.Add(centerBox)
+	parentBox.PackStart(expander, false, false, 0)
+}

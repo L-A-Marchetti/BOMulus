@@ -89,3 +89,21 @@ type AnalysisStatus struct {
 }
 
 var AnalysisState AnalysisStatus
+
+type ReportGrid struct {
+	ExpanderName    string
+	Headers         []string
+	RowsAttributes  []ComponentMethod
+	AttachmentsIter ComponentMethodIter
+	Attachments     []Attachment
+	Jump            int
+	Components      []Component
+}
+
+type Attachment struct {
+	Attribute ComponentMethod
+	Column    int
+}
+
+type ComponentMethod func(c *Component) string
+type ComponentMethodIter func(c *Component) []Component

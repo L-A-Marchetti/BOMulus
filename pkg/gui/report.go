@@ -37,34 +37,29 @@ func ShowReport() {
 	infosLabel := createLabel("---------- Infos Summary ----------")
 	vbox.PackStart(infosLabel, false, false, 0)
 	//			︵‿︵‿︵‿︵‿︵MISMATCHING MANUFACTURER PART NUMBER︵‿︵‿︵‿︵‿︵
-	mmExpander, _ := gtk.ExpanderNew("Mismatching Manufacturer Part Number ⚐ " + fmt.Sprintf("%d", len(mismatchComponents)))
-	// Create a grid for the mismatching manufacturer part numbers
-	mmGrid := createGrid()
-	// mmGrid headers.
-	createGridHeaders([]string{"Line", "Quantity", "Manufacturer Part Number", "Description"}, mmGrid)
-	// Add components to mmGrid
-	rowCount := 0
-	for i, mmComp := range mismatchComponents {
-		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.NewRow))
-		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mmComp.Quantity))
-		mpnLabel, _ := gtk.LabelNew(mmComp.Mpn)
-		descriptionLabel, _ := gtk.LabelNew(mmComp.UserDescription)
-		mmGrid.Attach(lineLabel, 0, i+1+rowCount, 1, 1)
-		mmGrid.Attach(quantityLabel, 1, i+1+rowCount, 1, 1)
-		mmGrid.Attach(mpnLabel, 2, i+1+rowCount, 1, 1)
-		mmGrid.Attach(descriptionLabel, 3, i+1+rowCount, 1, 1)
-		for j, mpn := range mmComp.MismatchMpn {
-			mpnLabel, _ := gtk.LabelNew(mpn.Mpn)
-			descriptionLabel, _ := gtk.LabelNew(mpn.SupplierDescription)
-			mmGrid.Attach(mpnLabel, 2, i+2+j+rowCount, 1, 1)
-			mmGrid.Attach(descriptionLabel, 3, i+2+j+rowCount, 1, 1)
-		}
-		rowCount += len(mmComp.MismatchMpn)
+	mismatchingMPN := core.ReportGrid{
+		ExpanderName: "Mismatching Manufacturer Part Number ⚐ " + fmt.Sprintf("%d", len(mismatchComponents)),
+		Headers:      []string{"Line", "Quantity", "Manufacturer Part Number", "Description"},
+		RowsAttributes: []core.ComponentMethod{
+			func(c *core.Component) string { return fmt.Sprintf("%d", c.NewRow) },
+			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
+			func(c *core.Component) string { return c.Mpn },
+			func(c *core.Component) string { return c.UserDescription }},
+		AttachmentsIter: func(c *core.Component) []core.Component { return c.MismatchMpn },
+		Attachments: []core.Attachment{
+			{
+				Attribute: func(c *core.Component) string { return c.Mpn },
+				Column:    2,
+			},
+			{
+				Attribute: func(c *core.Component) string { return c.SupplierDescription },
+				Column:    3,
+			},
+		},
+		Jump:       2,
+		Components: mismatchComponents,
 	}
-	mmCenterBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
-	mmCenterBox.PackStart(mmGrid, true, false, 0)
-	mmExpander.Add(mmCenterBox)
-	vbox.PackStart(mmExpander, false, false, 0)
+	createGridSection(mismatchingMPN, vbox)
 	//			︵‿︵‿︵‿︵‿︵MISMATCHING DESCRIPTIONS︵‿︵‿︵‿︵‿︵
 	mdLabel, err := gtk.LabelNew("---------- Mismatching Descriptions ----------")
 	if err != nil {
@@ -252,7 +247,7 @@ func ShowReport() {
 	mMsgsGrid.Attach(mMsgsmoreHeader, 3, 0, 1, 1)
 	mMsgsGrid.Attach(mMsgsHeader, 4, 0, 1, 1)
 	// Append components to the mMsgsGrid.
-	rowCount = 0
+	rowCount := 0
 	for i, mMsgComponent := range manufacturerMessages {
 		lineLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mMsgComponent.NewRow))
 		quantityLabel, _ := gtk.LabelNew(fmt.Sprintf("%d", mMsgComponent.Quantity))
