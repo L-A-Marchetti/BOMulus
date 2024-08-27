@@ -57,6 +57,7 @@ func CmpAnalyzed() int {
 	return c
 }
 
+// Bufferize an img from url.
 func imgFromUrl(idx int) {
 	// Request with a user-agent.
 	req, err := http.NewRequest("GET", core.Components[idx].ImagePath, nil)

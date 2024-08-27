@@ -4,7 +4,6 @@ import (
 	"config"
 	"core"
 	"fmt"
-	"log"
 	"report"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -15,7 +14,7 @@ func ShowReport() {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.ShowReport()", true).Stop()
 	}
-	// Prototyping Report functions.
+	// Calling Report functions.
 	oosComponents, oosCompIdx := report.OutOfStockComp()
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
 	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
@@ -131,16 +130,10 @@ func ShowReport() {
 	//			╔ ————————————————————————————————————————————— ╗
 	//							   SUGGESTIONS
 	//			╚ ————————————————————————————————————————————— ╝
-	suggestionsLabel, err := gtk.LabelNew("---------- Suggestions ----------")
-	if err != nil {
-		log.Fatal(err)
-	}
+	suggestionsLabel := createLabel("---------- Suggestions ----------")
 	vbox.PackStart(suggestionsLabel, false, false, 0)
 	// Create the "OK" button
-	okButton, err := gtk.ButtonNewWithLabel("OK")
-	if err != nil {
-		log.Fatal(err)
-	}
+	okButton := createButton("OK")
 	vbox.PackStart(okButton, false, false, 0)
 	// Connect the "OK" button to the export function
 	okButton.Connect("clicked", func() {

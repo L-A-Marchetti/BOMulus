@@ -12,9 +12,9 @@ import (
 )
 
 func runAnalysis() {
-	totalComponents := (len(core.Components) / 10) + 60
+	totalComponents := len(core.Components)
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-	for i := 60; i < totalComponents; i++ {
+	for i := 0; i < totalComponents; i++ {
 		err := limiter.Wait(context.Background())
 		if err != nil {
 			log.Print(err)

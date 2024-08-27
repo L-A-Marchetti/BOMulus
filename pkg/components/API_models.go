@@ -1,6 +1,5 @@
 package components
 
-// Define a struct to represent the request payload
 type SearchByPartRequest struct {
 	MouserPartNumber  string `json:"mouserPartNumber"`
 	PartSearchOptions string `json:"partSearchOptions"`
@@ -10,7 +9,6 @@ type RequestPayload struct {
 	SearchByPartRequest SearchByPartRequest `json:"SearchByPartRequest"`
 }
 
-// Define the struct for Errors
 type Error struct {
 	ID                    int    `json:"Id"`
 	Code                  string `json:"Code"`
@@ -21,48 +19,40 @@ type Error struct {
 	PropertyName          string `json:"PropertyName"`
 }
 
-// Define the struct for ProductAttributes
 type ProductAttribute struct {
 	AttributeName  string `json:"AttributeName"`
 	AttributeValue string `json:"AttributeValue"`
 	AttributeCost  string `json:"AttributeCost"`
 }
 
-// Define the struct for PriceBreaks
 type PriceBreak struct {
 	Quantity int    `json:"Quantity"`
 	Price    string `json:"Price"`
 	Currency string `json:"Currency"`
 }
 
-// Define the struct for AlternatePackagings
 type AlternatePackaging struct {
 	APMfrPN string `json:"APMfrPN"`
 }
 
-// Define the struct for UnitWeightKg
 type UnitWeightKg struct {
 	UnitWeight float64 `json:"UnitWeight"`
 }
 
-// Define the struct for StandardCost
 type StandardCost struct {
 	Standardcost float64 `json:"Standardcost"`
 }
 
-// Define the struct for AvailabilityOnOrder
 type AvailabilityOnOrder struct {
 	Quantity int    `json:"Quantity"`
 	Date     string `json:"Date"`
 }
 
-// Define the struct for ProductCompliance
 type ProductCompliance struct {
 	ComplianceName  string `json:"ComplianceName"`
 	ComplianceValue string `json:"ComplianceValue"`
 }
 
-// Define the struct for Parts
 type Part struct {
 	Availability           string                `json:"Availability"`
 	DataSheetUrl           string                `json:"DataSheetUrl"`
@@ -105,13 +95,11 @@ type Part struct {
 	ProductCompliance      []ProductCompliance   `json:"ProductCompliance"`
 }
 
-// Define the struct for SearchResults
 type SearchResults struct {
 	NumberOfResult int    `json:"NumberOfResult"`
 	Parts          []Part `json:"Parts"`
 }
 
-// Define the struct for the overall API response
 type ApiResponse struct {
 	Errors        []Error       `json:"Errors"`
 	SearchResults SearchResults `json:"SearchResults"`

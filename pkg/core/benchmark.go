@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-type BenchmarkTimer struct {
-	startTime time.Time
-	name      string
-	isVital   bool
-}
-
 var vitalCount int
 
 func StartBenchmark(name string, isVital bool) *BenchmarkTimer {
