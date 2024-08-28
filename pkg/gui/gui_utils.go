@@ -8,6 +8,7 @@ import (
 
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/gotk3/gotk3/pango"
 )
 
 func createWindow(title string, width, height int) *gtk.Window {
@@ -134,17 +135,15 @@ func createScrolledWindow() *gtk.ScrolledWindow {
 	return scrolledWindow
 }
 
-/*
-	func createCommonScrolledWindow() *gtk.ScrolledWindow {
-		if config.DEBUGGING {
-			defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
-		}
-		scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-		core.ErrorsHandler(err)
-		scrolledWindow.SetPolicy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		return scrolledWindow
+func createCommonScrolledWindow() *gtk.ScrolledWindow {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
 	}
-*/
+	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
+	core.ErrorsHandler(err)
+	scrolledWindow.SetPolicy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+	return scrolledWindow
+}
 
 func addBoxMargin(box *gtk.Box) {
 	box.SetMarginBottom(20)
@@ -287,6 +286,7 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 	for i, component := range reportGrid.Components {
 		for k, method := range reportGrid.RowsAttributes {
 			label := createLabel(method(&component))
+			wrapText(label, 40)
 			grid.Attach(label, k, i+1+rowCount, 1, 1)
 		}
 		if len(reportGrid.ButtonIdx) != 0 {
@@ -294,13 +294,14 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 			button.Connect("clicked", func() {
 				ShowComponent(reportGrid.ButtonIdx[i], -1, false)
 			})
-			grid.Attach(button, len(reportGrid.RowsAttributes)+1, i+1+rowCount, 1, 1)
+			grid.Attach(button, len(reportGrid.RowsAttributes), i+1+rowCount, 1, 1)
 		}
 		if len(reportGrid.Attachments) != 0 {
 			if reportGrid.Msg {
 				for j, iter := range reportGrid.AttachmentsIterMsg(&component) {
 					for _, attachment := range reportGrid.Attachments {
 						label := createLabel(attachment.AttributeMsg(iter))
+						wrapText(label, 40)
 						grid.Attach(label, attachment.Column, i+reportGrid.Jump+j+rowCount, 1, 1)
 					}
 				}
@@ -309,6 +310,7 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 				for j, iter := range reportGrid.AttachmentsIter(&component) {
 					for _, attachment := range reportGrid.Attachments {
 						label := createLabel(attachment.Attribute(&iter))
+						wrapText(label, 40)
 						grid.Attach(label, attachment.Column, i+reportGrid.Jump+j+rowCount, 1, 1)
 					}
 				}
@@ -317,7 +319,14 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 		}
 	}
 	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	addBoxMargin(centerBox)
 	centerBox.PackStart(grid, true, false, 0)
 	expander.Add(centerBox)
 	parentBox.PackStart(expander, false, false, 0)
+}
+
+func wrapText(label *gtk.Label, max int) {
+	label.SetLineWrap(true)
+	label.SetLineWrapMode(pango.WRAP_WORD_CHAR)
+	label.SetMaxWidthChars(max)
 }
