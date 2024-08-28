@@ -22,12 +22,14 @@ func ShowReport() {
 	mismatchComponents := report.MismatchMpn()
 	mismatchCompDescription, mismatchCompDesIdx := report.MismatchDescription()
 	// Create a new window for showing the report.
-	reportWindow := createWindow("Analysis Report", 800, 200)
+	reportWindow := createWindow("Analysis Report", 300, 900)
 	// Create a ScrolledWindow
+	scrolledWindow := createCommonScrolledWindow()
 	// Create a vertical box container for the window
 	vbox := createBox(gtk.ORIENTATION_VERTICAL, 10)
 	addBoxMargin(vbox)
-	reportWindow.Add(vbox)
+	scrolledWindow.Add(vbox)
+	reportWindow.Add(scrolledWindow)
 	//			╔ ————————————————————————————————————————————— ╗
 	//							   INFOS SUMMARY
 	//			╚ ————————————————————————————————————————————— ╝
@@ -132,6 +134,8 @@ func ShowReport() {
 	//			╚ ————————————————————————————————————————————— ╝
 	suggestionsLabel := createLabel("---------- Suggestions ----------")
 	vbox.PackStart(suggestionsLabel, false, false, 0)
+	voidBox := createBox(gtk.ORIENTATION_VERTICAL, 0)
+	vbox.PackStart(voidBox, true, true, 0)
 	// Create the "OK" button
 	okButton := createButton("OK")
 	vbox.PackStart(okButton, false, false, 0)
