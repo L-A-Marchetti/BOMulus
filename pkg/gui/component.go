@@ -30,15 +30,31 @@ func ShowComponent(idx, i int, isOld bool) {
 		image.SetFromPixbuf(core.Components[idx].Img)
 	}
 	vbox.PackStart(image, false, false, 0)
+	// Empty line.
+	emptyLine1 := createLabel("")
+	vbox.PackStart(emptyLine1, false, false, 0)
 	// Create labels for basic infos.
 	componentLabels(idx, vbox)
+	// Empty line.
+	emptyLine2 := createLabel("")
+	vbox.PackStart(emptyLine2, false, false, 0)
 	// Create a grid for price breaks.
 	componentPricesGrid(idx, vbox)
+	// Empty line.
+	emptyLine3 := createLabel("")
+	vbox.PackStart(emptyLine3, false, false, 0)
 	// Create the Data sheet button.
 	dataSheetButton := createButton("Open Data Sheet")
 	vbox.PackStart(dataSheetButton, false, false, 0)
 	dataSheetButton.Connect("clicked", func() {
 		err := open.Run(core.Components[idx].DataSheetUrl)
+		core.ErrorsHandler(err)
+	})
+	// Create the Product Details button.
+	productDetailsButton := createButton("Product Details")
+	vbox.PackStart(productDetailsButton, false, false, 0)
+	productDetailsButton.Connect("clicked", func() {
+		err := open.Run(core.Components[idx].ProductDetailUrl)
 		core.ErrorsHandler(err)
 	})
 	// Create the "OK" button

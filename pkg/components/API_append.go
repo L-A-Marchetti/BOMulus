@@ -1,6 +1,8 @@
 package components
 
-import "core"
+import (
+	"core"
+)
 
 func appendAnalysis(apiResponse ApiResponse, i int) {
 	if core.Components[i].Mpn == apiResponse.SearchResults.Parts[0].ManufacturerPartNumber {
@@ -15,6 +17,10 @@ func appendAnalysis(apiResponse ApiResponse, i int) {
 		}
 		core.Components[i].InfoMessages = append(core.Components[i].InfoMessages, apiResponse.SearchResults.Parts[0].InfoMessages...)
 		core.Components[i].SupplierDescription = apiResponse.SearchResults.Parts[0].Description
+		core.Components[i].Manufacturer = apiResponse.SearchResults.Parts[0].Manufacturer
+		core.Components[i].Category = apiResponse.SearchResults.Parts[0].Category
+		core.Components[i].ProductDetailUrl = apiResponse.SearchResults.Parts[0].ProductDetailUrl
+
 	} else {
 		for _, part := range apiResponse.SearchResults.Parts {
 			alternativeMpn := core.Component{}

@@ -165,38 +165,67 @@ func componentLabels(idx int, box *gtk.Box) {
 	if status == "" {
 		status = "Active"
 	}
-	availabilityLabel := createLabel(availability)
-	lifecycleStatusLabel := createLabel("Lifecycle Status: " + status)
-	rohsLabel := createLabel(core.Components[idx].ROHSStatus)
-	box.PackStart(availabilityLabel, false, false, 0)
-	box.PackStart(lifecycleStatusLabel, false, false, 0)
-	box.PackStart(rohsLabel, false, false, 0)
-	suggestion := core.Components[idx].SuggestedReplacement
-	if suggestion != "" {
-		replacementLabel := createLabel("Suggested Replacement: " + suggestion)
-		box.PackStart(replacementLabel, false, false, 0)
+	componentInfosGrid([]string{
+		"Manufacturer Part Number", core.Components[idx].Mpn,
+		"Manufacturer", core.Components[idx].Manufacturer,
+		"Supplier Descrition", core.Components[idx].SupplierDescription,
+		"Category", core.Components[idx].Category,
+		"Availability", availability,
+		"Lifecycle Status", status,
+		"ROHS", core.Components[idx].ROHSStatus,
+		"Suggested Replacement", core.Components[idx].SuggestedReplacement},
+		box)
+}
+
+func componentInfosGrid(infos []string, box *gtk.Box) {
+	grid := createGrid()
+	for i := 0; i+1 < len(infos); i += 2 {
+		if infos[i+1] == "" {
+			continue
+		}
+		label1 := createLabel(infos[i])
+		label1.SetHAlign(gtk.ALIGN_START)
+		label2 := createLabel(":")
+		label3 := createLabel(infos[i+1])
+		label3.SetHAlign(gtk.ALIGN_START)
+		grid.Attach(label1, 0, i/2, 1, 1)
+		grid.Attach(label2, 1, i/2, 1, 1)
+		grid.Attach(label3, 2, i/2, 1, 1)
 	}
+	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	centerBox.PackStart(grid, true, false, 0)
+	box.PackStart(centerBox, false, false, 0)
 }
 
 func componentPricesGrid(idx int, box *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.componentPricesGrid()", true).Stop()
 	}
-	grid, err := gtk.GridNew()
-	core.ErrorsHandler(err)
-	grid.SetColumnSpacing(10)
-	grid.SetRowSpacing(5)
-	// Grid headers.
+	grid := createGrid()
+	// Grid headers (quantities).
 	quantityHeader := createLabel("Quantity")
-	priceHeader := createLabel("Price")
-	grid.Attach(quantityHeader, 0, 0, 1, 1)
-	grid.Attach(priceHeader, 1, 0, 1, 1)
-	// Append price breaks to the grid.
+	quantityHeader.SetHAlign(gtk.ALIGN_START)
+	grid.Attach(quantityHeader, 1, 0, 1, 1)
 	for i, pb := range core.Components[idx].PriceBreaks {
-		quantityLabel := createLabel(fmt.Sprintf("%d", pb.Quantity))
+		if i == 0 {
+			grid.Attach(createLabel("│"), i*3+3, 0, 1, 1)
+		}
+		quantityHeader := createLabel(fmt.Sprintf("%d", pb.Quantity))
+		grid.Attach(quantityHeader, i*3+4, 0, 1, 1)
+		grid.Attach(createLabel("│"), i*3+5, 0, 1, 1)
+	}
+	// Price row.
+	priceHeader := createLabel("Price")
+	priceHeader.SetHAlign(gtk.ALIGN_START)
+	grid.Attach(priceHeader, 1, 1, 1, 1)
+	// Append prices to the grid.
+	for i, pb := range core.Components[idx].PriceBreaks {
+		if i == 0 {
+			grid.Attach(createLabel("│"), i*3+3, 1, 1, 1)
+		}
 		priceLabel := createLabel(pb.Price)
-		grid.Attach(quantityLabel, 0, i+1, 1, 1)
-		grid.Attach(priceLabel, 1, i+1, 1, 1)
+		grid.Attach(priceLabel, i*3+4, 1, 1, 1)
+		grid.Attach(createLabel("│"), i*3+5, 1, 1, 1)
 	}
 	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
 	centerBox.PackStart(grid, true, false, 0)

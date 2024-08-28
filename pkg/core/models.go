@@ -67,6 +67,9 @@ type Component struct {
 	UserDescription      string
 	SupplierDescription  string
 	Img                  *gdk.Pixbuf
+	Manufacturer         string
+	Category             string
+	ProductDetailUrl     string
 }
 
 type PriceBreak struct {
