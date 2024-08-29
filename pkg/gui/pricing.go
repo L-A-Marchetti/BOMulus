@@ -19,17 +19,20 @@ func priceCalculation(s string, win *gtk.Window) {
 		showMessageDialog(win, "Invalid Quantity Format", "Please insert a valid quantity format...")
 		return
 	}
-	// Calculate pricing.
-	totalPrice, priceDiff, err := report.QuantityPrice(quantity)
-	if err != nil {
-		showMessageDialog(win, "Minimum quantity is not reached", err.Error())
-		return
-	}
 	// Create a new window.
 	priceWin := createWindow(fmt.Sprintf("Price for [%d] piece(s)", quantity), 300, 100)
 	priceWin.Connect("destroy", func() {
 		priceWin.Destroy()
 	})
+	// Calculate pricing.
+	totalPrice, priceDiff, minimumQuantity := report.QuantityPrice(quantity)
+	if len(minimumQuantity) != 0 {
+		minimumQuantityList := ""
+		for _, minimum := range minimumQuantity {
+			minimumQuantityList += minimum + "\n"
+		}
+		showMessageDialog(priceWin, "Minimum quantity is not reached", minimumQuantityList)
+	}
 	// Create a vertical box.
 	box := createBox(gtk.ORIENTATION_VERTICAL, 5)
 	addBoxMargin(box)
@@ -39,10 +42,14 @@ func priceCalculation(s string, win *gtk.Window) {
 	box.PackStart(label, false, false, 0)
 	emptyLine := createLabel("")
 	box.PackStart(emptyLine, true, true, 0)
-	label2 := createLabel(fmt.Sprintf("Price diff: %.3f €", priceDiff))
+	label2 := createLabel(fmt.Sprintf("Price diff/piece: %.3f €", priceDiff/float64(quantity)))
 	box.PackStart(label2, false, false, 0)
 	emptyLine2 := createLabel("")
 	box.PackStart(emptyLine2, true, true, 0)
+	label3 := createLabel(fmt.Sprintf("Price/piece: %.3f €", totalPrice/float64(quantity)))
+	box.PackStart(label3, false, false, 0)
+	emptyLine3 := createLabel("")
+	box.PackStart(emptyLine3, true, true, 0)
 	// Create and add a button.
 	button := createButton("OK")
 	button.Connect("clicked", func() {
