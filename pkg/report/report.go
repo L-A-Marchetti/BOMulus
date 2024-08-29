@@ -2,6 +2,7 @@ package report
 
 import (
 	"core"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -52,23 +53,21 @@ func MinMaxPrice() (float64, float64, float64, float64) {
 	oldMax := 0.0
 	oldMin := 0.0
 	for _, component := range core.Components {
-		if component.Analyzed && component.Operator == "EQUAL" && len(component.PriceBreaks) != 0 {
+		if component.Analyzed {
 			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
 			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			newMax += maxPrice
-			newMin += minPrice
-			oldMax += maxPrice
-			oldMin += minPrice
-		} else if component.Analyzed && component.Operator != "EQUAL" && component.OldRow == -1 && len(component.PriceBreaks) != 0 {
-			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
-			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			newMax += maxPrice
-			newMin += minPrice
-		} else if component.Analyzed && component.Operator != "EQUAL" && component.NewRow == -1 && len(component.PriceBreaks) != 0 {
-			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
-			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			oldMax += maxPrice
-			oldMin += minPrice
+			if component.Operator == "EQUAL" && len(component.PriceBreaks) != 0 {
+				newMax += maxPrice * float64(component.Quantity)
+				newMin += minPrice * float64(component.Quantity)
+				oldMax += maxPrice * float64(component.Quantity)
+				oldMin += minPrice * float64(component.Quantity)
+			} else if component.OldRow == -1 && len(component.PriceBreaks) != 0 {
+				newMax += maxPrice * float64(component.Quantity)
+				newMin += minPrice * float64(component.Quantity)
+			} else if component.NewRow == -1 && len(component.PriceBreaks) != 0 {
+				oldMax += maxPrice * float64(component.Quantity)
+				oldMin += minPrice * float64(component.Quantity)
+			}
 		}
 	}
 	minPriceDiff := newMin - oldMin
@@ -100,4 +99,39 @@ func MismatchDescription() ([]core.Component, []int) {
 		}
 	}
 	return mismatchComp, compIdx
+}
+
+func QuantityPrice(quantity int) (float64, float64, []string) {
+	minimumQuantity := []string{}
+	oldPrice := 0.0
+	newPrice := 0.0
+	for _, component := range core.Components {
+		if component.Analyzed {
+			componentPrice := 0.0
+			for _, priceBreak := range component.PriceBreaks {
+				if priceBreak.Quantity > component.Quantity*quantity {
+					if componentPrice == 0.0 {
+						convPrice, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
+						core.ErrorsHandler(err)
+						componentPrice = float64(component.Quantity*quantity) * convPrice
+						minimumQuantity = append(minimumQuantity, fmt.Sprintf("Minimum quantity (%d) not reached for the component: %s", priceBreak.Quantity, component.Mpn))
+					}
+					break
+				}
+				convPrice, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
+				core.ErrorsHandler(err)
+				componentPrice = float64(component.Quantity*quantity) * convPrice
+			}
+			if component.Operator == "EQUAL" {
+				oldPrice += componentPrice
+				newPrice += componentPrice
+			} else if component.OldRow == -1 {
+				newPrice += componentPrice
+			} else if component.NewRow == -1 {
+				oldPrice += componentPrice
+			}
+		}
+	}
+	priceDiff := newPrice - oldPrice
+	return newPrice, priceDiff, minimumQuantity
 }
