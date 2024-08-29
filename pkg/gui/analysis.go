@@ -5,6 +5,7 @@ import (
 	"context"
 	"core"
 	"log"
+	"report"
 	"time"
 
 	"github.com/gotk3/gotk3/glib"
@@ -36,5 +37,6 @@ func runAnalysis() {
 		filtersHBox := filters()
 		vBox.Add(filtersHBox)
 		UpdateView()
+		report.QuantityPrice()
 	})
 }

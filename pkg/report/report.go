@@ -101,3 +101,22 @@ func MismatchDescription() ([]core.Component, []int) {
 	}
 	return mismatchComp, compIdx
 }
+
+func QuantityPrice() {
+	quantity := 13
+	totalPrice := 0.0
+	for _, component := range core.Components {
+		if component.Analyzed {
+			componentPrice := 0.0
+			for _, priceBreak := range component.PriceBreaks {
+				if priceBreak.Quantity > component.Quantity*quantity {
+					break
+				}
+				convPrice, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
+				core.ErrorsHandler(err)
+				componentPrice = float64(component.Quantity*quantity) * convPrice
+			}
+			totalPrice += componentPrice
+		}
+	}
+}
