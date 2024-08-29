@@ -330,3 +330,44 @@ func wrapText(label *gtk.Label, max int) {
 	label.SetLineWrapMode(pango.WRAP_WORD_CHAR)
 	label.SetMaxWidthChars(max)
 }
+
+func createComboBoxes(box *gtk.Box) {
+	startCombo, err := gtk.ComboBoxTextNew()
+	core.ErrorsHandler(err)
+	startCombo.PrependText("Analysis Starting Point")
+	for i, component := range core.Components {
+		text := fmt.Sprintf("[%d] ", i+1)
+		if component.OldRow != -1 {
+			text += fmt.Sprintf(" ◌%d ", component.OldRow)
+		}
+		if component.NewRow != -1 {
+			text += fmt.Sprintf(" ●%d ", component.NewRow)
+		}
+		text += fmt.Sprintf(" ∑%d  (%s)", component.Quantity, component.Mpn)
+		startCombo.AppendText(text)
+	}
+	startCombo.SetActive(0)
+	box.PackStart(startCombo, false, false, 0)
+	startCombo.Connect("changed", func() {
+		core.AnalysisState.IdxStart = startCombo.GetActive() - 1
+	})
+	endCombo, err := gtk.ComboBoxTextNew()
+	core.ErrorsHandler(err)
+	endCombo.PrependText("Analysis End Point")
+	for i, component := range core.Components {
+		text := fmt.Sprintf("[%d] ", i+1)
+		if component.OldRow != -1 {
+			text += fmt.Sprintf(" ◌%d ", component.OldRow)
+		}
+		if component.NewRow != -1 {
+			text += fmt.Sprintf(" ●%d ", component.NewRow)
+		}
+		text += fmt.Sprintf(" ∑%d  (%s)", component.Quantity, component.Mpn)
+		endCombo.AppendText(text)
+	}
+	endCombo.SetActive(0)
+	box.PackStart(endCombo, false, false, 0)
+	endCombo.Connect("changed", func() {
+		core.AnalysisState.IdxEnd = endCombo.GetActive() - 1
+	})
+}

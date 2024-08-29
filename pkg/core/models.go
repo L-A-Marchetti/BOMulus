@@ -108,6 +108,8 @@ type AnalysisStatus struct {
 	Total      int
 	Current    int
 	KeyIsValid bool
+	IdxStart   int
+	IdxEnd     int
 }
 
 var AnalysisState AnalysisStatus
