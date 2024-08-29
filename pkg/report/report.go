@@ -2,6 +2,7 @@ package report
 
 import (
 	"core"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -102,7 +103,7 @@ func MismatchDescription() ([]core.Component, []int) {
 	return mismatchComp, compIdx
 }
 
-func QuantityPrice(quantity int) (float64, float64) {
+func QuantityPrice(quantity int) (float64, float64, error) {
 	totalPrice := 0.0
 	oldPrice := 0.0
 	newPrice := 0.0
@@ -111,6 +112,9 @@ func QuantityPrice(quantity int) (float64, float64) {
 			componentPrice := 0.0
 			for _, priceBreak := range component.PriceBreaks {
 				if priceBreak.Quantity > component.Quantity*quantity {
+					if componentPrice == 0.0 {
+						return 0.0, 0.0, fmt.Errorf("minimum quantity for the component %s is %d", component.Mpn, priceBreak.Quantity)
+					}
 					break
 				}
 				convPrice, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
@@ -129,5 +133,5 @@ func QuantityPrice(quantity int) (float64, float64) {
 		}
 	}
 	priceDiff := newPrice - oldPrice
-	return totalPrice, priceDiff
+	return totalPrice, priceDiff, nil
 }
