@@ -102,8 +102,7 @@ func MismatchDescription() ([]core.Component, []int) {
 	return mismatchComp, compIdx
 }
 
-func QuantityPrice() {
-	quantity := 13
+func QuantityPrice(quantity int) float64 {
 	totalPrice := 0.0
 	for _, component := range core.Components {
 		if component.Analyzed {
@@ -119,4 +118,5 @@ func QuantityPrice() {
 			totalPrice += componentPrice
 		}
 	}
+	return totalPrice
 }

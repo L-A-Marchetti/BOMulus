@@ -75,8 +75,22 @@ func ShowReport() {
 	createGridSection(mismatchingDescriptions, vbox)
 	//			︵‿︵‿︵‿︵‿︵PRICE︵‿︵‿︵‿︵‿︵
 	priceExpander, _ := gtk.ExpanderNew("Price")
+	priceBox := createBox(gtk.ORIENTATION_VERTICAL, 0)
+	priceEntry := createEntry()
+	priceEntry.SetText("Enter a quantity.")
+	priceButton := createButton("Calculate")
+	priceButton.Connect("clicked", func() {
+		quantity, err := priceEntry.GetText()
+		core.ErrorsHandler(err)
+		priceCalculation(quantity, reportWindow)
+	})
 	minMaxPriceLabel := createLabel("Min:\t" + fmt.Sprintf("%.4f", minPrice) + "€\t\tΔ:\t" + fmt.Sprintf("%.4f", minPriceDiff) + "€\t\tMax:\t" + fmt.Sprintf("%.4f", maxPrice) + "€\t\tΔ:\t" + fmt.Sprintf("%.4f", maxPriceDiff) + "€")
-	priceExpander.Add(minMaxPriceLabel)
+	emptyLine := createLabel("")
+	priceBox.PackStart(emptyLine, true, true, 1)
+	priceBox.PackStart(priceEntry, false, false, 0)
+	priceBox.PackStart(priceButton, false, false, 0)
+	priceBox.PackStart(minMaxPriceLabel, false, false, 0)
+	priceExpander.Add(priceBox)
 	vbox.PackStart(priceExpander, false, false, 0)
 	//			╔ ————————————————————————————————————————————— ╗
 	//						  ORDERING/MANUFACTURING
