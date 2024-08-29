@@ -28,6 +28,8 @@ func UserApiKey() {
 	box := createBox(gtk.ORIENTATION_VERTICAL, 5)
 	addBoxMargin(box)
 	win.Add(box)
+	// Create combo boxes for Analysis range.
+	createComboBoxes(box)
 	// Create and add a label.
 	label := createLabel("Enter your personal Mouser's API key: ")
 	box.PackStart(label, false, false, 0)
@@ -51,6 +53,10 @@ func testAPIKey(win *gtk.Window, button *gtk.Button, entry *gtk.Entry) {
 		defer core.StartBenchmark("gui.testAPIKey()", false).Stop()
 	}
 	button.Connect("clicked", func() {
+		if core.AnalysisState.IdxEnd-core.AnalysisState.IdxStart+1 <= 0 {
+			showMessageDialog(win, "Invalid range", "Please select a valid range...")
+			return
+		}
 		unmarshalValidity := true
 		apiKey, err := entry.GetText()
 		if err != nil {

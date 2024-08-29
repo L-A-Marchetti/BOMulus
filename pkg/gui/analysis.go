@@ -12,9 +12,9 @@ import (
 )
 
 func runAnalysis() {
-	totalComponents := len(core.Components)
+	totalComponents := core.AnalysisState.IdxEnd - core.AnalysisState.IdxStart + 1
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-	for i := 0; i < totalComponents; i++ {
+	for i := core.AnalysisState.IdxStart; i <= core.AnalysisState.IdxEnd; i++ {
 		err := limiter.Wait(context.Background())
 		if err != nil {
 			log.Print(err)
@@ -23,8 +23,8 @@ func runAnalysis() {
 		components.APIRequest(i)
 
 		glib.IdleAdd(func() {
-			core.AnalysisState.Current = i + 1
-			core.AnalysisState.Progress = float64(i+1) / float64(totalComponents)
+			core.AnalysisState.Current += 1
+			core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents)
 			updateTableRow()
 		})
 	}
