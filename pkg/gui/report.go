@@ -89,6 +89,8 @@ func ShowReport() {
 	priceBox.PackStart(emptyLine, true, true, 1)
 	priceBox.PackStart(priceEntry, false, false, 0)
 	priceBox.PackStart(priceButton, false, false, 0)
+	emptyLine2 := createLabel("")
+	priceBox.PackStart(emptyLine2, true, true, 1)
 	priceBox.PackStart(minMaxPriceLabel, false, false, 0)
 	priceExpander.Add(priceBox)
 	vbox.PackStart(priceExpander, false, false, 0)

@@ -55,20 +55,20 @@ func MinMaxPrice() (float64, float64, float64, float64) {
 		if component.Analyzed && component.Operator == "EQUAL" && len(component.PriceBreaks) != 0 {
 			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
 			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			newMax += maxPrice
-			newMin += minPrice
-			oldMax += maxPrice
-			oldMin += minPrice
+			newMax += maxPrice * float64(component.Quantity)
+			newMin += minPrice * float64(component.Quantity)
+			oldMax += maxPrice * float64(component.Quantity)
+			oldMin += minPrice * float64(component.Quantity)
 		} else if component.Analyzed && component.Operator != "EQUAL" && component.OldRow == -1 && len(component.PriceBreaks) != 0 {
 			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
 			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			newMax += maxPrice
-			newMin += minPrice
+			newMax += maxPrice * float64(component.Quantity)
+			newMin += minPrice * float64(component.Quantity)
 		} else if component.Analyzed && component.Operator != "EQUAL" && component.NewRow == -1 && len(component.PriceBreaks) != 0 {
 			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
 			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			oldMax += maxPrice
-			oldMin += minPrice
+			oldMax += maxPrice * float64(component.Quantity)
+			oldMin += minPrice * float64(component.Quantity)
 		}
 	}
 	minPriceDiff := newMin - oldMin
@@ -102,8 +102,10 @@ func MismatchDescription() ([]core.Component, []int) {
 	return mismatchComp, compIdx
 }
 
-func QuantityPrice(quantity int) float64 {
+func QuantityPrice(quantity int) (float64, float64) {
 	totalPrice := 0.0
+	oldPrice := 0.0
+	newPrice := 0.0
 	for _, component := range core.Components {
 		if component.Analyzed {
 			componentPrice := 0.0
@@ -116,7 +118,16 @@ func QuantityPrice(quantity int) float64 {
 				componentPrice = float64(component.Quantity*quantity) * convPrice
 			}
 			totalPrice += componentPrice
+			if component.Operator == "EQUAL" {
+				oldPrice += componentPrice
+				newPrice += componentPrice
+			} else if component.OldRow == -1 {
+				newPrice += componentPrice
+			} else if component.NewRow == -1 {
+				oldPrice += componentPrice
+			}
 		}
 	}
-	return totalPrice
+	priceDiff := newPrice - oldPrice
+	return totalPrice, priceDiff
 }

@@ -20,7 +20,7 @@ func priceCalculation(s string, win *gtk.Window) {
 		return
 	}
 	// Create a new window.
-	priceWin := createWindow(fmt.Sprintf("Price with quantity %d", quantity), 300, 100)
+	priceWin := createWindow(fmt.Sprintf("Price for [%d] piece(s)", quantity), 300, 100)
 	priceWin.Connect("destroy", func() {
 		priceWin.Destroy()
 	})
@@ -29,12 +29,16 @@ func priceCalculation(s string, win *gtk.Window) {
 	addBoxMargin(box)
 	priceWin.Add(box)
 	// Calculate pricing.
-	totalPrice := report.QuantityPrice(quantity)
+	totalPrice, priceDiff := report.QuantityPrice(quantity)
 	// Create and add a label.
-	label := createLabel(fmt.Sprintf("%.3f €", totalPrice))
+	label := createLabel(fmt.Sprintf("BOM total price for [%d] piece(s): %.3f €", quantity, totalPrice))
 	box.PackStart(label, false, false, 0)
 	emptyLine := createLabel("")
-	box.PackStart(emptyLine, true, true, 1)
+	box.PackStart(emptyLine, true, true, 0)
+	label2 := createLabel(fmt.Sprintf("Price diff: %.3f €", priceDiff))
+	box.PackStart(label2, false, false, 0)
+	emptyLine2 := createLabel("")
+	box.PackStart(emptyLine2, true, true, 0)
 	// Create and add a button.
 	button := createButton("OK")
 	button.Connect("clicked", func() {
