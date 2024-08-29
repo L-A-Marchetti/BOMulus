@@ -33,6 +33,10 @@ func UserApiKey() {
 	box.PackStart(label, false, false, 0)
 	// Create and add an entry.
 	entry := createEntry()
+	APIExists, APIKey := core.LoadAPIKey()
+	if APIExists {
+		entry.SetText(APIKey)
+	}
 	box.PackStart(entry, false, false, 0)
 	// Create and add a button.
 	button := createButton("Test the API Key...")
@@ -98,6 +102,7 @@ func testAPIKey(win *gtk.Window, button *gtk.Button, entry *gtk.Entry) {
 			showMessageDialog(win, "Valid API Key", "Your API key is valid...")
 			win.Close()
 			core.AnalysisState.KeyIsValid = true
+			core.SaveAPIKey()
 			// Trigger the analyze button click
 			glib.IdleAdd(func() {
 				if TriggerAnalyze != nil {
