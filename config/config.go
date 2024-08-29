@@ -20,6 +20,7 @@ const (
 	INIT_FILE_PATH_2 string = "path/to/file2"
 	FILE_PREFIX      string = "file://"
 	FILE_EXT         string = ".xlsm"
+	API_KEY_FILE     string = "API_Key_Saved.bmls"
 )
 
 /*╚═══════════════════════════════════════════╝*/
