@@ -53,18 +53,18 @@ func MinMaxPrice() (float64, float64, float64, float64) {
 	oldMax := 0.0
 	oldMin := 0.0
 	for _, component := range core.Components {
-		if component.Analyzed {
+		if component.Analyzed && len(component.PriceBreaks) != 0 {
 			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
 			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
-			if component.Operator == "EQUAL" && len(component.PriceBreaks) != 0 {
+			if component.Operator == "EQUAL" {
 				newMax += maxPrice * float64(component.Quantity)
 				newMin += minPrice * float64(component.Quantity)
 				oldMax += maxPrice * float64(component.Quantity)
 				oldMin += minPrice * float64(component.Quantity)
-			} else if component.OldRow == -1 && len(component.PriceBreaks) != 0 {
+			} else if component.OldRow == -1 {
 				newMax += maxPrice * float64(component.Quantity)
 				newMin += minPrice * float64(component.Quantity)
-			} else if component.NewRow == -1 && len(component.PriceBreaks) != 0 {
+			} else if component.NewRow == -1 {
 				oldMax += maxPrice * float64(component.Quantity)
 				oldMin += minPrice * float64(component.Quantity)
 			}
