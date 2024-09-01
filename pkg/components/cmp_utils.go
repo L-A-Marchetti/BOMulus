@@ -3,6 +3,7 @@ package components
 import (
 	"core"
 	"io"
+	"math"
 	"net/http"
 
 	"github.com/gotk3/gotk3/gdk"
@@ -78,5 +79,15 @@ func imgFromUrl(idx int) {
 				core.Components[idx].Img = pixbuf
 			}
 		}
+	}
+}
+
+func colSafety(delta core.XlsmDelta) {
+	colSafety := math.Max(math.Max(float64(core.Filters.Quantity), float64(core.Filters.Mpn)), float64(core.Filters.Description))
+	for len(core.XlsmFiles[0].Content[delta.OldRow]) <= int(colSafety) {
+		core.XlsmFiles[0].Content[delta.OldRow] = append(core.XlsmFiles[0].Content[delta.OldRow], "")
+	}
+	for len(core.XlsmFiles[1].Content[delta.NewRow]) <= int(colSafety) {
+		core.XlsmFiles[1].Content[delta.NewRow] = append(core.XlsmFiles[1].Content[delta.NewRow], "")
 	}
 }
