@@ -29,6 +29,8 @@ func appendAnalysis(apiResponse ApiResponse, i int) {
 			core.Components[i].MismatchMpn = append(core.Components[i].MismatchMpn, alternativeMpn)
 		}
 	}
+	// Interpret the MPN.
+	MPNInterpreter(i)
 	// Load img in the buffer.
 	imgFromUrl(i)
 	// Validate the analysis
