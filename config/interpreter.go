@@ -1,8 +1,6 @@
 package config
 
-import (
-	"strconv"
-)
+import "strconv"
 
 type MPNInterpreter struct {
 	Pattern      string
@@ -13,14 +11,12 @@ type MPNInterpreter struct {
 }
 
 type MLCC struct {
-	TerminationStyle     string
-	Capacitance          func(string) Capacitance
-	VDC                  map[string]float64
-	Dielectric           map[string]string
-	Tolerance            map[string]Tolerance
-	CaseCode             string
-	OperatingTemperature OperatingTemperature
-	Packaging            map[string]string
+	Capacitance func(string) Capacitance
+	VDC         map[string]float64
+	Dielectric  func(string) string
+	Tolerance   map[string]Tolerance
+	CaseCode    func(string) string
+	Packaging   map[string]string
 }
 
 type Tolerance struct {
@@ -33,13 +29,57 @@ type Capacitance struct {
 	Unity string
 }
 
-type OperatingTemperature struct {
-	MinimumOperatingTemperature float64
-	MaximumOperatingTemperature float64
-	TemperatureUnity            string
+var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC, TDK_MLCC}
+
+func DecodeCapacitance(s string) Capacitance {
+	value := 0.0
+	num, _ := strconv.Atoi(s[:2])
+	exp, _ := strconv.Atoi(s[2:])
+	value = float64(num)
+	if exp == 1 {
+		return Capacitance{value * 10, "pF"}
+	} else if exp == 2 {
+		return Capacitance{value * 100, "pF"}
+	} else if exp == 3 {
+		return Capacitance{value * 1000, "pF"}
+	} else if exp == 4 {
+		return Capacitance{value / 100, "uF"}
+	} else if exp == 5 {
+		return Capacitance{value / 10, "uF"}
+	} else if exp == 6 {
+		return Capacitance{value, "uF"}
+	} else if exp == 8 {
+		return Capacitance{value / 100, "pF"}
+	} else if exp == 9 {
+		return Capacitance{value / 10, "pF"}
+	} else {
+		return Capacitance{value, "pF"}
+	}
 }
 
-var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC}
+func CaseCodeToEIA(s string) string {
+	switch s {
+	case "1005":
+		return "0402"
+	case "1608":
+		return "0603"
+	case "2012":
+		return "0805"
+	case "3216":
+		return "1206"
+	case "3225":
+		return "1210"
+	case "4532":
+		return "1812"
+	case "5750":
+		return "2220"
+	}
+	return ""
+}
+
+func transparent(s string) string {
+	return s
+}
 
 /*╔══════════════ KEMET ══════════════╗*/
 
@@ -52,34 +92,30 @@ var (
 		Family:       "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
 		Specs: map[int]string{
 			1:  "Ceramic",
-			2:  "EIA Size Code",
+			2:  "Dimensions",
 			3:  "Specification/Series",
-			4:  "Capacitance Code (pF)",
+			4:  "Capacitance",
 			5:  "Capacitance Tolerance",
 			6:  "Rated Voltage (VDC)",
 			7:  "Dielectric",
 			8:  "Failure Rate/Design",
 			9:  "Termination Finish",
-			10: "Packaging/Grade (C-Spec)",
+			10: "Packaging",
 		},
 		MLCC: MLCC{
-			TerminationStyle: "100% Matte Sn",
-			Capacitance:      DecodeCapacitance,
+			Capacitance: DecodeCapacitance,
 			VDC: map[string]float64{
-				"9":  6.3,
-				"8":  10,
-				"4:": 16,
-				"3":  25,
-				"6":  35,
-				"5":  50,
-				"1":  100,
-				"2":  200,
-				"A":  250,
+				"9": 6.3,
+				"8": 10,
+				"4": 16,
+				"3": 25,
+				"6": 35,
+				"5": 50,
+				"1": 100,
+				"2": 200,
+				"A": 250,
 			},
-			Dielectric: map[string]string{
-				"G": "C0G",
-				"R": "X7R",
-			},
+			Dielectric: KemetMLCCDialectric,
 			Tolerance: map[string]Tolerance{
 				"B": {0.10, "pF"},
 				"C": {0.25, "pF"},
@@ -90,11 +126,7 @@ var (
 				"K": {10.0, "%"},
 				"M": {20.0, "%"},
 			},
-			OperatingTemperature: OperatingTemperature{
-				MinimumOperatingTemperature: -55,
-				MaximumOperatingTemperature: 125,
-				TemperatureUnity:            "°C",
-			},
+			CaseCode: transparent,
 			Packaging: map[string]string{
 				"":     "Bulk Bag/Unmarked",
 				"TU":   `7" Reel/Unmarked`,
@@ -110,25 +142,79 @@ var (
 	}
 )
 
-func DecodeCapacitance(s string) Capacitance {
-	value := 0.0
-	num, _ := strconv.Atoi(s[:2])
-	exp, _ := strconv.Atoi(s[2:])
-	value = float64(num)
-	if exp == 1 {
-		return Capacitance{value * 10, "pF"}
-	} else if exp == 2 {
-		return Capacitance{value * 100, "pF"}
-	} else if exp == 3 {
-		return Capacitance{value * 1000, "pF"}
-	} else if exp == 8 {
-		return Capacitance{value / 100, "pF"}
-	} else if exp == 9 {
-		return Capacitance{value / 10, "pF"}
-	} else {
-		return Capacitance{value, "pF"}
+func KemetMLCCDialectric(s string) string {
+	switch s {
+	case "G":
+		return "C0G"
+	case "R":
+		return "X7R"
+	case "P":
+		return "X5R"
 	}
+	return ""
 }
+
+/*╚════════════════════════════════════════════════════════════════╝*/
+
+/*╚═══════════════════════════════════╝*/
+
+/*╔══════════════ TDK ══════════════╗*/
+
+/*╔══════════════ Multilayer Ceramic Chip Capacitors ══════════════╗*/
+
+var (
+	TDK_MLCC MPNInterpreter = MPNInterpreter{
+		Pattern:      `^([A-Z])(\d{4})([A-Z]{1}\d{1}[A-Z]{1})(\d{1}[A-Z])(\d{3})([A-Z])(\d{3})([A-Z])([A-Z])`,
+		Manufacturer: "TDK",
+		Family:       "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+		Specs: map[int]string{
+			1: "Ceramic",
+			2: "Dimensions",
+			3: "Dielectric",
+			4: "Rated Voltage (VDC)",
+			5: "Capacitance",
+			6: "Capacitance Tolerance",
+			7: "Thickness",
+			8: "Packaging",
+			9: "Special reserved code",
+		},
+		MLCC: MLCC{
+			Capacitance: DecodeCapacitance,
+			VDC: map[string]float64{
+				"0G": 4,
+				"0J": 6.3,
+				"1A": 10,
+				"1C": 16,
+				"1E": 25,
+				"1V": 35,
+				"1H": 50,
+				"1N": 75,
+				"2A": 100,
+				"2E": 250,
+				"2V": 350,
+				"2W": 450,
+				"2J": 630,
+			},
+			Dielectric: transparent,
+			Tolerance: map[string]Tolerance{
+				"B": {0.10, "pF"},
+				"C": {0.25, "pF"},
+				"D": {0.5, "pF"},
+				"F": {1.0, "%"},
+				"G": {2.0, "%"},
+				"J": {5.0, "%"},
+				"K": {10.0, "%"},
+				"M": {20.0, "%"},
+			},
+			CaseCode: CaseCodeToEIA,
+			Packaging: map[string]string{
+				"A": `178mm reel, 4mm pitch`,
+				"B": `178mm reel, 2mm pitch`,
+				"K": `178mm reel, 8mm pitch`,
+			},
+		},
+	}
+)
 
 /*╚════════════════════════════════════════════════════════════════╝*/
 
