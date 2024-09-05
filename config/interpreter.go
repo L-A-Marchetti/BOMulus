@@ -29,7 +29,7 @@ type Capacitance struct {
 	Unity string
 }
 
-var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC, TDK_MLCC}
+var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC, TDK_MLCC, KYOSERA_AVX_MLCC}
 
 func DecodeCapacitance(s string) Capacitance {
 	value := 0.0
@@ -115,7 +115,7 @@ var (
 				"2": 200,
 				"A": 250,
 			},
-			Dielectric: KemetMLCCDialectric,
+			Dielectric: KemetMLCCDielectric,
 			Tolerance: map[string]Tolerance{
 				"B": {0.10, "pF"},
 				"C": {0.25, "pF"},
@@ -142,7 +142,7 @@ var (
 	}
 )
 
-func KemetMLCCDialectric(s string) string {
+func KemetMLCCDielectric(s string) string {
 	switch s {
 	case "G":
 		return "C0G"
@@ -215,6 +215,85 @@ var (
 		},
 	}
 )
+
+/*╚════════════════════════════════════════════════════════════════╝*/
+
+/*╚═══════════════════════════════════╝*/
+
+/*╔══════════════ KYOSERA AVX ══════════════╗*/
+
+/*╔══════════════ Multilayer Ceramic Chip Capacitors ══════════════╗*/
+
+var (
+	KYOSERA_AVX_MLCC MPNInterpreter = MPNInterpreter{
+		Pattern:      `^(\d{4})(\d|[A-Z])([A-Z])(\d{3})([A-Z])([A-Z])([A-Z])(\d|[A-Z])([A-Z])`,
+		Manufacturer: "Kyosera AVX",
+		Family:       "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+		Specs: map[int]string{
+			1: "Dimensions",
+			2: "Rated Voltage (VDC)",
+			3: "Dielectric",
+			4: "Capacitance",
+			5: "Capacitance Tolerance",
+			6: "Failure Rate",
+			7: "Termination Finish",
+			8: "Packaging",
+			9: "Special code",
+		},
+		MLCC: MLCC{
+			Capacitance: DecodeCapacitance,
+			VDC: map[string]float64{
+				"4": 4,
+				"6": 6.3,
+				"Z": 10,
+				"Y": 16,
+				"3": 25,
+				"D": 35,
+				"5": 50,
+				"1": 100,
+			},
+			Dielectric: KYOSERA_AVX_MLCCDielectric,
+			Tolerance: map[string]Tolerance{
+				"B": {0.10, "pF"},
+				"C": {0.25, "pF"},
+				"D": {0.5, "pF"},
+				"F": {1.0, "%"},
+				"G": {2.0, "%"},
+				"J": {5.0, "%"},
+				"K": {10.0, "%"},
+				"M": {20.0, "%"},
+			},
+			CaseCode: transparent,
+			Packaging: map[string]string{
+				"2": `7" Reel`,
+				"4": `13" Reel`,
+				"U": `4mm TR`,
+			},
+		},
+	}
+)
+
+func KYOSERA_AVX_MLCCDielectric(s string) string {
+	switch s {
+	case "A":
+		return "C0G"
+	case "W":
+		return "X6S"
+	case "D":
+		return "X5R"
+	case "C":
+		return "X7R"
+	case "Z":
+		return "X7S"
+	case "F":
+		return "X8R"
+	case "L":
+		return "X8L"
+	case "G":
+		return "Y5V"
+	}
+	return ""
+}
 
 /*╚════════════════════════════════════════════════════════════════╝*/
 
