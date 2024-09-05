@@ -12,44 +12,37 @@ func MPNInterpreter(i int) {
 		re := regexp.MustCompile(MPNInterpreter.Pattern)
 		matches := re.FindStringSubmatch(core.Components[i].Mpn)
 		if matches != nil {
-			fmt.Println(MPNInterpreter.Brand, " | ", MPNInterpreter.Family)
+			fmt.Println(MPNInterpreter.Manufacturer, " | ", MPNInterpreter.Family)
 		}
 		for j, match := range matches {
 			if j != 0 {
-				fmt.Println(MPNInterpreter.Specs[j], ": ", match)
-				if MPNInterpreter.Specs[j] == "EIA Size Code" {
-					if dimensions, ok := MPNInterpreter.Dimensions[match]; ok {
-						fmt.Printf(
-							"Dimensions:\nLength: %.3f (%.3f) ±%.3f (%.3f)\n",
-							dimensions.Length.Millimeters,
-							dimensions.Length.Inches,
-							dimensions.Length.MillimetersTolerance,
-							dimensions.Length.InchesTolerance,
-						)
-						fmt.Printf(
-							"Width: %.3f (%.3f) ±%.3f (%.3f)\n",
-							dimensions.Width.Millimeters,
-							dimensions.Width.Inches,
-							dimensions.Width.MillimetersTolerance,
-							dimensions.Width.InchesTolerance,
-						)
-						fmt.Printf(
-							"Bandwidth: %.3f (%.3f) ±%.3f (%.3f)\n",
-							dimensions.Bandwidth.Millimeters,
-							dimensions.Bandwidth.Inches,
-							dimensions.Bandwidth.MillimetersTolerance,
-							dimensions.Bandwidth.InchesTolerance,
-						)
-						fmt.Printf(
-							"Separation Minimum: %.3f (%.3f)\n",
-							dimensions.SeparationMinimum.Millimeters,
-							dimensions.SeparationMinimum.Inches,
-						)
-						fmt.Println("Mounting Technique: ", dimensions.MountingTechnique)
-						fmt.Println("Notes: ", dimensions.Notes)
+				if MPNInterpreter.Specs[j] == "Capacitance Code (pF)" {
+					Capacitance := MPNInterpreter.MLCC.Capacitance(match)
+					fmt.Println("Capacitance: ", Capacitance.Value, Capacitance.Unity)
+				} else if MPNInterpreter.Specs[j] == "Rated Voltage (VDC)" {
+					if VDC, ok := MPNInterpreter.MLCC.VDC[match]; ok {
+						fmt.Println(MPNInterpreter.Specs[j], ": ", VDC, " VDC")
+					}
+				} else if MPNInterpreter.Specs[j] == "Dielectric" {
+					if Dielectric, ok := MPNInterpreter.MLCC.Dielectric[match]; ok {
+						fmt.Println(MPNInterpreter.Specs[j], ": ", Dielectric)
+					}
+				} else if MPNInterpreter.Specs[j] == "Capacitance Tolerance" {
+					if tolerance, ok := MPNInterpreter.MLCC.Tolerance[match]; ok {
+						fmt.Println(MPNInterpreter.Specs[j], ": ", "±", tolerance.Value, tolerance.Unity)
+					}
+					fmt.Println("Operating Temperature Range: ", MPNInterpreter.MLCC.OperatingTemperature.MinimumOperatingTemperature, " to ", MPNInterpreter.MLCC.OperatingTemperature.MaximumOperatingTemperature, " (", MPNInterpreter.MLCC.OperatingTemperature.TemperatureUnity, ")")
+				} else if MPNInterpreter.Specs[j] == "EIA Size Code" {
+					fmt.Println(MPNInterpreter.Specs[j], ": ", match)
+				} else if MPNInterpreter.Specs[j] == "Termination Finish" {
+					fmt.Println("Termination Style: ", MPNInterpreter.MLCC.TerminationStyle)
+				} else if MPNInterpreter.Specs[j] == "Packaging/Grade (C-Spec)" {
+					if packaging, ok := MPNInterpreter.MLCC.Packaging[match]; ok {
+						fmt.Println(MPNInterpreter.Specs[j], ": ", packaging)
 					}
 				}
 			}
 		}
+		fmt.Println()
 	}
 }

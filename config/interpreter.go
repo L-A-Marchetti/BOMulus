@@ -1,28 +1,42 @@
 package config
 
+import (
+	"strconv"
+)
+
 type MPNInterpreter struct {
-	Pattern    string
-	Brand      string
-	Family     string
-	Specs      map[int]string
-	Dimensions map[string]Dimensions
+	Pattern      string
+	Manufacturer string
+	Family       string
+	Specs        map[int]string
+	MLCC         MLCC
 }
 
-type Dimensions struct {
-	Length            Dimension
-	Width             Dimension
-	Thickness         Dimension
-	Bandwidth         Dimension
-	SeparationMinimum Dimension
-	MountingTechnique string
-	Notes             string
+type MLCC struct {
+	TerminationStyle     string
+	Capacitance          func(string) Capacitance
+	VDC                  map[string]float64
+	Dielectric           map[string]string
+	Tolerance            map[string]Tolerance
+	CaseCode             string
+	OperatingTemperature OperatingTemperature
+	Packaging            map[string]string
 }
 
-type Dimension struct {
-	Millimeters          float64
-	Inches               float64
-	MillimetersTolerance float64
-	InchesTolerance      float64
+type Tolerance struct {
+	Value float64
+	Unity string
+}
+
+type Capacitance struct {
+	Value float64
+	Unity string
+}
+
+type OperatingTemperature struct {
+	MinimumOperatingTemperature float64
+	MaximumOperatingTemperature float64
+	TemperatureUnity            string
 }
 
 var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC}
@@ -33,9 +47,9 @@ var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC}
 
 var (
 	KEMET_MLCC MPNInterpreter = MPNInterpreter{
-		Pattern: `^([A-Z])(\d{4})([A-Z])(\d{3})([A-Z])(\d)([A-Z])([A-Z])([A-Z])`,
-		Brand:   "KEMET",
-		Family:  "Multilayer Ceramic Chip Capacitors",
+		Pattern:      `^([A-Z])(\d{4})([A-Z])(\d{3})([A-Z])(\d)([A-Z])([A-Z])([A-Z])([A-Z]{2}|\d{4})?$`,
+		Manufacturer: "KEMET",
+		Family:       "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
 		Specs: map[int]string{
 			1:  "Ceramic",
 			2:  "EIA Size Code",
@@ -48,307 +62,73 @@ var (
 			9:  "Termination Finish",
 			10: "Packaging/Grade (C-Spec)",
 		},
-		Dimensions: map[string]Dimensions{
-			"0201": {
-				Length: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.03,
-					InchesTolerance:      0.001,
-				},
-				Width: Dimension{
-					Millimeters:          0.30,
-					Inches:               0.012,
-					MillimetersTolerance: 0.03,
-					InchesTolerance:      0.001,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.15,
-					Inches:               0.006,
-					MillimetersTolerance: 0.05,
-					InchesTolerance:      0.002,
-				},
-				MountingTechnique: "Solder Reflow Only",
+		MLCC: MLCC{
+			TerminationStyle: "100% Matte Sn",
+			Capacitance:      DecodeCapacitance,
+			VDC: map[string]float64{
+				"9":  6.3,
+				"8":  10,
+				"4:": 16,
+				"3":  25,
+				"6":  35,
+				"5":  50,
+				"1":  100,
+				"2":  200,
+				"A":  250,
 			},
-			"0402": {
-				Length: Dimension{
-					Millimeters:          1.00,
-					Inches:               0.040,
-					MillimetersTolerance: 0.05,
-					InchesTolerance:      0.002,
-				},
-				Width: Dimension{
-					Millimeters:          0.50,
-					Inches:               0.020,
-					MillimetersTolerance: 0.05,
-					InchesTolerance:      0.002,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.30,
-					Inches:               0.012,
-					MillimetersTolerance: 0.10,
-					InchesTolerance:      0.004,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 0.30,
-					Inches:      0.012,
-				},
-				MountingTechnique: "Solder Reflow Only",
+			Dielectric: map[string]string{
+				"G": "C0G",
+				"R": "X7R",
 			},
-			"0603": {
-				Length: Dimension{
-					Millimeters:          1.60,
-					Inches:               0.063,
-					MillimetersTolerance: 0.15,
-					InchesTolerance:      0.006,
-				},
-				Width: Dimension{
-					Millimeters:          0.80,
-					Inches:               0.032,
-					MillimetersTolerance: 0.15,
-					InchesTolerance:      0.006,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.35,
-					Inches:               0.014,
-					MillimetersTolerance: 0.15,
-					InchesTolerance:      0.006,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 0.50,
-					Inches:      0.020,
-				},
-				MountingTechnique: "Solder Wave or Solder Reflow",
+			Tolerance: map[string]Tolerance{
+				"B": {0.10, "pF"},
+				"C": {0.25, "pF"},
+				"D": {0.5, "pF"},
+				"F": {1.0, "%"},
+				"G": {2.0, "%"},
+				"J": {5.0, "%"},
+				"K": {10.0, "%"},
+				"M": {20.0, "%"},
 			},
-			"0805": {
-				Length: Dimension{
-					Millimeters:          2.00,
-					Inches:               0.079,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Width: Dimension{
-					Millimeters:          1.25,
-					Inches:               0.049,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.50,
-					Inches:               0.02,
-					MillimetersTolerance: 0.25,
-					InchesTolerance:      0.010,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 0.70,
-					Inches:      0.028,
-				},
-				MountingTechnique: "Solder Wave or Solder Reflow",
+			OperatingTemperature: OperatingTemperature{
+				MinimumOperatingTemperature: -55,
+				MaximumOperatingTemperature: 125,
+				TemperatureUnity:            "°C",
 			},
-			"1206": {
-				Length: Dimension{
-					Millimeters:          3.20,
-					Inches:               0.126,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Width: Dimension{
-					Millimeters:          1.60,
-					Inches:               0.063,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.50,
-					Inches:               0.02,
-					MillimetersTolerance: 0.25,
-					InchesTolerance:      0.010,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 1.50,
-					Inches:      0.060,
-				},
-				MountingTechnique: "Solder Wave or Solder Reflow",
-				Notes:             "For capacitance value 33 nF ≤ 50V add 0.10 (0.004) to the length tolerance dimension",
-			},
-			"1210": {
-				Length: Dimension{
-					Millimeters:          3.20,
-					Inches:               0.126,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Width: Dimension{
-					Millimeters:          2.50,
-					Inches:               0.098,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.50,
-					Inches:               0.02,
-					MillimetersTolerance: 0.25,
-					InchesTolerance:      0.010,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 1.50,
-					Inches:      0.060,
-				},
-				MountingTechnique: "Solder Reflow Only",
-			},
-			"1805": {
-				Length: Dimension{
-					Millimeters:          4.50,
-					Inches:               0.177,
-					MillimetersTolerance: 0.50,
-					InchesTolerance:      0.020,
-				},
-				Width: Dimension{
-					Millimeters:          1.27,
-					Inches:               0.050,
-					MillimetersTolerance: 0.30,
-					InchesTolerance:      0.015,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.35,
-					InchesTolerance:      0.014,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 2.90,
-					Inches:      0.114,
-				},
-				MountingTechnique: "Solder Reflow Only",
-			},
-			"1808": {
-				Length: Dimension{
-					Millimeters:          4.70,
-					Inches:               0.185,
-					MillimetersTolerance: 0.50,
-					InchesTolerance:      0.020,
-				},
-				Width: Dimension{
-					Millimeters:          2.00,
-					Inches:               0.079,
-					MillimetersTolerance: 0.20,
-					InchesTolerance:      0.008,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.35,
-					InchesTolerance:      0.014,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 2.90,
-					Inches:      0.114,
-				},
-				MountingTechnique: "Solder Reflow Only",
-			},
-			"1812": {
-				Length: Dimension{
-					Millimeters:          4.50,
-					Inches:               0.177,
-					MillimetersTolerance: 0.30,
-					InchesTolerance:      0.012,
-				},
-				Width: Dimension{
-					Millimeters:          3.20,
-					Inches:               0.126,
-					MillimetersTolerance: 0.30,
-					InchesTolerance:      0.012,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.35,
-					InchesTolerance:      0.014,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 2.30,
-					Inches:      0.091,
-				},
-				MountingTechnique: "Solder Reflow Only",
-			},
-			"1825": {
-				Length: Dimension{
-					Millimeters:          4.50,
-					Inches:               0.177,
-					MillimetersTolerance: 0.30,
-					InchesTolerance:      0.012,
-				},
-				Width: Dimension{
-					Millimeters:          6.40,
-					Inches:               0.252,
-					MillimetersTolerance: 0.40,
-					InchesTolerance:      0.016,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.35,
-					InchesTolerance:      0.014,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 2.30,
-					Inches:      0.091,
-				},
-				MountingTechnique: "Solder Reflow Only",
-			},
-			"2220": {
-				Length: Dimension{
-					Millimeters:          5.70,
-					Inches:               0.224,
-					MillimetersTolerance: 0.40,
-					InchesTolerance:      0.016,
-				},
-				Width: Dimension{
-					Millimeters:          5.00,
-					Inches:               0.197,
-					MillimetersTolerance: 0.40,
-					InchesTolerance:      0.016,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.35,
-					InchesTolerance:      0.014,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 3.50,
-					Inches:      0.138,
-				},
-				MountingTechnique: "Solder Reflow Only",
-			},
-			"2225": {
-				Length: Dimension{
-					Millimeters:          5.60,
-					Inches:               0.220,
-					MillimetersTolerance: 0.40,
-					InchesTolerance:      0.016,
-				},
-				Width: Dimension{
-					Millimeters:          6.40,
-					Inches:               0.248,
-					MillimetersTolerance: 0.40,
-					InchesTolerance:      0.016,
-				},
-				Bandwidth: Dimension{
-					Millimeters:          0.60,
-					Inches:               0.024,
-					MillimetersTolerance: 0.35,
-					InchesTolerance:      0.014,
-				},
-				SeparationMinimum: Dimension{
-					Millimeters: 3.20,
-					Inches:      0.126,
-				},
-				MountingTechnique: "Solder Reflow Only",
+			Packaging: map[string]string{
+				"":     "Bulk Bag/Unmarked",
+				"TU":   `7" Reel/Unmarked`,
+				"7411": `13" Reel/Unmarked`,
+				"7210": `13" Reel/Unmarked`,
+				"TM":   `7" Reel/Marked`,
+				"7040": `13" Reel/Marked`,
+				"7215": `13" Reel/Marked`,
+				"7081": `7" Reel/Unmarked/2 mm pitch`,
+				"7082": `13" Reel/Unmarked/2 mm pitch`,
 			},
 		},
 	}
 )
+
+func DecodeCapacitance(s string) Capacitance {
+	value := 0.0
+	num, _ := strconv.Atoi(s[:2])
+	exp, _ := strconv.Atoi(s[2:])
+	value = float64(num)
+	if exp == 1 {
+		return Capacitance{value * 10, "pF"}
+	} else if exp == 2 {
+		return Capacitance{value * 100, "pF"}
+	} else if exp == 3 {
+		return Capacitance{value * 1000, "pF"}
+	} else if exp == 8 {
+		return Capacitance{value / 100, "pF"}
+	} else if exp == 9 {
+		return Capacitance{value / 10, "pF"}
+	} else {
+		return Capacitance{value, "pF"}
+	}
+}
 
 /*╚════════════════════════════════════════════════════════════════╝*/
 
