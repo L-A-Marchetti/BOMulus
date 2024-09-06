@@ -30,7 +30,7 @@ func appendAnalysis(apiResponse ApiResponse, i int) {
 		}
 	}
 	// Interpret the MPN.
-	MPNInterpreter(i)
+	//MPNInterpreter(i)
 	// Load img in the buffer.
 	imgFromUrl(i)
 	// Validate the analysis
