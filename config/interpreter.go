@@ -29,7 +29,14 @@ type Capacitance struct {
 	Unity string
 }
 
-var Interpreter []MPNInterpreter = []MPNInterpreter{KEMET_MLCC, TDK_MLCC, KYOSERA_AVX_MLCC}
+var Interpreter []MPNInterpreter = []MPNInterpreter{
+	KEMET_MLCC,
+	TDK_MLCC,
+	KYOSERA_AVX_MLCC,
+	MURATA_MLCC,
+}
+
+/*╔══════════════ Multilayer Ceramic Chip Capacitors ══════════════╗*/
 
 func DecodeCapacitance(s string) Capacitance {
 	value := 0.0
@@ -82,8 +89,6 @@ func transparent(s string) string {
 }
 
 /*╔══════════════ KEMET ══════════════╗*/
-
-/*╔══════════════ Multilayer Ceramic Chip Capacitors ══════════════╗*/
 
 var (
 	KEMET_MLCC MPNInterpreter = MPNInterpreter{
@@ -154,13 +159,9 @@ func KemetMLCCDielectric(s string) string {
 	return ""
 }
 
-/*╚════════════════════════════════════════════════════════════════╝*/
-
 /*╚═══════════════════════════════════╝*/
 
 /*╔══════════════ TDK ══════════════╗*/
-
-/*╔══════════════ Multilayer Ceramic Chip Capacitors ══════════════╗*/
 
 var (
 	TDK_MLCC MPNInterpreter = MPNInterpreter{
@@ -216,13 +217,9 @@ var (
 	}
 )
 
-/*╚════════════════════════════════════════════════════════════════╝*/
-
 /*╚═══════════════════════════════════╝*/
 
 /*╔══════════════ KYOSERA AVX ══════════════╗*/
-
-/*╔══════════════ Multilayer Ceramic Chip Capacitors ══════════════╗*/
 
 var (
 	KYOSERA_AVX_MLCC MPNInterpreter = MPNInterpreter{
@@ -295,6 +292,113 @@ func KYOSERA_AVX_MLCCDielectric(s string) string {
 	return ""
 }
 
-/*╚════════════════════════════════════════════════════════════════╝*/
+/*╚═══════════════════════════════════╝*/
+
+/*╔══════════════ MURATA ══════════════╗*/
+
+var (
+	MURATA_MLCC MPNInterpreter = MPNInterpreter{
+		Pattern:      `^(GRM)(\d{2}|[A-Z]{2})([A-Z]|\d)([A-Z]\d|\d[A-Z])(\d[A-Z])(\d{3})([A-Z])([A-Z]\d{2})([A-Z])`,
+		Manufacturer: "MURATA",
+		Family:       "Multilayer Ceramic Capacitors MLCC - SMD/SMT",
+		Specs: map[int]string{
+			1: "Series",
+			2: "Dimensions",
+			3: "Thickness",
+			4: "Dielectric",
+			5: "Rated Voltage (VDC)",
+			6: "Capacitance",
+			7: "Capacitance Tolerance",
+			8: "Individual Specification",
+			9: "Packaging",
+		},
+		MLCC: MLCC{
+			Capacitance: DecodeCapacitance,
+			VDC: map[string]float64{
+				"0E": 2.5,
+				"0G": 4,
+				"0J": 6.3,
+				"1A": 10,
+				"1C": 16,
+				"1D": 20,
+				"1E": 25,
+				"YA": 35,
+				"1H": 50,
+				"1J": 63,
+				"1K": 80,
+				"2A": 100,
+				"2E": 250,
+			},
+			Dielectric: MURATA_MLCCDielectric,
+			Tolerance: map[string]Tolerance{
+				"B": {0.10, "pF"},
+				"C": {0.25, "pF"},
+				"D": {0.5, "pF"},
+				"F": {1.0, "%"},
+				"G": {2.0, "%"},
+				"J": {5.0, "%"},
+				"K": {10.0, "%"},
+				"M": {20.0, "%"},
+			},
+			CaseCode: MURATA_MLCC_Dimensions,
+			Packaging: map[string]string{
+				"L": `φ180mm Reel Plastic Tape W8P4`,
+				"K": `φ330mm Reel Plastic Tape W8P4`,
+				"J": `φ330mm Reel PAPER Tape W8P4`,
+				"D": `φ180mm Reel PAPER Tape W8P4`,
+				"V": `φ330mm Reel PAPER Tape W8P2`,
+				"W": `φ180mm Reel PAPER Tape W8P2`,
+			},
+		},
+	}
+)
+
+func MURATA_MLCC_Dimensions(s string) string {
+	switch s {
+	case "03":
+		return "0201"
+	case "15":
+		return "0402"
+	case "18":
+		return "0603"
+	case "JN":
+		return "0704"
+	case "21":
+		return "0805"
+	case "31":
+		return "1206"
+	case "32":
+		return "1210"
+	case "42":
+		return "1808"
+	case "43":
+		return "1812"
+	case "55":
+		return "2220"
+	}
+	return ""
+}
+
+func MURATA_MLCCDielectric(s string) string {
+	switch s {
+	case "5C":
+		return "C0G"
+	case "7U":
+		return "U2J"
+	case "C8":
+		return "X6S"
+	case "R6":
+		return "X5R"
+	case "R7":
+		return "X7R"
+	case "C7":
+		return "X7S"
+	case "L8":
+		return "X8L"
+	}
+	return ""
+}
 
 /*╚═══════════════════════════════════╝*/
+
+/*╚════════════════════════════════════════════════════════════════╝*/
