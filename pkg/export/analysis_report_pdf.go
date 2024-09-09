@@ -50,6 +50,13 @@ func ExportToPDF(filename string, grids ...core.ReportGrid) error {
 					maxHeight = height
 				}
 			}
+			_, pageHeight := pdf.GetPageSize()
+			yPos := pdf.GetY()
+			left, top, _, bot := pdf.GetMargins()
+			if yPos+maxHeight*6 > pageHeight-bot {
+				pdf.AddPage()
+				pdf.SetXY(left, top)
+			}
 			for i, attr := range grid.RowsAttributes {
 				startX, startY := pdf.GetXY()
 				value := attr(&component)
