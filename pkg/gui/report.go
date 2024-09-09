@@ -3,6 +3,7 @@ package gui
 import (
 	"config"
 	"core"
+	"export"
 	"fmt"
 	"report"
 
@@ -160,4 +161,13 @@ func ShowReport() {
 		reportWindow.Destroy() // Close the window after exporting
 	})
 	reportWindow.ShowAll() // Show all elements in the window
+
+	err := export.ExportToPDF("Analysis_Report.pdf",
+		mismatchingMPN,
+		mismatchingDescriptions,
+		outOfStockComponents,
+		riskyLifeCycleComponents,
+		manufacturerMessagesComponents)
+	core.ErrorsHandler(err)
+
 }
