@@ -3,6 +3,7 @@ package gui
 import (
 	"config"
 	"core"
+	"export"
 	"fmt"
 	"report"
 
@@ -152,6 +153,20 @@ func ShowReport() {
 	vbox.PackStart(suggestionsLabel, false, false, 0)
 	voidBox := createBox(gtk.ORIENTATION_VERTICAL, 0)
 	vbox.PackStart(voidBox, true, true, 0)
+	// Create the "Export" button.
+	exportButton := createButton("Export")
+	vbox.PackStart(exportButton, false, false, 0)
+	// Connect the "OK" button to the export function
+	exportButton.Connect("clicked", func() {
+		err := export.ExportToPDF("Analysis_Report.pdf",
+			mismatchingMPN,
+			mismatchingDescriptions,
+			outOfStockComponents,
+			riskyLifeCycleComponents,
+			manufacturerMessagesComponents)
+		core.ErrorsHandler(err)
+		showMessageDialog(reportWindow, "Export Analysis Report", "Analysis Report exported as a .pdf file.")
+	})
 	// Create the "OK" button
 	okButton := createButton("OK")
 	vbox.PackStart(okButton, false, false, 0)
