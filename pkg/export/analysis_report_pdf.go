@@ -10,6 +10,7 @@ import (
 
 func ExportToPDF(filename string, grids ...core.ReportGrid) error {
 	pdf := gofpdf.New("L", "mm", "A4", "")
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
 	pdf.AddPage()
 
 	// Set up some default styling
@@ -23,7 +24,7 @@ func ExportToPDF(filename string, grids ...core.ReportGrid) error {
 	for _, grid := range grids {
 		// Add grid title
 		pdf.SetFont("Arial", "B", 14)
-		pdf.Cell(0, 10, grid.ExpanderName)
+		pdf.Cell(0, 10, tr(grid.ExpanderName))
 		pdf.Ln(10)
 
 		// Set up the table
@@ -64,7 +65,7 @@ func ExportToPDF(filename string, grids ...core.ReportGrid) error {
 				for len(lines) <= int(maxHeight) {
 					lines = append(lines, "")
 				}
-				pdf.MultiCell(widths[i], 6, strings.Join(lines, "\n"), "1", "", false)
+				pdf.MultiCell(widths[i], 6, tr(strings.Join(lines, "\n")), "1", "", false)
 				pdf.SetXY(startX+widths[i], startY)
 			}
 			pdf.Ln(maxHeight * 6)
