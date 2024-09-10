@@ -10,7 +10,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-func priceCalculation(s string, win *gtk.Window) {
+func priceCalculation(s string, win *gtk.Window, currency string) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.priceCalculation()", false).Stop()
 	}
@@ -38,15 +38,27 @@ func priceCalculation(s string, win *gtk.Window) {
 	addBoxMargin(box)
 	priceWin.Add(box)
 	// Create and add a label.
-	label := createLabel(fmt.Sprintf("BOM total price for [%d] piece(s): %.3f €", quantity, totalPrice))
+	totalPriceText := ""
+	priceDiffText := ""
+	pricePieceText := ""
+	if currency == "€" {
+		totalPriceText = fmt.Sprintf("BOM total price for [%d] piece(s): %.3f €", quantity, totalPrice)
+		priceDiffText = fmt.Sprintf("Price diff/piece: %.3f €", priceDiff/float64(quantity))
+		pricePieceText = fmt.Sprintf("Price/piece: %.3f €", totalPrice/float64(quantity))
+	} else if currency == "$" {
+		totalPriceText = fmt.Sprintf("BOM total price for [%d] piece(s): $%.3f", quantity, totalPrice)
+		priceDiffText = fmt.Sprintf("Price diff/piece: $%.3f", priceDiff/float64(quantity))
+		pricePieceText = fmt.Sprintf("Price/piece: $%.3f", totalPrice/float64(quantity))
+	}
+	label := createLabel(totalPriceText)
 	box.PackStart(label, false, false, 0)
 	emptyLine := createLabel("")
 	box.PackStart(emptyLine, true, true, 0)
-	label2 := createLabel(fmt.Sprintf("Price diff/piece: %.3f €", priceDiff/float64(quantity)))
+	label2 := createLabel(priceDiffText)
 	box.PackStart(label2, false, false, 0)
 	emptyLine2 := createLabel("")
 	box.PackStart(emptyLine2, true, true, 0)
-	label3 := createLabel(fmt.Sprintf("Price/piece: %.3f €", totalPrice/float64(quantity)))
+	label3 := createLabel(pricePieceText)
 	box.PackStart(label3, false, false, 0)
 	emptyLine3 := createLabel("")
 	box.PackStart(emptyLine3, true, true, 0)

@@ -47,15 +47,25 @@ func ManufacturerMessages() ([]core.Component, []int) {
 }
 
 // Function to calculate min and max total price.
-func MinMaxPrice() (float64, float64, float64, float64) {
-	newMax := 0.0
-	newMin := 0.0
-	oldMax := 0.0
-	oldMin := 0.0
+func MinMaxPrice() (float64, float64, float64, float64, string) {
+	currency := ""
+	newMax, newMin, oldMax, oldMin := 0.0, 0.0, 0.0, 0.0
 	for _, component := range core.Components {
 		if component.Analyzed && len(component.PriceBreaks) != 0 {
-			maxPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
-			minPrice, _ := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
+			maxPrice, minPrice := 0.0, 0.0
+			if component.PriceBreaks[0].Currency == "EUR" {
+				if currency == "" {
+					currency = "€"
+				}
+				maxPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[0].Price, " €"), ",", "."), 64)
+				minPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(component.PriceBreaks[len(component.PriceBreaks)-1].Price, " €"), ",", "."), 64)
+			} else if component.PriceBreaks[0].Currency == "USD" {
+				if currency == "" {
+					currency = "$"
+				}
+				maxPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(component.PriceBreaks[0].Price, "$"), ",", "."), 64)
+				minPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(component.PriceBreaks[len(component.PriceBreaks)-1].Price, "$"), ",", "."), 64)
+			}
 			if component.Operator == "EQUAL" {
 				newMax += maxPrice * float64(component.Quantity)
 				newMin += minPrice * float64(component.Quantity)
@@ -72,7 +82,7 @@ func MinMaxPrice() (float64, float64, float64, float64) {
 	}
 	minPriceDiff := newMin - oldMin
 	maxPriceDiff := newMax - oldMax
-	return newMin, newMax, minPriceDiff, maxPriceDiff
+	return newMin, newMax, minPriceDiff, maxPriceDiff, currency
 }
 
 // Function to find components with not 100% matching manufacturer part number.
@@ -111,15 +121,23 @@ func QuantityPrice(quantity int) (float64, float64, []string) {
 			for _, priceBreak := range component.PriceBreaks {
 				if priceBreak.Quantity > component.Quantity*quantity {
 					if componentPrice == 0.0 {
-						convPrice, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
-						core.ErrorsHandler(err)
+						convPrice := 0.0
+						if priceBreak.Currency == "EUR" {
+							convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
+						} else if priceBreak.Currency == "USD" {
+							convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(priceBreak.Price, "$"), ",", "."), 64)
+						}
 						componentPrice = float64(component.Quantity*quantity) * convPrice
 						minimumQuantity = append(minimumQuantity, fmt.Sprintf("Minimum quantity (%d) not reached for the component: %s", priceBreak.Quantity, component.Mpn))
 					}
 					break
 				}
-				convPrice, err := strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
-				core.ErrorsHandler(err)
+				convPrice := 0.0
+				if priceBreak.Currency == "EUR" {
+					convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
+				} else if priceBreak.Currency == "USD" {
+					convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(priceBreak.Price, "$"), ",", "."), 64)
+				}
 				componentPrice = float64(component.Quantity*quantity) * convPrice
 			}
 			if component.Operator == "EQUAL" {

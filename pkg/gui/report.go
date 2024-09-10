@@ -19,7 +19,7 @@ func ShowReport() {
 	oosComponents, oosCompIdx := report.OutOfStockComp()
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
 	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
-	minPrice, maxPrice, minPriceDiff, maxPriceDiff := report.MinMaxPrice()
+	minPrice, maxPrice, minPriceDiff, maxPriceDiff, currency := report.MinMaxPrice()
 	mismatchComponents := report.MismatchMpn()
 	mismatchCompDescription, mismatchCompDesIdx := report.MismatchDescription()
 	// Create a new window for showing the report.
@@ -83,9 +83,15 @@ func ShowReport() {
 	priceButton.Connect("clicked", func() {
 		quantity, err := priceEntry.GetText()
 		core.ErrorsHandler(err)
-		priceCalculation(quantity, reportWindow)
+		priceCalculation(quantity, reportWindow, currency)
 	})
-	minMaxPriceLabel := createLabel("Min:\t" + fmt.Sprintf("%.4f", minPrice) + "€\t\tΔ:\t" + fmt.Sprintf("%.4f", minPriceDiff) + "€\t\tMax:\t" + fmt.Sprintf("%.4f", maxPrice) + "€\t\tΔ:\t" + fmt.Sprintf("%.4f", maxPriceDiff) + "€")
+	minMaxPriceLabelText := ""
+	if currency == "€" {
+		minMaxPriceLabelText = "Min:\t" + fmt.Sprintf("%.4f", minPrice) + currency + "\t\tΔ:\t" + fmt.Sprintf("%.4f", minPriceDiff) + currency + "\t\tMax:\t" + fmt.Sprintf("%.4f", maxPrice) + currency + "\t\tΔ:\t" + fmt.Sprintf("%.4f", maxPriceDiff) + currency
+	} else if currency == "$" {
+		minMaxPriceLabelText = "Min:\t" + currency + fmt.Sprintf("%.4f", minPrice) + "\t\tΔ:\t" + currency + fmt.Sprintf("%.4f", minPriceDiff) + "\t\tMax:\t" + currency + fmt.Sprintf("%.4f", maxPrice) + "\t\tΔ:\t" + currency + fmt.Sprintf("%.4f", maxPriceDiff)
+	}
+	minMaxPriceLabel := createLabel(minMaxPriceLabelText)
 	emptyLine := createLabel("")
 	priceBox.PackStart(emptyLine, true, true, 1)
 	priceBox.PackStart(priceEntry, false, false, 0)
