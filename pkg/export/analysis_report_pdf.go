@@ -71,15 +71,42 @@ func ExportToPDF(filename string, grids ...core.ReportGrid) error {
 
 			// Handle attachments
 			if grid.AttachmentsIter != nil {
+				maxHeight := 0.0
+				maxHeightRow := []float64{}
 				for _, attachment := range grid.AttachmentsIter(&component) {
-					for i, attach := range grid.Attachments {
-						value := attach.Attribute(&attachment)
-						if i == 0 {
-							pdf.CellFormat(widths[0], 6, "", "1", 0, "", false, 0, "")
+					emptyAttributes := [2]core.Attachment{}
+					attributes := append(emptyAttributes[:], grid.Attachments...)
+					for i, attach := range attributes {
+						maxHeight = 1.0
+						if i > 1 {
+							value := attach.Attribute(&attachment)
+							lines := pdf.SplitText(value, widths[i])
+							height := float64(len(lines))
+							if height > maxHeight {
+								maxHeight = height
+							}
 						}
-						pdf.CellFormat(widths[attach.Column], 6, value, "1", 0, "", false, 0, "")
 					}
-					pdf.Ln(-1)
+					maxHeightRow = append(maxHeightRow, maxHeight)
+				}
+				for j, attachment := range grid.AttachmentsIter(&component) {
+					emptyAttributes := [2]core.Attachment{}
+					attributes := append(emptyAttributes[:], grid.Attachments...)
+					for i, attach := range attributes {
+						if i < 2 {
+							pdf.CellFormat(widths[i], 6, "", "", 0, "", false, 0, "")
+						} else {
+							startX, startY := pdf.GetXY()
+							value := attach.Attribute(&attachment)
+							lines := pdf.SplitText(value, widths[attach.Column])
+							for len(lines) <= int(maxHeightRow[j]) {
+								lines = append(lines, "")
+							}
+							pdf.MultiCell(widths[attach.Column], 6, strings.Join(lines, "\n"), "1", "", false)
+							pdf.SetXY(startX+widths[attach.Column], startY)
+						}
+					}
+					pdf.Ln(maxHeightRow[j] * 6)
 				}
 			}
 
@@ -91,7 +118,7 @@ func ExportToPDF(filename string, grids ...core.ReportGrid) error {
 						if i == 0 {
 							pdf.CellFormat(widths[0], 6, "", "1", 0, "", false, 0, "")
 						}
-						pdf.CellFormat(widths[attach.Column], 6, value, "1", 0, "", false, 0, "")
+						pdf.CellFormat(widths[i], 6, value, "1", 0, "", false, 0, "")
 					}
 					pdf.Ln(-1)
 				}
