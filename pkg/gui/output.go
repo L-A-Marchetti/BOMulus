@@ -80,6 +80,13 @@ func appendRow(store *gtk.ListStore, operation, oldRow, newRow string, content [
 		oRow, _ := strconv.Atoi(oldRow)
 		nRow, _ := strconv.Atoi(newRow)
 		for i := range core.XlsmFiles[0].Content[oRow] {
+			// Hot fix.
+			if len(core.XlsmFiles[1].Content[nRow])-1 < i {
+				core.XlsmFiles[1].Content[nRow] = append(core.XlsmFiles[1].Content[nRow], "")
+			} else if len(core.XlsmFiles[0].Content[oRow])-1 < i {
+				core.XlsmFiles[0].Content[oRow] = append(core.XlsmFiles[0].Content[oRow], "")
+			}
+			// End of Hot fix.
 			if core.XlsmFiles[0].Content[oRow][i] != core.XlsmFiles[1].Content[nRow][i] {
 				storeCells = append(storeCells, i)
 			}
