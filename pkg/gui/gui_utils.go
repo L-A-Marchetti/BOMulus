@@ -166,7 +166,7 @@ func componentLabels(idx int, box *gtk.Box) {
 	}
 	componentInfosGrid([]string{
 		"Manufacturer Part Number", core.Components[idx].Mpn,
-		"Manufacturer", core.Components[idx].Manufacturer,
+		"Manufacturer", core.Components[idx].SupplierManufacturer,
 		"Supplier Descrition", core.Components[idx].SupplierDescription,
 		"Category", core.Components[idx].Category,
 		"Availability", availability,

@@ -20,10 +20,11 @@ func BtnCompare(button *gtk.Button) {
 	}
 	// Read and store both Xlsm files.
 	core.XlsmReader()
-	// Point break
-	os.Exit(0)
 	// Try to detect automatically the header.
 	components.HeaderDetection()
+	components.ComponentsDetection()
+	// Point break
+	os.Exit(0)
 	// Generate delta data.
 	core.XlsmDiff()
 	// Generate the filters box.

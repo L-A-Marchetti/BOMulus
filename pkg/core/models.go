@@ -32,18 +32,20 @@ var XlsmDeltas []XlsmDelta
 /*╔══════════════ FILTER MODEL ══════════════╗*/
 
 type Filter struct {
-	Equal       bool
-	Delete      bool
-	Insert      bool
-	Update      bool
-	Swap        bool
-	Header      int
-	Quantity    int
-	Mpn         int
-	Description int
+	Equal        bool
+	Delete       bool
+	Insert       bool
+	Update       bool
+	Swap         bool
+	Header       int
+	Quantity     int
+	Mpn          int
+	Description  int
+	Designator   int
+	Manufacturer int
 }
 
-var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0}
+var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0}
 
 /*╚══════════════════════════════════════════╝*/
 
@@ -54,6 +56,7 @@ type Component struct {
 	OldRow, NewRow       int
 	Quantity             int
 	Mpn                  string
+	Designator           string
 	ImagePath            string
 	Availability         string
 	DataSheetUrl         string
@@ -67,7 +70,8 @@ type Component struct {
 	UserDescription      string
 	SupplierDescription  string
 	Img                  *gdk.Pixbuf
-	Manufacturer         string
+	UserManufacturer     string
+	SupplierManufacturer string
 	Category             string
 	ProductDetailUrl     string
 }
@@ -78,7 +82,11 @@ type PriceBreak struct {
 	Currency string `json:"Currency"`
 }
 
-var Components = []Component{}
+var (
+	Components    = []Component{} // Do we still need it ?
+	OldComponents = []Component{}
+	NewComponents = []Component{}
+)
 
 /*╚══════════════════════════════════════════════╝*/
 
@@ -95,6 +103,8 @@ func ResetDeltas() {
 
 func ResetComponents() {
 	Components = []Component{}
+	OldComponents = []Component{}
+	NewComponents = []Component{}
 }
 
 /*╚══════════════════════════════════════════════╝*/

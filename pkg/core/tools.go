@@ -55,7 +55,7 @@ func ContainsInteger(slice []int, i int) bool {
 // Function to now if keywords contains s.
 // Maybe add a tolower filter...
 func ContainsKeywords(s string) bool {
-	normalizedInput := strings.ToLower(strings.ReplaceAll(s, " ", ""))
+	normalizedInput := strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(s, " ", ""), "_", ""))
 	for _, keyword := range config.HEADER_KEYWORDS {
 		normalizedKeyword := strings.ToLower(strings.ReplaceAll(keyword, " ", ""))
 		if normalizedKeyword == normalizedInput {

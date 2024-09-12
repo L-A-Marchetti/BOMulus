@@ -15,13 +15,17 @@ func HeaderDetection() {
 	for i, row := range core.XlsmFiles[1].Content {
 		for j, col := range row {
 			if core.ContainsKeywords(col) {
-				switch strings.ToLower(strings.ReplaceAll(col, " ", "")) {
+				switch strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(col, " ", ""), "_", "")) {
 				case "quantity":
 					core.Filters.Quantity = j
-				case "manufacturerpartnumber":
+				case "manufacturerpartnumber", "mpn":
 					core.Filters.Mpn = j
 				case "description":
 					core.Filters.Description = j
+				case "designator":
+					core.Filters.Designator = j
+				case "manufacturer", "manufacturername":
+					core.Filters.Manufacturer = j
 				}
 				header = i
 			}
