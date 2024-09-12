@@ -4,8 +4,6 @@ import (
 	"components"
 	"config"
 	"core"
-	"fmt"
-	"os"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -26,17 +24,13 @@ func BtnCompare(button *gtk.Button) {
 	components.ComponentsDetection()
 	// Generate delta data.
 	core.XlsmDiff()
-	for _, component := range core.Components {
-		if component.Operator == "INSERT" || component.Operator == "DELETE" {
-			fmt.Println(component)
-		}
-	}
-	// Point break
-	os.Exit(0)
-	// Generate the filters box.
-	avoidDuplicate()
-	filtersHBox := filters()
-	vBox.Add(filtersHBox)
-	// Update the view
-	UpdateView()
+	compareView()
+	/*
+		// Generate the filters box.
+		avoidDuplicate()
+		filtersHBox := filters()
+		vBox.Add(filtersHBox)
+		// Update the view
+		UpdateView()
+	*/
 }

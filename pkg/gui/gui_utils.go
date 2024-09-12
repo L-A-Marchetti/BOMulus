@@ -5,7 +5,9 @@ import (
 	"core"
 	"fmt"
 	"os"
+	"strconv"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/gotk3/gotk3/pango"
@@ -260,6 +262,14 @@ func createGrid() *gtk.Grid {
 	return grid
 }
 
+func createTightGrid() *gtk.Grid {
+	grid, err := gtk.GridNew()
+	core.ErrorsHandler(err)
+	grid.SetColumnSpacing(0)
+	grid.SetRowSpacing(5)
+	return grid
+}
+
 func createGridHeaders(headers []string, grid *gtk.Grid) {
 	for i, header := range headers {
 		headerLabel := createLabel(header)
@@ -370,4 +380,62 @@ func createComboBoxes(box *gtk.Box) {
 	endCombo.Connect("changed", func() {
 		core.AnalysisState.IdxEnd = endCombo.GetActive() - 1
 	})
+}
+
+func createCompareGrid(operator string, parentBox *gtk.Box) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.createCompareGrid()", true).Stop()
+	}
+	expander, _ := gtk.ExpanderNew(operator)
+	grid := createTightGrid()
+	applyCSS(grid, fmt.Sprintf(`
+		#grid label {
+			padding: 5px;
+		}
+		#grid .cell {
+			background-color: %s;
+		}
+    `, config.INSERT_BG_COLOR))
+	createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description"}, grid)
+	i := 0
+	for _, component := range core.Components {
+		if component.Operator == operator {
+			quantityLabel := createLabel(strconv.Itoa(component.Quantity))
+			context, _ := quantityLabel.GetStyleContext()
+			context.AddClass("cell")
+			wrapText(quantityLabel, 80)
+			grid.Attach(quantityLabel, 0, i+1, 1, 1)
+			mpnLabel := createLabel(component.Mpn)
+			context, _ = mpnLabel.GetStyleContext()
+			context.AddClass("cell")
+			wrapText(mpnLabel, 80)
+			grid.Attach(mpnLabel, 1, i+1, 1, 1)
+			designatorLabel := createLabel(component.Designator)
+			context, _ = designatorLabel.GetStyleContext()
+			context.AddClass("cell")
+			wrapText(designatorLabel, 80)
+			grid.Attach(designatorLabel, 2, i+1, 1, 1)
+			descriptionLabel := createLabel(component.UserDescription)
+			context, _ = descriptionLabel.GetStyleContext()
+			context.AddClass("cell")
+			wrapText(descriptionLabel, 80)
+			grid.Attach(descriptionLabel, 3, i+1, 1, 1)
+			i++
+		}
+	}
+	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	addBoxMargin(centerBox)
+	centerBox.PackStart(grid, true, false, 0)
+	expander.Add(centerBox)
+	parentBox.PackStart(expander, false, false, 0)
+}
+
+func applyCSS(widget *gtk.Grid, css string) {
+	cssProvider, _ := gtk.CssProviderNew()
+	screen, _ := gdk.ScreenGetDefault()
+	cssProvider.LoadFromData(css)
+	// Apply the CSS to the screen
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	// Set the CSS name of the widget
+	widget.SetName("grid")
 }
