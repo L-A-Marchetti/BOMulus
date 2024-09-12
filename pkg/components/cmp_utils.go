@@ -5,6 +5,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/gotk3/gotk3/gdk"
 )
@@ -90,4 +91,21 @@ func colSafety(delta core.XlsmDelta) {
 	for len(core.XlsmFiles[1].Content[delta.NewRow]) <= int(colSafety) {
 		core.XlsmFiles[1].Content[delta.NewRow] = append(core.XlsmFiles[1].Content[delta.NewRow], "")
 	}
+}
+
+func DiffCount() []string {
+	insertCount, updateCount, deleteCount, equalCount := 0, 0, 0, 0
+	for _, component := range core.Components {
+		switch component.Operator {
+		case "INSERT":
+			insertCount++
+		case "UPDATE":
+			updateCount++
+		case "DELETE":
+			deleteCount++
+		case "EQUAL":
+			equalCount++
+		}
+	}
+	return []string{strconv.Itoa(insertCount), strconv.Itoa(updateCount), strconv.Itoa(deleteCount), strconv.Itoa(equalCount)}
 }

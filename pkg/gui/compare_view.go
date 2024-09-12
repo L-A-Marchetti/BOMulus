@@ -22,6 +22,6 @@ func compareView() {
 	addBoxMargin(vbox)
 	scrolledWindow.Add(vbox)
 	compareWindow.Add(scrolledWindow)
-	createCompareGrid("INSERT", vbox)
+	createCompareGrid(vbox)
 	compareWindow.ShowAll()
 }

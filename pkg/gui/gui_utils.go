@@ -1,11 +1,13 @@
 package gui
 
 import (
+	"components"
 	"config"
 	"core"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
@@ -382,52 +384,63 @@ func createComboBoxes(box *gtk.Box) {
 	})
 }
 
-func createCompareGrid(operator string, parentBox *gtk.Box) {
+func createCompareGrid(parentBox *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createCompareGrid()", true).Stop()
 	}
-	expander, _ := gtk.ExpanderNew(operator)
-	grid := createTightGrid()
-	applyCSS(grid, fmt.Sprintf(`
+	diffSummary := components.DiffCount()
+	operator := []string{"INSERT", "UPDATE", "DELETE", "EQUAL"}
+	opColor := []string{config.INSERT_BG_COLOR, config.NEW_UPDATE_BG_COLOR, config.DELETE_BG_COLOR, "#adadad"}
+	for op := range operator {
+		expander, _ := gtk.ExpanderNew(operator[op] + " - ⚐ " + diffSummary[op])
+		expander.SetExpanded(true)
+		grid := createTightGrid()
+		className := fmt.Sprintf("cell-%s", strings.ToLower(operator[op]))
+		applyCSS(grid, fmt.Sprintf(`
 		#grid label {
 			padding: 5px;
 		}
-		#grid .cell {
+		#grid .%s {
 			background-color: %s;
 		}
-    `, config.INSERT_BG_COLOR))
-	createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description"}, grid)
-	i := 0
-	for _, component := range core.Components {
-		if component.Operator == operator {
-			quantityLabel := createLabel(strconv.Itoa(component.Quantity))
-			context, _ := quantityLabel.GetStyleContext()
-			context.AddClass("cell")
-			wrapText(quantityLabel, 80)
-			grid.Attach(quantityLabel, 0, i+1, 1, 1)
-			mpnLabel := createLabel(component.Mpn)
-			context, _ = mpnLabel.GetStyleContext()
-			context.AddClass("cell")
-			wrapText(mpnLabel, 80)
-			grid.Attach(mpnLabel, 1, i+1, 1, 1)
-			designatorLabel := createLabel(component.Designator)
-			context, _ = designatorLabel.GetStyleContext()
-			context.AddClass("cell")
-			wrapText(designatorLabel, 80)
-			grid.Attach(designatorLabel, 2, i+1, 1, 1)
-			descriptionLabel := createLabel(component.UserDescription)
-			context, _ = descriptionLabel.GetStyleContext()
-			context.AddClass("cell")
-			wrapText(descriptionLabel, 80)
-			grid.Attach(descriptionLabel, 3, i+1, 1, 1)
-			i++
+    `, className, opColor[op]))
+		createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description"}, grid)
+		i := 0
+		for _, component := range core.Components {
+			if component.Operator == operator[op] {
+				quantityText := strconv.Itoa(component.Quantity)
+				if component.Operator == "UPDATE" {
+					quantityText = strconv.Itoa(component.OldQuantity) + " → " + strconv.Itoa(component.NewQuantity)
+				}
+				quantityLabel := createLabel(quantityText)
+				context, _ := quantityLabel.GetStyleContext()
+				context.AddClass(className)
+				wrapText(quantityLabel, 80)
+				grid.Attach(quantityLabel, 0, i+1, 1, 1)
+				mpnLabel := createLabel(component.Mpn)
+				context, _ = mpnLabel.GetStyleContext()
+				context.AddClass(className)
+				wrapText(mpnLabel, 80)
+				grid.Attach(mpnLabel, 1, i+1, 1, 1)
+				designatorLabel := createLabel(component.Designator)
+				context, _ = designatorLabel.GetStyleContext()
+				context.AddClass(className)
+				wrapText(designatorLabel, 80)
+				grid.Attach(designatorLabel, 2, i+1, 1, 1)
+				descriptionLabel := createLabel(component.UserDescription)
+				context, _ = descriptionLabel.GetStyleContext()
+				context.AddClass(className)
+				wrapText(descriptionLabel, 80)
+				grid.Attach(descriptionLabel, 3, i+1, 1, 1)
+				i++
+			}
 		}
+		centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+		addBoxMargin(centerBox)
+		centerBox.PackStart(grid, true, false, 0)
+		expander.Add(centerBox)
+		parentBox.PackStart(expander, false, false, 0)
 	}
-	centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
-	addBoxMargin(centerBox)
-	centerBox.PackStart(grid, true, false, 0)
-	expander.Add(centerBox)
-	parentBox.PackStart(expander, false, false, 0)
 }
 
 func applyCSS(widget *gtk.Grid, css string) {
