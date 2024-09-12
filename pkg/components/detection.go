@@ -96,7 +96,7 @@ func ComponentsDetection() {
 			quantity, err := strconv.Atoi(row[core.Filters.Quantity])
 			if err != nil {
 				fmt.Println("Quantity not found.")
-				return
+				break
 			}
 			component := core.Component{
 				Quantity:         quantity,
@@ -113,7 +113,7 @@ func ComponentsDetection() {
 			quantity, err := strconv.Atoi(row[core.Filters.Quantity])
 			if err != nil {
 				fmt.Println("Quantity not found.")
-				return
+				break
 			}
 			component := core.Component{
 				Quantity:         quantity,

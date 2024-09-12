@@ -2,55 +2,50 @@ package core
 
 import (
 	"config"
-	"reflect"
 )
 
-// Diff algo with an UPDATE function added.
 func XlsmDiff() {
 	if config.DEBUGGING {
 		defer StartBenchmark("XlsmDiff()", false).Stop()
 	}
-	ResetDeltas()
-	var delta XlsmDelta
-	i := Filters.Header
-	j := Filters.Header
-	for i < len(XlsmFiles[1].Content) && j < len(XlsmFiles[0].Content) {
-		if !reflect.DeepEqual(XlsmFiles[1].Content[i], XlsmFiles[0].Content[j]) {
-			if InsertFound(i, j) {
-				delta = XlsmDelta{"INSERT", j, i}
-				XlsmDeltas = append(XlsmDeltas, delta)
-				j--
-			} else if DeleteFound(i, j) {
-				delta = XlsmDelta{"DELETE", j, i}
-				XlsmDeltas = append(XlsmDeltas, delta)
-				i--
-			} else {
-				delta = XlsmDelta{"UPDATE", j, i}
-				XlsmDeltas = append(XlsmDeltas, delta)
+	for _, newComponent := range NewComponents {
+		matchFound := false
+		for _, oldComponent := range OldComponents {
+			if newComponent.Mpn == oldComponent.Mpn &&
+				newComponent.Quantity == oldComponent.Quantity {
+				component := newComponent
+				component.Operator = "EQUAL"
+				Components = append(Components, component)
+				matchFound = true
+				break
+			} else if newComponent.Mpn == oldComponent.Mpn {
+				component := newComponent
+				component.Operator = "UPDATE"
+				component.OldQuantity = oldComponent.Quantity
+				component.NewQuantity = newComponent.Quantity
+				Components = append(Components, component)
+				matchFound = true
+				break
 			}
-		} else {
-			delta = XlsmDelta{"EQUAL", j, i}
-			XlsmDeltas = append(XlsmDeltas, delta)
 		}
-		i++
-		j++
-	}
-}
-
-func InsertFound(i, j int) bool {
-	for k := i; k < len(XlsmFiles[1].Content); k++ {
-		if reflect.DeepEqual(XlsmFiles[1].Content[k], XlsmFiles[0].Content[j]) {
-			return true
+		if !matchFound {
+			component := newComponent
+			component.Operator = "INSERT"
+			Components = append(Components, component)
 		}
 	}
-	return false
-}
-
-func DeleteFound(i, j int) bool {
-	for k := j; k < len(XlsmFiles[0].Content); k++ {
-		if reflect.DeepEqual(XlsmFiles[1].Content[i], XlsmFiles[0].Content[k]) {
-			return true
+	for _, oldComponent := range OldComponents {
+		matchFound := false
+		for _, newComponent := range NewComponents {
+			if newComponent.Mpn == oldComponent.Mpn {
+				matchFound = true
+				break
+			}
+		}
+		if !matchFound {
+			component := oldComponent
+			component.Operator = "DELETE"
+			Components = append(Components, component)
 		}
 	}
-	return false
 }

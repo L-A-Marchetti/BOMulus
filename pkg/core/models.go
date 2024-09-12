@@ -52,28 +52,28 @@ var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0}
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
 
 type Component struct {
-	Operator             string
-	OldRow, NewRow       int
-	Quantity             int
-	Mpn                  string
-	Designator           string
-	ImagePath            string
-	Availability         string
-	DataSheetUrl         string
-	LifecycleStatus      string
-	ROHSStatus           string
-	SuggestedReplacement string
-	PriceBreaks          []PriceBreak
-	InfoMessages         []string
-	Analyzed             bool
-	MismatchMpn          []Component
-	UserDescription      string
-	SupplierDescription  string
-	Img                  *gdk.Pixbuf
-	UserManufacturer     string
-	SupplierManufacturer string
-	Category             string
-	ProductDetailUrl     string
+	Operator                           string
+	OldRow, NewRow                     int
+	Quantity, OldQuantity, NewQuantity int
+	Mpn                                string
+	Designator                         string
+	ImagePath                          string
+	Availability                       string
+	DataSheetUrl                       string
+	LifecycleStatus                    string
+	ROHSStatus                         string
+	SuggestedReplacement               string
+	PriceBreaks                        []PriceBreak
+	InfoMessages                       []string
+	Analyzed                           bool
+	MismatchMpn                        []Component
+	UserDescription                    string
+	SupplierDescription                string
+	Img                                *gdk.Pixbuf
+	UserManufacturer                   string
+	SupplierManufacturer               string
+	Category                           string
+	ProductDetailUrl                   string
 }
 
 type PriceBreak struct {
