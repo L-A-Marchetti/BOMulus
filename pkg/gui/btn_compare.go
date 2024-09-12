@@ -4,6 +4,7 @@ import (
 	"components"
 	"config"
 	"core"
+	"os"
 
 	"github.com/gotk3/gotk3/gtk"
 )
@@ -19,6 +20,8 @@ func BtnCompare(button *gtk.Button) {
 	}
 	// Read and store both Xlsm files.
 	core.XlsmReader()
+	// Point break
+	os.Exit(0)
 	// Try to detect automatically the header.
 	components.HeaderDetection()
 	// Generate delta data.

@@ -47,4 +47,5 @@ func XlsmReader() {
 		// Convert data into a string matrix
 		XlsmFiles[i].Content = append(XlsmFiles[i].Content, rows...)
 	}
+	blankTailsFix()
 }
