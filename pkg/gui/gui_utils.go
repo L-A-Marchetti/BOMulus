@@ -5,8 +5,6 @@ import (
 	"core"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
@@ -53,9 +51,6 @@ func createBox(orientation gtk.Orientation, spacing int) *gtk.Box {
 }
 
 func createButton(s string) *gtk.Button {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createButton() ("+s+")", false).Stop()
-	}
 	button, err := gtk.ButtonNewWithLabel(s)
 	core.ErrorsHandler(err)
 	return button
@@ -380,70 +375,6 @@ func createComboBoxes(box *gtk.Box) {
 	endCombo.Connect("changed", func() {
 		core.AnalysisState.IdxEnd = endCombo.GetActive() - 1
 	})
-}
-
-func createCompareGrid(parentBox *gtk.Box) {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createCompareGrid()", true).Stop()
-	}
-	diffSummary := []string{strconv.Itoa(core.Filters.InsertCount), strconv.Itoa(core.Filters.UpdateCount), strconv.Itoa(core.Filters.DeleteCount), strconv.Itoa(core.Filters.EqualCount)}
-	operator := []string{"INSERT", "UPDATE", "DELETE", "EQUAL"}
-	opColor := []string{config.INSERT_BG_COLOR, config.NEW_UPDATE_BG_COLOR, config.DELETE_BG_COLOR, "#adadad"}
-	for op := range operator {
-		expander, _ := gtk.ExpanderNew(operator[op] + " - ⚐ " + diffSummary[op])
-		expander.SetExpanded(true)
-		grid := createTightGrid()
-		className := fmt.Sprintf("cell-%s", strings.ToLower(operator[op]))
-		applyCSS(grid, fmt.Sprintf(`
-		#grid label {
-			padding: 5px;
-		}
-		#grid .%s {
-			background-color: %s;
-		}
-    `, className, opColor[op]))
-		createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description", config.INFO_BTN_CHAR}, grid)
-		i := 0
-		for compIdx, component := range core.Components {
-			if component.Operator == operator[op] {
-				quantityText := strconv.Itoa(component.Quantity)
-				if component.Operator == "UPDATE" {
-					quantityText = strconv.Itoa(component.OldQuantity) + " → " + strconv.Itoa(component.NewQuantity)
-				}
-				quantityLabel := createLabel(quantityText)
-				context, _ := quantityLabel.GetStyleContext()
-				context.AddClass(className)
-				wrapText(quantityLabel, 80)
-				grid.Attach(quantityLabel, 0, i+1, 1, 1)
-				mpnLabel := createLabel(component.Mpn)
-				context, _ = mpnLabel.GetStyleContext()
-				context.AddClass(className)
-				wrapText(mpnLabel, 80)
-				grid.Attach(mpnLabel, 1, i+1, 1, 1)
-				designatorLabel := createLabel(component.Designator)
-				context, _ = designatorLabel.GetStyleContext()
-				context.AddClass(className)
-				wrapText(designatorLabel, 80)
-				grid.Attach(designatorLabel, 2, i+1, 1, 1)
-				descriptionLabel := createLabel(component.UserDescription)
-				context, _ = descriptionLabel.GetStyleContext()
-				context.AddClass(className)
-				wrapText(descriptionLabel, 80)
-				grid.Attach(descriptionLabel, 3, i+1, 1, 1)
-				compButton := createButton(config.INFO_BTN_CHAR)
-				compButton.Connect("clicked", func() {
-					ShowComponent(compIdx)
-				})
-				grid.Attach(compButton, 4, i+1, 1, 1)
-				i++
-			}
-		}
-		centerBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
-		addBoxMargin(centerBox)
-		centerBox.PackStart(grid, true, false, 0)
-		expander.Add(centerBox)
-		parentBox.PackStart(expander, false, false, 0)
-	}
 }
 
 func applyCSS(widget *gtk.Grid, css string) {
