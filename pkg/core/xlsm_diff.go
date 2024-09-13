@@ -16,6 +16,9 @@ func XlsmDiff() {
 				component := newComponent
 				component.Operator = "EQUAL"
 				Components = append(Components, component)
+				Filters.EqualCount++
+				Filters.OldQuantity += component.Quantity
+				Filters.NewQuantity += component.Quantity
 				matchFound = true
 				break
 			} else if newComponent.Mpn == oldComponent.Mpn {
@@ -24,6 +27,9 @@ func XlsmDiff() {
 				component.OldQuantity = oldComponent.Quantity
 				component.NewQuantity = newComponent.Quantity
 				Components = append(Components, component)
+				Filters.UpdateCount++
+				Filters.OldQuantity += component.OldQuantity
+				Filters.NewQuantity += component.NewQuantity
 				matchFound = true
 				break
 			}
@@ -32,6 +38,8 @@ func XlsmDiff() {
 			component := newComponent
 			component.Operator = "INSERT"
 			Components = append(Components, component)
+			Filters.InsertCount++
+			Filters.NewQuantity += component.Quantity
 		}
 	}
 	for _, oldComponent := range OldComponents {
@@ -46,6 +54,8 @@ func XlsmDiff() {
 			component := oldComponent
 			component.Operator = "DELETE"
 			Components = append(Components, component)
+			Filters.DeleteCount++
+			Filters.OldQuantity += component.Quantity
 		}
 	}
 }

@@ -17,7 +17,7 @@ func UpdateView() {
 		defer core.StartBenchmark("gui.UpdateView()", true).Stop()
 	}
 	// Generate labels for diff summary.
-	diffSummaryLabel = DiffSummary()
+	//diffSummaryLabel = DiffSummary()
 	// Determine the maximum number of columns.
 	maxColumns := core.MaxCol()
 	// Generate a ListStore and a TreeView.

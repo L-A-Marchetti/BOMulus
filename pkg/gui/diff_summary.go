@@ -1,14 +1,6 @@
 package gui
 
-import (
-	"components"
-	"config"
-	"core"
-	"fmt"
-
-	"github.com/gotk3/gotk3/gtk"
-)
-
+/*
 func DiffSummary() *gtk.Label {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.DiffSummary()", false).Stop()
@@ -38,3 +30,4 @@ func DiffSummary() *gtk.Label {
 	diffSummaryLabel.SetMarginBottom(10)
 	return diffSummaryLabel
 }
+*/

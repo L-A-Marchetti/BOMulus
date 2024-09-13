@@ -32,20 +32,22 @@ var XlsmDeltas []XlsmDelta
 /*╔══════════════ FILTER MODEL ══════════════╗*/
 
 type Filter struct {
-	Equal        bool
-	Delete       bool
-	Insert       bool
-	Update       bool
-	Swap         bool
-	Header       int
-	Quantity     int
-	Mpn          int
-	Description  int
-	Designator   int
-	Manufacturer int
+	Equal                                             bool
+	Delete                                            bool
+	Insert                                            bool
+	Update                                            bool
+	Swap                                              bool
+	Header                                            int
+	Quantity                                          int
+	Mpn                                               int
+	Description                                       int
+	Designator                                        int
+	Manufacturer                                      int
+	InsertCount, UpdateCount, DeleteCount, EqualCount int
+	OldQuantity, NewQuantity                          int
 }
 
-var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0}
+var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 /*╚══════════════════════════════════════════╝*/
 
@@ -105,6 +107,10 @@ func ResetComponents() {
 	Components = []Component{}
 	OldComponents = []Component{}
 	NewComponents = []Component{}
+}
+
+func ResetFilters() {
+	Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 }
 
 /*╚══════════════════════════════════════════════╝*/

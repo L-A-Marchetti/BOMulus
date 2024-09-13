@@ -5,22 +5,36 @@ import (
 	"io"
 	"math"
 	"net/http"
-	"strconv"
 
 	"github.com/gotk3/gotk3/gdk"
 )
 
+/*
 // Calculate total quantity of components. (still need to specify only new row)
-func CompTotalQuantity() int {
-	total := 0
+func DiffSummary() []string {
+	total, old, insertCount, updateCount, deleteCount, equalCount := 0, 0, 0, 0, 0, 0
 	for _, component := range core.Components {
-		if component.NewRow != -1 {
+		if component.Operator == "INSERT" {
 			total += component.Quantity
+			insertCount++
+		} else if component.Operator == "UPDATE" {
+			total += component.NewQuantity
+			old += component.OldQuantity
+			updateCount++
+		} else if component.Operator == "EQUAL" {
+			total += component.Quantity
+			old += component.Quantity
+			equalCount++
+		} else if component.Operator == "DELETE" {
+			old += component.Quantity
+			deleteCount++
 		}
 	}
-	return total
+	diff := total - old
+	return []string{strconv.Itoa(total), strconv.Itoa(diff), strconv.Itoa(insertCount), strconv.Itoa(updateCount), strconv.Itoa(deleteCount), strconv.Itoa(equalCount)}
 }
-
+*/
+/*
 // Calculate components quantities diff between old and new BOM
 func CompQuantityDiff() int {
 	oldDiff := 0
@@ -35,6 +49,7 @@ func CompQuantityDiff() int {
 	diff := newDiff - oldDiff
 	return diff
 }
+*/
 
 // To find a component with a row reference.
 func FindComponentRowId(idx int, isOld bool) int {
@@ -93,13 +108,15 @@ func colSafety(delta core.XlsmDelta) {
 	}
 }
 
+/*
 func DiffCount() []string {
 	insertCount, updateCount, deleteCount, equalCount := 0, 0, 0, 0
 	for _, component := range core.Components {
 		switch component.Operator {
 		case "INSERT":
 			insertCount++
-		case "UPDATE":
+		case "UPDATE": // Create a label with a formatted text.
+
 			updateCount++
 		case "DELETE":
 			deleteCount++
@@ -109,3 +126,4 @@ func DiffCount() []string {
 	}
 	return []string{strconv.Itoa(insertCount), strconv.Itoa(updateCount), strconv.Itoa(deleteCount), strconv.Itoa(equalCount)}
 }
+*/

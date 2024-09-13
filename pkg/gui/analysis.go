@@ -21,20 +21,20 @@ func runAnalysis() {
 			continue
 		}
 		components.APIRequest(i)
-
 		glib.IdleAdd(func() {
 			core.AnalysisState.Current += 1
 			core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents)
-			updateTableRow()
+			//updateTableRow()
 		})
 	}
 
 	glib.IdleAdd(func() {
 		core.AnalysisState.InProgress = false
 		core.AnalysisState.Completed = true
-		avoidDuplicate()
-		filtersHBox := filters()
-		vBox.Add(filtersHBox)
-		UpdateView()
+		compareView()
+		//avoidDuplicate()
+		//filtersHBox := filters()
+		//vBox.Add(filtersHBox)
+		//UpdateView()
 	})
 }

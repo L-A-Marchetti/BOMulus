@@ -1,7 +1,6 @@
 package gui
 
 import (
-	"components"
 	"config"
 	"core"
 	"fmt"
@@ -39,9 +38,6 @@ func setWindowIcon(win *gtk.Window) {
 }
 
 func createLabel(s string) *gtk.Label {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createLabel() ("+s+")", false).Stop()
-	}
 	label, err := gtk.LabelNew(s)
 	core.ErrorsHandler(err)
 	return label
@@ -388,7 +384,7 @@ func createCompareGrid(parentBox *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createCompareGrid()", true).Stop()
 	}
-	diffSummary := components.DiffCount()
+	diffSummary := []string{strconv.Itoa(core.Filters.InsertCount), strconv.Itoa(core.Filters.UpdateCount), strconv.Itoa(core.Filters.DeleteCount), strconv.Itoa(core.Filters.EqualCount)}
 	operator := []string{"INSERT", "UPDATE", "DELETE", "EQUAL"}
 	opColor := []string{config.INSERT_BG_COLOR, config.NEW_UPDATE_BG_COLOR, config.DELETE_BG_COLOR, "#adadad"}
 	for op := range operator {
