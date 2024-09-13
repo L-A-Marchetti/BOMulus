@@ -1,13 +1,6 @@
 package gui
 
-import (
-	"config"
-	"core"
-
-	"github.com/gotk3/gotk3/glib"
-	"github.com/gotk3/gotk3/gtk"
-)
-
+/*
 // Generate a ListStore and a TreeView.
 func RenderView(maxColumns int) {
 	if config.DEBUGGING {
@@ -64,3 +57,4 @@ func RenderView(maxColumns int) {
 	// Mouse hover for the components buttons.
 	btnMouseHover()
 }
+*/

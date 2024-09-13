@@ -18,22 +18,18 @@ func GuiInit() {
 	if config.DEBUGGING {
 		guiInitBenchmark = core.StartBenchmark("gui.GuiInit()", true)
 	}
-	// Initialize GTK.
 	gtk.Init(nil)
-	// Create the main window.
-	win := createWindow(config.TITLE, config.WIN_WIDTH, config.WIN_HEIGHT)
+	win := createWindow(config.TITLE, 0, 0)
 	// Setup the icon.
 	setWindowIcon(win)
 	// Create the compare button.
 	compareButton := createButton(config.INIT_BUTTON_LABEL)
-	// Connect the button click event to the BtnCompare function.
 	compareButton.Connect("clicked", BtnCompare)
 	// Create drag & drop boxes.
 	dragAndDropBoxes := createDragAndDropBoxes(compareButton)
-	// Create a vertical box container to hold drag and drop boxes and the compare button.
 	vBox = createBox(gtk.ORIENTATION_VERTICAL, 6)
 	vBox.PackStart(dragAndDropBoxes, false, false, 0)
-	vBox.PackStart(compareButton, false, false, 0)
+	vBox.PackStart(compareButton, false, false, 20)
 	win.Add(vBox)
 	win.ShowAll()
 	win.Connect("destroy", func() {
@@ -42,6 +38,5 @@ func GuiInit() {
 	if config.DEBUGGING {
 		guiInitBenchmark.Stop()
 	}
-	// Run the main GTK loop.
 	gtk.Main()
 }

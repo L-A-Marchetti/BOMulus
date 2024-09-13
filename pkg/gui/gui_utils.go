@@ -61,27 +61,28 @@ func createButton(s string) *gtk.Button {
 	return button
 }
 
-func createCheckBoxes(labels ...string) []*gtk.CheckButton {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createCheckBoxes()", false).Stop()
+/*
+	func createCheckBoxes(labels ...string) []*gtk.CheckButton {
+		if config.DEBUGGING {
+			defer core.StartBenchmark("gui.createCheckBoxes()", false).Stop()
+		}
+		checkboxes := []*gtk.CheckButton{}
+		for i, label := range labels {
+			cb, err := gtk.CheckButtonNewWithLabel(label)
+			core.ErrorsHandler(err)
+			// Initialize checkboxes.
+			cb = core.InitFilters(i, cb)
+			checkboxes = append(checkboxes, cb)
+			// Connect all checkboxes.
+			cb.Connect("toggled", func() {
+				// If a checkbox is toggled change the filters.
+				core.SetFilters(checkboxes)
+				UpdateView()
+			})
+		}
+		return checkboxes
 	}
-	checkboxes := []*gtk.CheckButton{}
-	for i, label := range labels {
-		cb, err := gtk.CheckButtonNewWithLabel(label)
-		core.ErrorsHandler(err)
-		// Initialize checkboxes.
-		cb = core.InitFilters(i, cb)
-		checkboxes = append(checkboxes, cb)
-		// Connect all checkboxes.
-		cb.Connect("toggled", func() {
-			// If a checkbox is toggled change the filters.
-			core.SetFilters(checkboxes)
-			UpdateView()
-		})
-	}
-	return checkboxes
-}
-
+*/
 func createProgressBar() *gtk.ProgressBar {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createProgressBar()", false).Stop()
@@ -101,25 +102,26 @@ func createProgressBar() *gtk.ProgressBar {
 	return progressBar
 }
 
-func createSpinButton() *gtk.SpinButton {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createSpinButton()", false).Stop()
+/*
+	func createSpinButton() *gtk.SpinButton {
+		if config.DEBUGGING {
+			defer core.StartBenchmark("gui.createSpinButton()", false).Stop()
+		}
+		spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
+		core.ErrorsHandler(err)
+		// Set default value
+		spinButton.SetValue(float64(core.Filters.Header))
+		// Connect the "value-changed" signal
+		spinButton.Connect("value-changed", func() {
+			value := spinButton.GetValue()
+			core.Filters.Header = int(value)
+			// Generate delta data.
+			core.XlsmDiff()
+			UpdateView()
+		})
+		return spinButton
 	}
-	spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
-	core.ErrorsHandler(err)
-	// Set default value
-	spinButton.SetValue(float64(core.Filters.Header))
-	// Connect the "value-changed" signal
-	spinButton.Connect("value-changed", func() {
-		value := spinButton.GetValue()
-		core.Filters.Header = int(value)
-		// Generate delta data.
-		core.XlsmDiff()
-		UpdateView()
-	})
-	return spinButton
-}
-
+*/
 func createScrolledWindow() *gtk.ScrolledWindow {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createScrolledWindow()", false).Stop()
@@ -300,7 +302,7 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 		if len(reportGrid.ButtonIdx) != 0 {
 			button := createButton(config.INFO_BTN_CHAR)
 			button.Connect("clicked", func() {
-				ShowComponent(reportGrid.ButtonIdx[i], -1, false)
+				ShowComponent(reportGrid.ButtonIdx[i])
 			})
 			grid.Attach(button, len(reportGrid.RowsAttributes), i+1+rowCount, 1, 1)
 		}
@@ -400,9 +402,9 @@ func createCompareGrid(parentBox *gtk.Box) {
 			background-color: %s;
 		}
     `, className, opColor[op]))
-		createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description"}, grid)
+		createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description", config.INFO_BTN_CHAR}, grid)
 		i := 0
-		for _, component := range core.Components {
+		for compIdx, component := range core.Components {
 			if component.Operator == operator[op] {
 				quantityText := strconv.Itoa(component.Quantity)
 				if component.Operator == "UPDATE" {
@@ -428,6 +430,11 @@ func createCompareGrid(parentBox *gtk.Box) {
 				context.AddClass(className)
 				wrapText(descriptionLabel, 80)
 				grid.Attach(descriptionLabel, 3, i+1, 1, 1)
+				compButton := createButton(config.INFO_BTN_CHAR)
+				compButton.Connect("clicked", func() {
+					ShowComponent(compIdx)
+				})
+				grid.Attach(compButton, 4, i+1, 1, 1)
 				i++
 			}
 		}

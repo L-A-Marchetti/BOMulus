@@ -1,9 +1,6 @@
 package gui
 
 import (
-	"config"
-	"core"
-
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -12,6 +9,7 @@ var (
 	diffSummaryLabel *gtk.Label
 )
 
+/*
 func UpdateView() {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.UpdateView()", true).Stop()
@@ -38,3 +36,4 @@ func UpdateView() {
 	vBox.ShowAll()
 	Output()
 }
+*/

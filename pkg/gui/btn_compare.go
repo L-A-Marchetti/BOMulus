@@ -21,13 +21,6 @@ func BtnCompare(button *gtk.Button) {
 	components.HeaderDetection()
 	components.ComponentsDetection()
 	core.XlsmDiff()
+	core.ResetAnalysisStatus()
 	compareView()
-	/*
-		// Generate the filters box.
-		avoidDuplicate()
-		filtersHBox := filters()
-		vBox.Add(filtersHBox)
-		// Update the view
-		UpdateView()
-	*/
 }

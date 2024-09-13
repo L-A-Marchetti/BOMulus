@@ -1,12 +1,6 @@
 package gui
 
-import (
-	"config"
-	"core"
-
-	"github.com/gotk3/gotk3/gtk"
-)
-
+/*
 // Function to open the export window
 func ExportOptions() {
 	if config.DEBUGGING {
@@ -50,3 +44,4 @@ func ExportOptions() {
 	btnExport(okButton, entry, exportWindow, checkboxes)
 	exportWindow.ShowAll() // Show all elements in the window
 }
+*/

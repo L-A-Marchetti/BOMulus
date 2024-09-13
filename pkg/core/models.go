@@ -109,6 +109,10 @@ func ResetComponents() {
 	NewComponents = []Component{}
 }
 
+func ResetAnalysisStatus() {
+	AnalysisState = AnalysisStatus{}
+}
+
 func ResetFilters() {
 	Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 }

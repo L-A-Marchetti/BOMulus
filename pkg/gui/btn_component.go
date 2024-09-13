@@ -1,15 +1,6 @@
 package gui
 
-import (
-	"config"
-	"core"
-	"fmt"
-	"strconv"
-
-	"github.com/gotk3/gotk3/gdk"
-	"github.com/gotk3/gotk3/gtk"
-)
-
+/*
 func btnPressedComponent() {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.btnPressedComponent()", false).Stop()
@@ -115,3 +106,4 @@ func btnMouseHover() {
 		return false
 	})
 }
+*/
