@@ -23,16 +23,15 @@ func compareView() {
 	oldName, newName := strings.Split(core.XlsmFiles[0].Path, "/"), strings.Split(core.XlsmFiles[1].Path, "/")
 	compareTitle := fmt.Sprintf("%s/%s", strings.Split(oldName[len(oldName)-1], ".")[0], strings.Split(newName[len(newName)-1], ".")[0])
 	if compareWindow != nil {
-		compareWindow.Remove(scrolledWindow)
 		scrolledWindow.Remove(vbox)
 	} else {
 		compareWindow = createWindow(compareTitle, 1200, 900)
 		scrolledWindow = createCommonScrolledWindow()
+		compareWindow.Add(scrolledWindow)
 	}
 	vbox = createBox(gtk.ORIENTATION_VERTICAL, 10)
 	addBoxMargin(vbox)
 	scrolledWindow.Add(vbox)
-	compareWindow.Add(scrolledWindow)
 	compareHeader(vbox)
 	createCompareGrid(vbox)
 	compareWindow.ShowAll()

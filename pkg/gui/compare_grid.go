@@ -34,7 +34,7 @@ func createCompareGrid(parentBox *gtk.Box) {
     `, className, opColor[op]))
 		createGridHeaders([]string{"Quantity", "Manufacturer Part Number", "Designator", "Description", config.INFO_BTN_CHAR}, Grids[op])
 		i := 0
-		for _, component := range core.Components {
+		for compIdx, component := range core.Components {
 			if component.Operator == operator[op] {
 				quantityText := strconv.Itoa(component.Quantity)
 				if component.Operator == "UPDATE" {
@@ -60,8 +60,16 @@ func createCompareGrid(parentBox *gtk.Box) {
 				context.AddClass(className)
 				wrapText(descriptionLabel, 80)
 				Grids[op].Attach(descriptionLabel, 3, i+1, 1, 1)
-				compButton := createButton(" ")
-				Grids[op].Attach(compButton, 4, i+1, 1, 1)
+				if !component.Analyzed {
+					compButton := createButton(" ")
+					Grids[op].Attach(compButton, 4, i+1, 1, 1)
+				} else {
+					compButton := createButton(config.INFO_BTN_CHAR)
+					compButton.Connect("clicked", func() {
+						ShowComponent(compIdx)
+					})
+					Grids[op].Attach(compButton, 4, i+1, 1, 1)
+				}
 				i++
 			}
 		}

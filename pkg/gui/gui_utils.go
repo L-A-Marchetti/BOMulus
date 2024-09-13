@@ -117,6 +117,7 @@ func createProgressBar() *gtk.ProgressBar {
 		return spinButton
 	}
 */
+/*
 func createScrolledWindow() *gtk.ScrolledWindow {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createScrolledWindow()", false).Stop()
@@ -131,7 +132,7 @@ func createScrolledWindow() *gtk.ScrolledWindow {
 	EnlargeSb()
 	return scrolledWindow
 }
-
+*/
 func createCommonScrolledWindow() *gtk.ScrolledWindow {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
@@ -272,14 +273,15 @@ func createGridHeaders(headers []string, grid *gtk.Grid) {
 	}
 }
 
-func avoidDuplicate() {
-	children := vBox.GetChildren()
-	childName, _ := children.Last().Data().(*gtk.Widget).GetName()
-	if childName == "GtkBox" {
-		vBox.Remove(children.Last().Previous().Data().(*gtk.Widget))
+/*
+	func avoidDuplicate() {
+		children := vBox.GetChildren()
+		childName, _ := children.Last().Data().(*gtk.Widget).GetName()
+		if childName == "GtkBox" {
+			vBox.Remove(children.Last().Previous().Data().(*gtk.Widget))
+		}
 	}
-}
-
+*/
 func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createGridSection()", true).Stop()

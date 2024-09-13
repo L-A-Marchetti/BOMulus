@@ -1,15 +1,6 @@
 package gui
 
-import (
-	"components"
-	"config"
-	"core"
-	"strconv"
-
-	"github.com/gotk3/gotk3/glib"
-	"github.com/gotk3/gotk3/gtk"
-)
-
+/*
 func updateTableRow() {
 	iter, ok := resultStore.GetIterFirst()
 	if !ok {
@@ -67,3 +58,4 @@ func refreshUI() {
 		}
 	})
 }
+*/

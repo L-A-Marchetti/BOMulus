@@ -1,15 +1,6 @@
 package gui
 
-import (
-	"components"
-	"config"
-	"core"
-	"fmt"
-	"strconv"
-
-	"github.com/gotk3/gotk3/gtk"
-)
-
+/*
 func Output() {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.Output()", false).Stop()
@@ -127,3 +118,4 @@ func appendRowWoBg(store *gtk.ListStore, operation, oldRow, newRow string, conte
 	err := store.Set(iter, core.MakeRange(0, len(values)), values)
 	core.ErrorsHandler(err)
 }
+*/

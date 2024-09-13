@@ -7,12 +7,6 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-var (
-	resultView  *gtk.TreeView
-	resultStore *gtk.ListStore
-	vBox        *gtk.Box
-)
-
 func GuiInit() {
 	var guiInitBenchmark *core.BenchmarkTimer
 	if config.DEBUGGING {
@@ -20,14 +14,11 @@ func GuiInit() {
 	}
 	gtk.Init(nil)
 	win := createWindow(config.TITLE, 0, 0)
-	// Setup the icon.
 	setWindowIcon(win)
-	// Create the compare button.
 	compareButton := createButton(config.INIT_BUTTON_LABEL)
 	compareButton.Connect("clicked", BtnCompare)
-	// Create drag & drop boxes.
 	dragAndDropBoxes := createDragAndDropBoxes(compareButton)
-	vBox = createBox(gtk.ORIENTATION_VERTICAL, 6)
+	vBox := createBox(gtk.ORIENTATION_VERTICAL, 6)
 	vBox.PackStart(dragAndDropBoxes, false, false, 0)
 	vBox.PackStart(compareButton, false, false, 20)
 	win.Add(vBox)
