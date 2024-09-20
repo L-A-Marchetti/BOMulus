@@ -39,9 +39,8 @@ func ShowReport() {
 	//			︵‿︵‿︵‿︵‿︵MISMATCHING MANUFACTURER PART NUMBER︵‿︵‿︵‿︵‿︵
 	mismatchingMPN := core.ReportGrid{
 		ExpanderName: "Mismatching Manufacturer Part Number ⚐ " + fmt.Sprintf("%d", len(mismatchComponents)),
-		Headers:      []string{"Line", "Quantity", "Manufacturer Part Number", "Description"},
+		Headers:      []string{"Quantity", "Manufacturer Part Number", "Description"},
 		RowsAttributes: []core.ComponentMethod{
-			func(c *core.Component) string { return fmt.Sprintf("%d", c.NewRow) },
 			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
 			func(c *core.Component) string { return c.Mpn },
 			func(c *core.Component) string { return c.UserDescription }},
@@ -63,9 +62,8 @@ func ShowReport() {
 	//			︵‿︵‿︵‿︵‿︵MISMATCHING DESCRIPTIONS︵‿︵‿︵‿︵‿︵
 	mismatchingDescriptions := core.ReportGrid{
 		ExpanderName: "Mismatching Descriptions ⚐ " + fmt.Sprintf("%d", len(mismatchCompDescription)),
-		Headers:      []string{"Line", "Quantity", "Manufacturer Part Number", "User Description", "Supplier Description", config.INFO_BTN_CHAR},
+		Headers:      []string{"Quantity", "Manufacturer Part Number", "User Description", "Supplier Description", config.INFO_BTN_CHAR},
 		RowsAttributes: []core.ComponentMethod{
-			func(c *core.Component) string { return fmt.Sprintf("%d", c.NewRow) },
 			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
 			func(c *core.Component) string { return c.Mpn },
 			func(c *core.Component) string { return c.UserDescription },
@@ -109,9 +107,8 @@ func ShowReport() {
 	//			︵‿︵‿︵‿︵‿︵OUT OF STOCK COMPONENTS︵‿︵‿︵‿︵‿︵
 	outOfStockComponents := core.ReportGrid{
 		ExpanderName: "Out of Stock Components ⚐ " + fmt.Sprintf("%d", len(oosComponents)),
-		Headers:      []string{"Line", "Quantity", "Manufacturer Part Number", config.INFO_BTN_CHAR},
+		Headers:      []string{"Quantity", "Manufacturer Part Number", config.INFO_BTN_CHAR},
 		RowsAttributes: []core.ComponentMethod{
-			func(c *core.Component) string { return fmt.Sprintf("%d", c.NewRow) },
 			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
 			func(c *core.Component) string { return c.Mpn }},
 		Components: oosComponents,
@@ -121,9 +118,8 @@ func ShowReport() {
 	//			︵‿︵‿︵‿︵‿︵RISKY LIFE CYCLE STATUS COMPONENTS︵‿︵‿︵‿︵‿︵
 	riskyLifeCycleComponents := core.ReportGrid{
 		ExpanderName: "Risky Life Cycle Status Components ⚐ " + fmt.Sprintf("%d", len(riskylssComponents)),
-		Headers:      []string{"Line", "Quantity", "Manufacturer Part Number", "Life Cycle Status", config.INFO_BTN_CHAR},
+		Headers:      []string{"Quantity", "Manufacturer Part Number", "Life Cycle Status", config.INFO_BTN_CHAR},
 		RowsAttributes: []core.ComponentMethod{
-			func(c *core.Component) string { return fmt.Sprintf("%d", c.NewRow) },
 			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
 			func(c *core.Component) string { return c.Mpn },
 			func(c *core.Component) string { return c.LifecycleStatus }},
@@ -134,9 +130,8 @@ func ShowReport() {
 	//			︵‿︵‿︵‿︵‿︵MANUFACTURER MESSAGES︵‿︵‿︵‿︵‿︵
 	manufacturerMessagesComponents := core.ReportGrid{
 		ExpanderName: "Manufacturer Messages ⚐ " + fmt.Sprintf("%d", len(manufacturerMessages)),
-		Headers:      []string{"Line", "Quantity", "Manufacturer Part Number", "Messages", config.INFO_BTN_CHAR},
+		Headers:      []string{"Quantity", "Manufacturer Part Number", "Messages", config.INFO_BTN_CHAR},
 		RowsAttributes: []core.ComponentMethod{
-			func(c *core.Component) string { return fmt.Sprintf("%d", c.NewRow) },
 			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
 			func(c *core.Component) string { return c.Mpn }},
 		Components:         manufacturerMessages,
