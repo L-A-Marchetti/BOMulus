@@ -276,14 +276,14 @@ func createComboBoxes(box *gtk.Box) {
 	core.ErrorsHandler(err)
 	startCombo.PrependText("Analysis Starting Point")
 	for i, component := range core.Components {
+		quantity := 0
+		if component.Operator == "UPDATE" {
+			quantity = component.NewQuantity
+		} else {
+			quantity = component.Quantity
+		}
 		text := fmt.Sprintf("[%d] ", i+1)
-		if component.OldRow != -1 {
-			text += fmt.Sprintf(" ◌%d ", component.OldRow)
-		}
-		if component.NewRow != -1 {
-			text += fmt.Sprintf(" ●%d ", component.NewRow)
-		}
-		text += fmt.Sprintf(" ∑%d  (%s)", component.Quantity, component.Mpn)
+		text += fmt.Sprintf(" ∑%d  (%s)", quantity, component.Mpn)
 		startCombo.AppendText(text)
 	}
 	startCombo.SetActive(0)
@@ -295,14 +295,14 @@ func createComboBoxes(box *gtk.Box) {
 	core.ErrorsHandler(err)
 	endCombo.PrependText("Analysis End Point")
 	for i, component := range core.Components {
+		quantity := 0
+		if component.Operator == "UPDATE" {
+			quantity = component.NewQuantity
+		} else {
+			quantity = component.Quantity
+		}
 		text := fmt.Sprintf("[%d] ", i+1)
-		if component.OldRow != -1 {
-			text += fmt.Sprintf(" ◌%d ", component.OldRow)
-		}
-		if component.NewRow != -1 {
-			text += fmt.Sprintf(" ●%d ", component.NewRow)
-		}
-		text += fmt.Sprintf(" ∑%d  (%s)", component.Quantity, component.Mpn)
+		text += fmt.Sprintf(" ∑%d  (%s)", quantity, component.Mpn)
 		endCombo.AppendText(text)
 	}
 	endCombo.SetActive(0)
