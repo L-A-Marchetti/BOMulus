@@ -56,28 +56,6 @@ func createButton(s string) *gtk.Button {
 	return button
 }
 
-/*
-	func createCheckBoxes(labels ...string) []*gtk.CheckButton {
-		if config.DEBUGGING {
-			defer core.StartBenchmark("gui.createCheckBoxes()", false).Stop()
-		}
-		checkboxes := []*gtk.CheckButton{}
-		for i, label := range labels {
-			cb, err := gtk.CheckButtonNewWithLabel(label)
-			core.ErrorsHandler(err)
-			// Initialize checkboxes.
-			cb = core.InitFilters(i, cb)
-			checkboxes = append(checkboxes, cb)
-			// Connect all checkboxes.
-			cb.Connect("toggled", func() {
-				// If a checkbox is toggled change the filters.
-				core.SetFilters(checkboxes)
-				UpdateView()
-			})
-		}
-		return checkboxes
-	}
-*/
 func createProgressBar() *gtk.ProgressBar {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createProgressBar()", false).Stop()
@@ -97,42 +75,6 @@ func createProgressBar() *gtk.ProgressBar {
 	return progressBar
 }
 
-/*
-	func createSpinButton() *gtk.SpinButton {
-		if config.DEBUGGING {
-			defer core.StartBenchmark("gui.createSpinButton()", false).Stop()
-		}
-		spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
-		core.ErrorsHandler(err)
-		// Set default value
-		spinButton.SetValue(float64(core.Filters.Header))
-		// Connect the "value-changed" signal
-		spinButton.Connect("value-changed", func() {
-			value := spinButton.GetValue()
-			core.Filters.Header = int(value)
-			// Generate delta data.
-			core.XlsmDiff()
-			UpdateView()
-		})
-		return spinButton
-	}
-*/
-/*
-func createScrolledWindow() *gtk.ScrolledWindow {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createScrolledWindow()", false).Stop()
-	}
-	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-	core.ErrorsHandler(err)
-	scrolledWindow.SetPolicy(config.SCROLLBAR_POLICY, config.SCROLLBAR_POLICY)
-	scrolledWindow.Add(resultView)
-	scrolledWindow.SetVExpand(true)
-	scrolledWindow.SetHExpand(true)
-	// Enlarge scrollbars.
-	EnlargeSb()
-	return scrolledWindow
-}
-*/
 func createCommonScrolledWindow() *gtk.ScrolledWindow {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createCommonScrolledWindow()", false).Stop()
@@ -273,15 +215,6 @@ func createGridHeaders(headers []string, grid *gtk.Grid) {
 	}
 }
 
-/*
-	func avoidDuplicate() {
-		children := vBox.GetChildren()
-		childName, _ := children.Last().Data().(*gtk.Widget).GetName()
-		if childName == "GtkBox" {
-			vBox.Remove(children.Last().Previous().Data().(*gtk.Widget))
-		}
-	}
-*/
 func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createGridSection()", true).Stop()
@@ -387,4 +320,14 @@ func applyCSS(widget *gtk.Grid, css string) {
 	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	// Set the CSS name of the widget
 	widget.SetName("grid")
+}
+
+func stylize(widget *gtk.Box) {
+	cssProvider, _ := gtk.CssProviderNew()
+	screen, _ := gdk.ScreenGetDefault()
+	cssProvider.LoadFromData(config.BOXES_CSS)
+	// Apply the CSS to the screen
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	// Set the CSS name of the widget
+	widget.SetName(config.BOXES_CLASS_NAME)
 }
