@@ -24,6 +24,7 @@ func compareView() {
 	compareTitle := fmt.Sprintf("%s/%s", strings.Split(oldName[len(oldName)-1], ".")[0], strings.Split(newName[len(newName)-1], ".")[0])
 	if compareWindow != nil {
 		scrolledWindow.Remove(vbox)
+		compareWindow.SetTitle(compareTitle)
 	} else {
 		compareWindow = createWindow(compareTitle, 1200, 900)
 		scrolledWindow = createCommonScrolledWindow()
