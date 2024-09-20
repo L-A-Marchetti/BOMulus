@@ -47,7 +47,7 @@ type Filter struct {
 	OldQuantity, NewQuantity                          int
 }
 
-var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var Filters = []Filter{{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
 /*╚══════════════════════════════════════════╝*/
 
@@ -114,7 +114,7 @@ func ResetAnalysisStatus() {
 }
 
 func ResetFilters() {
-	Filters = Filter{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+	Filters = []Filter{{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 }
 
 /*╚══════════════════════════════════════════════╝*/

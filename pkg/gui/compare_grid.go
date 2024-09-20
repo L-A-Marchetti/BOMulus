@@ -16,7 +16,7 @@ func createCompareGrid(parentBox *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createCompareGrid()", true).Stop()
 	}
-	diffSummary := []string{strconv.Itoa(core.Filters.InsertCount), strconv.Itoa(core.Filters.UpdateCount), strconv.Itoa(core.Filters.DeleteCount), strconv.Itoa(core.Filters.EqualCount)}
+	diffSummary := []string{strconv.Itoa(core.Filters[1].InsertCount), strconv.Itoa(core.Filters[1].UpdateCount), strconv.Itoa(core.Filters[1].DeleteCount), strconv.Itoa(core.Filters[1].EqualCount)}
 	operator := []string{"INSERT", "UPDATE", "DELETE", "EQUAL"}
 	opColor := []string{config.INSERT_BG_COLOR, config.NEW_UPDATE_BG_COLOR, config.DELETE_BG_COLOR, "#adadad"}
 	for op := range operator {

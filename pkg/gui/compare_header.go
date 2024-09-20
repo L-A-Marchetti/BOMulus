@@ -17,7 +17,7 @@ func compareHeader(box *gtk.Box) {
 	checkboxesHBox.PackStart(createBox(gtk.ORIENTATION_HORIZONTAL, 0), true, true, 0)
 	diffSummaryText := fmt.Sprintf(
 		"<span foreground='%s'>+++ INSERTS   %d</span>%s<span foreground='%s'>-+- UPDATES   %d</span>%s<span foreground='%s'>--- DELETES   %d</span>%s<span>∑   %d</span>%s<span>Δ   %d</span>%s",
-		config.INSERT_BG_COLOR, core.Filters.InsertCount, config.SUMMARY_SPACING, config.NEW_UPDATE_BG_COLOR, core.Filters.UpdateCount, config.SUMMARY_SPACING, config.DELETE_BG_COLOR, core.Filters.DeleteCount, config.SUMMARY_SPACING, core.Filters.NewQuantity, config.SUMMARY_SPACING, core.Filters.NewQuantity-core.Filters.OldQuantity, config.SUMMARY_SPACING,
+		config.INSERT_BG_COLOR, core.Filters[1].InsertCount, config.SUMMARY_SPACING, config.NEW_UPDATE_BG_COLOR, core.Filters[1].UpdateCount, config.SUMMARY_SPACING, config.DELETE_BG_COLOR, core.Filters[1].DeleteCount, config.SUMMARY_SPACING, core.Filters[1].NewQuantity, config.SUMMARY_SPACING, core.Filters[1].NewQuantity-core.Filters[1].OldQuantity, config.SUMMARY_SPACING,
 	)
 	diffSummaryLabel := createLabel("")
 	diffSummaryLabel.SetMarkup(diffSummaryText)
