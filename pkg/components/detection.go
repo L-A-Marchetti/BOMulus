@@ -3,7 +3,6 @@ package components
 import (
 	"config"
 	"core"
-	"fmt"
 	"strconv"
 )
 
@@ -16,7 +15,6 @@ func ComponentsDetection() {
 		if i >= core.Filters[0].Header {
 			quantity, err := strconv.Atoi(row[core.Filters[0].Quantity])
 			if err != nil {
-				fmt.Println("Quantity not found.", row)
 				continue
 			}
 			component := core.Component{
@@ -33,7 +31,6 @@ func ComponentsDetection() {
 		if i >= core.Filters[1].Header {
 			quantity, err := strconv.Atoi(row[core.Filters[1].Quantity])
 			if err != nil {
-				fmt.Println("Quantity not found.", row)
 				continue
 			}
 			component := core.Component{

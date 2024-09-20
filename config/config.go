@@ -8,7 +8,7 @@ const (
 	TITLE      string = "BOMulus"
 	WIN_WIDTH  int    = 800
 	WIN_HEIGHT int    = 800
-	DEBUGGING  bool   = true
+	DEBUGGING  bool   = false
 )
 
 /*╚══════════════════════════════════════════════════╝*/

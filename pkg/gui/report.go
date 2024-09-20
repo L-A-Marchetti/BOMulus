@@ -130,7 +130,7 @@ func ShowReport() {
 	//			︵‿︵‿︵‿︵‿︵MANUFACTURER MESSAGES︵‿︵‿︵‿︵‿︵
 	manufacturerMessagesComponents := core.ReportGrid{
 		ExpanderName: "Manufacturer Messages ⚐ " + fmt.Sprintf("%d", len(manufacturerMessages)),
-		Headers:      []string{"Quantity", "Manufacturer Part Number", "Messages", config.INFO_BTN_CHAR},
+		Headers:      []string{"Quantity", "Manufacturer Part Number", config.INFO_BTN_CHAR, "Messages"},
 		RowsAttributes: []core.ComponentMethod{
 			func(c *core.Component) string { return fmt.Sprintf("%d", c.Quantity) },
 			func(c *core.Component) string { return c.Mpn }},
