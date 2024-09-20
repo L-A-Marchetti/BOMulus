@@ -116,51 +116,6 @@ func MismatchDescription() ([]core.Component, []int) {
 	return mismatchComp, compIdx
 }
 
-/*
-func QuantityPrice(quantity int) (float64, float64, []string) {
-	minimumQuantity := []string{}
-	oldPrice := 0.0
-	newPrice := 0.0
-	for _, component := range core.Components {
-		if component.Analyzed {
-			componentPrice := 0.0
-			for _, priceBreak := range component.PriceBreaks {
-				if priceBreak.Quantity > component.Quantity*quantity {
-					if componentPrice == 0.0 {
-						convPrice := 0.0
-						if priceBreak.Currency == "EUR" {
-							convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
-						} else if priceBreak.Currency == "USD" {
-							convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(priceBreak.Price, "$"), ",", "."), 64)
-						}
-						componentPrice = float64(component.Quantity*quantity) * convPrice
-						minimumQuantity = append(minimumQuantity, fmt.Sprintf("Minimum quantity (%d) not reached for the component: %s", priceBreak.Quantity, component.Mpn))
-					}
-					break
-				}
-				convPrice := 0.0
-				if priceBreak.Currency == "EUR" {
-					convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
-				} else if priceBreak.Currency == "USD" {
-					convPrice, _ = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(priceBreak.Price, "$"), ",", "."), 64)
-				}
-				componentPrice = float64(component.Quantity*quantity) * convPrice
-			}
-			if component.Operator == "EQUAL" {
-				oldPrice += componentPrice
-				newPrice += componentPrice
-			} else if component.Operator == "INSERT" {
-				newPrice += componentPrice
-			} else if component.Operator == "DELETE" {
-				oldPrice += componentPrice
-			}
-		}
-	}
-	priceDiff := newPrice - oldPrice
-	return newPrice, priceDiff, minimumQuantity
-}
-*/
-
 func QuantityPrice(quantity int) (float64, float64, []string) {
 	minimumQuantity := []string{}
 	oldPrice := 0.0

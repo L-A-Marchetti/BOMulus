@@ -16,6 +16,18 @@ func runAnalysis() {
 	totalComponents := core.AnalysisState.IdxEnd - core.AnalysisState.IdxStart + 1
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 	insertRow, updateRow, deleteRow, equalRow := 0, 0, 0, 0
+	for j := 0; j < core.AnalysisState.IdxStart; j++ {
+		switch core.Components[j].Operator {
+		case "INSERT":
+			insertRow++
+		case "UPDATE":
+			updateRow++
+		case "DELETE":
+			deleteRow++
+		case "EQUAL":
+			equalRow++
+		}
+	}
 	for i := core.AnalysisState.IdxStart; i <= core.AnalysisState.IdxEnd; i++ {
 		err := limiter.Wait(context.Background())
 		if err != nil {
