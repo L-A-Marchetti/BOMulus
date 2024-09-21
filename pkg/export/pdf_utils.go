@@ -94,11 +94,11 @@ func getMaxHeightRow(attachmentsIter []core.Component, attachments []core.Attach
 	maxHeight := 0.0
 	maxHeightRow := []float64{}
 	for _, attachment := range attachmentsIter {
-		emptyAttributes := [2]core.Attachment{}
+		emptyAttributes := [1]core.Attachment{}
 		attributes := append(emptyAttributes[:], attachments...)
 		for i, attach := range attributes {
 			maxHeight = 1.0
-			if i > 1 && i < len(widths) {
+			if i > 0 && i < len(widths) {
 				value := attach.Attribute(&attachment)
 				lines := pdf.SplitText(value, widths[i])
 				height := float64(len(lines))
@@ -152,20 +152,20 @@ func jumpPageCheckerAttr(pdf *gofpdf.Fpdf, maxHeightRow []float64) {
 
 func writeAttachments(attachmentsIter []core.Component, attachments []core.Attachment, pdf *gofpdf.Fpdf, widths []float64, maxHeightRow []float64) {
 	for j, attachment := range attachmentsIter {
-		emptyAttributes := [2]core.Attachment{}
+		emptyAttributes := [1]core.Attachment{}
 		attributes := append(emptyAttributes[:], attachments...)
 		for i, attach := range attributes {
-			if i < 2 {
+			if i < 1 {
 				pdf.CellFormat(widths[i], 6, "", "", 0, "", false, 0, "")
-			} else {
+			} else if attach.Column-1 < len(widths) {
 				startX, startY := pdf.GetXY()
 				value := attach.Attribute(&attachment)
-				lines := pdf.SplitText(value, widths[attach.Column])
+				lines := pdf.SplitText(value, widths[attach.Column-1])
 				for len(lines) <= int(maxHeightRow[j]) {
 					lines = append(lines, "")
 				}
-				pdf.MultiCell(widths[attach.Column], 6, strings.Join(lines, "\n"), "1", "", false)
-				pdf.SetXY(startX+widths[attach.Column], startY)
+				pdf.MultiCell(widths[attach.Column-1], 6, strings.Join(lines, "\n"), "1", "", false)
+				pdf.SetXY(startX+widths[attach.Column-1], startY)
 			}
 		}
 		pdf.Ln(maxHeightRow[j] * 6)
