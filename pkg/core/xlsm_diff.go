@@ -4,13 +4,35 @@ import (
 	"config"
 )
 
+func groupByMpn(components []Component) []Component {
+	grouped := make(map[string]Component)
+	for _, component := range components {
+		if existing, found := grouped[component.Mpn]; found {
+			existing.Quantity += component.Quantity
+			grouped[component.Mpn] = existing
+		} else {
+			grouped[component.Mpn] = component
+		}
+	}
+	var result []Component
+	for _, component := range grouped {
+		result = append(result, component)
+	}
+
+	return result
+}
+
 func XlsmDiff() {
 	if config.DEBUGGING {
 		defer StartBenchmark("XlsmDiff()", false).Stop()
 	}
-	for _, newComponent := range NewComponents {
+
+	newComponentsGrouped := groupByMpn(NewComponents)
+	oldComponentsGrouped := groupByMpn(OldComponents)
+
+	for _, newComponent := range newComponentsGrouped {
 		matchFound := false
-		for _, oldComponent := range OldComponents {
+		for _, oldComponent := range oldComponentsGrouped {
 			if newComponent.Mpn == oldComponent.Mpn &&
 				newComponent.Quantity == oldComponent.Quantity {
 				component := newComponent
@@ -42,9 +64,10 @@ func XlsmDiff() {
 			Filters[1].NewQuantity += component.Quantity
 		}
 	}
-	for _, oldComponent := range OldComponents {
+
+	for _, oldComponent := range oldComponentsGrouped {
 		matchFound := false
-		for _, newComponent := range NewComponents {
+		for _, newComponent := range newComponentsGrouped {
 			if newComponent.Mpn == oldComponent.Mpn {
 				matchFound = true
 				break
@@ -58,4 +81,5 @@ func XlsmDiff() {
 			Filters[1].OldQuantity += component.Quantity
 		}
 	}
+
 }
