@@ -17,7 +17,7 @@ func appendAnalysis(apiResponse ApiResponse, i int) {
 		}
 		core.Components[i].InfoMessages = append(core.Components[i].InfoMessages, apiResponse.SearchResults.Parts[0].InfoMessages...)
 		core.Components[i].SupplierDescription = apiResponse.SearchResults.Parts[0].Description
-		core.Components[i].Manufacturer = apiResponse.SearchResults.Parts[0].Manufacturer
+		core.Components[i].SupplierManufacturer = apiResponse.SearchResults.Parts[0].Manufacturer
 		core.Components[i].Category = apiResponse.SearchResults.Parts[0].Category
 		core.Components[i].ProductDetailUrl = apiResponse.SearchResults.Parts[0].ProductDetailUrl
 

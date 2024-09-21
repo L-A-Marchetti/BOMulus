@@ -2,6 +2,7 @@ package gui
 
 import (
 	"components"
+	"config"
 	"context"
 	"core"
 	"log"
@@ -14,6 +15,19 @@ import (
 func runAnalysis() {
 	totalComponents := core.AnalysisState.IdxEnd - core.AnalysisState.IdxStart + 1
 	limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
+	insertRow, updateRow, deleteRow, equalRow := 0, 0, 0, 0
+	for j := 0; j < core.AnalysisState.IdxStart; j++ {
+		switch core.Components[j].Operator {
+		case "INSERT":
+			insertRow++
+		case "UPDATE":
+			updateRow++
+		case "DELETE":
+			deleteRow++
+		case "EQUAL":
+			equalRow++
+		}
+	}
 	for i := core.AnalysisState.IdxStart; i <= core.AnalysisState.IdxEnd; i++ {
 		err := limiter.Wait(context.Background())
 		if err != nil {
@@ -21,20 +35,39 @@ func runAnalysis() {
 			continue
 		}
 		components.APIRequest(i)
-
 		glib.IdleAdd(func() {
 			core.AnalysisState.Current += 1
 			core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents)
-			updateTableRow()
+			compButton := createButton(config.INFO_BTN_CHAR)
+			compButton.Connect("clicked", func() {
+				ShowComponent(i)
+			})
+			gridIdx := 0
+			switch core.Components[i].Operator {
+			case "INSERT":
+				gridIdx = 0
+				insertRow++
+			case "UPDATE":
+				gridIdx = 1
+				updateRow++
+			case "DELETE":
+				gridIdx = 2
+				deleteRow++
+			case "EQUAL":
+				gridIdx = 3
+				equalRow++
+			}
+			rowIdx := []int{insertRow, updateRow, deleteRow, equalRow}
+			oldButton, _ := Grids[gridIdx].GetChildAt(4, rowIdx[gridIdx])
+			Grids[gridIdx].Remove(oldButton)
+			Grids[gridIdx].Attach(compButton, 4, rowIdx[gridIdx], 1, 1)
+			Grids[gridIdx].ShowAll()
 		})
 	}
 
 	glib.IdleAdd(func() {
 		core.AnalysisState.InProgress = false
 		core.AnalysisState.Completed = true
-		avoidDuplicate()
-		filtersHBox := filters()
-		vBox.Add(filtersHBox)
-		UpdateView()
+		compareView()
 	})
 }

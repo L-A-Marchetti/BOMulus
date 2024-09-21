@@ -33,9 +33,6 @@ func btnAnalyze(analyzeButtonBox *gtk.Box) {
 				if core.AnalysisState.IdxStart == -1 {
 					core.AnalysisState.IdxStart = 0
 				}
-				if core.AnalysisState.IdxEnd == -1 || core.AnalysisState.IdxEnd == 0 {
-					core.AnalysisState.IdxEnd = len(core.Components) - 1
-				}
 				// Initialize analysis state.
 				core.AnalysisState.InProgress, core.AnalysisState.Total, core.AnalysisState.Current, core.AnalysisState.Progress = true, core.AnalysisState.IdxEnd-core.AnalysisState.IdxStart+1, 0, 0.0
 				progressBar := createProgressBar()

@@ -15,11 +15,15 @@ func calculateColumnWidths(pdf *gofpdf.Fpdf, headers []string) []float64 {
 	// Calculate proportional widths based on header length
 	totalLength := 0
 	for _, header := range headers {
-		totalLength += len(header)
+		if header != config.INFO_BTN_CHAR {
+			totalLength += len(header)
+		}
 	}
 	widths := make([]float64, numColumns)
 	for i, header := range headers {
-		widths[i] = float64(len(header)) / float64(totalLength) * tableWidth
+		if header != config.INFO_BTN_CHAR {
+			widths[i] = float64(len(header)) / float64(totalLength) * tableWidth
+		}
 	}
 	return widths
 }
@@ -90,11 +94,11 @@ func getMaxHeightRow(attachmentsIter []core.Component, attachments []core.Attach
 	maxHeight := 0.0
 	maxHeightRow := []float64{}
 	for _, attachment := range attachmentsIter {
-		emptyAttributes := [2]core.Attachment{}
+		emptyAttributes := [1]core.Attachment{}
 		attributes := append(emptyAttributes[:], attachments...)
 		for i, attach := range attributes {
 			maxHeight = 1.0
-			if i > 1 {
+			if i > 0 && i < len(widths) {
 				value := attach.Attribute(&attachment)
 				lines := pdf.SplitText(value, widths[i])
 				height := float64(len(lines))
@@ -116,7 +120,7 @@ func getMaxHeightRowMsg(attachmentsIterMsg []string, attachments []core.Attachme
 		attributes := append(emptyAttributes[:], attachments...)
 		for i, attach := range attributes {
 			maxHeight = 1.0
-			if i > 2 {
+			if i > 2 && i < len(widths) {
 				value := attach.AttributeMsg(msg)
 				lines := pdf.SplitText(value, widths[i])
 				height := float64(len(lines))
@@ -148,20 +152,20 @@ func jumpPageCheckerAttr(pdf *gofpdf.Fpdf, maxHeightRow []float64) {
 
 func writeAttachments(attachmentsIter []core.Component, attachments []core.Attachment, pdf *gofpdf.Fpdf, widths []float64, maxHeightRow []float64) {
 	for j, attachment := range attachmentsIter {
-		emptyAttributes := [2]core.Attachment{}
+		emptyAttributes := [1]core.Attachment{}
 		attributes := append(emptyAttributes[:], attachments...)
 		for i, attach := range attributes {
-			if i < 2 {
+			if i < 1 {
 				pdf.CellFormat(widths[i], 6, "", "", 0, "", false, 0, "")
-			} else {
+			} else if attach.Column-1 < len(widths) {
 				startX, startY := pdf.GetXY()
 				value := attach.Attribute(&attachment)
-				lines := pdf.SplitText(value, widths[attach.Column])
+				lines := pdf.SplitText(value, widths[attach.Column-1])
 				for len(lines) <= int(maxHeightRow[j]) {
 					lines = append(lines, "")
 				}
-				pdf.MultiCell(widths[attach.Column], 6, strings.Join(lines, "\n"), "1", "", false)
-				pdf.SetXY(startX+widths[attach.Column], startY)
+				pdf.MultiCell(widths[attach.Column-1], 6, strings.Join(lines, "\n"), "1", "", false)
+				pdf.SetXY(startX+widths[attach.Column-1], startY)
 			}
 		}
 		pdf.Ln(maxHeightRow[j] * 6)
@@ -170,10 +174,10 @@ func writeAttachments(attachmentsIter []core.Component, attachments []core.Attac
 
 func writeAttachmentsMsg(attachmentsIter []string, attachments []core.Attachment, pdf *gofpdf.Fpdf, widths []float64, maxHeightRow []float64) {
 	for j, msg := range attachmentsIter {
-		emptyAttributes := [3]core.Attachment{}
+		emptyAttributes := [2]core.Attachment{}
 		attributes := append(emptyAttributes[:], attachments...)
 		for i, attach := range attributes {
-			if i < 3 {
+			if i < 2 {
 				pdf.CellFormat(widths[i], 6, "", "", 0, "", false, 0, "")
 			} else {
 				startX, startY := pdf.GetXY()

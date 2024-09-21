@@ -32,44 +32,50 @@ var XlsmDeltas []XlsmDelta
 /*╔══════════════ FILTER MODEL ══════════════╗*/
 
 type Filter struct {
-	Equal       bool
-	Delete      bool
-	Insert      bool
-	Update      bool
-	Swap        bool
-	Header      int
-	Quantity    int
-	Mpn         int
-	Description int
+	Equal                                             bool
+	Delete                                            bool
+	Insert                                            bool
+	Update                                            bool
+	Swap                                              bool
+	Header                                            int
+	Quantity                                          int
+	Mpn                                               int
+	Description                                       int
+	Designator                                        int
+	Manufacturer                                      int
+	InsertCount, UpdateCount, DeleteCount, EqualCount int
+	OldQuantity, NewQuantity                          int
 }
 
-var Filters = Filter{true, true, true, true, false, 0, 0, 0, 0}
+var Filters = []Filter{{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
 /*╚══════════════════════════════════════════╝*/
 
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
 
 type Component struct {
-	Operator             string
-	OldRow, NewRow       int
-	Quantity             int
-	Mpn                  string
-	ImagePath            string
-	Availability         string
-	DataSheetUrl         string
-	LifecycleStatus      string
-	ROHSStatus           string
-	SuggestedReplacement string
-	PriceBreaks          []PriceBreak
-	InfoMessages         []string
-	Analyzed             bool
-	MismatchMpn          []Component
-	UserDescription      string
-	SupplierDescription  string
-	Img                  *gdk.Pixbuf
-	Manufacturer         string
-	Category             string
-	ProductDetailUrl     string
+	Operator                           string
+	OldRow, NewRow                     int
+	Quantity, OldQuantity, NewQuantity int
+	Mpn                                string
+	Designator                         string
+	ImagePath                          string
+	Availability                       string
+	DataSheetUrl                       string
+	LifecycleStatus                    string
+	ROHSStatus                         string
+	SuggestedReplacement               string
+	PriceBreaks                        []PriceBreak
+	InfoMessages                       []string
+	Analyzed                           bool
+	MismatchMpn                        []Component
+	UserDescription                    string
+	SupplierDescription                string
+	Img                                *gdk.Pixbuf
+	UserManufacturer                   string
+	SupplierManufacturer               string
+	Category                           string
+	ProductDetailUrl                   string
 }
 
 type PriceBreak struct {
@@ -78,7 +84,11 @@ type PriceBreak struct {
 	Currency string `json:"Currency"`
 }
 
-var Components = []Component{}
+var (
+	Components    = []Component{} // Do we still need it ?
+	OldComponents = []Component{}
+	NewComponents = []Component{}
+)
 
 /*╚══════════════════════════════════════════════╝*/
 
@@ -95,6 +105,16 @@ func ResetDeltas() {
 
 func ResetComponents() {
 	Components = []Component{}
+	OldComponents = []Component{}
+	NewComponents = []Component{}
+}
+
+func ResetAnalysisStatus() {
+	AnalysisState = AnalysisStatus{}
+}
+
+func ResetFilters() {
+	Filters = []Filter{{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 }
 
 /*╚══════════════════════════════════════════════╝*/

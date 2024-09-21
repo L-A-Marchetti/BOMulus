@@ -17,16 +17,10 @@ func BtnCompare(button *gtk.Button) {
 		button.SetLabel(config.ONE_FILE_MSG)
 		return
 	}
-	// Read and store both Xlsm files.
 	core.XlsmReader()
-	// Try to detect automatically the header.
 	components.HeaderDetection()
-	// Generate delta data.
+	components.ComponentsDetection()
 	core.XlsmDiff()
-	// Generate the filters box.
-	avoidDuplicate()
-	filtersHBox := filters()
-	vBox.Add(filtersHBox)
-	// Update the view
-	UpdateView()
+	core.ResetAnalysisStatus()
+	compareView()
 }

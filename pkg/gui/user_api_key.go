@@ -53,6 +53,9 @@ func testAPIKey(win *gtk.Window, button *gtk.Button, entry *gtk.Entry) {
 		defer core.StartBenchmark("gui.testAPIKey()", false).Stop()
 	}
 	button.Connect("clicked", func() {
+		if core.AnalysisState.IdxEnd <= 0 {
+			core.AnalysisState.IdxEnd = len(core.Components) - 1
+		}
 		if core.AnalysisState.IdxEnd-core.AnalysisState.IdxStart+1 <= 0 {
 			showMessageDialog(win, "Invalid range", "Please select a valid range...")
 			return

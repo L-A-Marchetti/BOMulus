@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/gotk3/gotk3/pango"
@@ -35,9 +36,6 @@ func setWindowIcon(win *gtk.Window) {
 }
 
 func createLabel(s string) *gtk.Label {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createLabel() ("+s+")", false).Stop()
-	}
 	label, err := gtk.LabelNew(s)
 	core.ErrorsHandler(err)
 	return label
@@ -53,33 +51,9 @@ func createBox(orientation gtk.Orientation, spacing int) *gtk.Box {
 }
 
 func createButton(s string) *gtk.Button {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createButton() ("+s+")", false).Stop()
-	}
 	button, err := gtk.ButtonNewWithLabel(s)
 	core.ErrorsHandler(err)
 	return button
-}
-
-func createCheckBoxes(labels ...string) []*gtk.CheckButton {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createCheckBoxes()", false).Stop()
-	}
-	checkboxes := []*gtk.CheckButton{}
-	for i, label := range labels {
-		cb, err := gtk.CheckButtonNewWithLabel(label)
-		core.ErrorsHandler(err)
-		// Initialize checkboxes.
-		cb = core.InitFilters(i, cb)
-		checkboxes = append(checkboxes, cb)
-		// Connect all checkboxes.
-		cb.Connect("toggled", func() {
-			// If a checkbox is toggled change the filters.
-			core.SetFilters(checkboxes)
-			UpdateView()
-		})
-	}
-	return checkboxes
 }
 
 func createProgressBar() *gtk.ProgressBar {
@@ -99,40 +73,6 @@ func createProgressBar() *gtk.ProgressBar {
 		return core.AnalysisState.InProgress
 	})
 	return progressBar
-}
-
-func createSpinButton() *gtk.SpinButton {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createSpinButton()", false).Stop()
-	}
-	spinButton, err := gtk.SpinButtonNewWithRange(0, float64(len(core.XlsmDeltas)), 1)
-	core.ErrorsHandler(err)
-	// Set default value
-	spinButton.SetValue(float64(core.Filters.Header))
-	// Connect the "value-changed" signal
-	spinButton.Connect("value-changed", func() {
-		value := spinButton.GetValue()
-		core.Filters.Header = int(value)
-		// Generate delta data.
-		core.XlsmDiff()
-		UpdateView()
-	})
-	return spinButton
-}
-
-func createScrolledWindow() *gtk.ScrolledWindow {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.createScrolledWindow()", false).Stop()
-	}
-	scrolledWindow, err := gtk.ScrolledWindowNew(nil, nil)
-	core.ErrorsHandler(err)
-	scrolledWindow.SetPolicy(config.SCROLLBAR_POLICY, config.SCROLLBAR_POLICY)
-	scrolledWindow.Add(resultView)
-	scrolledWindow.SetVExpand(true)
-	scrolledWindow.SetHExpand(true)
-	// Enlarge scrollbars.
-	EnlargeSb()
-	return scrolledWindow
 }
 
 func createCommonScrolledWindow() *gtk.ScrolledWindow {
@@ -166,7 +106,7 @@ func componentLabels(idx int, box *gtk.Box) {
 	}
 	componentInfosGrid([]string{
 		"Manufacturer Part Number", core.Components[idx].Mpn,
-		"Manufacturer", core.Components[idx].Manufacturer,
+		"Manufacturer", core.Components[idx].SupplierManufacturer,
 		"Supplier Descrition", core.Components[idx].SupplierDescription,
 		"Category", core.Components[idx].Category,
 		"Availability", availability,
@@ -260,18 +200,18 @@ func createGrid() *gtk.Grid {
 	return grid
 }
 
+func createTightGrid() *gtk.Grid {
+	grid, err := gtk.GridNew()
+	core.ErrorsHandler(err)
+	grid.SetColumnSpacing(0)
+	grid.SetRowSpacing(5)
+	return grid
+}
+
 func createGridHeaders(headers []string, grid *gtk.Grid) {
 	for i, header := range headers {
 		headerLabel := createLabel(header)
 		grid.Attach(headerLabel, i, 0, 1, 1)
-	}
-}
-
-func avoidDuplicate() {
-	children := vBox.GetChildren()
-	childName, _ := children.Last().Data().(*gtk.Widget).GetName()
-	if childName == "GtkBox" {
-		vBox.Remove(children.Last().Previous().Data().(*gtk.Widget))
 	}
 }
 
@@ -292,7 +232,7 @@ func createGridSection(reportGrid core.ReportGrid, parentBox *gtk.Box) {
 		if len(reportGrid.ButtonIdx) != 0 {
 			button := createButton(config.INFO_BTN_CHAR)
 			button.Connect("clicked", func() {
-				ShowComponent(reportGrid.ButtonIdx[i], -1, false)
+				ShowComponent(reportGrid.ButtonIdx[i])
 			})
 			grid.Attach(button, len(reportGrid.RowsAttributes), i+1+rowCount, 1, 1)
 		}
@@ -336,14 +276,14 @@ func createComboBoxes(box *gtk.Box) {
 	core.ErrorsHandler(err)
 	startCombo.PrependText("Analysis Starting Point")
 	for i, component := range core.Components {
+		quantity := 0
+		if component.Operator == "UPDATE" {
+			quantity = component.NewQuantity
+		} else {
+			quantity = component.Quantity
+		}
 		text := fmt.Sprintf("[%d] ", i+1)
-		if component.OldRow != -1 {
-			text += fmt.Sprintf(" ◌%d ", component.OldRow)
-		}
-		if component.NewRow != -1 {
-			text += fmt.Sprintf(" ●%d ", component.NewRow)
-		}
-		text += fmt.Sprintf(" ∑%d  (%s)", component.Quantity, component.Mpn)
+		text += fmt.Sprintf(" ∑%d  (%s)", quantity, component.Mpn)
 		startCombo.AppendText(text)
 	}
 	startCombo.SetActive(0)
@@ -355,14 +295,14 @@ func createComboBoxes(box *gtk.Box) {
 	core.ErrorsHandler(err)
 	endCombo.PrependText("Analysis End Point")
 	for i, component := range core.Components {
+		quantity := 0
+		if component.Operator == "UPDATE" {
+			quantity = component.NewQuantity
+		} else {
+			quantity = component.Quantity
+		}
 		text := fmt.Sprintf("[%d] ", i+1)
-		if component.OldRow != -1 {
-			text += fmt.Sprintf(" ◌%d ", component.OldRow)
-		}
-		if component.NewRow != -1 {
-			text += fmt.Sprintf(" ●%d ", component.NewRow)
-		}
-		text += fmt.Sprintf(" ∑%d  (%s)", component.Quantity, component.Mpn)
+		text += fmt.Sprintf(" ∑%d  (%s)", quantity, component.Mpn)
 		endCombo.AppendText(text)
 	}
 	endCombo.SetActive(0)
@@ -370,4 +310,24 @@ func createComboBoxes(box *gtk.Box) {
 	endCombo.Connect("changed", func() {
 		core.AnalysisState.IdxEnd = endCombo.GetActive() - 1
 	})
+}
+
+func applyCSS(widget *gtk.Grid, css string) {
+	cssProvider, _ := gtk.CssProviderNew()
+	screen, _ := gdk.ScreenGetDefault()
+	cssProvider.LoadFromData(css)
+	// Apply the CSS to the screen
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	// Set the CSS name of the widget
+	widget.SetName("grid")
+}
+
+func stylize(widget *gtk.Box) {
+	cssProvider, _ := gtk.CssProviderNew()
+	screen, _ := gdk.ScreenGetDefault()
+	cssProvider.LoadFromData(config.BOXES_CSS)
+	// Apply the CSS to the screen
+	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	// Set the CSS name of the widget
+	widget.SetName(config.BOXES_CLASS_NAME)
 }

@@ -63,8 +63,8 @@ func createDragAndDropBoxes(button *gtk.Button) *gtk.Box {
 	hBox.PackStart(box1, true, false, 0)
 	hBox.PackStart(box2, true, false, 0)
 	// Apply style to the boxes.
-	Stylize(box1)
-	Stylize(box2)
+	stylize(box1)
+	stylize(box2)
 	// Set up drag and drop functionality for both boxes.
 	SetupDragAndDrop(box1, 1, label1, button)
 	SetupDragAndDrop(box2, 2, label2, button)

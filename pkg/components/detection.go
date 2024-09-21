@@ -6,79 +6,41 @@ import (
 	"strconv"
 )
 
-// Detect components, can be updated with more specs.
 func ComponentsDetection() {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("ComponentsDetection()", false).Stop()
 	}
 	core.ResetComponents()
-	for _, delta := range core.XlsmDeltas {
-		colSafety(delta)
-		switch delta.Operator {
-		case "EQUAL":
-			quantity, err := strconv.Atoi(core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Quantity])
+	for i, row := range core.XlsmFiles[0].Content {
+		if i >= core.Filters[0].Header {
+			quantity, err := strconv.Atoi(row[core.Filters[0].Quantity])
 			if err != nil {
-				return
+				continue
 			}
 			component := core.Component{
-				Operator:        "EQUAL",
-				NewRow:          delta.NewRow,
-				OldRow:          -1,
-				Quantity:        quantity,
-				Mpn:             core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Mpn],
-				UserDescription: core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Description]}
-			core.Components = append(core.Components, component)
-		case "INSERT":
-			quantity, err := strconv.Atoi(core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Quantity])
+				Quantity:         quantity,
+				Mpn:              row[core.Filters[0].Mpn],
+				UserDescription:  row[core.Filters[0].Description],
+				Designator:       row[core.Filters[0].Designator],
+				UserManufacturer: row[core.Filters[0].Manufacturer],
+			}
+			core.OldComponents = append(core.OldComponents, component)
+		}
+	}
+	for i, row := range core.XlsmFiles[1].Content {
+		if i >= core.Filters[1].Header {
+			quantity, err := strconv.Atoi(row[core.Filters[1].Quantity])
 			if err != nil {
-				return
+				continue
 			}
 			component := core.Component{
-				Operator:        "INSERT",
-				NewRow:          delta.NewRow,
-				OldRow:          -1,
-				Quantity:        quantity,
-				Mpn:             core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Mpn],
-				UserDescription: core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Description]}
-			core.Components = append(core.Components, component)
-		case "DELETE":
-			quantity, err := strconv.Atoi(core.XlsmFiles[0].Content[delta.OldRow][core.Filters.Quantity])
-			if err != nil {
-				return
+				Quantity:         quantity,
+				Mpn:              row[core.Filters[1].Mpn],
+				UserDescription:  row[core.Filters[1].Description],
+				Designator:       row[core.Filters[1].Designator],
+				UserManufacturer: row[core.Filters[1].Manufacturer],
 			}
-			component := core.Component{
-				Operator:        "DELETE",
-				OldRow:          delta.OldRow,
-				NewRow:          -1,
-				Quantity:        quantity,
-				Mpn:             core.XlsmFiles[0].Content[delta.OldRow][core.Filters.Mpn],
-				UserDescription: core.XlsmFiles[0].Content[delta.OldRow][core.Filters.Description]}
-			core.Components = append(core.Components, component)
-		case "UPDATE":
-			oldQuantity, err := strconv.Atoi(core.XlsmFiles[0].Content[delta.OldRow][core.Filters.Quantity])
-			if err != nil {
-				return
-			}
-			oldComponent := core.Component{
-				Operator:        "UPDATE",
-				OldRow:          delta.OldRow,
-				NewRow:          -1,
-				Quantity:        oldQuantity,
-				Mpn:             core.XlsmFiles[0].Content[delta.OldRow][core.Filters.Mpn],
-				UserDescription: core.XlsmFiles[0].Content[delta.OldRow][core.Filters.Description]}
-			core.Components = append(core.Components, oldComponent)
-			newQuantity, err := strconv.Atoi(core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Quantity])
-			if err != nil {
-				return
-			}
-			newComponent := core.Component{
-				Operator:        "UPDATE",
-				NewRow:          delta.NewRow,
-				OldRow:          -1,
-				Quantity:        newQuantity,
-				Mpn:             core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Mpn],
-				UserDescription: core.XlsmFiles[1].Content[delta.NewRow][core.Filters.Description]}
-			core.Components = append(core.Components, newComponent)
+			core.NewComponents = append(core.NewComponents, component)
 		}
 	}
 }
