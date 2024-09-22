@@ -4,6 +4,7 @@ import (
 	"config"
 	"core"
 	"strconv"
+	"strings"
 )
 
 func ComponentsDetection() {
@@ -19,7 +20,7 @@ func ComponentsDetection() {
 			}
 			component := core.Component{
 				Quantity:         quantity,
-				Mpn:              row[core.Filters[0].Mpn],
+				Mpn:              strings.TrimSpace(row[core.Filters[0].Mpn]),
 				UserDescription:  row[core.Filters[0].Description],
 				Designator:       row[core.Filters[0].Designator],
 				UserManufacturer: row[core.Filters[0].Manufacturer],
@@ -35,7 +36,7 @@ func ComponentsDetection() {
 			}
 			component := core.Component{
 				Quantity:         quantity,
-				Mpn:              row[core.Filters[1].Mpn],
+				Mpn:              strings.TrimSpace(row[core.Filters[1].Mpn]),
 				UserDescription:  row[core.Filters[1].Description],
 				Designator:       row[core.Filters[1].Designator],
 				UserManufacturer: row[core.Filters[1].Manufacturer],
