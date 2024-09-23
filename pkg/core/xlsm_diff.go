@@ -81,5 +81,4 @@ func XlsmDiff() {
 			Filters[1].OldQuantity += component.Quantity
 		}
 	}
-
 }
