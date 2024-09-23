@@ -19,7 +19,11 @@ func ShowReport() {
 	oosComponents, oosCompIdx := report.OutOfStockComp()
 	riskylssComponents, riskylssCompIdx := report.RiskyLSSComp()
 	manufacturerMessages, manufacturerMsgCompIdx := report.ManufacturerMessages()
-	minPrice, maxPrice, minPriceDiff, maxPriceDiff, currency := report.MinMaxPrice()
+	_, _, unitPrice1, unitPriceDiff1, _, currency := report.QuantityPrice(1)
+	_, _, unitPrice10, unitPriceDiff10, _, _ := report.QuantityPrice(10)
+	_, _, unitPrice100, unitPriceDiff100, _, _ := report.QuantityPrice(100)
+	_, _, unitPrice1000, unitPriceDiff1000, _, _ := report.QuantityPrice(1000)
+	_, _, unitPrice10000, unitPriceDiff10000, _, _ := report.QuantityPrice(10000)
 	mismatchComponents := report.MismatchMpn()
 	mismatchCompDescription, mismatchCompDesIdx := report.MismatchDescription()
 	// Create a new window for showing the report.
@@ -81,22 +85,29 @@ func ShowReport() {
 	priceButton.Connect("clicked", func() {
 		quantity, err := priceEntry.GetText()
 		core.ErrorsHandler(err)
-		priceCalculation(quantity, reportWindow, currency)
+		calculatePrice(quantity, reportWindow, currency)
 	})
-	minMaxPriceLabelText := ""
-	if currency == "€" {
-		minMaxPriceLabelText = "Min:\t" + fmt.Sprintf("%.4f", minPrice) + currency + "\t\tΔ:\t" + fmt.Sprintf("%.4f", minPriceDiff) + currency + "\t\tMax:\t" + fmt.Sprintf("%.4f", maxPrice) + currency + "\t\tΔ:\t" + fmt.Sprintf("%.4f", maxPriceDiff) + currency
-	} else if currency == "$" {
-		minMaxPriceLabelText = "Min:\t" + currency + fmt.Sprintf("%.4f", minPrice) + "\t\tΔ:\t" + currency + fmt.Sprintf("%.4f", minPriceDiff) + "\t\tMax:\t" + currency + fmt.Sprintf("%.4f", maxPrice) + "\t\tΔ:\t" + currency + fmt.Sprintf("%.4f", maxPriceDiff)
-	}
-	minMaxPriceLabel := createLabel(minMaxPriceLabelText)
+	priceLabelText := ""
+	priceLabelText = fmt.Sprintf("Unit price for 10 pieces :\t%.2f %s\t Diff : %.2f %s\n"+
+		"Unit price for 10 pieces :\t%.2f %s\tDiff : %.2f %s\n"+
+		"Unit price for 100 pieces :\t%.2f %s\tDiff : %.2f %s\n"+
+		"Unit price for 1000 pieces :\t%.2f %s\tDiff : %.2f %s\n"+
+		"Unit price for 10000 pieces :\t%.2f %s\tDiff : %.2f %s\n",
+		unitPrice1, currency, unitPriceDiff1, currency,
+		unitPrice10, currency, unitPriceDiff10, currency,
+		unitPrice100, currency, unitPriceDiff100, currency,
+		unitPrice1000, currency, unitPriceDiff1000, currency,
+		unitPrice10000, currency, unitPriceDiff10000, currency)
+
+	priceLabel := createLabel(priceLabelText)
+
 	emptyLine := createLabel("")
 	priceBox.PackStart(emptyLine, true, true, 1)
 	priceBox.PackStart(priceEntry, false, false, 0)
 	priceBox.PackStart(priceButton, false, false, 0)
 	emptyLine2 := createLabel("")
 	priceBox.PackStart(emptyLine2, true, true, 1)
-	priceBox.PackStart(minMaxPriceLabel, false, false, 0)
+	priceBox.PackStart(priceLabel, false, false, 0)
 	priceExpander.Add(priceBox)
 	vbox.PackStart(priceExpander, false, false, 0)
 	//			╔ ————————————————————————————————————————————— ╗
