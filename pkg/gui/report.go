@@ -88,7 +88,7 @@ func ShowReport() {
 		calculatePrice(quantity, reportWindow, currency)
 	})
 	priceLabelText := ""
-	priceLabelText = fmt.Sprintf("Unit price for 1 pieces :\t%.2f %s\t Diff : %.2f %s\n"+
+	priceLabelText = fmt.Sprintf("Unit price for 1 piece :\t%.2f %s\t Diff : %.2f %s\n"+
 		"Unit price for 10 pieces :\t%.2f %s\tDiff : %.2f %s\n"+
 		"Unit price for 100 pieces :\t%.2f %s\tDiff : %.2f %s\n"+
 		"Unit price for 1000 pieces :\t%.2f %s\tDiff : %.2f %s\n"+
