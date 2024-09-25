@@ -25,8 +25,8 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 		if len(uris) > 0 && uris[0] != "" {
 			// Remove the "file://" prefix and any trailing whitespace
 			filename := strings.TrimSpace(strings.TrimPrefix(uris[0], config.FILE_PREFIX))
-			// Check if the file has .xlsm extension
-			if strings.ToLower(filepath.Ext(filename)) == config.FILE_EXT {
+			// Check if the file has valid extension
+			if core.HasValidExtension(filename) {
 				// Update the label with the filename
 				label.SetText(filepath.Base(filename))
 				// Update the XlsmFiles slice
