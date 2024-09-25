@@ -4,8 +4,20 @@ import (
 	"config"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 )
+
+// Helper function to check if the file has a valid extension
+func HasValidExtension(filename string) bool {
+	ext := strings.ToLower(filepath.Ext(filename))
+	for _, validExt := range config.FILE_EXT {
+		if ext == validExt {
+			return true
+		}
+	}
+	return false
+}
 
 // Function to now if keywords contains s.
 func ContainsKeywords(s string) bool {

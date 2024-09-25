@@ -19,9 +19,10 @@ const (
 	INIT_FILE_PATH_1 string = "path/to/file1"
 	INIT_FILE_PATH_2 string = "path/to/file2"
 	FILE_PREFIX      string = "file://"
-	FILE_EXT         string = ".xlsm"
 	API_KEY_FILE     string = "API_Key_Saved.bmls"
 )
+
+var FILE_EXT = []string{".xlsm", ".xlsx"}
 
 /*╚═══════════════════════════════════════════╝*/
 
@@ -30,7 +31,7 @@ const (
 const (
 	INIT_BOX_MSG      string = "Drag and drop a file here"
 	ONE_FILE_MSG      string = "You need at least 2 files to compare..."
-	WRONG_EXT_MSG     string = "Please insert an .xlsm file"
+	WRONG_EXT_MSG     string = "Please insert an valid file"
 	INIT_BUTTON_LABEL string = "Compare"
 )
 
