@@ -62,7 +62,6 @@ func runAnalysis(progressBar *gtk.ProgressBar, viewReportButton, runAnalysisButt
 				gridIdx = 3
 				equalRow++
 			}
-
 			rowIdx := []int{insertRow, updateRow, deleteRow, equalRow}
 			oldButton, _ := Grids[gridIdx].GetChildAt(4, rowIdx[gridIdx])
 			Grids[gridIdx].Remove(oldButton)

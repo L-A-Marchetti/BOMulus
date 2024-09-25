@@ -40,10 +40,10 @@ func btnAnalyze(analyzeButtonBox *gtk.Box) {
 					analyzeButtonBox.Add(progressBar)
 					analyzeButtonBox.ShowAll()
 
-					// Désactiver le bouton "View Report" pendant l'analyse
+					// Disable view button during analysis
 					viewReportButton.SetSensitive(false)
 
-					// Lancer l'analyse
+					// Run analysis
 					go runAnalysis(progressBar, viewReportButton, runAnalysisButton, analyzeButtonBox)
 				})
 			})
