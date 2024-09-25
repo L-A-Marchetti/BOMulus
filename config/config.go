@@ -31,7 +31,7 @@ var FILE_EXT = []string{".xlsm", ".xlsx"}
 const (
 	INIT_BOX_MSG      string = "Drag and drop a file here"
 	ONE_FILE_MSG      string = "You need at least 2 files to compare..."
-	WRONG_EXT_MSG     string = "Please insert an valid file"
+	WRONG_EXT_MSG     string = "Please insert a valid file"
 	INIT_BUTTON_LABEL string = "Compare"
 )
 
