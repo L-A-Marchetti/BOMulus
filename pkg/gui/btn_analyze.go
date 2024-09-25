@@ -4,6 +4,7 @@ import (
 	"config"
 	"core"
 
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -13,41 +14,56 @@ func btnAnalyze(analyzeButtonBox *gtk.Box) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.btnAnalyze()", false).Stop()
 	}
-	if core.AnalysisState.InProgress {
-		// Create the progress bar.
-		progressBar := createProgressBar()
-		analyzeButtonBox.Add(progressBar)
-	} else if core.AnalysisState.Completed {
-		// Create the report button.
-		analyzeButton := createButton("Report")
-		analyzeButtonBox.Add(analyzeButton)
-		analyzeButton.Connect("clicked", func() {
-			ShowReport()
-		})
-	} else {
-		analyzeButton := createButton("Analyze")
-		analyzeButtonBox.Add(analyzeButton)
-		// Run the analysis if the API key is valid.
-		analyzeFunc := func() {
-			if core.AnalysisState.KeyIsValid {
-				if core.AnalysisState.IdxStart == -1 {
-					core.AnalysisState.IdxStart = 0
-				}
-				// Initialize analysis state.
-				core.AnalysisState.InProgress, core.AnalysisState.Total, core.AnalysisState.Current, core.AnalysisState.Progress = true, core.AnalysisState.IdxEnd-core.AnalysisState.IdxStart+1, 0, 0.0
-				progressBar := createProgressBar()
-				analyzeButtonBox.Remove(analyzeButton)
-				analyzeButtonBox.Add(progressBar)
-				analyzeButtonBox.ShowAll()
-				go runAnalysis()
-			} else {
-				// Ask for the API key and check the validity.
-				UserApiKey()
+	runAnalysisButton := createButton("Run Analysis")
+	viewReportButton := createButton("View Report")
+	analyzeButtonBox.Add(runAnalysisButton)
+	analyzeButtonBox.Add(viewReportButton)
+	viewReportButton.SetSensitive(false)
+	analyzeFunc := func() {
+		core.ResetAnalysisStatus()
+		afterApiKey := func() {
+			if !core.AnalysisState.KeyIsValid {
+				return
 			}
+			AnalysisRange(func() {
+				if core.AnalysisState.IdxStart == -1 || core.AnalysisState.IdxEnd == -1 {
+					return
+				}
+				core.AnalysisState.InProgress = true
+				core.AnalysisState.Total = core.AnalysisState.IdxEnd - core.AnalysisState.IdxStart + 1
+				core.AnalysisState.Current = 0
+				core.AnalysisState.Progress = 0.0
+
+				glib.IdleAdd(func() {
+					analyzeButtonBox.Remove(runAnalysisButton)
+					progressBar := createProgressBar()
+					analyzeButtonBox.Add(progressBar)
+					analyzeButtonBox.ShowAll()
+
+					// Désactiver le bouton "View Report" pendant l'analyse
+					viewReportButton.SetSensitive(false)
+
+					// Lancer l'analyse
+					go runAnalysis(progressBar, viewReportButton, runAnalysisButton, analyzeButtonBox)
+				})
+			})
 		}
-		analyzeButton.Connect("clicked", analyzeFunc)
-		SetupTriggerAnalyze(analyzeFunc)
+
+		if !core.AnalysisState.KeyIsValid {
+			UserApiKey(afterApiKey)
+		} else {
+			afterApiKey()
+		}
 	}
+
+	runAnalysisButton.Connect("clicked", analyzeFunc)
+	SetupTriggerAnalyze(analyzeFunc)
+
+	viewReportButton.Connect("clicked", func() {
+		ShowReport()
+	})
+
+	analyzeButtonBox.ShowAll()
 }
 
 func SetupTriggerAnalyze(analyzeFunc func()) {
