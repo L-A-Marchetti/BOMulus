@@ -3,10 +3,14 @@ package gui
 import (
 	"config"
 	"core"
+	"fmt"
+	"math"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gotk3/gotk3/gdk"
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -27,23 +31,70 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 			filename := strings.TrimSpace(strings.TrimPrefix(uris[0], config.FILE_PREFIX))
 			// Check if the file has valid extension
 			if core.HasValidExtension(filename) {
-				// Update the label with the filename
-				label.SetText(filepath.Base(filename))
-				// Update the XlsmFiles slice
-				switch boxIdx {
-				case 1:
-					core.XlsmFiles[0].Path = filename
-				case 2:
-					core.XlsmFiles[1].Path = filename
-				}
-				// Reset the button label.
-				button.SetLabel(config.INIT_BUTTON_LABEL)
+
+				startPulsatingAnimation(widget.ToWidget())
+
+				// Simuler un chargement
+				glib.TimeoutAdd(1500, func() bool {
+					// Arrêter l'animation de pulsation
+					stopPulsatingAnimation(widget.ToWidget())
+
+					// Mettre à jour le label avec le nom du fichier et une coche
+					label.SetMarkup(fmt.Sprintf("<span foreground='green'>✓</span> %s", filepath.Base(filename)))
+
+					// Mettre à jour XlsmFiles
+					switch boxIdx {
+					case 1:
+						core.XlsmFiles[0].Path = filename
+					case 2:
+						core.XlsmFiles[1].Path = filename
+					}
+
+					// Réinitialiser le label du bouton
+					button.SetLabel(config.INIT_BUTTON_LABEL)
+					return false
+				})
 			} else {
-				// If not an .xlsm file, update the label with an error message
-				label.SetText(config.WRONG_EXT_MSG)
+				label.SetMarkup(fmt.Sprintf("<span foreground='red'>✗</span> %s", config.WRONG_EXT_MSG))
 			}
 		}
 	})
+}
+
+var animationID int
+
+func startPulsatingAnimation(widget *gtk.Widget) {
+	origWidth, origHeight := widget.GetSizeRequest()
+	startTime := time.Now()
+	animationDuration := time.Millisecond * 1500 // 1.5 secondes d'animation
+
+	animationID = widget.AddTickCallback(func(widget *gtk.Widget, frameClock *gdk.FrameClock) bool {
+		elapsed := time.Since(startTime)
+		if elapsed > animationDuration {
+			widget.SetSizeRequest(origWidth, origHeight)
+			widget.SetOpacity(1.0)
+			animationID = 0
+			return false // Arrête l'animation
+		}
+
+		progress := float64(elapsed) / float64(animationDuration)
+		scale := 1.0 + 0.1*math.Sin(progress*math.Pi*2)
+		opacity := 0.5 + 0.5*math.Sin(progress*math.Pi*2)
+
+		widget.SetOpacity(opacity)
+		widget.SetSizeRequest(int(float64(origWidth)*scale), int(float64(origHeight)*scale))
+		return true
+	})
+}
+
+func stopPulsatingAnimation(widget *gtk.Widget) {
+	if animationID != 0 {
+		widget.RemoveTickCallback(animationID)
+		animationID = 0
+	}
+	widget.SetOpacity(1.0)
+	origWidth, origHeight := widget.GetSizeRequest()
+	widget.SetSizeRequest(origWidth, origHeight)
 }
 
 func createDragAndDropBoxes(button *gtk.Button) *gtk.Box {
@@ -51,22 +102,45 @@ func createDragAndDropBoxes(button *gtk.Button) *gtk.Box {
 		defer core.StartBenchmark("gui.createDragAndDropBoxes()", true).Stop()
 	}
 	// Create labels for boxes.
-	label1, label2 := createLabel(config.INIT_BOX_MSG), createLabel(config.INIT_BOX_MSG)
+	label1, label2 := createLabel(config.INIT_BOX1_MSG), createLabel(config.INIT_BOX2_MSG)
+
+	// Configure labels
+	for _, label := range []*gtk.Label{label1, label2} {
+		label.SetJustify(gtk.JUSTIFY_CENTER)
+		label.SetHAlign(gtk.ALIGN_CENTER)
+		label.SetVAlign(gtk.ALIGN_CENTER)
+		label.SetLineWrap(true)
+		label.SetVExpand(true)
+		label.SetHExpand(true)
+	}
 	// Create the depot boxes.
 	box1, box2 := createBox(gtk.ORIENTATION_VERTICAL, 6), createBox(gtk.ORIENTATION_VERTICAL, 6)
+	box1.SetVExpand(true)
+	box2.SetVExpand(true)
+	box1.SetHExpand(true)
+	box2.SetHExpand(true)
+
 	// Add labels to boxes.
 	box1.Add(label1)
 	box2.Add(label2)
 	// Create a horizontal box container to hold both boxes side by side.
-	hBox := createBox(gtk.ORIENTATION_HORIZONTAL, 6)
+	hBox := createBox(gtk.ORIENTATION_HORIZONTAL, 0)
+	hBox.SetVExpand(true)
+	hBox.SetHExpand(true)
+
+	separator, _ := gtk.SeparatorNew(gtk.ORIENTATION_VERTICAL)
+	separator.SetVExpand(true) // S'assurer qu'il s'étend verticalement
+
 	// Add both boxes to the horizontal box container.
-	hBox.PackStart(box1, true, false, 0)
-	hBox.PackStart(box2, true, false, 0)
+	hBox.PackStart(box1, true, true, 0)
+	hBox.PackStart(separator, false, false, 0) // Séparateur au milieu
+	hBox.PackStart(box2, true, true, 0)
 	// Apply style to the boxes.
-	stylize(box1)
-	stylize(box2)
+	//stylize(box1)
+	//stylize(box2)
 	// Set up drag and drop functionality for both boxes.
 	SetupDragAndDrop(box1, 1, label1, button)
 	SetupDragAndDrop(box2, 2, label2, button)
+
 	return hBox
 }

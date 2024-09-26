@@ -322,12 +322,19 @@ func applyCSS(widget *gtk.Grid, css string) {
 	widget.SetName("grid")
 }
 
-func stylize(widget *gtk.Box) {
+func stylize(widget gtk.IWidget, cssContent string, cssClassName string) {
 	cssProvider, _ := gtk.CssProviderNew()
 	screen, _ := gdk.ScreenGetDefault()
-	cssProvider.LoadFromData(config.BOXES_CSS)
-	// Apply the CSS to the screen
+
+	// Charger le CSS à partir de la chaîne passée
+	err := cssProvider.LoadFromData(cssContent)
+	if err != nil {
+		fmt.Println("Erreur lors du chargement du CSS :", err)
+	}
+
+	// Ajouter le CSS au screen
 	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-	// Set the CSS name of the widget
-	widget.SetName(config.BOXES_CLASS_NAME)
+
+	// Assigner la classe CSS au widget
+	widget.ToWidget().SetName(cssClassName)
 }
