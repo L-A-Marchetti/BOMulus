@@ -34,15 +34,15 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 
 				startPulsatingAnimation(widget.ToWidget())
 
-				// Simuler un chargement
-				glib.TimeoutAdd(1500, func() bool {
-					// Arrêter l'animation de pulsation
+				// Loading simulation animation
+				glib.TimeoutAdd(1000, func() bool {
+					// Stop animation
 					stopPulsatingAnimation(widget.ToWidget())
 
-					// Mettre à jour le label avec le nom du fichier et une coche
+					// Add green icon to say valid
 					label.SetMarkup(fmt.Sprintf("<span foreground='green'>✓</span> %s", filepath.Base(filename)))
 
-					// Mettre à jour XlsmFiles
+					// Update filesnames
 					switch boxIdx {
 					case 1:
 						core.XlsmFiles[0].Path = filename
@@ -50,7 +50,7 @@ func SetupDragAndDrop(widget *gtk.Box, boxIdx int, label *gtk.Label, button *gtk
 						core.XlsmFiles[1].Path = filename
 					}
 
-					// Réinitialiser le label du bouton
+					// Reinit label
 					button.SetLabel(config.INIT_BUTTON_LABEL)
 					return false
 				})
@@ -66,7 +66,7 @@ var animationID int
 func startPulsatingAnimation(widget *gtk.Widget) {
 	origWidth, origHeight := widget.GetSizeRequest()
 	startTime := time.Now()
-	animationDuration := time.Millisecond * 1500 // 1.5 secondes d'animation
+	animationDuration := time.Millisecond * 1000 // 1s animation
 
 	animationID = widget.AddTickCallback(func(widget *gtk.Widget, frameClock *gdk.FrameClock) bool {
 		elapsed := time.Since(startTime)
@@ -74,7 +74,7 @@ func startPulsatingAnimation(widget *gtk.Widget) {
 			widget.SetSizeRequest(origWidth, origHeight)
 			widget.SetOpacity(1.0)
 			animationID = 0
-			return false // Arrête l'animation
+			return false // Stop animation
 		}
 
 		progress := float64(elapsed) / float64(animationDuration)

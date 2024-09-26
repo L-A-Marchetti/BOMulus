@@ -326,15 +326,15 @@ func stylize(widget gtk.IWidget, cssContent string, cssClassName string) {
 	cssProvider, _ := gtk.CssProviderNew()
 	screen, _ := gdk.ScreenGetDefault()
 
-	// Charger le CSS à partir de la chaîne passée
+	// Load css from string
 	err := cssProvider.LoadFromData(cssContent)
 	if err != nil {
 		fmt.Println("Erreur lors du chargement du CSS :", err)
 	}
 
-	// Ajouter le CSS au screen
+	// Add CSS
 	gtk.AddProviderForScreen(screen, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-	// Assigner la classe CSS au widget
+	// Assign CSS class to widget
 	widget.ToWidget().SetName(cssClassName)
 }
