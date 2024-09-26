@@ -38,20 +38,30 @@ func ShowComponent(i int) {
 	// Empty line.
 	emptyLine3 := createLabel("")
 	vbox.PackStart(emptyLine3, false, false, 0)
-	// Create the Data sheet button.
-	dataSheetButton := createButton("Open Data Sheet")
-	vbox.PackStart(dataSheetButton, false, false, 0)
+	// Create a horizontal box for the two external link buttons (Data Sheet and Product Details)
+	hBox, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10)
+
+	// Create the "Open Data Sheet" button with an external link icon
+	dataSheetButton := createButtonWithIcon("Open Datasheet", "emblem-web") // "emblem-web" is the external link icon
+	hBox.PackStart(dataSheetButton, true, true, 0)                          // Add the button to the vbox
 	dataSheetButton.Connect("clicked", func() {
+		// Open the Data Sheet URL in the default browser
 		err := open.Run(core.Components[i].DataSheetUrl)
 		core.ErrorsHandler(err)
 	})
-	// Create the Product Details button.
-	productDetailsButton := createButton("Product Details")
-	vbox.PackStart(productDetailsButton, false, false, 0)
+
+	// Create the "Product Details" button with an external link icon
+	productDetailsButton := createButtonWithIcon("Open Product Details", "emblem-web")
+	hBox.PackStart(productDetailsButton, true, true, 0) // Add the button to the vbox
 	productDetailsButton.Connect("clicked", func() {
+		// Open the Product Details URL in the default browser
 		err := open.Run(core.Components[i].ProductDetailUrl)
 		core.ErrorsHandler(err)
 	})
+
+	// Add the horizontal box (with both buttons) to the vertical box
+	vbox.PackStart(hBox, false, false, 0)
+
 	// Create the "OK" button
 	okButton := createButton("OK")
 	vbox.PackStart(okButton, false, false, 0)

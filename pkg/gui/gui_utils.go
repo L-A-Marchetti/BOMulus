@@ -56,6 +56,27 @@ func createButton(s string) *gtk.Button {
 	return button
 }
 
+func createButtonWithIcon(labelText, iconName string) *gtk.Button {
+	// Create a horizontal box to hold both the text label and the icon
+	hBox, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 5)
+
+	// Create a label with the provided text
+	label, _ := gtk.LabelNew(labelText)
+
+	// Create an image widget using a GTK icon name (icon for "external link")
+	icon, _ := gtk.ImageNewFromIconName(iconName, gtk.ICON_SIZE_BUTTON)
+
+	// Pack the label and icon into the horizontal box
+	hBox.PackStart(label, true, true, 0) // Add label on the left
+	hBox.PackEnd(icon, false, false, 0)  // Add icon on the right
+
+	// Create a button and add the horizontal box to it
+	button, _ := gtk.ButtonNew()
+	button.Add(hBox)
+
+	return button
+}
+
 func createProgressBar() *gtk.ProgressBar {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.createProgressBar()", false).Stop()
