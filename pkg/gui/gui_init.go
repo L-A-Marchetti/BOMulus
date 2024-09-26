@@ -14,7 +14,7 @@ func GuiInit() {
 	}
 	gtk.Init(nil)
 	win := createWindow(config.TITLE, 0, 0)
-	win.SetDefaultSize(700, 400)
+	win.SetDefaultSize(500, 200)
 	setWindowIcon(win)
 
 	compareButton := createButton(config.INIT_BUTTON_LABEL)
