@@ -77,7 +77,7 @@ func UserApiKey(callback func()) {
 	}
 	box.PackStart(entry, false, false, 0)
 	// Create and add a button.
-	button := createButton("Test the API Key...")
+	button := createButton("OK")
 	box.PackStart(button, false, false, 0)
 
 	button.Connect("clicked", func() {
@@ -148,7 +148,6 @@ func testAPIKey(win *gtk.Window, entry *gtk.Entry, callback func()) {
 		return
 	}
 	if len(apiResponse.Errors) == 0 {
-		showMessageDialog(win, "Valid API Key", "Your API key is valid...")
 		win.Close()
 		core.AnalysisState.KeyIsValid = true
 		core.SaveAPIKey()
