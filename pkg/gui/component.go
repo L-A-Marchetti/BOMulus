@@ -42,8 +42,8 @@ func ShowComponent(i int) {
 	hBox, _ := gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 10)
 
 	// Create the "Open Data Sheet" button with an external link icon
-	dataSheetButton := createButtonWithIcon("Open Datasheet", "emblem-web") // "emblem-web" is the external link icon
-	hBox.PackStart(dataSheetButton, true, true, 0)                          // Add the button to the vbox
+	dataSheetButton := createButtonWithIcon("Open Datasheet", "application-exit") // "emblem-web" is the external link icon
+	hBox.PackStart(dataSheetButton, true, true, 0)                                // Add the button to the vbox
 	dataSheetButton.Connect("clicked", func() {
 		// Open the Data Sheet URL in the default browser
 		err := open.Run(core.Components[i].DataSheetUrl)
@@ -51,7 +51,7 @@ func ShowComponent(i int) {
 	})
 
 	// Create the "Product Details" button with an external link icon
-	productDetailsButton := createButtonWithIcon("Open Product Details", "emblem-web")
+	productDetailsButton := createButtonWithIcon("Open Product Details", "application-exit")
 	hBox.PackStart(productDetailsButton, true, true, 0) // Add the button to the vbox
 	productDetailsButton.Connect("clicked", func() {
 		// Open the Product Details URL in the default browser
