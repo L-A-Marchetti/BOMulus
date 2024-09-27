@@ -166,7 +166,7 @@ func ShowReport() {
 	voidBox := createBox(gtk.ORIENTATION_VERTICAL, 0)
 	vbox.PackStart(voidBox, true, true, 0)
 	// Create the "Export" button.
-	exportButton := createButton("Export")
+	exportButton := createButtonWithIcon("Export to PDF", "document-save")
 	vbox.PackStart(exportButton, false, false, 0)
 	// Connect the "OK" button to the export function
 	exportButton.Connect("clicked", func() {
