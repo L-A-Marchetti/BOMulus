@@ -5,6 +5,7 @@ import (
 	"core"
 	"export"
 	"fmt"
+	"path/filepath"
 	"report"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -27,7 +28,11 @@ func ShowReport() {
 	mismatchComponents := report.MismatchMpn()
 	mismatchCompDescription, mismatchCompDesIdx := report.MismatchDescription()
 	// Create a new window for showing the report.
-	reportWindow := createWindow("Analysis Report", 300, 900)
+	newBOMName := filepath.Base(core.XlsmFiles[1].Path)
+	analysisReportTitle := fmt.Sprintf("Analysis Report of %s", newBOMName)
+
+	reportWindow := createWindow(analysisReportTitle, 300, 900)
+
 	// Create a ScrolledWindow
 	scrolledWindow := createCommonScrolledWindow()
 	// Create a vertical box container for the window
