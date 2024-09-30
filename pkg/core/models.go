@@ -32,11 +32,6 @@ var XlsmDeltas []XlsmDelta
 /*╔══════════════ FILTER MODEL ══════════════╗*/
 
 type Filter struct {
-	Equal                                             bool
-	Delete                                            bool
-	Insert                                            bool
-	Update                                            bool
-	Swap                                              bool
 	Header                                            int
 	Quantity                                          int
 	Mpn                                               int
@@ -47,7 +42,7 @@ type Filter struct {
 	OldQuantity, NewQuantity                          int
 }
 
-var Filters = []Filter{{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+var Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
 /*╚══════════════════════════════════════════╝*/
 
@@ -114,7 +109,7 @@ func ResetAnalysisStatus() {
 }
 
 func ResetFilters() {
-	Filters = []Filter{{true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {true, true, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+	Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 }
 
 /*╚══════════════════════════════════════════════╝*/
