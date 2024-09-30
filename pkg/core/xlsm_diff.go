@@ -4,24 +4,6 @@ import (
 	"config"
 )
 
-func groupByMpn(components []Component) []Component {
-	grouped := make(map[string]Component)
-	for _, component := range components {
-		if existing, found := grouped[component.Mpn]; found {
-			existing.Quantity += component.Quantity
-			grouped[component.Mpn] = existing
-		} else {
-			grouped[component.Mpn] = component
-		}
-	}
-	var result []Component
-	for _, component := range grouped {
-		result = append(result, component)
-	}
-
-	return result
-}
-
 func XlsmDiff() {
 	if config.DEBUGGING {
 		defer StartBenchmark("XlsmDiff()", false).Stop()

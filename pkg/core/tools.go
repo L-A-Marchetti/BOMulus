@@ -74,3 +74,32 @@ func blankTailsFix() {
 		}
 	}
 }
+
+// New line filter helper for XlsmReader()
+func fixLn(rows [][]string) [][]string {
+	for i := range rows {
+		for j := range rows[i] {
+			rows[i][j] = strings.ReplaceAll(rows[i][j], "\n", "")
+		}
+	}
+	return rows
+}
+
+// Avoid duplicates by grouping components using their mpn and summing their quantities.
+func groupByMpn(components []Component) []Component {
+	grouped := make(map[string]Component)
+	for _, component := range components {
+		if existing, found := grouped[component.Mpn]; found {
+			existing.Quantity += component.Quantity
+			grouped[component.Mpn] = existing
+		} else {
+			grouped[component.Mpn] = component
+		}
+	}
+	var result []Component
+	for _, component := range grouped {
+		result = append(result, component)
+	}
+
+	return result
+}

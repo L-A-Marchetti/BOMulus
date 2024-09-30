@@ -44,6 +44,8 @@ func XlsmReader() {
 		// Read every used row
 		rows, err := f.GetRows(f.GetSheetName(0))
 		ErrorsHandler(err)
+		// Freshly added to avoid some special characters to jump a line.
+		rows = fixLn(rows)
 		// Convert data into a string matrix
 		XlsmFiles[i].Content = append(XlsmFiles[i].Content, rows...)
 	}
