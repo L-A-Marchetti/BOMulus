@@ -1,0 +1,136 @@
+  .switch {
+    font-family: Poppins, sans-serif;
+    font-weight: 300;
+    position: relative;
+    display: inline-block;
+    width: 90px;
+    height: 34px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #333333;
+    transition: .7s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-shadow: 6px 6px 0px -4px rgba(0, 0, 0, 0.2)
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    top: 4px;
+    background-color: rgb(71, 71, 71);
+    transition: .7s;
+    z-index: 2;
+  }
+
+  input:checked+.slider {
+    background-color: #333333;
+  }
+
+  input:checked+.slider:before {
+    transform: translateX(26px);
+  }
+
+  .slider.round {
+    border-radius: 0px;
+  }
+
+  .slider.round:before {
+    border-radius: 0%;
+  }
+
+  .switch-text {
+    color: rgb(168, 168, 168);
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 1;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .switch-text.left {
+    margin-right: 5px;
+  }
+
+  .switch-text.middle {
+    margin-right: 1px;
+  }
+
+  .switch-text.right {
+    margin-left: 5px;
+    color: #86b384;
+  }
+
+  .switch-text.right:hover {
+    font-weight: 500;
+  }
+
+  input:not(:checked)+.slider .switch-text.left,
+  input:checked+.slider .switch-text.middle {
+    opacity: 0;
+  }
+
+  input:checked+.slider .switch-text.left,
+  input:not(:checked)+.slider .switch-text.right {
+    opacity: 1;
+  }
+
+  .switch-indicator {
+    position: absolute;
+    left: 4px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dadada;
+    font-weight: bold;
+    font-size: 12px;
+    transition: .7s;
+    z-index: 3;
+  }
+
+  .switch-indicator::before,
+  .switch-indicator::after {
+    position: absolute;
+    content: attr(data-text);
+    transition: opacity 0.1s ease-in-out;
+  }
+
+  .switch-indicator::before {
+    opacity: 1;
+  }
+
+  .switch-indicator::after {
+    opacity: 0;
+  }
+
+  input:checked+.slider .switch-indicator {
+    transform: translateX(26px);
+  }
+
+  input:checked+.slider .switch-indicator::before {
+    opacity: 0;
+  }
+
+  input:checked+.slider .switch-indicator::after {
+    opacity: 1;
+  }

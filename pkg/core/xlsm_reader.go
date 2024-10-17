@@ -2,12 +2,7 @@ package core
 
 import (
 	"config"
-	"fmt"
-	"net/url"
 	"os"
-	"path/filepath"
-	"runtime"
-	"strings"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -17,8 +12,6 @@ func XlsmReader() {
 		defer StartBenchmark("XlsmReader()", true).Stop()
 	}
 	ResetContent()
-	// Define the path of the os tmp dir.
-	tempDir := os.TempDir()
 	var tempFiles []string
 	defer func() {
 		// Clean up temporary files
@@ -27,18 +20,9 @@ func XlsmReader() {
 		}
 	}()
 	for i := range XlsmFiles {
-		filePath, err := url.PathUnescape(strings.TrimSpace(strings.TrimPrefix(XlsmFiles[i].Path, config.FILE_PREFIX)))
-		ErrorsHandler(err)
-		if runtime.GOOS == "windows" {
-			filePath = strings.TrimPrefix(filePath, "/")
-		}
-		// Create a temporary copy of the file
-		tempFile := filepath.Join(tempDir, fmt.Sprintf("temp_%d.xlsm", i))
-		err = CopyFile(filePath, tempFile)
-		ErrorsHandler(err)
-		tempFiles = append(tempFiles, tempFile)
-		// Open the temporary file
-		f, err := excelize.OpenFile(tempFile)
+		tempFiles = append(tempFiles, XlsmFiles[i].Path)
+		// Open the file
+		f, err := excelize.OpenFile(XlsmFiles[i].Path)
 		ErrorsHandler(err)
 		defer f.Close()
 		// Read every used row

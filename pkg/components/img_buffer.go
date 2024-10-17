@@ -1,13 +1,6 @@
 package components
 
-import (
-	"core"
-	"io"
-	"net/http"
-
-	"github.com/gotk3/gotk3/gdk"
-)
-
+/*
 // Bufferize an img from url.
 func imgFromUrl(idx int) {
 	// Request with a user-agent.
@@ -30,3 +23,4 @@ func imgFromUrl(idx int) {
 		}
 	}
 }
+*/

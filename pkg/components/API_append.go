@@ -25,14 +25,27 @@ func appendAnalysis(apiResponse ApiResponse, i int) {
 		for _, part := range apiResponse.SearchResults.Parts {
 			alternativeMpn := core.Component{}
 			alternativeMpn.Mpn = part.ManufacturerPartNumber
+			alternativeMpn.ImagePath = part.ImagePath
+			alternativeMpn.Availability = part.Availability
+			alternativeMpn.DataSheetUrl = part.DataSheetUrl
+			alternativeMpn.LifecycleStatus = part.LifecycleStatus
+			alternativeMpn.ROHSStatus = part.ROHSStatus
+			alternativeMpn.SuggestedReplacement = part.SuggestedReplacement
+			for _, priceBreak := range part.PriceBreaks {
+				alternativeMpn.PriceBreaks = append(alternativeMpn.PriceBreaks, core.PriceBreak(priceBreak))
+			}
+			alternativeMpn.InfoMessages = append(alternativeMpn.InfoMessages, apiResponse.SearchResults.Parts[0].InfoMessages...)
 			alternativeMpn.SupplierDescription = part.Description
+			alternativeMpn.SupplierManufacturer = part.Manufacturer
+			alternativeMpn.Category = part.Category
+			alternativeMpn.ProductDetailUrl = part.ProductDetailUrl
 			core.Components[i].MismatchMpn = append(core.Components[i].MismatchMpn, alternativeMpn)
 		}
 	}
 	// Interpret the MPN.
 	//MPNInterpreter(i)
 	// Load img in the buffer.
-	imgFromUrl(i)
+	//imgFromUrl(i)
 	// Validate the analysis
 	if len(apiResponse.Errors) == 0 {
 		core.Components[i].Analyzed = true

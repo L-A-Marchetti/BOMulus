@@ -1,0 +1,53 @@
+.compare-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    font-family: Poppins, sans-serif;
+    font-weight: 200;
+    width: 100%;
+}
+
+.expander {
+    width: 100%;
+}
+
+.component-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-weight: 400;
+    font-size: 0.6rem;
+
+}
+
+
+.component-table td {
+    border: 1px solid rgb(39, 39, 39);
+    padding: 8px;
+    text-align: left;
+    color: rgb(255, 255, 255);
+
+
+}
+
+.component-table th {
+    background-color: rgb(39, 39, 39);
+    border: 2px;
+
+}
+
+.summary-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    /* Space between summary and expanders */
+    gap: 2rem;
+    width: 100%;
+}
+
+h4 {
+    font-size: 1rem;
+    font-weight: 200;
+}

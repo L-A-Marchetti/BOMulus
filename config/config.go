@@ -1,7 +1,5 @@
 package config
 
-import "github.com/gotk3/gotk3/gtk"
-
 /*╔══════════════ APPLICATION SETTINGS ══════════════╗*/
 
 const (
@@ -73,8 +71,8 @@ const (
 
 	}
 	`
-	SCROLLBAR_POLICY        = gtk.POLICY_ALWAYS
-	SCROLLBAR_CSS    string = `
+	/*SCROLLBAR_POLICY        = gtk.POLICY_ALWAYS*/
+	SCROLLBAR_CSS string = `
     scrollbar slider {
         min-width: 15px;
         min-height: 15px;
@@ -112,7 +110,7 @@ const (
 )
 
 var (
-	USER_API_KEY string = ""
+	USER_API_KEY string = "a5ed8d21-eb53-4ab3-85fa-35284bb9689d"
 )
 
 /*╚═══════════════════════════════════════════════╝*/

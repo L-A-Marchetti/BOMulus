@@ -3,8 +3,6 @@ package core
 import (
 	"config"
 	"time"
-
-	"github.com/gotk3/gotk3/gdk"
 )
 
 /*╔══════════════ FILES MODELS ══════════════╗*/
@@ -49,6 +47,7 @@ var Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
 
 type Component struct {
+	Id                                 int
 	Operator                           string
 	OldRow, NewRow                     int
 	Quantity, OldQuantity, NewQuantity int
@@ -66,7 +65,6 @@ type Component struct {
 	MismatchMpn                        []Component
 	UserDescription                    string
 	SupplierDescription                string
-	Img                                *gdk.Pixbuf
 	UserManufacturer                   string
 	SupplierManufacturer               string
 	Category                           string

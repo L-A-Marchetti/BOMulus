@@ -1,0 +1,230 @@
+/* Styles existants */
+
+#app {
+    height: 100vh;
+    text-align: center;
+}
+
+#logo {
+    display: block;
+    width: 50%;
+    height: 50%;
+    margin: auto;
+    padding: 10% 0 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-origin: content-box;
+}
+
+.result {
+    height: 20px;
+    line-height: 20px;
+    margin: 1.5rem auto;
+}
+
+.input-box .btn {
+    width: 60px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 3px;
+    border: none;
+    margin: 0 0 0 20px;
+    padding: 0 8px;
+    cursor: pointer;
+}
+
+.input-box .btn:hover {
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    color: #333333;
+}
+
+.input-box .input {
+    border: none;
+    border-radius: 3px;
+    outline: none;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    background-color: rgba(240, 240, 240, 1);
+    -webkit-font-smoothing: antialiased;
+}
+
+.input-box .input:hover {
+    border: none;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.input-box .input:focus {
+    border: none;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+/* Ajout pour la barre supérieure personnalisée */
+
+.custom-title-bar {
+    font-family: 'Poppins', sans-serif;
+    position: fixed;
+    /* S'assurer qu'elle reste en haut */
+    color: rgb(255, 255, 255);
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Texte blanc */
+    padding: 0;
+    /* Enlever tout le padding */
+    margin: 0;
+    /* Enlever tout le margin */
+    height: 40px;
+    /* Définir une hauteur fixe pour la barre */
+    -webkit-user-select: none;
+    /* Empêcher la sélection de texte */
+    -webkit-app-region: drag;
+    /* Permet de déplacer la fenêtre */
+    --wails-draggable: drag;
+    /* Propriété Wails */
+    z-index: 1000;
+    /* S'assurer que la barre est au-dessus du contenu */
+}
+
+.title-bar-logo {
+
+    padding-top: 7px;
+}
+
+.drag-area {
+    flex-grow: 1;
+    -webkit-app-region: drag;
+    /* Permet de déplacer la fenêtre */
+    font-weight: bold;
+    /* Pour donner une meilleure apparence au titre */
+    text-align: left;
+    padding-left: 10px;
+    /* Espacement entre le titre et le bord gauche */
+}
+
+.window-controls {
+    display: flex;
+    gap: 0;
+    /* Pas d'espace entre les boutons de contrôle */
+    height: 100%;
+    /* Assure que la hauteur est la même que la barre */
+}
+
+.control-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 40px;
+    /* Assurer une largeur qui corresponde à la hauteur */
+    height: 100%;
+    /* Prendre toute la hauteur de la barre */
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    /* Utilisé pour centrer le contenu */
+    align-items: center;
+    /* Centrer verticalement le contenu (icône) */
+    justify-content: center;
+    /* Centrer horizontalement le contenu (icône) */
+    box-sizing: border-box;
+    /* Assurer une bonne prise en compte des dimensions */
+    transition: background 0.2s ease-in-out;
+    /* Ajout d'une transition pour un effet plus agréable */
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    /* Légère surbrillance sur le survol */
+    width: 40px;
+    /* S'assurer qu'il conserve la même largeur */
+    height: 100%;
+    /* S'assurer qu'il prend toute la hauteur de la barre */
+    padding: 0;
+    /* Pas de padding au survol */
+}
+
+.close-btn {
+    color: #ffffff;
+    /* Rouge pour le bouton de fermeture */
+}
+
+.close-btn:hover {
+    background: rgba(225, 30, 16, 0.455);
+    /* Légère surbrillance rouge sur le survol */
+    width: 40px;
+    /* S'assurer qu'il conserve la même largeur */
+    height: 100%;
+    /* S'assurer qu'il prend toute la hauteur de la barre */
+    padding: 0;
+    /* Pas de padding au survol */
+}
+
+
+/*
+
+#app {
+    height: 100vh;
+    text-align: center;
+}
+
+#logo {
+    display: block;
+    width: 50%;
+    height: 50%;
+    margin: auto;
+    padding: 10% 0 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-origin: content-box;
+}
+
+.result {
+    height: 20px;
+    line-height: 20px;
+    margin: 1.5rem auto;
+}
+
+.input-box .btn {
+    width: 60px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 3px;
+    border: none;
+    margin: 0 0 0 20px;
+    padding: 0 8px;
+    cursor: pointer;
+}
+
+.input-box .btn:hover {
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    color: #333333;
+}
+
+.input-box .input {
+    border: none;
+    border-radius: 3px;
+    outline: none;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    background-color: rgba(240, 240, 240, 1);
+    -webkit-font-smoothing: antialiased;
+}
+
+.input-box .input:hover {
+    border: none;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.input-box .input:focus {
+    border: none;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+*/

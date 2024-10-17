@@ -12,6 +12,8 @@ func XlsmDiff() {
 	newComponentsGrouped := groupByMpn(NewComponents)
 	oldComponentsGrouped := groupByMpn(OldComponents)
 
+	compId := 0
+
 	for _, newComponent := range newComponentsGrouped {
 		matchFound := false
 		for _, oldComponent := range oldComponentsGrouped {
@@ -19,6 +21,8 @@ func XlsmDiff() {
 				newComponent.Quantity == oldComponent.Quantity {
 				component := newComponent
 				component.Operator = "EQUAL"
+				component.Id = compId
+				compId++
 				Components = append(Components, component)
 				Filters[1].EqualCount++
 				Filters[1].OldQuantity += component.Quantity
@@ -30,6 +34,8 @@ func XlsmDiff() {
 				component.Operator = "UPDATE"
 				component.OldQuantity = oldComponent.Quantity
 				component.NewQuantity = newComponent.Quantity
+				component.Id = compId
+				compId++
 				Components = append(Components, component)
 				Filters[1].UpdateCount++
 				Filters[1].OldQuantity += component.OldQuantity
@@ -41,6 +47,8 @@ func XlsmDiff() {
 		if !matchFound {
 			component := newComponent
 			component.Operator = "INSERT"
+			component.Id = compId
+			compId++
 			Components = append(Components, component)
 			Filters[1].InsertCount++
 			Filters[1].NewQuantity += component.Quantity
@@ -58,6 +66,8 @@ func XlsmDiff() {
 		if !matchFound {
 			component := oldComponent
 			component.Operator = "DELETE"
+			component.Id = compId
+			compId++
 			Components = append(Components, component)
 			Filters[1].DeleteCount++
 			Filters[1].OldQuantity += component.Quantity
