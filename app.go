@@ -5,6 +5,7 @@ import (
 	"config"
 	"context"
 	"core"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -154,6 +155,20 @@ func (a *App) OpenDirectoryDialog() string {
 	return selection
 }
 
+type WorkspaceInfos struct {
+	Name      string    `json:"name"`
+	Path      string    `json:"path"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type Workspace struct {
+	WorkspaceInfos WorkspaceInfos `json:"workspace_infos"`
+}
+
+type BOMulusFile struct {
+	Workspaces []Workspace `json:"workspaces"`
+}
+
 // CreateWorkspace creates a new workspace
 func (a *App) CreateWorkspace(path string, name string) error {
 	fullPath := filepath.Join(path, name)
@@ -167,13 +182,70 @@ func (a *App) CreateWorkspace(path string, name string) error {
 	// Format the bmls name file
 	formattedName := strings.ReplaceAll(name, " ", "_")
 	bmlsFile := fmt.Sprintf("%s.bmls", formattedName)
+	bmlsFilePath := filepath.Join(fullPath, bmlsFile)
 
-	// Create the test.bmls file
-	file, err := os.Create(filepath.Join(fullPath, bmlsFile))
-	if err != nil {
-		return fmt.Errorf("failed to create test.bmls file: %w", err)
+	// Create the workspace info
+	workspaceInfos := Workspace{
+		WorkspaceInfos: WorkspaceInfos{
+			Name:      name,
+			Path:      fullPath,
+			CreatedAt: time.Now(),
+		},
 	}
-	defer file.Close()
+
+	// Convert workspace info to JSON
+	jsonData, err := json.MarshalIndent(workspaceInfos, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal workspace info: %w", err)
+	}
+
+	// Write JSON data to the .bmls file
+	err = os.WriteFile(bmlsFilePath, jsonData, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write .bmls file: %w", err)
+	}
+
+	// Update BOMulus.bmls
+	err = updateBOMulusFile(workspaceInfos)
+	if err != nil {
+		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
+	}
+
+	return nil
+}
+
+// updateBOMulusFile updates the BOMulus.bmls file with new workspace info
+func updateBOMulusFile(newWorkspace Workspace) error {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+
+	var bomulusFile BOMulusFile
+
+	// Read existing BOMulus.bmls file if it exists
+	if _, err := os.Stat(bomulusPath); err == nil {
+		data, err := os.ReadFile(bomulusPath)
+		if err != nil {
+			return fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+		}
+
+		err = json.Unmarshal(data, &bomulusFile)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+		}
+	}
+
+	// Add new workspace to the list
+	bomulusFile.Workspaces = append(bomulusFile.Workspaces, newWorkspace)
+
+	// Write updated data back to BOMulus.bmls
+	jsonData, err := json.MarshalIndent(bomulusFile, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal BOMulus file: %w", err)
+	}
+
+	err = os.WriteFile(bomulusPath, jsonData, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
+	}
 
 	return nil
 }
