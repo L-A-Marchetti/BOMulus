@@ -6,10 +6,9 @@ import './AddFileToWorkspace.css';
 
 function AddFileToWorkspaceComp() {
     const [selectedFile, setSelectedFile] = useState(null);
-    const [existingFiles, setExistingFiles] = useState([]); // Initialisé comme un tableau vide
-    const [selectedFiles, setSelectedFiles] = useState([]); // Pour gérer les fichiers sélectionnés
+    const [existingFiles, setExistingFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
-    // Charger les fichiers existants lors du montage du composant
     useEffect(() => {
         loadExistingFiles();
     }, []);
@@ -17,10 +16,10 @@ function AddFileToWorkspaceComp() {
     const loadExistingFiles = async () => {
         try {
             const files = await GetFilesInWorkspaceInfo();
-            setExistingFiles(files || []); // Assurez-vous que c'est un tableau
+            setExistingFiles(files || []);
         } catch (error) {
             console.error("Failed to load existing files:", error);
-            setExistingFiles([]); // Réinitialiser en cas d'erreur
+            setExistingFiles([]);
         }
     };
 
@@ -46,7 +45,7 @@ function AddFileToWorkspaceComp() {
             await AddFileToWorkspace(selectedFile);
             alert("File added successfully");
             setSelectedFile(null);
-            loadExistingFiles(); // Recharger les fichiers existants après ajout
+            loadExistingFiles();
         } catch (error) {
             console.error("Error adding file to workspace:", error);
             alert("Failed to add file to workspace");
@@ -55,30 +54,28 @@ function AddFileToWorkspaceComp() {
 
     const handleSelectFile = (file) => {
         if (selectedFiles.includes(file)) {
-            // Désélectionner le fichier s'il est déjà sélectionné
             setSelectedFiles(selectedFiles.filter(f => f !== file));
         } else {
-            // Si on a déjà 2 fichiers sélectionnés, désélectionner le plus ancien
-            if (selectedFiles.length >= 2) {
-                setSelectedFiles([file]); // Remplacer par le nouveau fichier
-            } else {
-                setSelectedFiles([...selectedFiles, file]); // Ajouter le fichier à la sélection
+            if (selectedFiles.length < 2) {
+                setSelectedFiles([...selectedFiles, file]);
             }
         }
     };
 
     const handleCompare = async () => {
-        if (selectedFiles.length === 2) {
-            // Appeler la fonction Go avec les chemins des fichiers
-            await BtnCompare(selectedFiles[0].components, selectedFiles[1].components); // Assurez-vous que `path` est correct
+        if (selectedFiles.length >= 1 && selectedFiles.length <= 2) {
+            if (selectedFiles.length === 2) {
+                await BtnCompare(selectedFiles[0].components, selectedFiles[1].components);
+            } else if (selectedFiles.length === 1) {
+                await BtnCompare(selectedFiles[0].components, null);
+            }
         } else {
-            alert("Please select exactly 2 files for comparison.");
+            alert("Please select 1 or 2 files for comparison.");
         }
     };
 
-    // Fonction pour extraire le nom du fichier à partir du chemin complet
     const getFileName = (filePath) => {
-        return filePath.split('/').pop().split('\\').pop(); // Gérer à la fois les chemins Unix et Windows
+        return filePath.split('/').pop().split('\\').pop();
     };
 
     return (
@@ -90,9 +87,12 @@ function AddFileToWorkspaceComp() {
                         <Button 
                             key={file.path} 
                             onClick={() => handleSelectFile(file)} 
-                            style={{ backgroundColor: selectedFiles.includes(file) ? 'blue' : 'transparent' }} // Couleur bleue si sélectionné
+                            style={{ backgroundColor: selectedFiles.includes(file) ? 'blue' : 'transparent' }}
                         >
-                            {getFileName(file.path)} {/* Affiche le nom du fichier */}
+                            {/* Affiche le tag selon le nombre de fichiers sélectionnés */}
+                            {selectedFiles.includes(file) ? 
+                                (selectedFiles.length === 1 ? "single" : selectedFiles.indexOf(file) === 0 ? "v1" : "v2") + " " + getFileName(file.path)
+                                : getFileName(file.path)}
                         </Button>
                     ))}
                 </>
@@ -105,7 +105,7 @@ function AddFileToWorkspaceComp() {
             {selectedFile && (
                 <Button onClick={handleAddFile}>Add to Workspace</Button>
             )}
-            <Button onClick={handleCompare} disabled={selectedFiles.length !== 2}>Compare Selected Files</Button>
+            <Button onClick={handleCompare} disabled={selectedFiles.length === 0}>Compare Selected Files</Button>
         </div>
     );
 }
