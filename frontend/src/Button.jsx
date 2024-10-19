@@ -1,8 +1,8 @@
-import { m } from "framer-motion";
 import React, { useState } from "react";
 
-function Button({ children, onClick }) {
+function Button({ children, onClick, style }) {
     const [isHovered, setIsHovered] = useState(false);
+
     const buttonStyle = {
         normal: {
             textDecoration: "none",
@@ -26,23 +26,23 @@ function Button({ children, onClick }) {
             background: "none",
             border: "none",
             cursor: "pointer",
-            backgroundColor: "rgba(68, 68, 68, 0.1)",
+            backgroundColor: "rgba(68, 68, 68, 0.2)", // Change légèrement la couleur au survol
         }
-    }
+    };
 
     const handleClick = (e) => {
         e.preventDefault();
         if (onClick) {
             onClick(e);
         }
-    }
+    };
 
     return (
         <button
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            style={isHovered ? buttonStyle.hovered : buttonStyle.normal}
+            style={{ ...buttonStyle.normal, ...(isHovered ? buttonStyle.hovered : {}), ...style }} // Applique les styles passés en props
         >
             {children}
         </button>

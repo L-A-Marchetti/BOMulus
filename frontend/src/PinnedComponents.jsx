@@ -1,8 +1,11 @@
-import React from 'react';
-import OperatorExpander from './Expander'; // Assurez-vous d'importer OperatorExpander
+import React, { useState } from 'react';
+import OperatorExpander from './Expander'; 
 import AddFileToWorkspaceComp from './AddFileToWorkspace';
+import Button from './Button'; // Assurez-vous que Button est un composant qui accepte des styles
 
 function PinnedComponents({ pinnedComponents, onPinToggle }) {
+    const [isVisible, setIsVisible] = useState(true);
+    
     const operators = ["INSERT", "UPDATE", "DELETE", "EQUAL"];
     const opColors = {
         INSERT: '#86b384',
@@ -11,49 +14,61 @@ function PinnedComponents({ pinnedComponents, onPinToggle }) {
         EQUAL: '#636363',
     };
 
+    const toggleVisibility = () => {
+        setIsVisible(prev => !prev); // Bascule l'état de visibilité
+    };
+
     return (
-        <div style={pinnedContainerStyle}>
-            <h4>Pinned Components</h4>
-
-            {/* Affichage des composants épinglés par opérateur */}
-            {operators.map((operator) => {
-                const componentsForOperator = pinnedComponents.filter(comp => comp.Operator === operator);
-                return componentsForOperator.length > 0 ? (
-                    <OperatorExpander
-                        key={operator}
-                        operator={operator}
-                        components={componentsForOperator}
-                        color={opColors[operator]}
-                        count={componentsForOperator.length}
-                        onPinToggle={onPinToggle} // Passer la fonction d'épinglage
-                        pinnedComponents={pinnedComponents}
-                    />
-                ) : null;
-            })}
-
-            {/* Ajoutez un espace pour pousser le AddFileToWorkspaceComp vers le bas */}
-            <div style={{ flexGrow: 1 }} />
-
-            <AddFileToWorkspaceComp />
+        <div style={{ display: 'flex', position: 'sticky', top: '10px', left: '0' }}>
+            {isVisible && (
+                <div style={pinnedContainerStyle}>
+                    <h4>Pinned Components</h4>
+                    {operators.map((operator) => {
+                        const componentsForOperator = pinnedComponents.filter(comp => comp.Operator === operator);
+                        return componentsForOperator.length > 0 ? (
+                            <OperatorExpander
+                                key={operator}
+                                operator={operator}
+                                components={componentsForOperator}
+                                color={opColors[operator]}
+                                count={componentsForOperator.length}
+                                onPinToggle={onPinToggle}
+                                pinnedComponents={pinnedComponents}
+                            />
+                        ) : null;
+                    })}
+                    <div style={{ flexGrow: 1 }} />
+                    <AddFileToWorkspaceComp />
+                </div>
+            )}
+            <div style={{width: '40px'}}>
+            <Button 
+                onClick={toggleVisibility} 
+                style={{ 
+                    marginTop: '50px',
+                    height: 'calc(100vh - 80px)',
+                    position: isVisible ? 'relative' : 'absolute', // Change la position selon la visibilité
+                    left: isVisible ? 'auto' : '0', // Colle le bouton à gauche quand masqué
+                }}
+            >
+                {isVisible ? '←' : '→'} {/* Flèche vers la gauche ou vers la droite */}
+            </Button>
+            </div>
         </div>
     );
 }
 
 const pinnedContainerStyle = {
     display: 'flex',
-    flexDirection: 'column', // Aligner les éléments verticalement
-    position: 'sticky',
-    marginTop: '30px',
-    top: '10px',
-    left: '0',
-    width: '100%',
+    flexDirection: 'column', 
+    marginTop: '10px',
+    width: '300px', // Ajustez selon vos besoins
     backgroundColor: 'inherit',
     padding: '10px',
-    height: 'calc(100vh - 80px)', // Ajustez selon vos besoins
+    height: 'calc(100vh - 60px)', 
     overflowY: 'auto',
     fontFamily: 'Poppins, sans-serif',
     fontSize: '0.6rem',
-    maxWidth: '20%',
 };
 
 export default PinnedComponents;
