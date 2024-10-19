@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -248,4 +249,33 @@ func updateBOMulusFile(newWorkspace Workspace) error {
 	}
 
 	return nil
+}
+
+// GetRecentWorkspaces returns the 3 most recently created workspaces
+func (a *App) GetRecentWorkspaces() ([]Workspace, error) {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+
+	var bomulusFile BOMulusFile
+
+	// Read BOMulus.bmls file
+	data, err := os.ReadFile(bomulusPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+	}
+
+	err = json.Unmarshal(data, &bomulusFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	}
+
+	// Sort workspaces by creation date (most recent first)
+	sort.Slice(bomulusFile.Workspaces, func(i, j int) bool {
+		return bomulusFile.Workspaces[i].WorkspaceInfos.CreatedAt.After(bomulusFile.Workspaces[j].WorkspaceInfos.CreatedAt)
+	})
+
+	// Return up to 3 most recent workspaces
+	if len(bomulusFile.Workspaces) > 3 {
+		return bomulusFile.Workspaces[:3], nil
+	}
+	return bomulusFile.Workspaces, nil
 }

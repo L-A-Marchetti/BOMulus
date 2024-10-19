@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { CreateWorkspace, OpenDirectoryDialog } from '../wailsjs/go/main/App';
 import Button from './Button';
 import './WorkspaceCreator.css';
+import RecentWorkspaces from './RecentWorkspaces';
 
 function WorkspaceCreator() {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -42,7 +43,10 @@ function WorkspaceCreator() {
     return (
         <div className='container'>
             {!isWizardOpen ? (
-                <Button onClick={openWizard}>+ Workspace</Button>
+                <>
+                    <Button onClick={openWizard}>+ Workspace</Button>
+                    <RecentWorkspaces />
+                </>
             ) : (
                 <div className="wizard-content">
                     <Button onClick={chooseDirectory}>Workspace Directory {workspacePath}</Button>
