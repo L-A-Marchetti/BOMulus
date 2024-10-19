@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/skratchdot/open-golang/open"
@@ -139,4 +140,40 @@ func (a *App) MaximizeWindow() {
 
 func (a *App) CloseWindow() {
 	runtime.Quit(a.ctx)
+}
+
+// OpenDirectoryDialog opens a directory selection dialog
+func (a *App) OpenDirectoryDialog() string {
+	selection, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select Workspace Directory",
+	})
+	if err != nil {
+		fmt.Println("Error opening directory dialog:", err)
+		return ""
+	}
+	return selection
+}
+
+// CreateWorkspace creates a new workspace
+func (a *App) CreateWorkspace(path string, name string) error {
+	fullPath := filepath.Join(path, name)
+
+	// Create the workspace directory
+	err := os.MkdirAll(fullPath, 0755)
+	if err != nil {
+		return fmt.Errorf("failed to create workspace directory: %w", err)
+	}
+
+	// Format the bmls name file
+	formattedName := strings.ReplaceAll(name, " ", "_")
+	bmlsFile := fmt.Sprintf("%s.bmls", formattedName)
+
+	// Create the test.bmls file
+	file, err := os.Create(filepath.Join(fullPath, bmlsFile))
+	if err != nil {
+		return fmt.Errorf("failed to create test.bmls file: %w", err)
+	}
+	defer file.Close()
+
+	return nil
 }

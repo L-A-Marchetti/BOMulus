@@ -1,10 +1,10 @@
 // App.js
 import React, { useState } from 'react';
 import './App.css';
-import Remote from './Remote';
 import CompareView from './CompareView';
 import PinnedComponents from './PinnedComponents';
 import TopBar from './TopBar';
+import WorkspaceCreator from './WorkspaceCreator';
 
 function App() {
     // State hooks for managing component visibility and data
@@ -38,8 +38,7 @@ function App() {
         <>
             {/* Render the custom title bar */}
             <TopBar />
-            {/* Remote component for triggering compare view */}
-            <Remote setShowCompareView={handleToggleCompareView} />
+            <WorkspaceCreator />
 
             {/* Conditional rendering of CompareView and PinnedComponents */}
             {showCompareView && (
