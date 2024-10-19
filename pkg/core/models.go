@@ -13,20 +13,6 @@ type XlsmFile struct {
 	Components []Component
 }
 
-type XlsmDelta struct {
-	Operator string
-	OldRow   int
-	NewRow   int
-}
-
-/*
-	var XlsmFiles = []XlsmFile{
-		{Path: config.INIT_FILE_PATH_1},
-		{Path: config.INIT_FILE_PATH_2},
-	}
-*/
-var XlsmDeltas []XlsmDelta
-
 /*╚══════════════════════════════════════════╝*/
 
 /*╔══════════════ FILTER MODEL ══════════════╗*/
@@ -40,6 +26,17 @@ type Filter struct {
 	Manufacturer int `json:"manufacturer"`
 }
 
+type DiffSummary struct {
+	EqualCount  int
+	InsertCount int
+	UpdateCount int
+	DeleteCount int
+	OldQuantity int
+	NewQuantity int
+}
+
+var Diff = DiffSummary{}
+
 //var Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
 /*╚══════════════════════════════════════════╝*/
@@ -47,26 +44,28 @@ type Filter struct {
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
 
 type Component struct {
-	Id                   int          `json:"id"`
-	Quantity             int          `json:"quantity"`
-	Mpn                  string       `json:"mpn"`
-	Designator           string       `json:"designator"`
-	ImagePath            string       `json:"image_path"`
-	Availability         string       `json:"availability"`
-	DataSheetUrl         string       `json:"datasheet_url"`
-	LifecycleStatus      string       `json:"lifecycle_status"`
-	ROHSStatus           string       `json:"rohs_status"`
-	SuggestedReplacement string       `json:"suggested_replacement"`
-	PriceBreaks          []PriceBreak `json:"price_breaks"`
-	InfoMessages         []string     `json:"info_messages"`
-	Analyzed             bool         `json:"analyzed"`
-	MismatchMpn          []Component  `json:"mismatch_mpn"`
-	UserDescription      string       `json:"user_description"`
-	SupplierDescription  string       `json:"supplier_description"`
-	UserManufacturer     string       `json:"user_manufacturer"`
-	SupplierManufacturer string       `json:"supplier_manufacturer"`
-	Category             string       `json:"category"`
-	ProductDetailUrl     string       `json:"product_detail_url"`
+	Id                       int          `json:"id"`
+	Quantity                 int          `json:"quantity"`
+	Mpn                      string       `json:"mpn"`
+	Designator               string       `json:"designator"`
+	ImagePath                string       `json:"image_path"`
+	Availability             string       `json:"availability"`
+	DataSheetUrl             string       `json:"datasheet_url"`
+	LifecycleStatus          string       `json:"lifecycle_status"`
+	ROHSStatus               string       `json:"rohs_status"`
+	SuggestedReplacement     string       `json:"suggested_replacement"`
+	PriceBreaks              []PriceBreak `json:"price_breaks"`
+	InfoMessages             []string     `json:"info_messages"`
+	Analyzed                 bool         `json:"analyzed"`
+	MismatchMpn              []Component  `json:"mismatch_mpn"`
+	UserDescription          string       `json:"user_description"`
+	SupplierDescription      string       `json:"supplier_description"`
+	UserManufacturer         string       `json:"user_manufacturer"`
+	SupplierManufacturer     string       `json:"supplier_manufacturer"`
+	Category                 string       `json:"category"`
+	ProductDetailUrl         string       `json:"product_detail_url"`
+	Operator                 string
+	OldQuantity, NewQuantity int
 }
 
 type PriceBreak struct {
@@ -76,28 +75,15 @@ type PriceBreak struct {
 }
 
 var (
-	Components    = []Component{} // Do we still need it ?
-	OldComponents = []Component{}
-	NewComponents = []Component{}
+	Components = []Component{} // Do we still need it ?
 )
 
 /*╚══════════════════════════════════════════════╝*/
 
 /*╔══════════════ RESET FUNCTIONS ══════════════╗*/
-/*
-func ResetContent() {
-	XlsmFiles[0].Content = nil
-	XlsmFiles[1].Content = nil
-}
-*/
-func ResetDeltas() {
-	XlsmDeltas = nil
-}
 
 func ResetComponents() {
 	Components = []Component{}
-	OldComponents = []Component{}
-	NewComponents = []Component{}
 }
 
 func ResetAnalysisStatus() {

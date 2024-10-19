@@ -75,7 +75,6 @@ func fixLn(rows [][]string) [][]string {
 	return rows
 }
 
-/*
 // Avoid duplicates by grouping components using their mpn and summing their quantities.
 func groupByMpn(components []Component) []Component {
 	grouped := make(map[string]Component)
@@ -94,4 +93,3 @@ func groupByMpn(components []Component) []Component {
 
 	return result
 }
-*/

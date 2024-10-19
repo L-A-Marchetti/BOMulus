@@ -1,12 +1,13 @@
 // AddFileToWorkspaceComponent.js
 import React, { useState, useEffect } from 'react';
-import { OpenFileDialog, AddFileToWorkspace, GetFilesInWorkspaceInfo } from '../wailsjs/go/main/App';
+import { OpenFileDialog, AddFileToWorkspace, GetFilesInWorkspaceInfo, BtnCompare } from '../wailsjs/go/main/App';
 import Button from './Button';
 import './AddFileToWorkspace.css';
 
 function AddFileToWorkspaceComp() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [existingFiles, setExistingFiles] = useState([]); // Initialisé comme un tableau vide
+    const [selectedFiles, setSelectedFiles] = useState([]); // Pour gérer les fichiers sélectionnés
 
     // Charger les fichiers existants lors du montage du composant
     useEffect(() => {
@@ -52,6 +53,29 @@ function AddFileToWorkspaceComp() {
         }
     };
 
+    const handleSelectFile = (file) => {
+        if (selectedFiles.includes(file)) {
+            // Désélectionner le fichier s'il est déjà sélectionné
+            setSelectedFiles(selectedFiles.filter(f => f !== file));
+        } else {
+            // Si on a déjà 2 fichiers sélectionnés, désélectionner le plus ancien
+            if (selectedFiles.length >= 2) {
+                setSelectedFiles([file]); // Remplacer par le nouveau fichier
+            } else {
+                setSelectedFiles([...selectedFiles, file]); // Ajouter le fichier à la sélection
+            }
+        }
+    };
+
+    const handleCompare = async () => {
+        if (selectedFiles.length === 2) {
+            // Appeler la fonction Go avec les chemins des fichiers
+            await BtnCompare(selectedFiles[0].components, selectedFiles[1].components); // Assurez-vous que `path` est correct
+        } else {
+            alert("Please select exactly 2 files for comparison.");
+        }
+    };
+
     // Fonction pour extraire le nom du fichier à partir du chemin complet
     const getFileName = (filePath) => {
         return filePath.split('/').pop().split('\\').pop(); // Gérer à la fois les chemins Unix et Windows
@@ -63,7 +87,13 @@ function AddFileToWorkspaceComp() {
             {existingFiles && existingFiles.length > 0 ? (
                 <>
                     {existingFiles.map((file) => (
-                        <Button>{file.name}</Button> // Assurez-vous que `file` a une propriété `name`
+                        <Button 
+                            key={file.path} 
+                            onClick={() => handleSelectFile(file)} 
+                            style={{ backgroundColor: selectedFiles.includes(file) ? 'blue' : 'transparent' }} // Couleur bleue si sélectionné
+                        >
+                            {getFileName(file.path)} {/* Affiche le nom du fichier */}
+                        </Button>
                     ))}
                 </>
             ) : (
@@ -75,6 +105,7 @@ function AddFileToWorkspaceComp() {
             {selectedFile && (
                 <Button onClick={handleAddFile}>Add to Workspace</Button>
             )}
+            <Button onClick={handleCompare} disabled={selectedFiles.length !== 2}>Compare Selected Files</Button>
         </div>
     );
 }

@@ -130,12 +130,12 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                 </td>
             )}
             <tr className={`grid-row ${operator.toLowerCase()}`} style={isWarning ? { border: '4px solid #fff98f' } : {}}>
-                <td>{operator === 'UPDATE' ? `${component.OldQuantity} → ${component.NewQuantity}` : component.Quantity}</td>
-                <td>{component.Mpn}</td>
-                <td>{component.Designator}</td>
-                <td>{component.UserDescription}</td>
+                <td>{operator === 'UPDATE' ? `${component.OldQuantity} → ${component.NewQuantity}` : component.quantity}</td>
+                <td>{component.mpn}</td>
+                <td>{component.designator}</td>
+                <td>{component.user_description}</td>
                 <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
-                    {!component.Analyzed && (
+                    {!component.analyzed && (
                         <>
                             <div style={{ display: 'flex' }}>
                                 <ButtonAction onClick={() => onPinToggle(component.Id)} style={{ marginLeft: '10px' }}>
@@ -145,7 +145,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                             </div>
                         </>
                     )}
-                    {component.Analyzed && (
+                    {component.analyzed && (
                         <>
                             <div style={{ display: 'flex' }}>
                                 <ButtonAction onClick={() => onPinToggle(component.Id)} style={{ marginLeft: '10px' }}>

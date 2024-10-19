@@ -86,14 +86,14 @@ func (a *App) DisplayFileName(fileName string) struct {
 		return nil
 	}
 */
-func (a *App) BtnCompare() {
+func (a *App) BtnCompare(v1, v2 []core.Component) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
 	}
 	//core.XlsmReader()
 	//components.HeaderDetection()
 	//components.ComponentsDetection()
-	//core.XlsmDiff()
+	core.XlsmDiff(v1, v2)
 	//core.ResetAnalysisStatus()
 }
 
