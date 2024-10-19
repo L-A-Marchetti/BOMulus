@@ -11,13 +11,13 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
     };
 
     const isPinned = pinnedComponents && pinnedComponents.length > 0
-        ? pinnedComponents.some(pinned => pinned.Id === component.Id)
+        ? pinnedComponents.some(pinned => pinned.id === component.id)
         : false;
 
-    const isOutOfStock = component.Analyzed && operator !== 'DELETE' && component.Availability === "";
-    const isLCSRisky = component.Analyzed && operator !== 'DELETE' && component.LifecycleStatus !== "" && component.LifecycleStatus !== "New Product" && component.LifecycleStatus !== "New at Mouser";
-    const hasMessages = component.Analyzed && operator !== 'DELETE' && component.InfoMessages !== null;
-    const hasMismatchMpn = component.Analyzed && operator !== 'DELETE' && component.MismatchMpn && component.MismatchMpn !== null;
+    const isOutOfStock = component.analyzed && operator !== 'DELETE' && component.availability === "";
+    const isLCSRisky = component.analyzed && operator !== 'DELETE' && component.lifecycle_status !== "" && component.lifecycle_status !== "New Product" && component.lifecycle_status !== "New at Mouser";
+    const hasMessages = component.analyzed && operator !== 'DELETE' && component.info_messages !== null;
+    const hasMismatchMpn = component.analyzed && operator !== 'DELETE' && component.mismatch_mpn && component.mismatch_mpn !== null;
     const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
 
     const messages = [];
@@ -45,32 +45,32 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
 
                     <tr>
                         <td style={{ width: '30%', verticalAlign: 'top', padding: '10px' }}>
-                            <img src={comp.ImagePath} alt="Component" style={{ maxWidth: '100%' }} />
+                            <img src={comp.image_path} alt="Component" style={{ maxWidth: '100%' }} />
                         </td>
                         <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
-                            <p><strong>Availability:</strong> {comp.Availability || 'N/A'}</p>
-                            <p><strong>Lifecycle Status:</strong> {comp.LifecycleStatus || 'N/A'}</p>
-                            <p><strong>ROHS Status:</strong> {comp.ROHSStatus || 'N/A'}</p>
-                            <p><strong>Suggested Replacement:</strong> {comp.SuggestedReplacement || 'N/A'}</p>
+                            <p><strong>Availability:</strong> {comp.availability || 'N/A'}</p>
+                            <p><strong>Lifecycle Status:</strong> {comp.lifecycle_status || 'N/A'}</p>
+                            <p><strong>ROHS Status:</strong> {comp.rohs_status || 'N/A'}</p>
+                            <p><strong>Suggested Replacement:</strong> {comp.suggested_replacement || 'N/A'}</p>
                         </td>
                         <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
-                            <p><strong>Manufacturer Part Number:</strong> {comp.Mpn || 'N/A'}</p>
-                            <p><strong>Supplier Description:</strong> {comp.SupplierDescription || 'N/A'}</p>
-                            <p><strong>Supplier Manufacturer:</strong> {comp.SupplierManufacturer || 'N/A'}</p>
-                            <p><strong>Category:</strong> {comp.Category || 'N/A'}</p>
+                            <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
+                            <p><strong>Supplier Description:</strong> {comp.supplier_description || 'N/A'}</p>
+                            <p><strong>Supplier Manufacturer:</strong> {comp.supplier_manufacturer || 'N/A'}</p>
+                            <p><strong>Category:</strong> {comp.category || 'N/A'}</p>
                         </td>
                     </tr>
 
 
                     {/* Boutons pour les URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
-                        {comp.ProductDetailUrl && (
-                            <Button onClick={() => openExternalLink(comp.ProductDetailUrl)}>
+                        {comp.product_detail_url && (
+                            <Button onClick={() => openExternalLink(comp.product_detail_url)}>
                                 Product Details ↝
                             </Button>
                         )}
-                        {comp.DataSheetUrl && (
-                            <Button onClick={() => openExternalLink(comp.DataSheetUrl)}>
+                        {comp.datasheet_url && (
+                            <Button onClick={() => openExternalLink(comp.datasheet_url)}>
                                 Data Sheet ↝
                             </Button>
                         )}
@@ -79,9 +79,9 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                     {/* Info Messages */}
                     <div>
                         <strong>Info Messages:</strong>
-                        {comp.InfoMessages && comp.InfoMessages.length > 0 ? (
+                        {comp.info_messages && comp.info_messages.length > 0 ? (
                             <ul>
-                                {comp.InfoMessages.map((message, index) => (
+                                {comp.info_messages.map((message, index) => (
                                     <li key={index}>{message}</li>
                                 ))}
                             </ul>
@@ -93,7 +93,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                     {/* Price Breaks */}
                     <div>
                         <strong>Price Breaks:</strong>
-                        {comp.PriceBreaks && comp.PriceBreaks.length > 0 ? (
+                        {comp.price_breaks && comp.price_breaks.length > 0 ? (
                             <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '10px' }}>
                                 <thead>
                                     <tr>
@@ -103,7 +103,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {comp.PriceBreaks.map((priceBreak, index) => (
+                                    {comp.price_breaks.map((priceBreak, index) => (
                                         <tr key={index}>
                                             <td style={tableCellStyle}>{priceBreak.Quantity}</td>
                                             <td style={tableCellStyle}>{priceBreak.Price}</td>
@@ -138,7 +138,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                     {!component.analyzed && (
                         <>
                             <div style={{ display: 'flex' }}>
-                                <ButtonAction onClick={() => onPinToggle(component.Id)} style={{ marginLeft: '10px' }}>
+                                <ButtonAction onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
                                     {isPinned ? '→' : '←'}
                                 </ButtonAction>
                                 <ButtonAction onClick={() => setExpanded(!expanded)}>&ensp;</ButtonAction>
@@ -148,7 +148,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                     {component.analyzed && (
                         <>
                             <div style={{ display: 'flex' }}>
-                                <ButtonAction onClick={() => onPinToggle(component.Id)} style={{ marginLeft: '10px' }}>
+                                <ButtonAction onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
                                     {isPinned ? '→' : '←'}
                                 </ButtonAction>
                                 <ButtonAction onClick={() => setExpanded(!expanded)}>{expanded ? '˅' : '>'}</ButtonAction>
@@ -158,10 +158,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                 </td>
             </tr>
 
-            {component.Analyzed && expanded && renderComponentDetails(component)}
+            {component.analyzed && expanded && renderComponentDetails(component)}
 
             {/* Afficher les détails de MismatchMpn si ils existent */}
-            {hasMismatchMpn && expanded && component.MismatchMpn.map((mismatchComponent, index) => (
+            {hasMismatchMpn && expanded && component.mismatch_mpn.map((mismatchComponent, index) => (
                 renderComponentDetails(mismatchComponent)
             ))}
         </>

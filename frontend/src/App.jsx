@@ -24,13 +24,13 @@ function App() {
     // Function to handle pinning/unpinning components
     const handlePinToggle = (id) => {
         setPinnedComponents(prevPinned => {
-            const isAlreadyPinned = prevPinned.some(component => component.Id === id);
+            const isAlreadyPinned = prevPinned.some(component => component.id === id);
             if (isAlreadyPinned) {
                 // Remove the component if it's already pinned
-                return prevPinned.filter(component => component.Id !== id);
+                return prevPinned.filter(component => component.id !== id);
             } else {
                 // Add the component to pinned list if it's not already pinned
-                const componentToPin = components.find(component => component.Id === id);
+                const componentToPin = components.find(component => component.id === id);
                 return componentToPin ? [...prevPinned, { ...componentToPin }] : prevPinned;
             }
         });
