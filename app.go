@@ -7,11 +7,13 @@ import (
 	"core"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/skratchdot/open-golang/open"
@@ -156,6 +158,25 @@ func (a *App) OpenDirectoryDialog() string {
 	return selection
 }
 
+var (
+	activeWorkspacePath  string
+	activeWorkspaceMutex sync.RWMutex
+)
+
+// SetActiveWorkspace sets the active workspace path
+func (a *App) SetActiveWorkspace(path string) {
+	activeWorkspaceMutex.Lock()
+	defer activeWorkspaceMutex.Unlock()
+	activeWorkspacePath = path
+}
+
+// GetActiveWorkspace returns the active workspace path
+func (a *App) GetActiveWorkspace() string {
+	activeWorkspaceMutex.RLock()
+	defer activeWorkspaceMutex.RUnlock()
+	return activeWorkspacePath
+}
+
 type WorkspaceInfos struct {
 	Name      string    `json:"name"`
 	Path      string    `json:"path"`
@@ -164,10 +185,16 @@ type WorkspaceInfos struct {
 
 type Workspace struct {
 	WorkspaceInfos WorkspaceInfos `json:"workspace_infos"`
+	Files          []FileInfo     `json:"files"`
 }
 
 type BOMulusFile struct {
 	Workspaces []Workspace `json:"workspaces"`
+}
+
+type FileInfo struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 // CreateWorkspace creates a new workspace
@@ -278,4 +305,108 @@ func (a *App) GetRecentWorkspaces() ([]Workspace, error) {
 		return bomulusFile.Workspaces[:3], nil
 	}
 	return bomulusFile.Workspaces, nil
+}
+
+// OpenFileDialog opens a file selection dialog
+func (a *App) OpenFileDialog() (string, error) {
+	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select File to Add",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "All Files",
+				Pattern:     "*.*",
+			},
+		},
+	})
+	if err != nil {
+		return "", fmt.Errorf("error opening file dialog: %w", err)
+	}
+	return selection, nil
+}
+
+// AddFileToWorkspace copies a file to the active workspace directory and updates the .bmls file
+func (a *App) AddFileToWorkspace(filePath string) error {
+	workspacePath := a.GetActiveWorkspace()
+	if workspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+
+	fileName := filepath.Base(filePath)
+	destPath := filepath.Join(workspacePath, fileName)
+
+	// Ouvrir le fichier source
+	srcFile, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("error opening source file: %w", err)
+	}
+	defer srcFile.Close()
+
+	// Créer le fichier de destination
+	destFile, err := os.Create(destPath)
+	if err != nil {
+		return fmt.Errorf("error creating destination file: %w", err)
+	}
+	defer destFile.Close()
+
+	// Copier le contenu du fichier
+	_, err = io.Copy(destFile, srcFile)
+	if err != nil {
+		return fmt.Errorf("error copying file: %w", err)
+	}
+
+	// Mettre à jour le fichier .bmls avec les informations du nouveau fichier
+	return a.updateBMLSWithNewFile(workspacePath, fileName, destPath)
+}
+
+// updateBMLSWithNewFile met à jour le fichier .bmls avec les informations du nouveau fichier ajouté
+func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
+	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
+
+	var workspace Workspace
+
+	// Lire le fichier .bmls existant
+	data, err := os.ReadFile(bmlsFilePath)
+	if err == nil {
+		err = json.Unmarshal(data, &workspace)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+		}
+	}
+
+	// Ajouter les informations du nouveau fichier
+	workspace.Files = append(workspace.Files, FileInfo{Name: fileName, Path: filePath})
+
+	// Écrire les données mises à jour dans le fichier .bmls
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+
+// GetFilesInWorkspaceInfo returns the list of files in the active workspace's .bmls file
+func (a *App) GetFilesInWorkspaceInfo() ([]FileInfo, error) {
+	workspacePath := a.GetActiveWorkspace()
+	if workspacePath == "" {
+		return nil, fmt.Errorf("no active workspace set")
+	}
+
+	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
+
+	var workspace Workspace
+
+	// Lire le fichier .bmls
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+
+	// Unmarshal le contenu JSON
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+
+	return workspace.Files, nil
 }

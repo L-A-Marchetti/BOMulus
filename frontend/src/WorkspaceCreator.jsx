@@ -5,7 +5,7 @@ import Button from './Button';
 import './WorkspaceCreator.css';
 import RecentWorkspaces from './RecentWorkspaces';
 
-function WorkspaceCreator() {
+function WorkspaceCreator({ handleToggleCompareView }) {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [workspacePath, setWorkspacePath] = useState('');
     const [workspaceName, setWorkspaceName] = useState('');
@@ -45,7 +45,7 @@ function WorkspaceCreator() {
             {!isWizardOpen ? (
                 <>
                     <Button onClick={openWizard}>+ Workspace</Button>
-                    <RecentWorkspaces />
+                    <RecentWorkspaces handleToggleCompareView={handleToggleCompareView} />
                 </>
             ) : (
                 <div className="wizard-content">

@@ -1,9 +1,9 @@
 // RecentWorkspaces.js
 import React, { useState, useEffect } from 'react';
-import { GetRecentWorkspaces } from '../wailsjs/go/main/App';
+import { GetRecentWorkspaces, SetActiveWorkspace } from '../wailsjs/go/main/App'; // Assurez-vous d'importer SetActiveWorkspace
 import Button from './Button';
 
-function RecentWorkspaces() {
+function RecentWorkspaces({ handleToggleCompareView }) {
     const [recentWorkspaces, setRecentWorkspaces] = useState([]);
 
     useEffect(() => {
@@ -19,15 +19,23 @@ function RecentWorkspaces() {
         }
     };
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString();
+    const handleWorkspaceClick = async (workspace) => {
+        try {
+            // Définir le workspace actif dans la variable globale
+            await SetActiveWorkspace(workspace.workspace_infos.path);
+            // Appeler la fonction pour afficher la CompareView
+            handleToggleCompareView();
+        } catch (error) {
+            console.error("Error setting active workspace:", error);
+        }
     };
 
     return (
         <div>
             {recentWorkspaces.map((workspace, index) => (
-                <Button>☰ {workspace.workspace_infos.name}</Button>
+                <Button key={index} onClick={() => handleWorkspaceClick(workspace)}>
+                    ☰ {workspace.workspace_infos.name}
+                </Button>
             ))}
         </div>
     );

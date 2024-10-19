@@ -5,6 +5,7 @@ import CompareView from './CompareView';
 import PinnedComponents from './PinnedComponents';
 import TopBar from './TopBar';
 import WorkspaceCreator from './WorkspaceCreator';
+import { MaximizeWindow } from "../wailsjs/go/main/App";
 
 function App() {
     // State hooks for managing component visibility and data
@@ -15,6 +16,7 @@ function App() {
 
     // Function to toggle the CompareView and update its key
     const handleToggleCompareView = () => {
+        MaximizeWindow();
         setShowCompareView(true);
         setCompareKey(prevKey => prevKey + 1);
     };
@@ -38,17 +40,17 @@ function App() {
         <>
             {/* Render the custom title bar */}
             <TopBar />
-            <WorkspaceCreator />
+            {!showCompareView && (
+                <WorkspaceCreator handleToggleCompareView={handleToggleCompareView} />
+            )}
 
             {/* Conditional rendering of CompareView and PinnedComponents */}
             {showCompareView && (
                 <div style={{ display: 'flex' }}>
-                    {pinnedComponents.length > 0 && (
-                        <PinnedComponents
-                            pinnedComponents={pinnedComponents}
-                            onPinToggle={handlePinToggle}
-                        />
-                    )}
+                    <PinnedComponents
+                        pinnedComponents={pinnedComponents}
+                        onPinToggle={handlePinToggle}
+                    />
                     <CompareView
                         key={compareKey}
                         setComponents={setComponents}

@@ -1,5 +1,6 @@
 import React from 'react';
 import OperatorExpander from './Expander'; // Assurez-vous d'importer OperatorExpander
+import AddFileToWorkspaceComp from './AddFileToWorkspace';
 
 function PinnedComponents({ pinnedComponents, onPinToggle }) {
     const operators = ["INSERT", "UPDATE", "DELETE", "EQUAL"];
@@ -29,23 +30,30 @@ function PinnedComponents({ pinnedComponents, onPinToggle }) {
                     />
                 ) : null;
             })}
+
+            {/* Ajoutez un espace pour pousser le AddFileToWorkspaceComp vers le bas */}
+            <div style={{ flexGrow: 1 }} />
+
+            <AddFileToWorkspaceComp />
         </div>
     );
 }
 
 const pinnedContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column', // Aligner les éléments verticalement
     position: 'sticky',
+    marginTop: '30px',
     top: '10px',
     left: '0',
     width: '100%',
     backgroundColor: 'inherit',
     padding: '10px',
-    height: 'calc(100vh - 20px)', // Ajustez selon vos besoins
+    height: 'calc(100vh - 80px)', // Ajustez selon vos besoins
     overflowY: 'auto',
     fontFamily: 'Poppins, sans-serif',
     fontSize: '0.6rem',
-    maxWidth: '40%',
-
+    maxWidth: '20%',
 };
 
 export default PinnedComponents;
