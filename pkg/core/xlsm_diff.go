@@ -1,9 +1,6 @@
 package core
 
-import (
-	"config"
-)
-
+/*
 func XlsmDiff() {
 	if config.DEBUGGING {
 		defer StartBenchmark("XlsmDiff()", false).Stop()
@@ -74,3 +71,4 @@ func XlsmDiff() {
 		}
 	}
 }
+*/

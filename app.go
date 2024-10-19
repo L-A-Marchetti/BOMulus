@@ -68,32 +68,43 @@ func (a *App) DisplayFileName(fileName string) struct {
 	}
 }
 
-func (a *App) UploadFile(name string, content []byte, idx int) error {
-	filePath := filepath.Join("./tmp", name)
-	core.XlsmFiles[idx-1].Path = filePath
+/*
+	func (a *App) UploadFile(name string, content []byte, idx int) error {
+		filePath := filepath.Join("./tmp", name)
+		core.XlsmFiles[idx-1].Path = filePath
 
-	file, err := os.Create(filePath)
-	if err != nil {
-		return fmt.Errorf("error creating the file: %w", err)
+		file, err := os.Create(filePath)
+		if err != nil {
+			return fmt.Errorf("error creating the file: %w", err)
+		}
+		defer file.Close()
+
+		_, err = file.Write(content)
+		if err != nil {
+			return fmt.Errorf("error writing the file: %w", err)
+		}
+		return nil
 	}
-	defer file.Close()
-
-	_, err = file.Write(content)
-	if err != nil {
-		return fmt.Errorf("error writing the file: %w", err)
-	}
-	return nil
-}
-
+*/
 func (a *App) BtnCompare() {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
 	}
-	core.XlsmReader()
-	components.HeaderDetection()
-	components.ComponentsDetection()
-	core.XlsmDiff()
-	core.ResetAnalysisStatus()
+	//core.XlsmReader()
+	//components.HeaderDetection()
+	//components.ComponentsDetection()
+	//core.XlsmDiff()
+	//core.ResetAnalysisStatus()
+}
+
+func ComponentDetection(filePath string) ([]core.Component, core.Filter) {
+	file := core.XlsmFile{
+		Path: filePath,
+	}
+	core.XlsmReader(&file)
+	components.HeaderDetection(&file)
+	components.ComponentsDetection(&file)
+	return file.Components, file.Filters
 }
 
 /*
@@ -193,8 +204,10 @@ type BOMulusFile struct {
 }
 
 type FileInfo struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
+	Name       string           `json:"name"`
+	Path       string           `json:"path"`
+	Components []core.Component `json:"components"`
+	Filters    core.Filter      `json:"filters"`
 }
 
 // CreateWorkspace creates a new workspace
@@ -372,9 +385,14 @@ func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) er
 			return fmt.Errorf("failed to unmarshal .bmls: %w", err)
 		}
 	}
-
+	components, filters := ComponentDetection(filePath)
 	// Ajouter les informations du nouveau fichier
-	workspace.Files = append(workspace.Files, FileInfo{Name: fileName, Path: filePath})
+	workspace.Files = append(workspace.Files, FileInfo{
+		Name:       fileName,
+		Path:       filePath,
+		Components: components,
+		Filters:    filters,
+	})
 
 	// Écrire les données mises à jour dans le fichier .bmls
 	jsonData, err := json.MarshalIndent(workspace, "", "  ")

@@ -48,29 +48,19 @@ func CopyFile(src, dst string) error {
 }
 
 // Fix the blank tails skipped by the GetRows function.
-func blankTailsFix() {
+func blankTailsFix(file *XlsmFile) {
 	if config.DEBUGGING {
 		defer StartBenchmark("blankTailsFix()", false).Stop()
 	}
 	maxCol := 0
-	for _, row := range XlsmFiles[0].Content {
+	for _, row := range file.Content {
 		if len(row) > maxCol {
 			maxCol = len(row)
 		}
 	}
-	for _, row := range XlsmFiles[1].Content {
-		if len(row) > maxCol {
-			maxCol = len(row)
-		}
-	}
-	for i := range XlsmFiles[0].Content {
-		for len(XlsmFiles[0].Content[i]) < maxCol {
-			XlsmFiles[0].Content[i] = append(XlsmFiles[0].Content[i], "")
-		}
-	}
-	for i := range XlsmFiles[1].Content {
-		for len(XlsmFiles[1].Content[i]) < maxCol {
-			XlsmFiles[1].Content[i] = append(XlsmFiles[1].Content[i], "")
+	for i := range file.Content {
+		for len(file.Content[i]) < maxCol {
+			file.Content[i] = append(file.Content[i], "")
 		}
 	}
 }
@@ -85,6 +75,7 @@ func fixLn(rows [][]string) [][]string {
 	return rows
 }
 
+/*
 // Avoid duplicates by grouping components using their mpn and summing their quantities.
 func groupByMpn(components []Component) []Component {
 	grouped := make(map[string]Component)
@@ -103,3 +94,4 @@ func groupByMpn(components []Component) []Component {
 
 	return result
 }
+*/
