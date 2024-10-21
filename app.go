@@ -93,8 +93,9 @@ func (a *App) BtnCompare(v1, v2 []core.Component) {
 	//core.XlsmReader()
 	//components.HeaderDetection()
 	//components.ComponentsDetection()
+	core.ResetComponents()
 	core.XlsmDiff(v1, v2)
-	//core.ResetAnalysisStatus()
+	core.ResetAnalysisStatus()
 }
 
 func ComponentDetection(filePath string) ([]core.Component, core.Filter) {

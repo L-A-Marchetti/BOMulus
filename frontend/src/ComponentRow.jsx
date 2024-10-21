@@ -42,26 +42,29 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
         <tr>
             <td style={{ backgroundColor: 'rgb(68, 68, 68)' }} colSpan="4">
                 <div style={{ backgroundColor: 'rgb(39, 39, 39)', color: '#fff', padding: '10px' }}>
-
-                    <tr>
-                        <td style={{ width: '30%', verticalAlign: 'top', padding: '10px' }}>
-                            <img src={comp.image_path} alt="Component" style={{ maxWidth: '100%' }} />
-                        </td>
-                        <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
-                            <p><strong>Availability:</strong> {comp.availability || 'N/A'}</p>
-                            <p><strong>Lifecycle Status:</strong> {comp.lifecycle_status || 'N/A'}</p>
-                            <p><strong>ROHS Status:</strong> {comp.rohs_status || 'N/A'}</p>
-                            <p><strong>Suggested Replacement:</strong> {comp.suggested_replacement || 'N/A'}</p>
-                        </td>
-                        <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
-                            <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
-                            <p><strong>Supplier Description:</strong> {comp.supplier_description || 'N/A'}</p>
-                            <p><strong>Supplier Manufacturer:</strong> {comp.supplier_manufacturer || 'N/A'}</p>
-                            <p><strong>Category:</strong> {comp.category || 'N/A'}</p>
-                        </td>
-                    </tr>
-
-
+                    {/* Détails du composant */}
+                    <table style={{ width: '100%' }}>
+                        <tbody>
+                            <tr>
+                                <td style={{ width: '30%', verticalAlign: 'top', padding: '10px' }}>
+                                    <img src={comp.image_path} alt="Component" style={{ maxWidth: '100%' }} />
+                                </td>
+                                <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
+                                    <p><strong>Availability:</strong> {comp.availability || 'N/A'}</p>
+                                    <p><strong>Lifecycle Status:</strong> {comp.lifecycle_status || 'N/A'}</p>
+                                    <p><strong>ROHS Status:</strong> {comp.rohs_status || 'N/A'}</p>
+                                    <p><strong>Suggested Replacement:</strong> {comp.suggested_replacement || 'N/A'}</p>
+                                </td>
+                                <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
+                                    <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
+                                    <p><strong>Supplier Description:</strong> {comp.supplier_description || 'N/A'}</p>
+                                    <p><strong>Supplier Manufacturer:</strong> {comp.supplier_manufacturer || 'N/A'}</p>
+                                    <p><strong>Category:</strong> {comp.category || 'N/A'}</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+    
                     {/* Boutons pour les URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
                         {comp.product_detail_url && (
@@ -75,7 +78,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                             </Button>
                         )}
                     </div>
-
+    
                     {/* Info Messages */}
                     <div>
                         <strong>Info Messages:</strong>
@@ -89,7 +92,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                             <p>Aucune information disponible.</p>
                         )}
                     </div>
-
+    
                     {/* Price Breaks */}
                     <div>
                         <strong>Price Breaks:</strong>
@@ -116,11 +119,12 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                             <p>Aucun prix disponible.</p>
                         )}
                     </div>
+    
                 </div>
             </td>
         </tr>
-
     );
+    
 
     return (
         <>
@@ -132,8 +136,12 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
             <tr className={`grid-row ${operator.toLowerCase()}`} style={isWarning ? { border: '4px solid #fff98f' } : {}}>
                 <td>{operator === 'UPDATE' ? `${component.OldQuantity} → ${component.NewQuantity}` : component.quantity}</td>
                 <td>{component.mpn}</td>
-                <td>{component.designator}</td>
-                <td>{component.user_description}</td>
+                {!isPinned && (
+                    <>
+                    <td>{component.designator}</td>
+                    <td>{component.user_description}</td>
+                    </>
+                )}
                 <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
                     {!component.analyzed && (
                         <>

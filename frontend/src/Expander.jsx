@@ -1,9 +1,13 @@
-//Expander.jsx
 import React, { useState } from 'react';
 import ComponentRow from './ComponentRow';
 
 function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents }) {
     const [expanded, setExpanded] = useState(true);
+    
+    // Vérifiez si tous les composants de cet opérateur sont épinglés
+    const allPinned = components.every(component => 
+        pinnedComponents.some(pinned => pinned.id === component.id)
+    );
 
     return (
         <div className="expander">
@@ -21,28 +25,31 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
                 <table className="component-table">
                     <thead>
                         <tr>
-                            <th>Quantity</th>
-                            <th>Manufacturer Part Number</th>
-                            <th>Designator</th>
-                            <th>Description</th>
-                            <th>Action</th> {/* Colonne pour les actions (épingle) */}
+                            <th>∑</th>
+                            <th>MPN</th>
+                            {!allPinned && (
+                                <>
+                                <th>☸</th>
+                                <th>☰</th>
+                                </>
+                            )}
+                            <th></th>
                         </tr>
                     </thead>
 
-                    {/* Rendu des lignes de composants */}
-                    <tbody style={{ backgroundColor: color }}>{components.map((component) => (
-                        // Passer la fonction d'épinglage ici
-                        <ComponentRow
-                            key={component.Id} // Utiliser component.Id
-                            component={component}
-                            operator={operator}
-                            onPinToggle={onPinToggle}
-                            pinnedComponents={pinnedComponents}
-                        />
-                    ))}</tbody>
-
+                    <tbody style={{ backgroundColor: color }}>
+                        {components.map((component) => (
+                            <ComponentRow
+                                key={component.id}
+                                component={component}
+                                operator={operator}
+                                onPinToggle={onPinToggle}
+                                pinnedComponents={pinnedComponents}
+                                showExtraColumns={!allPinned}
+                            />
+                        ))}
+                    </tbody>
                 </table>
-
             )}
         </div>
     );

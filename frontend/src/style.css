@@ -31,7 +31,13 @@ html {
 
 }
 
-
+table td {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 150px; /* Ajustez selon vos besoins */
+    white-space: normal;
+  }
 
 /*
 body {
