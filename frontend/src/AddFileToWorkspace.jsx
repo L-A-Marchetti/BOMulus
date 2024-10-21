@@ -1,4 +1,3 @@
-// AddFileToWorkspaceComponent.js
 import React, { useState, useEffect } from 'react';
 import { OpenFileDialog, AddFileToWorkspace, GetFilesInWorkspaceInfo, BtnCompare } from '../wailsjs/go/main/App';
 import Button from './Button';
@@ -79,33 +78,51 @@ function AddFileToWorkspaceComp() {
     };
 
     return (
-        <div className='file-manager'>
-            <h4>File Manager</h4>
-            {existingFiles && existingFiles.length > 0 ? (
-                <>
-                    {existingFiles.map((file) => (
-                        <Button 
-                            key={file.path} 
-                            onClick={() => handleSelectFile(file)} 
-                            style={{ backgroundColor: selectedFiles.includes(file) ? 'blue' : 'transparent' }}
-                        >
-                            {/* Affiche le tag selon le nombre de fichiers sélectionnés */}
-                            {selectedFiles.includes(file) ? 
-                                (selectedFiles.length === 1 ? "single" : selectedFiles.indexOf(file) === 0 ? "v1" : "v2") + " " + getFileName(file.path)
-                                : getFileName(file.path)}
-                        </Button>
-                    ))}
-                </>
-            ) : (
-                <p>No files found in the workspace.</p>
-            )}
-            <Button onClick={handleFileSelection}>
-                {selectedFile ? getFileName(selectedFile) : "+ BOM"}
-            </Button>
-            {selectedFile && (
-                <Button onClick={handleAddFile}>Add to Workspace</Button>
-            )}
-            <Button onClick={handleCompare} disabled={selectedFiles.length === 0}>Compare Selected Files</Button>
+        <div className='file-manager' style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <h4 style={{
+                padding: '10px',
+                fontFamily: 'Poppins, sans-serif',
+                backgroundColor: 'rgb(39, 39, 39)',
+                margin: 0,
+                position: 'sticky',
+                top: 0,
+                zIndex: 1
+            }}>
+                File Manager
+            </h4>
+            <div style={{ overflowY: 'auto', flexGrow: 1, padding: '10px' }}>
+                {existingFiles && existingFiles.length > 0 ? (
+                    <>
+                        {existingFiles.map((file) => (
+                            <Button 
+                                key={file.path} 
+                                onClick={() => handleSelectFile(file)} 
+                                style={{ 
+                                    backgroundColor: selectedFiles.includes(file) ? 'blue' : 'transparent',
+                                    width: '100%',
+                                    textAlign: 'left',
+                                    marginBottom: '5px'
+                                }}
+                            >
+                                {selectedFiles.includes(file) ? 
+                                    (selectedFiles.length === 1 ? "single" : selectedFiles.indexOf(file) === 0 ? "v1" : "v2") + " " + getFileName(file.path)
+                                    : getFileName(file.path)}
+                            </Button>
+                        ))}
+                    </>
+                ) : (
+                    <p>No files found in the workspace.</p>
+                )}
+                <Button onClick={handleFileSelection} style={{ width: '100%', marginBottom: '5px' }}>
+                    {selectedFile ? getFileName(selectedFile) : "+ BOM"}
+                </Button>
+                {selectedFile && (
+                    <Button onClick={handleAddFile} style={{ width: '100%', marginBottom: '5px' }}>Add to Workspace</Button>
+                )}
+                <Button onClick={handleCompare} disabled={selectedFiles.length === 0} style={{ width: '100%', marginBottom: '5px' }}>
+                    Compare Selected Files
+                </Button>
+            </div>
         </div>
     );
 }
