@@ -94,7 +94,8 @@ function PinnedComponents({ pinnedComponents, onPinToggle }) {
                     maxHeight: '500px', // Ajustez la hauteur maximale selon vos besoins
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    paddingTop: '10px'
+                    paddingTop: '10px',
+                    minHeight: '300px',
                 }}>
                     <AddFileToWorkspaceComp />
                 </div>

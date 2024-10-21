@@ -80,7 +80,7 @@ function AddFileToWorkspaceComp() {
     return (
         <div className='file-manager' style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <h4 style={{
-                padding: '10px',
+                padding: '20px',
                 fontFamily: 'Poppins, sans-serif',
                 backgroundColor: 'rgb(39, 39, 39)',
                 margin: 0,
