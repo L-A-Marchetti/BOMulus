@@ -51,12 +51,22 @@ function App() {
                         pinnedComponents={pinnedComponents}
                         onPinToggle={handlePinToggle}
                     />
+                    <main id="main-content" style={{
+                flexGrow: 1,
+                transition: 'margin-left 0.3s ease-in-out',
+                marginLeft: '300px', // Ajustez cette valeur initiale si nécessaire
+                padding: '50px',
+                boxSizing: 'border-box',
+                width: '100%',
+                overflowX: 'hidden'
+            }}>
                     <CompareView
                         key={compareKey}
                         setComponents={setComponents}
                         onPinToggle={handlePinToggle}
                         pinnedComponents={pinnedComponents}
                     />
+                    </main>
                 </div>
             )}
         </>
