@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Button from './Button';
 import DragDrop from './DragDrop';
 import Switch from './Switch';
 import { motion, AnimatePresence } from 'framer-motion'; // Importer les éléments nécessaires

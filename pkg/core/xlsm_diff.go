@@ -1,16 +1,18 @@
 package core
 
-import (
-	"config"
-)
+import "config"
 
-func XlsmDiff() {
+func XlsmDiff(v1, v2 []Component) {
 	if config.DEBUGGING {
 		defer StartBenchmark("XlsmDiff()", false).Stop()
 	}
-
-	newComponentsGrouped := groupByMpn(NewComponents)
-	oldComponentsGrouped := groupByMpn(OldComponents)
+	oldComponentsGrouped := groupByMpn(v1)
+	var newComponentsGrouped []Component
+	if v2 != nil {
+		newComponentsGrouped = groupByMpn(v2)
+	} else {
+		newComponentsGrouped = oldComponentsGrouped
+	}
 
 	compId := 0
 
@@ -24,9 +26,9 @@ func XlsmDiff() {
 				component.Id = compId
 				compId++
 				Components = append(Components, component)
-				Filters[1].EqualCount++
-				Filters[1].OldQuantity += component.Quantity
-				Filters[1].NewQuantity += component.Quantity
+				Diff.EqualCount++
+				Diff.OldQuantity += component.Quantity
+				Diff.NewQuantity += component.Quantity
 				matchFound = true
 				break
 			} else if newComponent.Mpn == oldComponent.Mpn {
@@ -37,9 +39,9 @@ func XlsmDiff() {
 				component.Id = compId
 				compId++
 				Components = append(Components, component)
-				Filters[1].UpdateCount++
-				Filters[1].OldQuantity += component.OldQuantity
-				Filters[1].NewQuantity += component.NewQuantity
+				Diff.UpdateCount++
+				Diff.OldQuantity += component.OldQuantity
+				Diff.NewQuantity += component.NewQuantity
 				matchFound = true
 				break
 			}
@@ -50,8 +52,8 @@ func XlsmDiff() {
 			component.Id = compId
 			compId++
 			Components = append(Components, component)
-			Filters[1].InsertCount++
-			Filters[1].NewQuantity += component.Quantity
+			Diff.InsertCount++
+			Diff.NewQuantity += component.Quantity
 		}
 	}
 
@@ -69,8 +71,8 @@ func XlsmDiff() {
 			component.Id = compId
 			compId++
 			Components = append(Components, component)
-			Filters[1].DeleteCount++
-			Filters[1].OldQuantity += component.Quantity
+			Diff.DeleteCount++
+			Diff.OldQuantity += component.Quantity
 		}
 	}
 }

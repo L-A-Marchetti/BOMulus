@@ -66,43 +66,50 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
 
     return (
         <div className="compare-grid">
-            <div className="summary-section">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {operators.map((operator) => (
-                        <span key={operator} style={{ color: opColors[operator], marginRight: '20px' }}>
-                            {operator}: {components.filter(comp => comp.Operator === operator).length}
+            {/* Afficher la section de résumé uniquement si des composants existent */}
+            {components.length > 0 && (
+                <div className="summary-section">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {operators.map((operator) => (
+                            <span key={operator} style={{ color: opColors[operator], marginRight: '20px' }}>
+                                {operator}: {components.filter(comp => comp.Operator === operator).length}
+                            </span>
+                        ))}
+                        <AnalyzeButton onComponentAnalyzed={handleComponentAnalyzed} />
+                    </div>
+                    <div>
+                        {/* Ajout des nouveaux compteurs */}
+                        <span style={{ marginRight: '20px' }}>
+                            Out of Stock: {statusCounts.outOfStockCount}
                         </span>
-                    ))}
-                    <AnalyzeButton onComponentAnalyzed={handleComponentAnalyzed} />
+                        <span style={{ marginRight: '20px' }}>
+                            Risky Lifecycle: {statusCounts.riskyLifecycleCount}
+                        </span>
+                        <span style={{ marginRight: '20px' }}>
+                            Manufacturer Messages: {statusCounts.manufacturerMessagesCount}
+                        </span>
+                        <span style={{ marginRight: '20px' }}>
+                            Mismatching MPN: {statusCounts.mismatchingMpnCount}
+                        </span>
+                    </div>
                 </div>
-                <div>
-                    {/* Ajout des nouveaux compteurs */}
-                    <span style={{ marginRight: '20px' }}>
-                        Out of Stock: {statusCounts.outOfStockCount}
-                    </span>
-                    <span style={{ marginRight: '20px' }}>
-                        Risky Lifecycle: {statusCounts.riskyLifecycleCount}
-                    </span>
-                    <span style={{ marginRight: '20px' }}>
-                        Manufacturer Messages: {statusCounts.manufacturerMessagesCount}
-                    </span>
-                    <span style={{ marginRight: '20px' }}>
-                        Mismatching MPN: {statusCounts.mismatchingMpnCount}
-                    </span>
-                </div>
-            </div>
+            )}
 
-            {operators.map((operator, index) => (
-                <OperatorExpander
-                    key={operator}
-                    operator={operator}
-                    components={components.filter(comp => comp.Operator === operator)}
-                    color={opColors[operator]}
-                    count={diffSummary[index]}
-                    onPinToggle={onPinToggle} // Passer la fonction d'épinglage
-                    pinnedComponents={pinnedComponents}
-                />
-            ))}
+            {/* Afficher OperatorExpander uniquement si des composants existent pour cet opérateur */}
+            {operators.map((operator, index) => {
+                const filteredComponents = components.filter(comp => comp.Operator === operator);
+                return filteredComponents.length > 0 ? (
+                    <OperatorExpander
+                        key={operator}
+                        operator={operator}
+                        components={filteredComponents}
+                        color={opColors[operator]}
+                        count={diffSummary[index]}
+                        onPinToggle={onPinToggle} // Passer la fonction d'épinglage
+                        pinnedComponents={pinnedComponents}
+                    />
+                ) : null; // Ne rien rendre si aucun composant n'est trouvé
+            })}
         </div>
     );
 }

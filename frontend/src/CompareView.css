@@ -4,7 +4,7 @@
     align-items: center;
     margin: 20px;
     font-family: Poppins, sans-serif;
-    font-weight: 200;
+    font-weight: 300;
     width: 100%;
 }
 
@@ -16,7 +16,7 @@
     width: 100%;
     border-collapse: collapse;
     font-weight: 400;
-    font-size: 0.6rem;
+    font-size: 0.8rem;
 
 }
 
@@ -49,5 +49,5 @@
 
 h4 {
     font-size: 1rem;
-    font-weight: 200;
+    font-weight: 300;
 }
