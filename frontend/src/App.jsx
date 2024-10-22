@@ -6,6 +6,7 @@ import PinnedComponents from './PinnedComponents';
 import TopBar from './TopBar';
 import WorkspaceCreator from './WorkspaceCreator';
 import { MaximizeWindow } from "../wailsjs/go/main/App";
+import RightSidebar from './RightSideBar';
 
 function App() {
     // State hooks for managing component visibility and data
@@ -51,6 +52,7 @@ function App() {
                         pinnedComponents={pinnedComponents}
                         onPinToggle={handlePinToggle}
                     />
+                    <RightSidebar />
                     <main id="main-content" style={{
                 flexGrow: 1,
                 transition: 'margin-left 0.3s ease-in-out',
