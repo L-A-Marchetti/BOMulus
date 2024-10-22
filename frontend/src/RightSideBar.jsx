@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
+import PricingCalculator from './PricingCalculator';
 
 function RightSidebar() {
     const [isVisible, setIsVisible] = useState(true);
@@ -75,17 +76,7 @@ function RightSidebar() {
                 </div>
 
                 {/* Pricing Content */}
-                <div style={{
-                    flexGrow: 1,
-                    overflowY: 'auto',
-                    overflowX: 'hidden',
-                    paddingBottom: '10px'
-                }}>
-                    <div style={containerStyle}>
-                        {/* Add your pricing content here */}
-                        <p>Pricing content goes here...</p>
-                    </div>
-                </div>
+                <PricingCalculator />
                 
                 {/* Settings Block */}
                 <div style={{

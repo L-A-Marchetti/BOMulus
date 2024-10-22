@@ -131,7 +131,7 @@ func (a *App) RunAnalysis() {
 				continue
 			}
 			components.APIRequest(i)
-			fmt.Println(core.Components[i])
+			//fmt.Println(core.Components[i])
 			core.AnalysisState.Current += 1
 			core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100 // Update progress to percentage
 		}
@@ -428,4 +428,30 @@ func (a *App) GetFilesInWorkspaceInfo() ([]FileInfo, error) {
 	}
 
 	return workspace.Files, nil
+}
+
+type PriceCalculationResult struct {
+	Quantity          int      `json:"quantity"`
+	OrderPrice        float64  `json:"orderPrice"`
+	UnitPrice         float64  `json:"unitPrice"`
+	UnitPriceDiff     float64  `json:"unitPriceDiff"`
+	Currency          string   `json:"currency"`
+	MinimumQuantities []string `json:"minimumQuantities"`
+}
+
+func (a *App) PriceCalculator(quantity float64) (*PriceCalculationResult, error) {
+	intQuantity := int(quantity)
+
+	_, newPrice, unitPrice, unitPriceDiff, minimumQuantity, currency := components.QuantityPrice(intQuantity)
+
+	result := &PriceCalculationResult{
+		Quantity:          intQuantity,
+		OrderPrice:        newPrice,
+		UnitPrice:         unitPrice,
+		UnitPriceDiff:     unitPriceDiff,
+		Currency:          currency,
+		MinimumQuantities: minimumQuantity,
+	}
+
+	return result, nil
 }
