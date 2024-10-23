@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"workspaces"
 )
 
 func APIRequest(i int) {
@@ -27,7 +28,7 @@ func APIRequest(i int) {
 	jsonData, err := json.Marshal(payload)
 	core.ErrorsHandler(err)
 	// Construct the full URL with the API key
-	fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, config.USER_API_KEY)
+	fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, workspaces.API_KEYS.MouserApiKey)
 	// Create a new HTTP POST request
 	req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
 	core.ErrorsHandler(err)

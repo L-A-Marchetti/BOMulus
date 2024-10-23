@@ -32,3 +32,8 @@ type APIKeys struct {
 	MouserApiKey  string `json:"mouser_api_key"`
 	BOMulusApiKey string `json:"bomulus_api_key"`
 }
+
+var API_KEYS = APIKeys{
+	BOMulusApiKey: "",
+	MouserApiKey:  "",
+}

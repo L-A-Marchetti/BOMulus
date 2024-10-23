@@ -62,7 +62,7 @@ func TestAPIKey(apiKey string, supplier string) error {
 			return errors.New("Failed to parse API response.")
 		}
 		if len(apiResponse.Errors) == 0 {
-			//core.AnalysisState.KeyIsValid = true
+			workspaces.API_KEYS.MouserApiKey = apiKey
 			workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{
 				MouserApiKey: apiKey,
 			})

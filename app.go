@@ -280,6 +280,11 @@ func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
 		return workspaces.APIKeys{}, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
 	}
 
+	workspaces.API_KEYS = workspaces.APIKeys{
+		BOMulusApiKey: bomulusFile.ApiKeys.BOMulusApiKey,
+		MouserApiKey:  bomulusFile.ApiKeys.MouserApiKey,
+	}
+
 	return bomulusFile.ApiKeys, nil
 }
 
