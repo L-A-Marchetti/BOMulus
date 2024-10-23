@@ -15,6 +15,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"workspaces"
 
 	"github.com/skratchdot/open-golang/open"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -189,28 +190,6 @@ func (a *App) GetActiveWorkspace() string {
 	return activeWorkspacePath
 }
 
-type WorkspaceInfos struct {
-	Name      string    `json:"name"`
-	Path      string    `json:"path"`
-	CreatedAt time.Time `json:"createdAt"`
-}
-
-type Workspace struct {
-	WorkspaceInfos WorkspaceInfos `json:"workspace_infos"`
-	Files          []FileInfo     `json:"files"`
-}
-
-type BOMulusFile struct {
-	Workspaces []Workspace `json:"workspaces"`
-}
-
-type FileInfo struct {
-	Name       string           `json:"name"`
-	Path       string           `json:"path"`
-	Components []core.Component `json:"components"`
-	Filters    core.Filter      `json:"filters"`
-}
-
 // CreateWorkspace creates a new workspace
 func (a *App) CreateWorkspace(path string, name string) error {
 	fullPath := filepath.Join(path, name)
@@ -227,8 +206,8 @@ func (a *App) CreateWorkspace(path string, name string) error {
 	bmlsFilePath := filepath.Join(fullPath, bmlsFile)
 
 	// Create the workspace info
-	workspaceInfos := Workspace{
-		WorkspaceInfos: WorkspaceInfos{
+	workspaceInfos := workspaces.Workspace{
+		WorkspaceInfos: workspaces.WorkspaceInfos{
 			Name:      name,
 			Path:      fullPath,
 			CreatedAt: time.Now(),
@@ -248,7 +227,7 @@ func (a *App) CreateWorkspace(path string, name string) error {
 	}
 
 	// Update BOMulus.bmls
-	err = updateBOMulusFile(workspaceInfos)
+	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{})
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}
@@ -256,47 +235,11 @@ func (a *App) CreateWorkspace(path string, name string) error {
 	return nil
 }
 
-// updateBOMulusFile updates the BOMulus.bmls file with new workspace info
-func updateBOMulusFile(newWorkspace Workspace) error {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile BOMulusFile
-
-	// Read existing BOMulus.bmls file if it exists
-	if _, err := os.Stat(bomulusPath); err == nil {
-		data, err := os.ReadFile(bomulusPath)
-		if err != nil {
-			return fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-		}
-
-		err = json.Unmarshal(data, &bomulusFile)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-		}
-	}
-
-	// Add new workspace to the list
-	bomulusFile.Workspaces = append(bomulusFile.Workspaces, newWorkspace)
-
-	// Write updated data back to BOMulus.bmls
-	jsonData, err := json.MarshalIndent(bomulusFile, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal BOMulus file: %w", err)
-	}
-
-	err = os.WriteFile(bomulusPath, jsonData, 0644)
-	if err != nil {
-		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
-	}
-
-	return nil
-}
-
 // GetRecentWorkspaces returns the 3 most recently created workspaces
-func (a *App) GetRecentWorkspaces() ([]Workspace, error) {
+func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 
-	var bomulusFile BOMulusFile
+	var bomulusFile workspaces.BOMulusFile
 
 	// Read BOMulus.bmls file
 	data, err := os.ReadFile(bomulusPath)
@@ -376,7 +319,7 @@ func (a *App) AddFileToWorkspace(filePath string) error {
 func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
 	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
 
-	var workspace Workspace
+	var workspace workspaces.Workspace
 
 	// Lire le fichier .bmls existant
 	data, err := os.ReadFile(bmlsFilePath)
@@ -388,7 +331,7 @@ func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) er
 	}
 	components, filters := ComponentDetection(filePath)
 	// Ajouter les informations du nouveau fichier
-	workspace.Files = append(workspace.Files, FileInfo{
+	workspace.Files = append(workspace.Files, workspaces.FileInfo{
 		Name:       fileName,
 		Path:       filePath,
 		Components: components,
@@ -405,7 +348,7 @@ func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) er
 }
 
 // GetFilesInWorkspaceInfo returns the list of files in the active workspace's .bmls file
-func (a *App) GetFilesInWorkspaceInfo() ([]FileInfo, error) {
+func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
 	workspacePath := a.GetActiveWorkspace()
 	if workspacePath == "" {
 		return nil, fmt.Errorf("no active workspace set")
@@ -413,7 +356,7 @@ func (a *App) GetFilesInWorkspaceInfo() ([]FileInfo, error) {
 
 	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
 
-	var workspace Workspace
+	var workspace workspaces.Workspace
 
 	// Lire le fichier .bmls
 	data, err := os.ReadFile(bmlsFilePath)
@@ -454,4 +397,18 @@ func (a *App) PriceCalculator(quantity float64) (*PriceCalculationResult, error)
 	}
 
 	return result, nil
+}
+
+func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {
+	err := components.TestAPIKey(apiKey, "mouser")
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (a *App) TestBOMulusAPIKey(apiKey string) (bool, error) {
+	// Implémentez la logique de test pour l'API BOMulus
+	// Retournez true si la clé API est valide, false sinon
+	return true, nil
 }

@@ -5,4 +5,5 @@ use (
 	./config
 	./pkg/components
 	./pkg/core
+	./pkg/workspaces
 )

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import PricingCalculator from './PricingCalculator';
+import Settings from './Settings';
 
 function RightSidebar() {
     const [isVisible, setIsVisible] = useState(true);
@@ -85,19 +86,19 @@ function RightSidebar() {
                     overflowX: 'hidden',
                     paddingTop: '10px',
                     minHeight: '300px',
-                }}>
+                    }}>
                     <div style={{ 
                         backgroundColor: 'rgb(39, 39, 39)',
                         padding: '10px',
                         borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-                    }}>
+                        }}>
                         <h4 style={{
                             margin: '0 0 10px 0',
                             padding: '10px',
                             fontFamily: 'Poppins, sans-serif',
                         }}>Settings</h4>
                         {/* Add your settings content here */}
-                        <p>Settings content goes here...</p>
+                        <Settings />
                     </div>
                 </div>
             </div>
