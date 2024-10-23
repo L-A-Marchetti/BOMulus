@@ -118,28 +118,48 @@ func (a *App) GetAnalysisState() core.AnalysisStatus {
 	return core.AnalysisState
 }
 
-func (a *App) RunAnalysis() {
-	core.AnalysisState.Total = 100
-	core.AnalysisState.IdxStart = 0
-	core.AnalysisState.IdxEnd = 99
-	go func() { // Run in a goroutine
-		totalComponents := core.AnalysisState.Total
+func (a *App) RunAnalysis() error {
+	errChan := make(chan error, 1)
+	done := make(chan struct{})
+
+	go func() {
+		totalComponents := len(core.Components)
 		limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-		for i := core.AnalysisState.IdxStart; i <= core.AnalysisState.IdxEnd; i++ {
-			err := limiter.Wait(context.Background())
-			if err != nil {
-				log.Print(err)
-				continue
+		for i := 0; i < totalComponents; i++ {
+			select {
+			case <-done:
+				return
+			default:
+				err := limiter.Wait(context.Background())
+				if err != nil {
+					log.Print(err)
+					continue
+				}
+				APIErr := components.APIRequest(i)
+				if APIErr != nil {
+					errChan <- APIErr
+					return
+				}
+				core.AnalysisState.Current += 1
+				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
 			}
-			components.APIRequest(i)
-			//fmt.Println(core.Components[i])
-			core.AnalysisState.Current += 1
-			core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100 // Update progress to percentage
 		}
 
 		core.AnalysisState.InProgress = false
 		core.AnalysisState.Completed = true
+		close(errChan)
 	}()
+
+	// Wait for either an error or completion
+	select {
+	case err, ok := <-errChan:
+		if ok {
+			close(done) // Signal the goroutine to stop
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (a *App) OpenExternalLink(s string) {

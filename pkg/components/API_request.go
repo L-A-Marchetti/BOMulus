@@ -5,17 +5,18 @@ import (
 	"config"
 	"core"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"workspaces"
 )
 
-func APIRequest(i int) {
+func APIRequest(i int) error {
 	// Check if a MPN was found.
 	if core.Components[i].Mpn == "" {
 		core.Components[i].Mpn = "MPN not found."
-		return
+		return nil
 	}
 	// Create the request payload
 	payload := RequestPayload{
@@ -48,8 +49,9 @@ func APIRequest(i int) {
 	err = json.Unmarshal(body, &apiResponse)
 	core.ErrorsHandler(err)
 	if apiResponse.SearchResults.NumberOfResult == 0 {
-		return
+		return errors.New("API connexion lost")
 	}
 	// Add some infos to the component.
 	appendAnalysis(apiResponse, i)
+	return nil
 }
