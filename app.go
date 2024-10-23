@@ -264,6 +264,25 @@ func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
 	return bomulusFile.Workspaces, nil
 }
 
+func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+
+	var bomulusFile workspaces.BOMulusFile
+
+	// Read BOMulus.bmls file
+	data, err := os.ReadFile(bomulusPath)
+	if err != nil {
+		return workspaces.APIKeys{}, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+	}
+
+	err = json.Unmarshal(data, &bomulusFile)
+	if err != nil {
+		return workspaces.APIKeys{}, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	}
+
+	return bomulusFile.ApiKeys, nil
+}
+
 // OpenFileDialog opens a file selection dialog
 func (a *App) OpenFileDialog() (string, error) {
 	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{

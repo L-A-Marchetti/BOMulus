@@ -1,6 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from './Button';
-import { TestMouserAPIKey, TestBOMulusAPIKey } from '../wailsjs/go/main/App';
+import { TestMouserAPIKey, TestBOMulusAPIKey, GetSavedAPIKeys } from '../wailsjs/go/main/App';
+
+const LoadingSpinner = () => (
+    <div className="loading-bar" style={{
+        display: 'inline-block',
+        width: '100px',
+        height: '4px',
+        borderRadius: '2px',
+        overflow: 'hidden',
+        position: 'relative',
+        marginLeft: '10px',
+    }}>
+        <div className="loading-bar-fill" style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            left: '-100%',
+            backgroundColor: 'white',
+            animation: 'loadingBarFill 1.5s ease-in-out infinite',
+        }} />
+    </div>
+);
+
 
 function Settings() {
     const [mouserApiKey, setMouserApiKey] = useState('');
@@ -9,6 +31,35 @@ function Settings() {
     const [bomulusApiStatus, setBomulusApiStatus] = useState('');
     const [mouserError, setMouserError] = useState('');
     const [bomulusError, setBomulusError] = useState('');
+    const [isTestingMouser, setIsTestingMouser] = useState(false);
+    const [isTestingBOMulus, setIsTestingBOMulus] = useState(false);
+
+    useEffect(() => {
+        loadSavedAPIKeys();
+        const style = document.createElement('style');
+        style.textContent = `
+        @keyframes loadingBarFill {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+    `;
+        document.head.appendChild(style);
+        return () => document.head.removeChild(style);
+    }, []);
+
+    const loadSavedAPIKeys = async () => {
+        try {
+            const savedKeys = await GetSavedAPIKeys();
+            setMouserApiKey(savedKeys.mouser_api_key || '');
+            setBomulusApiKey(savedKeys.bomulus_api_key || '');
+        } catch (error) {
+            console.error("Error loading saved API keys:", error);
+        }
+    };
 
     const handleMouserApiKeyChange = (e) => {
         setMouserApiKey(e.target.value);
@@ -23,6 +74,7 @@ function Settings() {
     };
 
     const testMouserApiKey = async () => {
+        setIsTestingMouser(true);
         try {
             const result = await TestMouserAPIKey(mouserApiKey);
             if (result) {
@@ -36,10 +88,13 @@ function Settings() {
             console.error("Error testing Mouser API key:", error);
             setMouserApiStatus('');
             setMouserError(error.toString());
+        } finally {
+            setIsTestingMouser(false);
         }
     };
 
     const testBomulusApiKey = async () => {
+        setIsTestingBOMulus(true);
         try {
             const result = await TestBOMulusAPIKey(bomulusApiKey);
             if (result) {
@@ -53,6 +108,8 @@ function Settings() {
             console.error("Error testing BOMulus API key:", error);
             setBomulusApiStatus('');
             setBomulusError(error.toString());
+        } finally {
+            setIsTestingBOMulus(false);
         }
     };
 
@@ -71,6 +128,7 @@ function Settings() {
                     type="text"
                     value={mouserApiKey}
                     onChange={handleMouserApiKeyChange}
+                    placeholder="Enter Mouser API Key"
                     style={{
                         width: '100%',
                         padding: '8px',
@@ -78,8 +136,16 @@ function Settings() {
                         boxSizing: 'border-box',
                     }}
                 />
-                <Button style={{ width: '100%' }} onClick={testMouserApiKey}>
-                    Test Mouser API Key
+                <Button 
+                    style={{ width: '100%' }} 
+                    onClick={testMouserApiKey}
+                    disabled={isTestingMouser}
+                >
+                    {isTestingMouser ? (
+                        <>Test Mouser API Key <LoadingSpinner /></>
+                    ) : (
+                        'Test Mouser API Key'
+                    )}
                 </Button>
                 {mouserApiStatus && <p style={{ color: 'green' }}>{mouserApiStatus}</p>}
                 {mouserError && <p style={{ color: 'red' }}>{mouserError}</p>}
@@ -92,6 +158,7 @@ function Settings() {
                     type="text"
                     value={bomulusApiKey}
                     onChange={handleBomulusApiKeyChange}
+                    placeholder="Enter BOMulus API Key"
                     style={{
                         width: '100%',
                         padding: '8px',
@@ -99,8 +166,16 @@ function Settings() {
                         boxSizing: 'border-box',
                     }}
                 />
-                <Button style={{ width: '100%' }} onClick={testBomulusApiKey}>
-                    Test BOMulus API Key
+                <Button 
+                    style={{ width: '100%' }} 
+                    onClick={testBomulusApiKey}
+                    disabled={isTestingBOMulus}
+                >
+                    {isTestingBOMulus ? (
+                        <>Test BOMulus API Key <LoadingSpinner /></>
+                    ) : (
+                        'Test BOMulus API Key'
+                    )}
                 </Button>
                 {bomulusApiStatus && <p style={{ color: 'green' }}>{bomulusApiStatus}</p>}
                 {bomulusError && <p style={{ color: 'red' }}>{bomulusError}</p>}
