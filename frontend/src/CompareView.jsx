@@ -44,18 +44,18 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
     };
 
     const getStatusCounts = () => {
-        const outOfStockCount = components.filter(comp => comp.Availability === "" && comp.Analyzed).length;
+        const outOfStockCount = components.filter(comp => comp.availability === "" && comp.analyzed).length;
         const riskyLifecycleCount = components.filter(comp =>
-            comp.LifecycleStatus !== "" &&
-            comp.LifecycleStatus !== "New Product" &&
-            comp.LifecycleStatus !== "New at Mouser" &&
-            comp.Analyzed
+            comp.lifecycle_status !== "" &&
+            comp.lifecycle_status !== "New Product" &&
+            comp.lifecycle_status !== "New at Mouser" &&
+            comp.analyzed
         ).length;
         const manufacturerMessagesCount = components.filter(comp =>
-            comp.InfoMessages !== null && comp.Analyzed
+            comp.info_messages !== null && comp.analyzed
         ).length;
         const mismatchingMpnCount = components.filter(comp =>
-            comp.MismatchMpn !== null && comp.Analyzed
+            comp.mismatch_mpn !== null && comp.analyzed
         ).length;
 
         return { outOfStockCount, riskyLifecycleCount, manufacturerMessagesCount, mismatchingMpnCount };
