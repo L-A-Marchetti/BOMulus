@@ -13,7 +13,7 @@ function RightSidebar() {
     useEffect(() => {
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
-            mainContent.style.marginRight = isVisible ? '300px' : '40px';
+            mainContent.style.marginRight = isVisible ? '340px' : '40px';
             mainContent.style.transition = 'margin-left 0.3s ease-in-out, margin-right 0.3s ease-in-out';
         }
     }, [isVisible]);
@@ -24,22 +24,23 @@ function RightSidebar() {
             top: 40,
             right: 0,
             height: '95vh',
-            width: '340px',
+            width: isVisible ? '340px' : '40px',
             display: 'flex',
             backgroundColor: 'inherit',
             zIndex: 1000,
+            transition: 'width 0.3s ease-in-out',
         }}>
             <div style={{
                 position: 'absolute',
-                width: '40px',
+                left: 0,
                 height: '100%',
-                transition: 'transform 0.3s ease-in-out',
-                transform: isVisible ? 'translateX(0)' : 'translateX(300px)',
+                transition: 'left 0.3s ease-in-out',
+                transform: isVisible ? 'translateX(0)' : 'translateX(0)',
             }}>
                 <Button 
                     onClick={toggleVisibility} 
                     style={{ 
-                        width: '100%',
+                        width: '40px',
                         height: '100%',
                         padding: 0,
                         display: 'flex',
@@ -59,7 +60,7 @@ function RightSidebar() {
                 display: 'flex',
                 flexDirection: 'column',
                 transition: 'transform 0.3s ease-in-out',
-                transform: isVisible ? 'translateX(0)' : 'translateX(300px)',
+                transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
             }}>
                 {/* Pricing Block */}
                 <div style={{ 
@@ -105,16 +106,5 @@ function RightSidebar() {
         </div>
     );
 }
-
-const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column', 
-    height: '100%', 
-    width: '300px',
-    padding: '10px',
-    fontFamily: 'Poppins, sans-serif',
-    fontSize: '0.6rem',
-    boxSizing: 'border-box'
-};
 
 export default RightSidebar;

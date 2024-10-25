@@ -7,6 +7,7 @@ import TopBar from './TopBar';
 import WorkspaceCreator from './WorkspaceCreator';
 import { MaximizeWindow } from "../wailsjs/go/main/App";
 import RightSidebar from './RightSideBar';
+import Button from './Button';
 
 function App() {
     // State hooks for managing component visibility and data
@@ -14,6 +15,10 @@ function App() {
     const [compareKey, setCompareKey] = useState(0);
     const [components, setComponents] = useState([]);
     const [pinnedComponents, setPinnedComponents] = useState([]);
+
+    const handleCloseCompareView = () => {
+        setShowCompareView(false);
+    };
 
     // Function to toggle the CompareView and update its key
     const handleToggleCompareView = () => {
@@ -62,6 +67,9 @@ function App() {
                 width: '100%',
                 overflowX: 'hidden'
             }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                        <Button onClick={handleCloseCompareView}>☓</Button>
+                    </div>
                     <CompareView
                         key={compareKey}
                         setComponents={setComponents}

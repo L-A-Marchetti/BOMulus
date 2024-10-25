@@ -170,9 +170,11 @@ func (a *App) OpenExternalLink(s string) {
 func (a *App) MinimizeWindow() {
 	runtime.WindowMinimise(a.ctx)
 }
-
 func (a *App) MaximizeWindow() {
-	runtime.WindowToggleMaximise(a.ctx)
+	isMaximised := runtime.WindowIsMaximised(a.ctx)
+	if !isMaximised {
+		runtime.WindowMaximise(a.ctx)
+	}
 }
 
 func (a *App) CloseWindow() {
