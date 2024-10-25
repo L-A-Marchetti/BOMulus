@@ -3,9 +3,17 @@ import { GetComponents } from "../wailsjs/go/main/App";
 import './CompareView.css';
 import AnalyzeButton from './AnalyzeButton';
 import OperatorExpander from './Expander';
+import Button from './Button';
 
 function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
     const [components, setLocalComponents] = useState([]);
+    const [activeFilters, setActiveFilters] = useState({
+        outOfStock: false,
+        riskyLifecycle: false,
+        manufacturerMessages: false,
+        mismatchingMpn: false
+    });
+
     const operators = ["INSERT", "UPDATE", "DELETE", "EQUAL"];
     const opColors = {
         INSERT: '#86b384',
@@ -17,9 +25,9 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
     const updateComponents = useCallback(async () => {
         try {
             const updatedComponents = await GetComponents();
-            console.log(updatedComponents); // Vérifie la structure des données ici
+            console.log(updatedComponents);
             setLocalComponents(updatedComponents);
-            setComponents(updatedComponents); // Mettre à jour les composants dans App
+            setComponents(updatedComponents);
         } catch (error) {
             console.error("Error fetching components:", error);
         }
@@ -61,12 +69,24 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
         return { outOfStockCount, riskyLifecycleCount, manufacturerMessagesCount, mismatchingMpnCount };
     };
 
-    const diffSummary = getDiffSummary();
+    const toggleFilter = (filterName) => {
+        setActiveFilters(prev => ({ ...prev, [filterName]: !prev[filterName] }));
+    };
+
     const statusCounts = getStatusCounts();
+
+    const filterComponents = (components) => {
+        return components.filter(comp => {
+            if (activeFilters.outOfStock && (comp.availability !== "" || !comp.analyzed)) return false;
+            if (activeFilters.riskyLifecycle && (comp.lifecycle_status === "" || comp.lifecycle_status === "New Product" || comp.lifecycle_status === "New at Mouser" || !comp.analyzed)) return false;
+            if (activeFilters.manufacturerMessages && (comp.info_messages === null || !comp.analyzed)) return false;
+            if (activeFilters.mismatchingMpn && (comp.mismatch_mpn === null || !comp.analyzed)) return false;
+            return true;
+        });
+    };
 
     return (
         <div className="compare-grid">
-            {/* Afficher la section de résumé uniquement si des composants existent */}
             {components.length > 0 && (
                 <div className="summary-section">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -78,37 +98,54 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
                         <AnalyzeButton onComponentAnalyzed={handleComponentAnalyzed} />
                     </div>
                     <div>
-                        {/* Ajout des nouveaux compteurs */}
-                        <span style={{ marginRight: '20px' }}>
+                        <Button 
+                            onClick={() => toggleFilter('outOfStock')}
+                            style={{ 
+                                backgroundColor: activeFilters.outOfStock ? 'lightblue' : 'inherit',
+                            }}
+                        >
                             Out of Stock: {statusCounts.outOfStockCount}
-                        </span>
-                        <span style={{ marginRight: '20px' }}>
+                        </Button>
+                        <Button 
+                            onClick={() => toggleFilter('riskyLifecycle')}
+                            style={{ 
+                                backgroundColor: activeFilters.riskyLifecycle ? 'lightblue' : 'inherit',
+                            }}
+                        >
                             Risky Lifecycle: {statusCounts.riskyLifecycleCount}
-                        </span>
-                        <span style={{ marginRight: '20px' }}>
+                        </Button>
+                        <Button 
+                            onClick={() => toggleFilter('manufacturerMessages')}
+                            style={{ 
+                                backgroundColor: activeFilters.manufacturerMessages ? 'lightblue' : 'inherit',                                                   }}
+                        >
                             Manufacturer Messages: {statusCounts.manufacturerMessagesCount}
-                        </span>
-                        <span style={{ marginRight: '20px' }}>
+                        </Button>
+                        <Button 
+                            onClick={() => toggleFilter('mismatchingMpn')}
+                            style={{ 
+                                backgroundColor: activeFilters.mismatchingMpn ? 'lightblue' : 'inherit',
+                            }}
+                        >
                             Mismatching MPN: {statusCounts.mismatchingMpnCount}
-                        </span>
+                        </Button>
                     </div>
                 </div>
             )}
 
-            {/* Afficher OperatorExpander uniquement si des composants existent pour cet opérateur */}
             {operators.map((operator, index) => {
-                const filteredComponents = components.filter(comp => comp.Operator === operator);
+                const filteredComponents = filterComponents(components.filter(comp => comp.Operator === operator));
                 return filteredComponents.length > 0 ? (
                     <OperatorExpander
                         key={operator}
                         operator={operator}
                         components={filteredComponents}
                         color={opColors[operator]}
-                        count={diffSummary[index]}
-                        onPinToggle={onPinToggle} // Passer la fonction d'épinglage
+                        count={filteredComponents.length}
+                        onPinToggle={onPinToggle}
                         pinnedComponents={pinnedComponents}
                     />
-                ) : null; // Ne rien rendre si aucun composant n'est trouvé
+                ) : null;
             })}
         </div>
     );
