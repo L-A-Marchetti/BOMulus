@@ -64,6 +64,7 @@ type Component struct {
 	SupplierManufacturer     string       `json:"supplier_manufacturer"`
 	Category                 string       `json:"category"`
 	ProductDetailUrl         string       `json:"product_detail_url"`
+	LastRefresh              time.Time    `json:"last_refresh"`
 	Operator                 string
 	OldQuantity, NewQuantity int
 }

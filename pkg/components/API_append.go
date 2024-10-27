@@ -2,6 +2,7 @@ package components
 
 import (
 	"core"
+	"time"
 )
 
 func appendAnalysis(apiResponse ApiResponse, i int) {
@@ -49,5 +50,6 @@ func appendAnalysis(apiResponse ApiResponse, i int) {
 	// Validate the analysis
 	if len(apiResponse.Errors) == 0 {
 		core.Components[i].Analyzed = true
+		core.Components[i].LastRefresh = time.Now()
 	}
 }

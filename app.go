@@ -125,15 +125,18 @@ func (a *App) RunAnalysis() error {
 	go func() {
 		totalComponents := len(core.Components)
 		limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
+		refreshThreshold := time.Now().AddDate(0, 0, -config.ANALYSIS_REFRESH_DAYS)
 		for i := 0; i < totalComponents; i++ {
 			select {
 			case <-done:
 				return
 			default:
 				if core.Components[i].Analyzed {
-					core.AnalysisState.Current += 1
-					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-					continue
+					if core.Components[i].LastRefresh.After(refreshThreshold) {
+						core.AnalysisState.Current += 1
+						core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
+						continue
+					}
 				}
 				err := limiter.Wait(context.Background())
 				if err != nil {
