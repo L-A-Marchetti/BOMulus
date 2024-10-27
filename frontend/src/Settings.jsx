@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
-import { TestMouserAPIKey, TestBOMulusAPIKey, GetSavedAPIKeys, SetAnalyzeSaveState, GetAnalyzeSaveState } from '../wailsjs/go/main/App';
+import { TestMouserAPIKey, TestBOMulusAPIKey, GetSavedAPIKeys, SetAnalyzeSaveState, GetAnalyzeSaveState, GetAnalysisRefreshDays, SetAnalysisRefreshDays } from '../wailsjs/go/main/App';
 
 const LoadingSpinner = () => (
     <div className="loading-bar" style={{
@@ -34,10 +34,12 @@ function Settings() {
     const [isTestingMouser, setIsTestingMouser] = useState(false);
     const [isTestingBOMulus, setIsTestingBOMulus] = useState(false);
     const [analyzeSaveState, setAnalyzeSaveState] = useState(false);
+    const [analysisRefreshDays, setAnalysisRefreshDays] = useState(0);
 
     useEffect(() => {
         loadSavedAPIKeys();
         loadAnalyzeSaveState();
+        loadAnalysisRefreshDays();
         const style = document.createElement('style');
         style.textContent = `
         @keyframes loadingBarFill {
@@ -52,6 +54,29 @@ function Settings() {
         document.head.appendChild(style);
         return () => document.head.removeChild(style);
     }, []);
+
+    const loadAnalysisRefreshDays = async () => {
+        try {
+            const days = await GetAnalysisRefreshDays();
+            setAnalysisRefreshDays(days);
+        } catch (error) {
+            console.error("Error loading reanalysis days:", error);
+        }
+    };
+
+    const handleAnalysisRefreshDaysChange = async (e) => {
+        const newDays = parseInt(e.target.value, 10);
+        if (isNaN(newDays) || newDays < 0) return;
+        
+        setAnalysisRefreshDays(newDays);
+        try {
+            await SetAnalysisRefreshDays(newDays);
+        } catch (error) {
+            console.error("Error setting reanalysis days:", error);
+            // Revert the state if there's an error
+            setAnalysisRefreshDays(prevDays => prevDays);
+        }
+    };
 
     const loadSavedAPIKeys = async () => {
         try {
@@ -212,6 +237,22 @@ function Settings() {
                     />
                     Save Analysis State
                 </label>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+                <input
+                    id="analysisRefreshDays"
+                    type="number"
+                    value={analysisRefreshDays}
+                    onChange={handleAnalysisRefreshDaysChange}
+                    min="0"
+                    style={{
+                        width: '60px',
+                        padding: '8px',
+                        marginLeft: '10px',
+                        boxSizing: 'border-box',
+                    }}
+                />
+                <label htmlFor="analysisRefreshDays"> Days Analysis Refresh</label>
             </div>
         </div>
     );

@@ -110,8 +110,9 @@ const (
 )
 
 var (
-	USER_API_KEY       string = ""
-	ANALYZE_SAVE_STATE bool
+	USER_API_KEY          string = ""
+	ANALYZE_SAVE_STATE    bool
+	ANALYSIS_REFRESH_DAYS int
 )
 
 /*╚═══════════════════════════════════════════════╝*/

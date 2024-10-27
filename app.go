@@ -257,7 +257,7 @@ func (a *App) CreateWorkspace(path string, name string) error {
 	}
 
 	// Update BOMulus.bmls
-	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{}, true, true)
+	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{}, true, true, 3)
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}
@@ -468,7 +468,7 @@ func (a *App) TestBOMulusAPIKey(apiKey string) (bool, error) {
 }
 
 func (a *App) SetAnalyzeSaveState(state bool) error {
-	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true)
+	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true, -1)
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}
@@ -532,4 +532,34 @@ func UpdateBMLSComponents(analyzedComponent core.Component) error {
 	}
 
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+
+func (a *App) GetAnalysisRefreshDays() (int, error) {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+
+	var bomulusFile workspaces.BOMulusFile
+
+	// Read BOMulus.bmls file
+	data, err := os.ReadFile(bomulusPath)
+	if err != nil {
+		return -1, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+	}
+
+	err = json.Unmarshal(data, &bomulusFile)
+	if err != nil {
+		return -1, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	}
+
+	config.ANALYSIS_REFRESH_DAYS = bomulusFile.AnalysisRefreshDays
+
+	return bomulusFile.AnalysisRefreshDays, nil
+}
+
+func (a *App) SetAnalysisRefreshDays(refreshDays int) error {
+	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, refreshDays)
+	if err != nil {
+		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
+	}
+	config.ANALYSIS_REFRESH_DAYS = refreshDays
+	return nil
 }

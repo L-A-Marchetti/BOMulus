@@ -17,9 +17,10 @@ type Workspace struct {
 }
 
 type BOMulusFile struct {
-	Workspaces       []Workspace `json:"workspaces"`
-	ApiKeys          APIKeys     `json:"api_keys"`
-	AnalyzeSaveState bool        `json:"analyze_save_state"`
+	Workspaces          []Workspace `json:"workspaces"`
+	ApiKeys             APIKeys     `json:"api_keys"`
+	AnalyzeSaveState    bool        `json:"analyze_save_state"`
+	AnalysisRefreshDays int         `json:"analysis_refresh_days"`
 }
 
 type FileInfo struct {
