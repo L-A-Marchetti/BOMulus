@@ -130,6 +130,11 @@ func (a *App) RunAnalysis() error {
 			case <-done:
 				return
 			default:
+				if core.Components[i].Analyzed {
+					core.AnalysisState.Current += 1
+					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
+					continue
+				}
 				err := limiter.Wait(context.Background())
 				if err != nil {
 					log.Print(err)
