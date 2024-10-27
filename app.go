@@ -140,6 +140,9 @@ func (a *App) RunAnalysis() error {
 					errChan <- APIErr
 					return
 				}
+				if config.ANALYZE_SAVE_STATE {
+					UpdateBMLSComponents(core.Components[i])
+				}
 				core.AnalysisState.Current += 1
 				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
 			}
@@ -487,4 +490,41 @@ func (a *App) GetAnalyzeSaveState() (bool, error) {
 	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
 
 	return bomulusFile.AnalyzeSaveState, nil
+}
+
+func UpdateBMLSComponents(analyzedComponent core.Component) error {
+	if activeWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+
+	bmlsFilePath := filepath.Join(activeWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspacePath), " ", "_")))
+
+	var workspace workspaces.Workspace
+
+	// Lire le fichier .bmls
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+
+	// Unmarshal le contenu JSON
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+
+	for i := range workspace.Files {
+		for j := range workspace.Files[i].Components {
+			if workspace.Files[i].Components[j].Mpn == analyzedComponent.Mpn {
+				workspace.Files[i].Components[j] = analyzedComponent
+			}
+		}
+	}
+
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
