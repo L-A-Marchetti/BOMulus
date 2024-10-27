@@ -8,7 +8,7 @@ import (
 )
 
 // updateBOMulusFile updates the BOMulus.bmls file with new workspace info
-func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys) error {
+func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState, saveStateMustChange bool) error {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 
 	var bomulusFile BOMulusFile
@@ -38,6 +38,9 @@ func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys) error {
 		if apiKeys.MouserApiKey != "" {
 			bomulusFile.ApiKeys.MouserApiKey = apiKeys.MouserApiKey
 		}
+	}
+	if saveStateMustChange {
+		bomulusFile.AnalyzeSaveState = analyzeSaveState
 	}
 
 	// Write updated data back to BOMulus.bmls

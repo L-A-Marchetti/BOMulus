@@ -47,10 +47,6 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
         );
     };
 
-    const getDiffSummary = () => {
-        return operators.map(operator => components.filter(comp => comp.Operator === operator).length);
-    };
-
     const getStatusCounts = () => {
         const outOfStockCount = components.filter(comp => comp.availability === "" && comp.analyzed).length;
         const riskyLifecycleCount = components.filter(comp =>

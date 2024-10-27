@@ -249,7 +249,7 @@ func (a *App) CreateWorkspace(path string, name string) error {
 	}
 
 	// Update BOMulus.bmls
-	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{})
+	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{}, true, true)
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}
@@ -457,4 +457,34 @@ func (a *App) TestBOMulusAPIKey(apiKey string) (bool, error) {
 	// Implémentez la logique de test pour l'API BOMulus
 	// Retournez true si la clé API est valide, false sinon
 	return true, nil
+}
+
+func (a *App) SetAnalyzeSaveState(state bool) error {
+	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true)
+	if err != nil {
+		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
+	}
+	config.ANALYZE_SAVE_STATE = state
+	return nil
+}
+
+func (a *App) GetAnalyzeSaveState() (bool, error) {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+
+	var bomulusFile workspaces.BOMulusFile
+
+	// Read BOMulus.bmls file
+	data, err := os.ReadFile(bomulusPath)
+	if err != nil {
+		return false, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+	}
+
+	err = json.Unmarshal(data, &bomulusFile)
+	if err != nil {
+		return false, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	}
+
+	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
+
+	return bomulusFile.AnalyzeSaveState, nil
 }

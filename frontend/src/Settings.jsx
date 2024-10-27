@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
-import { TestMouserAPIKey, TestBOMulusAPIKey, GetSavedAPIKeys } from '../wailsjs/go/main/App';
+import { TestMouserAPIKey, TestBOMulusAPIKey, GetSavedAPIKeys, SetAnalyzeSaveState, GetAnalyzeSaveState } from '../wailsjs/go/main/App';
 
 const LoadingSpinner = () => (
     <div className="loading-bar" style={{
@@ -33,9 +33,11 @@ function Settings() {
     const [bomulusError, setBomulusError] = useState('');
     const [isTestingMouser, setIsTestingMouser] = useState(false);
     const [isTestingBOMulus, setIsTestingBOMulus] = useState(false);
+    const [analyzeSaveState, setAnalyzeSaveState] = useState(false);
 
     useEffect(() => {
         loadSavedAPIKeys();
+        loadAnalyzeSaveState();
         const style = document.createElement('style');
         style.textContent = `
         @keyframes loadingBarFill {
@@ -58,6 +60,27 @@ function Settings() {
             setBomulusApiKey(savedKeys.bomulus_api_key || '');
         } catch (error) {
             console.error("Error loading saved API keys:", error);
+        }
+    };
+
+    const loadAnalyzeSaveState = async () => {
+        try {
+            const state = await GetAnalyzeSaveState();
+            setAnalyzeSaveState(state);
+        } catch (error) {
+            console.error("Error loading analyze save state:", error);
+        }
+    };
+
+    const handleAnalyzeSaveStateChange = async (e) => {
+        const newState = e.target.checked;
+        setAnalyzeSaveState(newState);
+        try {
+            await SetAnalyzeSaveState(newState);
+        } catch (error) {
+            console.error("Error setting analyze save state:", error);
+            // Revert the state if there's an error
+            setAnalyzeSaveState(!newState);
         }
     };
 
@@ -179,6 +202,16 @@ function Settings() {
                 </Button>
                 {bomulusApiStatus && <p style={{ color: 'green' }}>{bomulusApiStatus}</p>}
                 {bomulusError && <p style={{ color: 'red' }}>{bomulusError}</p>}
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={analyzeSaveState}
+                        onChange={handleAnalyzeSaveStateChange}
+                    />
+                    Save Analysis State
+                </label>
             </div>
         </div>
     );
