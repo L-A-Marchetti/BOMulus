@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
-import ButtonAction from './ButtonAction';
 
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
     const [expanded, setExpanded] = useState(false);
@@ -146,20 +145,20 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                     {!component.analyzed && (
                         <>
                             <div style={{ display: 'flex' }}>
-                                <ButtonAction onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
+                                <Button onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
                                     {isPinned ? '→' : '←'}
-                                </ButtonAction>
-                                <ButtonAction onClick={() => setExpanded(!expanded)}>&ensp;</ButtonAction>
+                                </Button>
+                                <Button onClick={() => setExpanded(!expanded)}>&ensp;</Button>
                             </div>
                         </>
                     )}
                     {component.analyzed && (
                         <>
                             <div style={{ display: 'flex' }}>
-                                <ButtonAction onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
+                                <Button onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
                                     {isPinned ? '→' : '←'}
-                                </ButtonAction>
-                                <ButtonAction onClick={() => setExpanded(!expanded)}>{expanded ? '˅' : '>'}</ButtonAction>
+                                </Button>
+                                <Button onClick={() => setExpanded(!expanded)}>{expanded ? '˅' : '>'}</Button>
                             </div>
                         </>
                     )}
