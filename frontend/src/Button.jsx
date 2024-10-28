@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Button({ children, onClick, style }) {
+function Button({ children, onClick, style, className }) {
     const [isHovered, setIsHovered] = useState(false);
 
     const buttonStyle = {
@@ -43,6 +43,7 @@ function Button({ children, onClick, style }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             style={{ ...buttonStyle.normal, ...(isHovered ? buttonStyle.hovered : {}), ...style }} // Applique les styles passés en props
+            className={className}
         >
             {children}
         </button>

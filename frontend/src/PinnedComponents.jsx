@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import OperatorExpander from './Expander'; 
-import AddFileToWorkspaceComp from './AddFileToWorkspace';
+import FileManager from './FileManager';
 import Button from './Button';
 
 function PinnedComponents({ pinnedComponents, onPinToggle }) {
@@ -97,7 +97,7 @@ function PinnedComponents({ pinnedComponents, onPinToggle }) {
                     paddingTop: '10px',
                     minHeight: '300px',
                 }}>
-                    <AddFileToWorkspaceComp />
+                    <FileManager />
                 </div>
                 
             </div>
