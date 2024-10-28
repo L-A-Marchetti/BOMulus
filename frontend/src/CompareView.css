@@ -66,5 +66,5 @@ h4 {
 }
 
 .filter-button.active {
-    background-color: lightblue !important;
+    background-color: rgb(51, 123, 156) !important;
 }

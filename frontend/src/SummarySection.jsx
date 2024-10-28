@@ -1,10 +1,25 @@
-// SummarySection.jsx
+/*
+ * SummarySection.jsx
+ * 
+ * Component for displaying summary information and filter buttons.
+ *
+ * Props:
+ * components: Array of components to summarize.
+ * operators: Array of operator types.
+ * opColors: Object mapping operator types to colors.
+ * activeFilters: Object containing the active state of filters.
+ * toggleFilter: Function to toggle the active state of a filter.
+ * onComponentAnalyzed: Function to handle component analysis.
+ */
+
 import React from 'react';
 import AnalyzeButton from './AnalyzeButton';
 import Button from './Button';
-import './CompareView.css';
+import './CompareView.css'; // Importing the external CSS file
 
+// Main SummarySection component
 function SummarySection({ components, operators, opColors, activeFilters, toggleFilter, onComponentAnalyzed }) {
+    // Calculate counts for various statuses
     const getStatusCounts = () => ({
         outOfStockCount: components.filter(comp => comp.availability === "" && comp.analyzed).length,
         riskyLifecycleCount: components.filter(comp =>
@@ -63,6 +78,7 @@ function SummarySection({ components, operators, opColors, activeFilters, toggle
     );
 }
 
+// Sub-component for individual filter buttons
 function FilterButton({ label, count, isActive, onClick }) {
     return (
         <Button 
