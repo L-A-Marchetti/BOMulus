@@ -1,7 +1,24 @@
+/*
+ * TopBar.jsx
+ * 
+ * Component for the application title bar with window control buttons.
+ * Provides functionality to minimize, maximize, and close the application window.
+ *
+ * Props: None
+ *
+ * States: None
+ *
+ * Backend Dependencies:
+ * MinimizeWindow: Function to minimize the application window.
+ * MaximizeWindow: Function to maximize the application window.
+ * CloseWindow: Function to close the application window.
+ */
+
 import React from 'react';
 import { MinimizeWindow, MaximizeWindow, CloseWindow } from '../wailsjs/go/main/App';
 import logo from './assets/images/logo.png';
 
+// Main TopBar component
 function TopBar() {
     // Function to minimize the window
     const handleMinimize = () => {

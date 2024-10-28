@@ -1,4 +1,12 @@
-// ProgressBar.jsx
+/*
+ * ProgressBar.jsx
+ * 
+ * Displays a progress bar indicating the completion percentage of a task.
+ *
+ * Props:
+ * progress: Number representing the completion percentage (0 to 100).
+ */
+
 import React from 'react';
 import './AnalyzeButton.css';
 

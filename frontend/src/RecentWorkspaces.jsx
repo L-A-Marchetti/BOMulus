@@ -18,13 +18,16 @@ import React, { useState, useEffect } from 'react';
 import { GetRecentWorkspaces, SetActiveWorkspace } from '../wailsjs/go/main/App';
 import Button from './Button';
 
+// Main RecentWorkspaces component
 function RecentWorkspaces({ handleToggleCompareView }) {
     const [recentWorkspaces, setRecentWorkspaces] = useState([]);
 
+    // Effect to load recent workspaces on component mount
     useEffect(() => {
         loadRecentWorkspaces();
     }, []);
 
+    // Function to fetch and set recent workspaces
     const loadRecentWorkspaces = async () => {
         try {
             const workspaces = await GetRecentWorkspaces();
@@ -34,6 +37,7 @@ function RecentWorkspaces({ handleToggleCompareView }) {
         }
     };
 
+    // Function to handle click on a workspace button
     const handleWorkspaceClick = async (workspace) => {
         try {
             await SetActiveWorkspace(workspace.workspace_infos.path);
