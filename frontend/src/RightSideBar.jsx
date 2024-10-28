@@ -1,15 +1,34 @@
+/*
+ * RightSidebar.jsx
+ * 
+ * Component for displaying a collapsible right sidebar with pricing and settings.
+ *
+ * Props: None
+ *
+ * States:
+ * isVisible: Boolean to control the visibility of the sidebar.
+ *
+ * Sub-components:
+ * Button: Reusable button component for toggling sidebar visibility.
+ * PricingCalculator: Component for price calculations.
+ * Settings: Component for application settings.
+ */
+
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import PricingCalculator from './PricingCalculator';
 import Settings from './Settings';
 
+// Main RightSidebar component
 function RightSidebar() {
     const [isVisible, setIsVisible] = useState(true);
 
+    // Toggles the visibility of the sidebar
     const toggleVisibility = () => {
         setIsVisible(prev => !prev);
     };
 
+    // Adjusts the main content margin based on sidebar visibility
     useEffect(() => {
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
@@ -69,36 +88,39 @@ function RightSidebar() {
                     backgroundColor: 'rgb(39, 39, 39)', 
                     zIndex: 1,
                     padding: '10px',
+                    height: '100%',
+                    overflowY: 'auto',
+                    
                 }}>
                     <h4 style={{
                         margin: 0,
                         padding: '10px',
                         fontFamily: 'Poppins, sans-serif',
                     }}>Pricing</h4>
-                </div>
+                
 
                 {/* Pricing Content */}
                 <PricingCalculator />
+
+                </div>
                 
                 {/* Settings Block */}
                 <div style={{
-                    maxHeight: '500px',
-                    overflowY: 'auto',
-                    overflowX: 'hidden',
-                    paddingTop: '10px',
-                    minHeight: '300px',
-                    }}>
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    minHeight: '500px',
+                }}>
                     <div style={{ 
                         backgroundColor: 'rgb(39, 39, 39)',
                         padding: '10px',
-                        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-                        }}>
+                    }}>
                         <h4 style={{
-                            margin: '0 0 10px 0',
                             padding: '10px',
                             fontFamily: 'Poppins, sans-serif',
                         }}>Settings</h4>
-                        {/* Add your settings content here */}
+                        {/* Settings Content */}
                         <Settings />
                     </div>
                 </div>

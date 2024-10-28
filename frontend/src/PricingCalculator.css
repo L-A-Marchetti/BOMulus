@@ -1,0 +1,35 @@
+/* PricingCalculator.css */
+.pricing-calculator {
+    padding: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.calculator-title {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.quantity-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.quantity-input.error {
+    border-color: red;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.calculate-button {
+    width: 100%;
+}
+
+.calculation-result {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}

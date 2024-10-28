@@ -1,0 +1,68 @@
+/* Settings.css */
+.settings-container {
+    padding: 10px;
+    font-family: "Poppins", sans-serif;
+ }
+ 
+ .api-key-input {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+ }
+ 
+ .input-field {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+ }
+ 
+ .test-button {
+    width: 100%;
+ }
+ 
+ .status-message.success {
+    color: green;
+ }
+ 
+ .status-message.error {
+    color: red;
+ }
+ 
+ .checkbox-container,
+ .refresh-days-container {
+    margin-bottom: 20px;
+ }
+ 
+ .input-number {
+    width: 60px;
+    padding: 8px;
+    margin-left: 10px;
+    box-sizing: border-box;
+ }
+ 
+ .loading-bar,
+ .loading-bar-fill {
+    display: inline-block;
+    width: 100px; /* Adjust as needed */
+    height: 4px; /* Adjust as needed */
+    border-radius: 2px; /* Adjust as needed */
+    overflow: hidden; /* Adjust as needed */
+    position: relative; /* Adjust as needed */
+    margin-left: 10px; /* Adjust as needed */
+ }
+ 
+ .loading-bar-fill {
+    width: 100%;
+    height: 100%;
+    position: absolute; /* Adjust as needed */
+    left: -100%; /* Adjust as needed */
+    background-color: white; /* Adjust as needed */
+    animation: loadingBarFill 1.5s ease-in-out infinite; /* Adjust as needed */
+ }
+ 
+ /* Keyframes for loading animation */
+ @keyframes loadingBarFill {
+    0% { left: -100%; }
+    100% { left: 100%; }
+ }
+ 

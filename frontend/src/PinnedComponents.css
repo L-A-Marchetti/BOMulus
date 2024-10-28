@@ -1,0 +1,77 @@
+/* PinnedComponents.css */
+.pinned-components-sidebar {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    height: 95vh;
+    width: 340px;
+    transition: width 0.3s ease-in-out;
+    display: flex;
+    background-color: inherit;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.pinned-components-sidebar.hidden {
+    width: 40px;
+}
+
+.sidebar-content {
+    width: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-content.hidden {
+    transform: translateX(-300px);
+}
+
+.sidebar-header {
+    position: sticky;
+    top: 0;
+    background-color: rgb(39, 39, 39);
+    z-index: 1;
+    padding: 10px;
+}
+
+.sidebar-header h4 {
+    margin: 0;
+    padding: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pinned-components-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+    padding: 10px;
+}
+
+.file-manager-section {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+    min-height: 300px;
+}
+
+.toggle-button-container {
+    width: 40px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.toggle-button {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

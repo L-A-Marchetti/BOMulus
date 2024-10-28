@@ -1,35 +1,26 @@
-import React, { useState } from "react";
+/*
+ * Button.jsx
+ * 
+ * A reusable button component with hover effects.
+ *
+ * Props:
+ * children: Content to be rendered inside the button.
+ * onClick: Function to be called when the button is clicked.
+ * style: Additional inline styles to be applied to the button.
+ * className: Additional CSS classes to be applied to the button.
+ *
+ * States:
+ * isHovered: Boolean indicating whether the button is being hovered over.
+ */
 
-function Button({ children, onClick, style }) {
+import React, { useState } from "react";
+import "./Button.css";
+
+// Reusable button component with hover effects
+function Button({ children, onClick, style, className }) {
     const [isHovered, setIsHovered] = useState(false);
 
-    const buttonStyle = {
-        normal: {
-            textDecoration: "none",
-            color: "inherit",
-            fontFamily: "Poppins, sans-serif",
-            fontWeight: "300",
-            boxShadow: "6px 6px 0px -4px rgba(0, 0, 0, 0.2)",
-            padding: "1rem",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            backgroundColor: "rgba(68, 68, 68, 0.1)",
-        },
-        hovered: {
-            textDecoration: "none",
-            color: "inherit",
-            fontFamily: "Poppins, sans-serif",
-            fontWeight: "400",
-            boxShadow: "7px 7px 0px -4px rgba(0, 0, 0, 0.2)",
-            padding: "1rem",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            backgroundColor: "rgba(68, 68, 68, 0.2)", // Change légèrement la couleur au survol
-        }
-    };
-
+    // Handles button click, preventing default behavior
     const handleClick = (e) => {
         e.preventDefault();
         if (onClick) {
@@ -42,7 +33,8 @@ function Button({ children, onClick, style }) {
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            style={{ ...buttonStyle.normal, ...(isHovered ? buttonStyle.hovered : {}), ...style }} // Applique les styles passés en props
+            className={`custom-button ${isHovered ? 'hovered' : ''} ${className || ''}`}
+            style={style}
         >
             {children}
         </button>

@@ -1,34 +1,24 @@
-/* Cacher le fond de la scrollbar */
+/* style.css */
 ::-webkit-scrollbar {
     width: 4px;
-    /* Largeur de la scrollbar */
 }
 
-/* Personnaliser le fond de la scrollbar */
 ::-webkit-scrollbar-track {
     background: transparent;
-    /* Fond de la scrollbar transparent */
 }
 
-/* Personnaliser la partie qui bouge */
 ::-webkit-scrollbar-thumb {
     background: white;
-    /* Partie qui bouge en blanc */
     border-radius: 10px;
-    /* Optionnel : adoucir les coins */
 }
 
-/* Optionnel : Ajouter une apparence lors du survol */
 ::-webkit-scrollbar-thumb:hover {
     background: #ccc;
-    /* Couleur lors du survol */
 }
 
 html {
     background-color: rgb(39, 39, 39);
-    /*text-align: center;*/
     color: white;
-
 }
 
 table td {
@@ -38,26 +28,3 @@ table td {
     min-width: 18px;
     white-space: normal;
   }
-
-/*
-body {
-    margin: 0;
-    color: white;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-}
-
-@font-face {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 200;
-    src: local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
-}
-
-#app {
-    height: 100vh;
-    text-align: center;
-}
-*/

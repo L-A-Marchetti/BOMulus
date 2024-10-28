@@ -1,28 +1,46 @@
+/*
+ * Settings.jsx
+ * 
+ * Component for managing API keys and settings related to analysis.
+ * Provides functionality to input and test API keys for Mouser and BOMulus,
+ * configure the save state for analysis results, and set the number of days for refreshing analysis.
+ *
+ * Props: None
+ *
+ * States:
+ * mouserApiKey: String representing the Mouser API key.
+ * bomulusApiKey: String representing the BOMulus API key.
+ * mouserApiStatus: String for displaying the status of the Mouser API key test.
+ * bomulusApiStatus: String for displaying the status of the BOMulus API key test.
+ * mouserError: String for storing any errors related to the Mouser API key.
+ * bomulusError: String for storing any errors related to the BOMulus API key.
+ * isTestingMouser: Boolean indicating if the Mouser API key is currently being tested.
+ * isTestingBOMulus: Boolean indicating if the BOMulus API key is currently being tested.
+ * analyzeSaveState: Boolean indicating if analysis results should be saved.
+ * analysisRefreshDays: Number of days for refreshing analysis results.
+ *
+ * Backend Dependencies:
+ * TestMouserAPIKey: Tests the provided Mouser API key.
+ * TestBOMulusAPIKey: Tests the provided BOMulus API key.
+ * GetSavedAPIKeys: Fetches saved API keys from storage.
+ * SetAnalyzeSaveState: Saves the user's preference for saving analysis results.
+ * GetAnalyzeSaveState: Retrieves the current state of saving analysis results.
+ * GetAnalysisRefreshDays: Retrieves the number of days for refreshing analysis results.
+ * SetAnalysisRefreshDays: Sets the number of days for refreshing analysis results.
+ */
+
 import React, { useState, useEffect } from 'react';
-import Button from './Button';
-import { TestMouserAPIKey, TestBOMulusAPIKey, GetSavedAPIKeys, SetAnalyzeSaveState, GetAnalyzeSaveState, GetAnalysisRefreshDays, SetAnalysisRefreshDays } from '../wailsjs/go/main/App';
-
-const LoadingSpinner = () => (
-    <div className="loading-bar" style={{
-        display: 'inline-block',
-        width: '100px',
-        height: '4px',
-        borderRadius: '2px',
-        overflow: 'hidden',
-        position: 'relative',
-        marginLeft: '10px',
-    }}>
-        <div className="loading-bar-fill" style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            left: '-100%',
-            backgroundColor: 'white',
-            animation: 'loadingBarFill 1.5s ease-in-out infinite',
-        }} />
-    </div>
-);
-
+import ApiKeyInput from './ApiKeyInput'; // Importing the new component
+import { 
+    TestMouserAPIKey, 
+    TestBOMulusAPIKey, 
+    GetSavedAPIKeys, 
+    SetAnalyzeSaveState, 
+    GetAnalyzeSaveState, 
+    GetAnalysisRefreshDays, 
+    SetAnalysisRefreshDays 
+} from '../wailsjs/go/main/App';
+import './Settings.css'; // External CSS file
 
 function Settings() {
     const [mouserApiKey, setMouserApiKey] = useState('');
@@ -36,25 +54,14 @@ function Settings() {
     const [analyzeSaveState, setAnalyzeSaveState] = useState(false);
     const [analysisRefreshDays, setAnalysisRefreshDays] = useState(0);
 
+    // Load saved keys and settings on component mount
     useEffect(() => {
         loadSavedAPIKeys();
         loadAnalyzeSaveState();
         loadAnalysisRefreshDays();
-        const style = document.createElement('style');
-        style.textContent = `
-        @keyframes loadingBarFill {
-            0% {
-                left: -100%;
-            }
-            100% {
-                left: 100%;
-            }
-        }
-    `;
-        document.head.appendChild(style);
-        return () => document.head.removeChild(style);
     }, []);
 
+    // Load number of days for refreshing analysis results
     const loadAnalysisRefreshDays = async () => {
         try {
             const days = await GetAnalysisRefreshDays();
@@ -64,6 +71,7 @@ function Settings() {
         }
     };
 
+    // Handle changes to analysis refresh days input
     const handleAnalysisRefreshDaysChange = async (e) => {
         const newDays = parseInt(e.target.value, 10);
         if (isNaN(newDays) || newDays < 0) return;
@@ -73,11 +81,12 @@ function Settings() {
             await SetAnalysisRefreshDays(newDays);
         } catch (error) {
             console.error("Error setting reanalysis days:", error);
-            // Revert the state if there's an error
+            // Revert state if there's an error
             setAnalysisRefreshDays(prevDays => prevDays);
         }
     };
 
+    // Load saved API keys from storage
     const loadSavedAPIKeys = async () => {
         try {
             const savedKeys = await GetSavedAPIKeys();
@@ -88,6 +97,7 @@ function Settings() {
         }
     };
 
+    // Load analyze save state from storage
     const loadAnalyzeSaveState = async () => {
         try {
             const state = await GetAnalyzeSaveState();
@@ -97,6 +107,7 @@ function Settings() {
         }
     };
 
+    // Handle changes to analyze save state checkbox
     const handleAnalyzeSaveStateChange = async (e) => {
         const newState = e.target.checked;
         setAnalyzeSaveState(newState);
@@ -104,23 +115,26 @@ function Settings() {
             await SetAnalyzeSaveState(newState);
         } catch (error) {
             console.error("Error setting analyze save state:", error);
-            // Revert the state if there's an error
+            // Revert state if there's an error
             setAnalyzeSaveState(!newState);
         }
     };
 
+    // Handle changes to Mouser API key input
     const handleMouserApiKeyChange = (e) => {
         setMouserApiKey(e.target.value);
         setMouserApiStatus('');
         setMouserError('');
     };
 
+    // Handle changes to BOMulus API key input
     const handleBomulusApiKeyChange = (e) => {
         setBomulusApiKey(e.target.value);
         setBomulusApiStatus('');
         setBomulusError('');
     };
 
+    // Test Mouser API key validity
     const testMouserApiKey = async () => {
         setIsTestingMouser(true);
         try {
@@ -141,6 +155,7 @@ function Settings() {
         }
     };
 
+    // Test BOMulus API key validity
     const testBomulusApiKey = async () => {
         setIsTestingBOMulus(true);
         try {
@@ -161,101 +176,55 @@ function Settings() {
         }
     };
 
-    return (
-        <div style={{ padding: '10px' }}>
-            <h4 style={{
-                margin: 0,
-                padding: '10px',
-                fontFamily: 'Poppins, sans-serif',
-            }}>API Settings</h4>
-            
-            <div style={{ marginBottom: '20px' }}>
-                <label htmlFor="mouserApiKey">Mouser API Key:</label>
-                <input
-                    id="mouserApiKey"
-                    type="text"
-                    value={mouserApiKey}
-                    onChange={handleMouserApiKeyChange}
-                    placeholder="Enter Mouser API Key"
-                    style={{
-                        width: '100%',
-                        padding: '8px',
-                        marginBottom: '10px',
-                        boxSizing: 'border-box',
-                    }}
-                />
-                <Button 
-                    style={{ width: '100%' }} 
-                    onClick={testMouserApiKey}
-                    disabled={isTestingMouser}
-                >
-                    {isTestingMouser ? (
-                        <>Test Mouser API Key <LoadingSpinner /></>
-                    ) : (
-                        'Test Mouser API Key'
-                    )}
-                </Button>
-                {mouserApiStatus && <p style={{ color: 'green' }}>{mouserApiStatus}</p>}
-                {mouserError && <p style={{ color: 'red' }}>{mouserError}</p>}
-            </div>
+   return (
+         <div className="settings-container">
+             
+             <ApiKeyInput 
+                 id="mouserApiKey"
+                 label="Mouser API Key"
+                 value={mouserApiKey}
+                 onChange={handleMouserApiKeyChange}
+                 onTest={testMouserApiKey}
+                 isTesting={isTestingMouser}
+                 status={mouserApiStatus}
+                 error={mouserError}
+             />
 
-            <div style={{ marginBottom: '20px' }}>
-                <label htmlFor="bomulusApiKey">BOMulus API Key:</label>
-                <input
-                    id="bomulusApiKey"
-                    type="text"
-                    value={bomulusApiKey}
-                    onChange={handleBomulusApiKeyChange}
-                    placeholder="Enter BOMulus API Key"
-                    style={{
-                        width: '100%',
-                        padding: '8px',
-                        marginBottom: '10px',
-                        boxSizing: 'border-box',
-                    }}
-                />
-                <Button 
-                    style={{ width: '100%' }} 
-                    onClick={testBomulusApiKey}
-                    disabled={isTestingBOMulus}
-                >
-                    {isTestingBOMulus ? (
-                        <>Test BOMulus API Key <LoadingSpinner /></>
-                    ) : (
-                        'Test BOMulus API Key'
-                    )}
-                </Button>
-                {bomulusApiStatus && <p style={{ color: 'green' }}>{bomulusApiStatus}</p>}
-                {bomulusError && <p style={{ color: 'red' }}>{bomulusError}</p>}
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-                <label>
-                    <input
-                        type="checkbox"
-                        checked={analyzeSaveState}
-                        onChange={handleAnalyzeSaveStateChange}
-                    />
-                    Save Analysis State
-                </label>
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-                <input
-                    id="analysisRefreshDays"
-                    type="number"
-                    value={analysisRefreshDays}
-                    onChange={handleAnalysisRefreshDaysChange}
-                    min="0"
-                    style={{
-                        width: '60px',
-                        padding: '8px',
-                        marginLeft: '10px',
-                        boxSizing: 'border-box',
-                    }}
-                />
-                <label htmlFor="analysisRefreshDays"> Days Analysis Refresh</label>
-            </div>
-        </div>
-    );
+             <ApiKeyInput 
+                 id="bomulusApiKey"
+                 label="BOMulus API Key"
+                 value={bomulusApiKey}
+                 onChange={handleBomulusApiKeyChange}
+                 onTest={testBomulusApiKey}
+                 isTesting={isTestingBOMulus}
+                 status={bomulusApiStatus}
+                 error={bomulusError}
+             />
+
+             <div className="checkbox-container">
+                 <label>
+                     <input
+                         type="checkbox"
+                         checked={analyzeSaveState}
+                         onChange={handleAnalyzeSaveStateChange}
+                     />
+                     Save Analysis State
+                 </label>
+             </div>
+
+             <div className="refresh-days-container">
+                 <input
+                     id="analysisRefreshDays"
+                     type="number"
+                     value={analysisRefreshDays}
+                     onChange={handleAnalysisRefreshDaysChange}
+                     min="0"
+                     className="input-number"
+                 />
+                 <label htmlFor="analysisRefreshDays"> Days Analysis Refresh</label>
+             </div>
+         </div>
+     );
 }
 
 export default Settings;
