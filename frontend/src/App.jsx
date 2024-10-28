@@ -1,4 +1,28 @@
-// App.js
+/*
+ * App.jsx
+ * 
+ * Main application component that manages the overall layout and state.
+ * Controls the visibility of workspace creator and compare view.
+ *
+ * Props: None
+ *
+ * Sub-components:
+ * TopBar: Renders the custom title bar.
+ * WorkspaceCreator: Allows creation of a new workspace.
+ * PinnedComponents: Displays pinned components.
+ * RightSidebar: Renders the right sidebar.
+ * CompareView: Main view for component comparison.
+ *
+ * States:
+ * showCompareView: Boolean to toggle the compare view visibility.
+ * compareKey: Key to force re-render of CompareView.
+ * components: Array of all components.
+ * pinnedComponents: Array of pinned components.
+ *
+ * Backend Dependencies:
+ * MaximizeWindow: Maximizes the application window.
+ */
+
 import React, { useState } from 'react';
 import './App.css';
 import CompareView from './CompareView';
@@ -9,33 +33,32 @@ import { MaximizeWindow } from "../wailsjs/go/main/App";
 import RightSidebar from './RightSideBar';
 import Button from './Button';
 
+// Main application component
 function App() {
-    // State hooks for managing component visibility and data
     const [showCompareView, setShowCompareView] = useState(false);
     const [compareKey, setCompareKey] = useState(0);
     const [components, setComponents] = useState([]);
     const [pinnedComponents, setPinnedComponents] = useState([]);
 
+    // Closes the compare view
     const handleCloseCompareView = () => {
         setShowCompareView(false);
     };
 
-    // Function to toggle the CompareView and update its key
+    // Toggles the compare view and updates its key
     const handleToggleCompareView = () => {
         MaximizeWindow();
         setShowCompareView(true);
         setCompareKey(prevKey => prevKey + 1);
     };
 
-    // Function to handle pinning/unpinning components
+    // Handles pinning/unpinning of components
     const handlePinToggle = (id) => {
         setPinnedComponents(prevPinned => {
             const isAlreadyPinned = prevPinned.some(component => component.id === id);
             if (isAlreadyPinned) {
-                // Remove the component if it's already pinned
                 return prevPinned.filter(component => component.id !== id);
             } else {
-                // Add the component to pinned list if it's not already pinned
                 const componentToPin = components.find(component => component.id === id);
                 return componentToPin ? [...prevPinned, { ...componentToPin }] : prevPinned;
             }
@@ -44,43 +67,41 @@ function App() {
 
     return (
         <>
-            {/* Render the custom title bar */}
             <TopBar />
             {!showCompareView && (
                 <WorkspaceCreator handleToggleCompareView={handleToggleCompareView} />
             )}
-
-            {/* Conditional rendering of CompareView and PinnedComponents */}
-            {showCompareView && (
-                <div style={{ display: 'flex' }}>
-                    <PinnedComponents
-                        pinnedComponents={pinnedComponents}
-                        onPinToggle={handlePinToggle}
-                    />
-                    <RightSidebar />
-                    <main id="main-content" style={{
-                flexGrow: 1,
-                transition: 'margin-left 0.3s ease-in-out',
-                marginLeft: '300px', // Ajustez cette valeur initiale si nécessaire
-                padding: '50px',
-                boxSizing: 'border-box',
-                width: '100%',
-                overflowX: 'hidden'
-            }}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-                        <Button onClick={handleCloseCompareView}>☓</Button>
-                    </div>
-                    <CompareView
-                        key={compareKey}
-                        setComponents={setComponents}
-                        onPinToggle={handlePinToggle}
-                        pinnedComponents={pinnedComponents}
-                    />
-                    </main>
-                </div>
-            )}
+            {showCompareView && <CompareViewLayout 
+                pinnedComponents={pinnedComponents}
+                onPinToggle={handlePinToggle}
+                compareKey={compareKey}
+                setComponents={setComponents}
+                onClose={handleCloseCompareView}
+            />}
         </>
     );
 }
+
+// Layout component for the compare view
+const CompareViewLayout = ({ pinnedComponents, onPinToggle, compareKey, setComponents, onClose }) => (
+    <div className="compare-view-layout">
+        <PinnedComponents
+            pinnedComponents={pinnedComponents}
+            onPinToggle={onPinToggle}
+        />
+        <RightSidebar />
+        <main id="main-content" className="main-content">
+            <div className="close-button-container">
+                <Button onClick={onClose}>☓</Button>
+            </div>
+            <CompareView
+                key={compareKey}
+                setComponents={setComponents}
+                onPinToggle={onPinToggle}
+                pinnedComponents={pinnedComponents}
+            />
+        </main>
+    </div>
+);
 
 export default App;
