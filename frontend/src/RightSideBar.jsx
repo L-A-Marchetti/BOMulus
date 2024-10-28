@@ -1,15 +1,34 @@
+/*
+ * RightSidebar.jsx
+ * 
+ * Component for displaying a collapsible right sidebar with pricing and settings.
+ *
+ * Props: None
+ *
+ * States:
+ * isVisible: Boolean to control the visibility of the sidebar.
+ *
+ * Sub-components:
+ * Button: Reusable button component for toggling sidebar visibility.
+ * PricingCalculator: Component for price calculations.
+ * Settings: Component for application settings.
+ */
+
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import PricingCalculator from './PricingCalculator';
 import Settings from './Settings';
 
+// Main RightSidebar component
 function RightSidebar() {
     const [isVisible, setIsVisible] = useState(true);
 
+    // Toggles the visibility of the sidebar
     const toggleVisibility = () => {
         setIsVisible(prev => !prev);
     };
 
+    // Adjusts the main content margin based on sidebar visibility
     useEffect(() => {
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
