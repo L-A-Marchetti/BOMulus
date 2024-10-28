@@ -6,6 +6,7 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
     const [status, setStatus] = useState('idle');
     const [progress, setProgress] = useState(0);
     const [lastAnalyzedComponent, setLastAnalyzedComponent] = useState(null);
+    const [error, setError] = useState(null);
 
     const updateProgress = useCallback(async () => {
         try {
@@ -17,6 +18,8 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
             }
         } catch (error) {
             console.error("Error fetching analysis state:", error);
+            setError(error.toString());
+            setStatus('error');
         }
     }, []);
 
@@ -41,16 +44,20 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
     }, [status, updateProgress, onComponentAnalyzed, lastAnalyzedComponent]);
 
     const handleClick = async () => {
-        if (status === 'idle') {
+        if (status === 'idle' || status === 'error') {
             setStatus('running');
+            setError(null);
+            setProgress(0);
             try {
                 await RunAnalysis();
             } catch (error) {
                 console.error("Error starting analysis:", error);
-                setStatus('idle');
+                setStatus('error');
+                setError(error.toString());
             }
         } else if (status === 'completed') {
             console.log('Displaying report');
+            // Implement your logic to display the report
         }
     };
 
@@ -68,6 +75,14 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
             )}
             {status === 'completed' && (
                 <Button onClick={handleClick}>Show Report ↝</Button>
+            )}
+            {status === 'error' && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Button onClick={handleClick} style={{ backgroundColor: '#ff4444' }}>
+                        Error: Retry Analysis
+                    </Button>
+                    {error && <p style={{ color: 'red', marginTop: '0.5rem', textAlign: 'center' }}>{error}</p>}
+                </div>
             )}
         </div>
     );
