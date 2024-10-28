@@ -89,6 +89,7 @@ function RightSidebar() {
                     zIndex: 1,
                     padding: '10px',
                     height: '100%',
+                    overflowY: 'auto',
                     
                 }}>
                     <h4 style={{

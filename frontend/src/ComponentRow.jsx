@@ -1,4 +1,23 @@
-//ComponentRow.jsx
+/*
+ * ComponentRow.jsx
+ * 
+ * Component for displaying a row of component information, including availability,
+ * lifecycle status, and manufacturer details. It also provides buttons to open external links
+ * for product details and datasheets, as well as displaying price breaks and info messages.
+ *
+ * Props:
+ * component: Object containing details about the component.
+ * operator: String indicating the operation type (e.g., 'DELETE').
+ * onPinToggle: Function to handle pinning/unpinning the component.
+ * pinnedComponents: Array of currently pinned components.
+ *
+ * States:
+ * expanded: Boolean indicating whether the component details are expanded.
+ *
+ * Backend Dependencies:
+ * OpenExternalLink: Function from Wails backend to open external links.
+ */
+
 import React, { useState } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
@@ -6,14 +25,17 @@ import { OpenExternalLink } from '../wailsjs/go/main/App';
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
     const [expanded, setExpanded] = useState(false);
 
+    // Opens an external link
     const openExternalLink = (link) => {
         OpenExternalLink(link);
     };
 
+    // Checks if the component is pinned
     const isPinned = pinnedComponents && pinnedComponents.length > 0
         ? pinnedComponents.some(pinned => pinned.id === component.id)
         : false;
 
+    // Checks various conditions to determine if there are warnings
     const isOutOfStock = component.analyzed && operator !== 'DELETE' && component.availability === "";
     const isLCSRisky = component.analyzed && operator !== 'DELETE' && component.lifecycle_status !== "" && component.lifecycle_status !== "New Product" && component.lifecycle_status !== "New at Mouser";
     const hasMessages = component.analyzed && operator !== 'DELETE' && component.info_messages !== null;
@@ -38,11 +60,12 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
         messages.push('Mismatching Manufacturer Part Number');
     }
 
+    // Renders detailed information about the component
     const renderComponentDetails = (comp) => (
         <tr>
             <td style={{ backgroundColor: 'rgb(68, 68, 68)' }} colSpan="4">
                 <div style={{ backgroundColor: 'rgb(39, 39, 39)', color: '#fff', padding: '10px' }}>
-                    {/* Détails du composant */}
+                    {/* Component Details */}
                     <table style={{ width: '100%' }}>
                         <tbody>
                             <tr>
@@ -64,8 +87,8 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                             </tr>
                         </tbody>
                     </table>
-    
-                    {/* Boutons pour les URLs */}
+
+                    {/* Buttons for URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
                         {comp.product_detail_url && (
                             <Button onClick={() => openExternalLink(comp.product_detail_url)}>
@@ -78,7 +101,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                             </Button>
                         )}
                     </div>
-    
+
                     {/* Info Messages */}
                     <div>
                         <strong>Info Messages:</strong>
@@ -89,10 +112,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                                 ))}
                             </ul>
                         ) : (
-                            <p>Aucune information disponible.</p>
+                            <p>No information available.</p>
                         )}
                     </div>
-    
+
                     {/* Price Breaks */}
                     <div>
                         <strong>Price Breaks:</strong>
@@ -116,15 +139,14 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                                 </tbody>
                             </table>
                         ) : (
-                            <p>Aucun prix disponible.</p>
+                            <p>No price available.</p>
                         )}
                     </div>
-    
+
                 </div>
             </td>
         </tr>
     );
-    
 
     return (
         <>
@@ -168,7 +190,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
 
             {component.analyzed && expanded && renderComponentDetails(component)}
 
-            {/* Afficher les détails de MismatchMpn si ils existent */}
+            {/* Display mismatch MPN details if they exist */}
             {hasMismatchMpn && expanded && component.mismatch_mpn.map((mismatchComponent, index) => (
                 renderComponentDetails(mismatchComponent)
             ))}
