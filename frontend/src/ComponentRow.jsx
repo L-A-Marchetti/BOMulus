@@ -1,3 +1,4 @@
+//ComponentRow.jsx
 import React, { useState } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';

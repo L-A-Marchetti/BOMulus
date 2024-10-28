@@ -1,3 +1,4 @@
+/* CompareView.css */
 .compare-grid {
     display: flex;
     flex-direction: column;
@@ -20,20 +21,16 @@
 
 }
 
-
 .component-table td {
     border: 1px solid rgb(39, 39, 39);
     padding: 8px;
     text-align: left;
     color: rgb(255, 255, 255);
-
-
 }
 
 .component-table th {
     background-color: rgb(39, 39, 39);
     border: 2px;
-
 }
 
 .summary-section {
@@ -50,4 +47,24 @@
 h4 {
     font-size: 1rem;
     font-weight: 300;
+}
+
+.operator-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.filter-button {
+    /* none */
+}
+
+.filter-button.active {
+    background-color: lightblue !important;
 }
