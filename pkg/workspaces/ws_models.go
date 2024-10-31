@@ -2,6 +2,7 @@ package workspaces
 
 import (
 	"core"
+	"sync"
 	"time"
 )
 
@@ -39,3 +40,8 @@ var API_KEYS = APIKeys{
 	BOMulusApiKey: "",
 	MouserApiKey:  "",
 }
+
+var (
+	ActiveWorkspacePath  string
+	ActiveWorkspaceMutex sync.RWMutex
+)

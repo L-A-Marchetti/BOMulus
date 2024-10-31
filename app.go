@@ -8,18 +8,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 	"workspaces"
 
 	"github.com/skratchdot/open-golang/open"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"golang.org/x/time/rate"
 )
 
 // App struct
@@ -69,59 +66,9 @@ func (a *App) GetAnalysisState() core.AnalysisStatus {
 	return core.AnalysisState
 }
 
+// RunAnalysis initiates the analysis of components by calling the AnalyzeComponents function.
 func (a *App) RunAnalysis() error {
-	errChan := make(chan error, 1)
-	done := make(chan struct{})
-
-	go func() {
-		totalComponents := len(core.Components)
-		limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-		refreshThreshold := time.Now().AddDate(0, 0, -config.ANALYSIS_REFRESH_DAYS)
-		for i := 0; i < totalComponents; i++ {
-			select {
-			case <-done:
-				return
-			default:
-				if core.Components[i].Analyzed {
-					if core.Components[i].LastRefresh.After(refreshThreshold) {
-						core.AnalysisState.Current += 1
-						core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-						continue
-					}
-				}
-				err := limiter.Wait(context.Background())
-				if err != nil {
-					log.Print(err)
-					continue
-				}
-				APIErr := components.APIRequest(i)
-				if APIErr != nil {
-					errChan <- APIErr
-					return
-				}
-				if config.ANALYZE_SAVE_STATE {
-					UpdateBMLSComponents(core.Components[i])
-				}
-				core.AnalysisState.Current += 1
-				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-			}
-		}
-
-		core.AnalysisState.InProgress = false
-		core.AnalysisState.Completed = true
-		close(errChan)
-	}()
-
-	// Wait for either an error or completion
-	select {
-	case err, ok := <-errChan:
-		if ok {
-			close(done) // Signal the goroutine to stop
-			return err
-		}
-	}
-
-	return nil
+	return components.AnalyzeComponents() // Delegate analysis to the components package
 }
 
 func (a *App) OpenExternalLink(s string) {
@@ -155,23 +102,18 @@ func (a *App) OpenDirectoryDialog() string {
 	return selection
 }
 
-var (
-	activeWorkspacePath  string
-	activeWorkspaceMutex sync.RWMutex
-)
-
 // SetActiveWorkspace sets the active workspace path
 func (a *App) SetActiveWorkspace(path string) {
-	activeWorkspaceMutex.Lock()
-	defer activeWorkspaceMutex.Unlock()
-	activeWorkspacePath = path
+	workspaces.ActiveWorkspaceMutex.Lock()
+	defer workspaces.ActiveWorkspaceMutex.Unlock()
+	workspaces.ActiveWorkspacePath = path
 }
 
 // GetActiveWorkspace returns the active workspace path
 func (a *App) GetActiveWorkspace() string {
-	activeWorkspaceMutex.RLock()
-	defer activeWorkspaceMutex.RUnlock()
-	return activeWorkspacePath
+	workspaces.ActiveWorkspaceMutex.RLock()
+	defer workspaces.ActiveWorkspaceMutex.RUnlock()
+	return workspaces.ActiveWorkspacePath
 }
 
 // CreateWorkspace creates a new workspace
@@ -427,43 +369,6 @@ func (a *App) GetAnalyzeSaveState() (bool, error) {
 	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
 
 	return bomulusFile.AnalyzeSaveState, nil
-}
-
-func UpdateBMLSComponents(analyzedComponent core.Component) error {
-	if activeWorkspacePath == "" {
-		return fmt.Errorf("no active workspace set")
-	}
-
-	bmlsFilePath := filepath.Join(activeWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspacePath), " ", "_")))
-
-	var workspace workspaces.Workspace
-
-	// Lire le fichier .bmls
-	data, err := os.ReadFile(bmlsFilePath)
-	if err != nil {
-		fmt.Errorf("failed to read .bmls file: %w", err)
-	}
-
-	// Unmarshal le contenu JSON
-	err = json.Unmarshal(data, &workspace)
-	if err != nil {
-		fmt.Errorf("failed to unmarshal .bmls: %w", err)
-	}
-
-	for i := range workspace.Files {
-		for j := range workspace.Files[i].Components {
-			if workspace.Files[i].Components[j].Mpn == analyzedComponent.Mpn {
-				workspace.Files[i].Components[j] = analyzedComponent
-			}
-		}
-	}
-
-	jsonData, err := json.MarshalIndent(workspace, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal updated workspace: %w", err)
-	}
-
-	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
 
 func (a *App) GetAnalysisRefreshDays() (int, error) {

@@ -1,10 +1,12 @@
 package workspaces
 
 import (
+	"core"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // updateBOMulusFile updates the BOMulus.bmls file with new workspace info
@@ -59,4 +61,41 @@ func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState
 	}
 
 	return nil
+}
+
+func UpdateBMLSComponents(analyzedComponent core.Component) error {
+	if ActiveWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+
+	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+
+	var workspace Workspace
+
+	// Lire le fichier .bmls
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+
+	// Unmarshal le contenu JSON
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+
+	for i := range workspace.Files {
+		for j := range workspace.Files[i].Components {
+			if workspace.Files[i].Components[j].Mpn == analyzedComponent.Mpn {
+				workspace.Files[i].Components[j] = analyzedComponent
+			}
+		}
+	}
+
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
