@@ -55,7 +55,11 @@ func UpdateBMLSComponents(analyzedComponent core.Component) error {
 	for i := range workspace.Files {
 		for j := range workspace.Files[i].Components {
 			if workspace.Files[i].Components[j].Mpn == analyzedComponent.Mpn {
-				workspace.Files[i].Components[j] = analyzedComponent
+				// Create a new component without the Quantity field
+				updatedComponent := analyzedComponent
+				updatedComponent.Quantity = workspace.Files[i].Components[j].Quantity // Preserve the original quantity
+				// Update the existing component with the new values (excluding Quantity)
+				workspace.Files[i].Components[j] = updatedComponent
 			}
 		}
 	}
