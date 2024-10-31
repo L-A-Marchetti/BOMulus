@@ -5,14 +5,7 @@ import (
 	"config"
 	"context"
 	"core"
-	"encoding/json"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
-	"sort"
-	"strings"
-	"time"
 	"workspaces"
 
 	"github.com/skratchdot/open-golang/open"
@@ -50,16 +43,6 @@ func (a *App) BtnCompare(v1, v2 []core.Component) {
 	core.ResetComponents()
 	core.XlsmDiff(v1, v2)
 	core.ResetAnalysisStatus()
-}
-
-func ComponentDetection(filePath string) ([]core.Component, core.Filter) {
-	file := core.XlsmFile{
-		Path: filePath,
-	}
-	core.XlsmReader(&file)
-	components.HeaderDetection(&file)
-	components.ComponentsDetection(&file)
-	return file.Components, file.Filters
 }
 
 func (a *App) GetAnalysisState() core.AnalysisStatus {
@@ -116,102 +99,19 @@ func (a *App) GetActiveWorkspace() string {
 	return workspaces.ActiveWorkspacePath
 }
 
-// CreateWorkspace creates a new workspace
+// CreateWorkspace initiates the creation of a new workspace by delegating to the workspaces package.
 func (a *App) CreateWorkspace(path string, name string) error {
-	fullPath := filepath.Join(path, name)
-
-	// Create the workspace directory
-	err := os.MkdirAll(fullPath, 0755)
-	if err != nil {
-		return fmt.Errorf("failed to create workspace directory: %w", err)
-	}
-
-	// Format the bmls name file
-	formattedName := strings.ReplaceAll(name, " ", "_")
-	bmlsFile := fmt.Sprintf("%s.bmls", formattedName)
-	bmlsFilePath := filepath.Join(fullPath, bmlsFile)
-
-	// Create the workspace info
-	workspaceInfos := workspaces.Workspace{
-		WorkspaceInfos: workspaces.WorkspaceInfos{
-			Name:      name,
-			Path:      fullPath,
-			CreatedAt: time.Now(),
-		},
-	}
-
-	// Convert workspace info to JSON
-	jsonData, err := json.MarshalIndent(workspaceInfos, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal workspace info: %w", err)
-	}
-
-	// Write JSON data to the .bmls file
-	err = os.WriteFile(bmlsFilePath, jsonData, 0644)
-	if err != nil {
-		return fmt.Errorf("failed to write .bmls file: %w", err)
-	}
-
-	// Update BOMulus.bmls
-	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{}, true, true, 3)
-	if err != nil {
-		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
-	}
-
-	return nil
+	return workspaces.CreateWorkspace(path, name) // Delegate to workspaces package
 }
 
-// GetRecentWorkspaces returns the 3 most recently created workspaces
+// GetRecentWorkspaces retrieves the most recently created workspaces by delegating to the workspaces package.
 func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	// Sort workspaces by creation date (most recent first)
-	sort.Slice(bomulusFile.Workspaces, func(i, j int) bool {
-		return bomulusFile.Workspaces[i].WorkspaceInfos.CreatedAt.After(bomulusFile.Workspaces[j].WorkspaceInfos.CreatedAt)
-	})
-
-	// Return up to 3 most recent workspaces
-	if len(bomulusFile.Workspaces) > 3 {
-		return bomulusFile.Workspaces[:3], nil
-	}
-	return bomulusFile.Workspaces, nil
+	return workspaces.GetRecentWorkspaces() // Delegate to workspaces package
 }
 
+// GetSavedAPIKeys retrieves saved API keys by delegating to the workspaces package.
 func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return workspaces.APIKeys{}, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return workspaces.APIKeys{}, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	workspaces.API_KEYS = workspaces.APIKeys{
-		BOMulusApiKey: bomulusFile.ApiKeys.BOMulusApiKey,
-		MouserApiKey:  bomulusFile.ApiKeys.MouserApiKey,
-	}
-
-	return bomulusFile.ApiKeys, nil
+	return workspaces.GetSavedAPIKeys() // Delegate to workspaces package
 }
 
 // OpenFileDialog opens a file selection dialog
@@ -231,96 +131,21 @@ func (a *App) OpenFileDialog() (string, error) {
 	return selection, nil
 }
 
-// AddFileToWorkspace copies a file to the active workspace directory and updates the .bmls file
+// AddFileToWorkspace initiates adding a file to the active workspace by delegating to workspaces package.
 func (a *App) AddFileToWorkspace(filePath string) error {
-	workspacePath := a.GetActiveWorkspace()
-	if workspacePath == "" {
-		return fmt.Errorf("no active workspace set")
-	}
-
-	fileName := filepath.Base(filePath)
-	destPath := filepath.Join(workspacePath, fileName)
-
-	// Ouvrir le fichier source
-	srcFile, err := os.Open(filePath)
-	if err != nil {
-		return fmt.Errorf("error opening source file: %w", err)
-	}
-	defer srcFile.Close()
-
-	// Créer le fichier de destination
-	destFile, err := os.Create(destPath)
-	if err != nil {
-		return fmt.Errorf("error creating destination file: %w", err)
-	}
-	defer destFile.Close()
-
-	// Copier le contenu du fichier
-	_, err = io.Copy(destFile, srcFile)
-	if err != nil {
-		return fmt.Errorf("error copying file: %w", err)
-	}
-
-	// Mettre à jour le fichier .bmls avec les informations du nouveau fichier
-	return a.updateBMLSWithNewFile(workspacePath, fileName, destPath)
+	activeWorkspace := a.GetActiveWorkspace()                       // Get active workspace path
+	return workspaces.AddFileToWorkspace(activeWorkspace, filePath) // Delegate to workspaces package
 }
 
-// updateBMLSWithNewFile met à jour le fichier .bmls avec les informations du nouveau fichier ajouté
-func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
-	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
-
-	var workspace workspaces.Workspace
-
-	// Lire le fichier .bmls existant
-	data, err := os.ReadFile(bmlsFilePath)
-	if err == nil {
-		err = json.Unmarshal(data, &workspace)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal .bmls: %w", err)
-		}
-	}
-	components, filters := ComponentDetection(filePath)
-	// Ajouter les informations du nouveau fichier
-	workspace.Files = append(workspace.Files, workspaces.FileInfo{
-		Name:       fileName,
-		Path:       filePath,
-		Components: components,
-		Filters:    filters,
-	})
-
-	// Écrire les données mises à jour dans le fichier .bmls
-	jsonData, err := json.MarshalIndent(workspace, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal updated workspace: %w", err)
-	}
-
-	return os.WriteFile(bmlsFilePath, jsonData, 0644)
-}
-
-// GetFilesInWorkspaceInfo returns the list of files in the active workspace's .bmls file
+// GetFilesInWorkspaceInfo retrieves files in the active workspace's .bmls by delegating to workspaces package.
 func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
-	workspacePath := a.GetActiveWorkspace()
-	if workspacePath == "" {
-		return nil, fmt.Errorf("no active workspace set")
-	}
+	activeWorkspace := a.GetActiveWorkspace()                  // Get active workspace path
+	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
+}
 
-	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
-
-	var workspace workspaces.Workspace
-
-	// Lire le fichier .bmls
-	data, err := os.ReadFile(bmlsFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read .bmls file: %w", err)
-	}
-
-	// Unmarshal le contenu JSON
-	err = json.Unmarshal(data, &workspace)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal .bmls: %w", err)
-	}
-
-	return workspace.Files, nil
+// updateBMLSWithNewFile updates the .bmls file with information about a newly added file by delegating to workspaces package.
+func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
+	return workspaces.UpdateBMLSWithNewFile(workspacePath, fileName, filePath) // Delegate to workspaces package
 }
 
 func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResult, error) {
@@ -350,46 +175,14 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 	return nil
 }
 
+// GetAnalyzeSaveState retrieves the analyze save state by delegating to workspaces package.
 func (a *App) GetAnalyzeSaveState() (bool, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return false, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return false, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
-
-	return bomulusFile.AnalyzeSaveState, nil
+	return workspaces.GetAnalyzeSaveState() // Delegate to workspaces package
 }
 
+// GetAnalysisRefreshDays retrieves the analysis refresh days by delegating to workspaces package.
 func (a *App) GetAnalysisRefreshDays() (int, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return -1, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return -1, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	config.ANALYSIS_REFRESH_DAYS = bomulusFile.AnalysisRefreshDays
-
-	return bomulusFile.AnalysisRefreshDays, nil
+	return workspaces.GetAnalysisRefreshDays() // Delegate to workspaces package
 }
 
 func (a *App) SetAnalysisRefreshDays(refreshDays int) error {

@@ -1,5 +1,5 @@
 /*
-* Package: components
+* Package: core
 * File: header_detection.go
 *
 * Description:
@@ -13,7 +13,7 @@
 *   row and identify important column indices.
 *
 * Input:
-* - file (*core.XlsmFile): Pointer to a structure representing the Excel file
+* - file (*XlsmFile): Pointer to a structure representing the Excel file
 *   containing the BOM data.
 *
 * Output:
@@ -21,19 +21,18 @@
 *   for key columns and the header row.
  */
 
-package components
+package core
 
 import (
 	"config"
-	"core"
 	"strings"
 )
 
 // HeaderDetection automatically detects the header row in the Excel file
 // and identifies the indices of important columns.
-func HeaderDetection(file *core.XlsmFile) {
+func HeaderDetection(file *XlsmFile) {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("HeaderDetection()", false).Stop()
+		defer StartBenchmark("HeaderDetection()", false).Stop()
 	}
 	header := 0
 	// Iterate through each row in the file
@@ -41,7 +40,7 @@ func HeaderDetection(file *core.XlsmFile) {
 		// Iterate through each cell in the row
 		for j, col := range row {
 			// Check if the cell contains any of the predefined keywords
-			if core.ContainsKeywords(col) {
+			if ContainsKeywords(col) {
 				// Normalize the cell content for comparison
 				normalizedCol := strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(col, " ", ""), "_", ""))
 				// Identify specific columns based on their headers

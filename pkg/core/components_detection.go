@@ -1,5 +1,5 @@
 /*
-* Package: components
+* Package: core
 * File: components_detection.go
 *
 * Description:
@@ -12,7 +12,7 @@
 *   component information and populate the Components slice in the XlsmFile structure.
 *
 * Input:
-* - file (*core.XlsmFile): Pointer to a structure representing the Excel file
+* - file (*XlsmFile): Pointer to a structure representing the Excel file
 *   containing the BOM data, including header information and filters.
 *
 * Output:
@@ -25,20 +25,19 @@
 * indices. It skips rows where the quantity cannot be converted to an integer.
  */
 
-package components
+package core
 
 import (
 	"config"
-	"core"
 	"strconv"
 	"strings"
 )
 
 // ComponentsDetection processes the Excel file to extract component information
 // from each row after the header row.
-func ComponentsDetection(file *core.XlsmFile) {
+func ComponentsDetection(file *XlsmFile) {
 	if config.DEBUGGING {
-		defer core.StartBenchmark("ComponentsDetection()", false).Stop()
+		defer StartBenchmark("ComponentsDetection()", false).Stop()
 	}
 	// Iterate through each row in the file
 	for i, row := range file.Content {
@@ -51,7 +50,7 @@ func ComponentsDetection(file *core.XlsmFile) {
 				continue
 			}
 			// Create a new Component structure with data from the current row
-			component := core.Component{
+			component := Component{
 				Quantity:         quantity,
 				Mpn:              strings.TrimSpace(row[file.Filters.Mpn]),
 				UserDescription:  row[file.Filters.Description],
