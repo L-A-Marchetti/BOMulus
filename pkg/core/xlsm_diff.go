@@ -17,8 +17,7 @@
 * - v2 ([]Component): The second slice of components to compare; can be nil.
 *
 * Output:
-* - Updates the global Components slice and the Diff structure with counts and
-*   quantities of each category.
+* - Updates the global Components slice with diff operators
  */
 
 package core
@@ -55,9 +54,6 @@ func XlsmDiff(v1, v2 []Component) {
 					newComponent.Operator = "EQUAL"
 					newComponent.Id = compId
 					Components = append(Components, newComponent)
-					Diff.EqualCount++
-					Diff.OldQuantity += oldComponent.Quantity
-					Diff.NewQuantity += newComponent.Quantity
 				} else {
 					// If MPN matches but quantities differ, mark as UPDATE
 					newComponent.Operator = "UPDATE"
@@ -65,9 +61,6 @@ func XlsmDiff(v1, v2 []Component) {
 					newComponent.NewQuantity = newComponent.Quantity
 					newComponent.Id = compId
 					Components = append(Components, newComponent)
-					Diff.UpdateCount++
-					Diff.OldQuantity += oldComponent.Quantity
-					Diff.NewQuantity += newComponent.NewQuantity
 				}
 				matchFound = true // Set flag to true since a match was found
 				compId++          // Increment component ID counter
@@ -79,8 +72,6 @@ func XlsmDiff(v1, v2 []Component) {
 			newComponent.Operator = "INSERT"
 			newComponent.Id = compId
 			Components = append(Components, newComponent)
-			Diff.InsertCount++
-			Diff.NewQuantity += newComponent.Quantity
 			compId++ // Increment component ID counter for inserted component
 		}
 	}
@@ -99,8 +90,6 @@ func XlsmDiff(v1, v2 []Component) {
 			oldComponent.Operator = "DELETE"
 			oldComponent.Id = compId
 			Components = append(Components, oldComponent)
-			Diff.DeleteCount++
-			Diff.OldQuantity += oldComponent.Quantity
 			compId++ // Increment component ID counter for deleted component
 		}
 	}

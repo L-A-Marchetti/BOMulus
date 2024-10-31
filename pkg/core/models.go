@@ -26,17 +26,6 @@ type Filter struct {
 	Manufacturer int `json:"manufacturer"`
 }
 
-type DiffSummary struct {
-	EqualCount  int
-	InsertCount int
-	UpdateCount int
-	DeleteCount int
-	OldQuantity int
-	NewQuantity int
-}
-
-var Diff = DiffSummary{}
-
 /*╚══════════════════════════════════════════╝*/
 
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
