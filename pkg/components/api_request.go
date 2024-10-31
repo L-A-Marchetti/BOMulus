@@ -41,6 +41,8 @@ import (
 	"workspaces"
 )
 
+// APIRequest retrieves information based on the MPN
+// and updates the corresponding component
 func APIRequest(i int) error {
 	// Check if a MPN was found.
 	if core.Components[i].Mpn == "" {

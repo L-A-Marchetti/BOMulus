@@ -39,6 +39,8 @@ import (
 	"workspaces"
 )
 
+// TestAPIKey sends a test request to the API and
+// validates the response to ensure the API key is correct.
 func TestAPIKey(apiKey string, supplier string) error {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.testAPIKey()", false).Stop()
