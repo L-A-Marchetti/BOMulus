@@ -1,76 +1,59 @@
 package core
 
 import (
-	"config"
 	"time"
-
-	"github.com/gotk3/gotk3/gdk"
 )
 
 /*╔══════════════ FILES MODELS ══════════════╗*/
 
 type XlsmFile struct {
-	Path    string
-	Content [][]string
+	Path       string
+	Content    [][]string
+	Filters    Filter
+	Components []Component
 }
-
-type XlsmDelta struct {
-	Operator string
-	OldRow   int
-	NewRow   int
-}
-
-var XlsmFiles = []XlsmFile{
-	{Path: config.INIT_FILE_PATH_1},
-	{Path: config.INIT_FILE_PATH_2},
-}
-
-var XlsmDeltas []XlsmDelta
 
 /*╚══════════════════════════════════════════╝*/
 
 /*╔══════════════ FILTER MODEL ══════════════╗*/
 
 type Filter struct {
-	Header                                            int
-	Quantity                                          int
-	Mpn                                               int
-	Description                                       int
-	Designator                                        int
-	Manufacturer                                      int
-	InsertCount, UpdateCount, DeleteCount, EqualCount int
-	OldQuantity, NewQuantity                          int
+	Header       int `json:"header"`
+	Quantity     int `json:"quantity"`
+	Mpn          int `json:"mpn"`
+	Description  int `json:"description"`
+	Designator   int `json:"designator"`
+	Manufacturer int `json:"manufacturer"`
 }
-
-var Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 
 /*╚══════════════════════════════════════════╝*/
 
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
 
 type Component struct {
-	Operator                           string
-	OldRow, NewRow                     int
-	Quantity, OldQuantity, NewQuantity int
-	Mpn                                string
-	Designator                         string
-	ImagePath                          string
-	Availability                       string
-	DataSheetUrl                       string
-	LifecycleStatus                    string
-	ROHSStatus                         string
-	SuggestedReplacement               string
-	PriceBreaks                        []PriceBreak
-	InfoMessages                       []string
-	Analyzed                           bool
-	MismatchMpn                        []Component
-	UserDescription                    string
-	SupplierDescription                string
-	Img                                *gdk.Pixbuf
-	UserManufacturer                   string
-	SupplierManufacturer               string
-	Category                           string
-	ProductDetailUrl                   string
+	Id                       int          `json:"id"`
+	Quantity                 int          `json:"quantity"`
+	Mpn                      string       `json:"mpn"`
+	Designator               string       `json:"designator"`
+	ImagePath                string       `json:"image_path"`
+	Availability             string       `json:"availability"`
+	DataSheetUrl             string       `json:"datasheet_url"`
+	LifecycleStatus          string       `json:"lifecycle_status"`
+	ROHSStatus               string       `json:"rohs_status"`
+	SuggestedReplacement     string       `json:"suggested_replacement"`
+	PriceBreaks              []PriceBreak `json:"price_breaks"`
+	InfoMessages             []string     `json:"info_messages"`
+	Analyzed                 bool         `json:"analyzed"`
+	MismatchMpn              []Component  `json:"mismatch_mpn"`
+	UserDescription          string       `json:"user_description"`
+	SupplierDescription      string       `json:"supplier_description"`
+	UserManufacturer         string       `json:"user_manufacturer"`
+	SupplierManufacturer     string       `json:"supplier_manufacturer"`
+	Category                 string       `json:"category"`
+	ProductDetailUrl         string       `json:"product_detail_url"`
+	LastRefresh              time.Time    `json:"last_refresh"`
+	Operator                 string
+	OldQuantity, NewQuantity int
 }
 
 type PriceBreak struct {
@@ -80,36 +63,19 @@ type PriceBreak struct {
 }
 
 var (
-	Components    = []Component{} // Do we still need it ?
-	OldComponents = []Component{}
-	NewComponents = []Component{}
+	Components = []Component{} // Do we still need it ?
 )
 
 /*╚══════════════════════════════════════════════╝*/
 
 /*╔══════════════ RESET FUNCTIONS ══════════════╗*/
 
-func ResetContent() {
-	XlsmFiles[0].Content = nil
-	XlsmFiles[1].Content = nil
-}
-
-func ResetDeltas() {
-	XlsmDeltas = nil
-}
-
 func ResetComponents() {
 	Components = []Component{}
-	OldComponents = []Component{}
-	NewComponents = []Component{}
 }
 
 func ResetAnalysisStatus() {
 	AnalysisState = AnalysisStatus{}
-}
-
-func ResetFilters() {
-	Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
 }
 
 /*╚══════════════════════════════════════════════╝*/
@@ -130,34 +96,6 @@ type AnalysisStatus struct {
 var AnalysisState AnalysisStatus
 
 /*╚═══════════════════════════════════════════════════╝*/
-
-/*╔══════════════ REPORT GRID MODEL ══════════════╗*/
-
-type ReportGrid struct {
-	ExpanderName       string
-	Headers            []string
-	RowsAttributes     []ComponentMethod
-	AttachmentsIter    ComponentMethodIter
-	AttachmentsIterMsg ComponentMethodIterMsg
-	Attachments        []Attachment
-	Jump               int
-	Components         []Component
-	ButtonIdx          []int
-	Msg                bool
-}
-
-type Attachment struct {
-	Attribute    ComponentMethod
-	AttributeMsg ComponentMethodMsg
-	Column       int
-}
-
-type ComponentMethod func(c *Component) string
-type ComponentMethodMsg func(s string) string
-type ComponentMethodIter func(c *Component) []Component
-type ComponentMethodIterMsg func(c *Component) []string
-
-/*╚════════════════════════════════════════════════╝*/
 
 /*╔══════════════ BENCHMARK MODEL ══════════════╗*/
 

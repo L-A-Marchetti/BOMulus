@@ -1,0 +1,26 @@
+/* Expander.css */
+.expander {
+    margin-bottom: 20px;
+}
+
+.expander-header {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.expander-icon {
+    margin-right: 16px;
+    padding-left: 5px;
+}
+
+.component-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.component-table th,
+.component-table td {
+    padding: 8px;
+    text-align: left;
+}

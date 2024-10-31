@@ -1,0 +1,151 @@
+/* App.css */
+#app {
+    height: 100vh;
+    text-align: center;
+}
+
+#logo {
+    display: block;
+    width: 50%;
+    height: 50%;
+    margin: auto;
+    padding: 10% 0 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-origin: content-box;
+}
+
+.result {
+    height: 20px;
+    line-height: 20px;
+    margin: 1.5rem auto;
+}
+
+.input-box .btn {
+    width: 60px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 3px;
+    border: none;
+    margin: 0 0 0 20px;
+    padding: 0 8px;
+    cursor: pointer;
+}
+
+.input-box .btn:hover {
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    color: #333333;
+}
+
+.input-box .input {
+    border: none;
+    border-radius: 3px;
+    outline: none;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    background-color: rgba(240, 240, 240, 1);
+    -webkit-font-smoothing: antialiased;
+}
+
+.input-box .input:hover {
+    border: none;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.input-box .input:focus {
+    border: none;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.custom-title-bar {
+    font-family: 'Poppins', sans-serif;
+    position: fixed;
+    color: rgb(255, 255, 255);
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    height: 40px;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    --wails-draggable: drag;
+    z-index: 1000;
+}
+
+.title-bar-logo {
+    padding-top: 7px;
+}
+
+.drag-area {
+    flex-grow: 1;
+    -webkit-app-region: drag;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.window-controls {
+    display: flex;
+    gap: 0;
+    height: 100%;
+}
+
+.control-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 40px;
+    height: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    transition: background 0.2s ease-in-out;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    width: 40px;
+    height: 100%;
+    padding: 0;
+}
+
+.close-btn {
+    color: #ffffff;
+}
+
+.close-btn:hover {
+    background: rgba(225, 30, 16, 0.455);
+    width: 40px;
+    height: 100%;
+    padding: 0;
+}
+
+.compare-view-layout {
+    display: flex;
+}
+
+.main-content {
+    flex-grow: 1;
+    transition: margin-left 0.3s ease-in-out;
+    margin-left: 300px;
+    padding: 50px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.close-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}

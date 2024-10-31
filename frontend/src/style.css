@@ -1,0 +1,30 @@
+/* style.css */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}
+
+html {
+    background-color: rgb(39, 39, 39);
+    color: white;
+}
+
+table td {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    min-width: 18px;
+    white-space: normal;
+  }

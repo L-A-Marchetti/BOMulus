@@ -1,0 +1,38 @@
+/* FileManager.css */
+.file-manager {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+.file-manager-header {
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(39, 39, 39);
+    margin: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  
+.file-list-container {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 10px;
+  }
+  
+.file-button {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 5px;
+  }
+  
+.file-button.selected {
+    background-color: rgb(51, 123, 156) !important;  /* Highlight selected files */
+  }
+  
+.full-width-button {
+    width: 100%;
+    margin-bottom: 5px; /* Space between buttons */
+  }
+  

@@ -1,5 +1,5 @@
-build/
-*.xlsm
-API_key.go
-*.bmls
-*.pdf
+**/build/
+**/frontend/dist/
+**/frontend/node_modules
+**/frontend/wailsjs
+BOMulus.bmls
