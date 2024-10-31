@@ -1,3 +1,32 @@
+/*
+* Package: components
+* File: api_request.go
+*
+* Description:
+* This file contains a function for making API requests to the Mouser Electronics
+* API to retrieve component information. It processes each component in the
+* core.Components slice, sends a request to the API, and updates the component
+* with the received information.
+*
+* Main Function:
+* - APIRequest: Sends a request to the Mouser API for a specific component and
+*   processes the response.
+*
+* Input:
+* - i (int): Index of the component in the core.Components slice to be processed.
+*
+* Output:
+* - error: Returns an error if the API connection is lost or if there are any
+*   issues during the request process.
+*
+* Note:
+* This function assumes that the core.Components slice has been populated with
+* component information, including MPNs. It uses the Mouser Electronics API to
+* fetch additional details for each component. The function handles JSON
+* encoding/decoding, HTTP requests, and updates the component information
+* based on the API response.
+ */
+
 package components
 
 import (
@@ -12,6 +41,8 @@ import (
 	"workspaces"
 )
 
+// APIRequest retrieves information based on the MPN
+// and updates the corresponding component
 func APIRequest(i int) error {
 	// Check if a MPN was found.
 	if core.Components[i].Mpn == "" {
@@ -52,6 +83,6 @@ func APIRequest(i int) error {
 		return errors.New("API connexion lost")
 	}
 	// Add some infos to the component.
-	appendAnalysis(apiResponse, i)
+	processAnalysis(apiResponse, i)
 	return nil
 }

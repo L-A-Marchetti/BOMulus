@@ -1,3 +1,13 @@
+/*
+* Package: main
+* File: app.go
+*
+* Description:
+* This file contains the main application logic for the Wails framework.
+* It defines the App structure and methods that connect the frontend with
+* the backend functionalities of the application.
+ */
+
 package main
 
 import (
@@ -5,21 +15,11 @@ import (
 	"config"
 	"context"
 	"core"
-	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"os"
-	"path/filepath"
-	"sort"
-	"strings"
-	"sync"
-	"time"
 	"workspaces"
 
 	"github.com/skratchdot/open-golang/open"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"golang.org/x/time/rate"
 )
 
 // App struct
@@ -38,149 +38,52 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+/*╔══════════════ COMPONENTS FUNCTIONS ══════════════╗*/
+
+// GetComponents retrieves all components.
 func (a *App) GetComponents() []core.Component {
 	return core.Components
 }
 
+// GetComponent retrieves a specific component by index.
 func (a *App) GetComponent(i int) core.Component {
 	return core.Components[i]
 }
 
-// DisplayFileName returns file information with validation status
-func (a *App) DisplayFileName(fileName string) struct {
-	File  string
-	Color string
-} {
-	if core.HasValidExtension(fileName) {
-		return struct {
-			File  string
-			Color string
-		}{
-			File:  fmt.Sprintf("☑ %s", fileName),
-			Color: "valid",
-		}
-	}
-	return struct {
-		File  string
-		Color string
-	}{
-		File:  "☒ file not valid...",
-		Color: "invalid",
-	}
+func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResult, error) {
+	return components.QuantityPrice(int(quantity))
 }
 
-/*
-	func (a *App) UploadFile(name string, content []byte, idx int) error {
-		filePath := filepath.Join("./tmp", name)
-		core.XlsmFiles[idx-1].Path = filePath
+/*╚══════════════════════════════════════════════╝*/
 
-		file, err := os.Create(filePath)
-		if err != nil {
-			return fmt.Errorf("error creating the file: %w", err)
-		}
-		defer file.Close()
+/*╔══════════════ ANALYSIS FUNCTIONS ══════════════╗*/
 
-		_, err = file.Write(content)
-		if err != nil {
-			return fmt.Errorf("error writing the file: %w", err)
-		}
-		return nil
-	}
-*/
-func (a *App) BtnCompare(v1, v2 []core.Component) {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
-	}
-	//core.XlsmReader()
-	//components.HeaderDetection()
-	//components.ComponentsDetection()
-	core.ResetComponents()
-	core.XlsmDiff(v1, v2)
-	core.ResetAnalysisStatus()
+// RunAnalysis initiates the analysis of components by calling the AnalyzeComponents function.
+func (a *App) RunAnalysis() error {
+	return components.AnalyzeComponents() // Delegate analysis to the components package
 }
 
-func ComponentDetection(filePath string) ([]core.Component, core.Filter) {
-	file := core.XlsmFile{
-		Path: filePath,
-	}
-	core.XlsmReader(&file)
-	components.HeaderDetection(&file)
-	components.ComponentsDetection(&file)
-	return file.Components, file.Filters
-}
-
-/*
-	func (a *App) ResizeWindow(width, height int) {
-		runtime.WindowSetSize(a.ctx, width, height)
-	}
-*/
+// GetAnalysisState retrieves the current analysis state.
 func (a *App) GetAnalysisState() core.AnalysisStatus {
 	return core.AnalysisState
 }
 
-func (a *App) RunAnalysis() error {
-	errChan := make(chan error, 1)
-	done := make(chan struct{})
+/*╚══════════════════════════════════════════════╝*/
 
-	go func() {
-		totalComponents := len(core.Components)
-		limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
-		refreshThreshold := time.Now().AddDate(0, 0, -config.ANALYSIS_REFRESH_DAYS)
-		for i := 0; i < totalComponents; i++ {
-			select {
-			case <-done:
-				return
-			default:
-				if core.Components[i].Analyzed {
-					if core.Components[i].LastRefresh.After(refreshThreshold) {
-						core.AnalysisState.Current += 1
-						core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-						continue
-					}
-				}
-				err := limiter.Wait(context.Background())
-				if err != nil {
-					log.Print(err)
-					continue
-				}
-				APIErr := components.APIRequest(i)
-				if APIErr != nil {
-					errChan <- APIErr
-					return
-				}
-				if config.ANALYZE_SAVE_STATE {
-					UpdateBMLSComponents(core.Components[i])
-				}
-				core.AnalysisState.Current += 1
-				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-			}
-		}
+/*╔══════════════ WINDOW FUNCTIONS ══════════════╗*/
 
-		core.AnalysisState.InProgress = false
-		core.AnalysisState.Completed = true
-		close(errChan)
-	}()
-
-	// Wait for either an error or completion
-	select {
-	case err, ok := <-errChan:
-		if ok {
-			close(done) // Signal the goroutine to stop
-			return err
-		}
-	}
-
-	return nil
-}
-
+// OpenExternalLink opens an external link in the default browser.
 func (a *App) OpenExternalLink(s string) {
 	err := open.Run(s)
 	core.ErrorsHandler(err)
 }
 
+// MinimizeWindow minimizes the application window.
 func (a *App) MinimizeWindow() {
 	runtime.WindowMinimise(a.ctx)
 }
+
+// MaximizeWindow maximizes the application window if it is not already maximized.
 func (a *App) MaximizeWindow() {
 	isMaximised := runtime.WindowIsMaximised(a.ctx)
 	if !isMaximised {
@@ -188,11 +91,26 @@ func (a *App) MaximizeWindow() {
 	}
 }
 
+// CloseWindow closes the application window.
 func (a *App) CloseWindow() {
 	runtime.Quit(a.ctx)
 }
 
-// OpenDirectoryDialog opens a directory selection dialog
+// BtnCompare launch the diff processing.
+func (a *App) BtnCompare(v1, v2 []core.Component) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
+	}
+	core.ResetComponents()
+	core.XlsmDiff(v1, v2)
+	core.ResetAnalysisStatus()
+}
+
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ DIALOG FUNCTIONS ══════════════╗*/
+
+// OpenDirectoryDialog opens a directory selection dialog and returns the selected path.
 func (a *App) OpenDirectoryDialog() string {
 	selection, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Select Workspace Directory",
@@ -204,124 +122,7 @@ func (a *App) OpenDirectoryDialog() string {
 	return selection
 }
 
-var (
-	activeWorkspacePath  string
-	activeWorkspaceMutex sync.RWMutex
-)
-
-// SetActiveWorkspace sets the active workspace path
-func (a *App) SetActiveWorkspace(path string) {
-	activeWorkspaceMutex.Lock()
-	defer activeWorkspaceMutex.Unlock()
-	activeWorkspacePath = path
-}
-
-// GetActiveWorkspace returns the active workspace path
-func (a *App) GetActiveWorkspace() string {
-	activeWorkspaceMutex.RLock()
-	defer activeWorkspaceMutex.RUnlock()
-	return activeWorkspacePath
-}
-
-// CreateWorkspace creates a new workspace
-func (a *App) CreateWorkspace(path string, name string) error {
-	fullPath := filepath.Join(path, name)
-
-	// Create the workspace directory
-	err := os.MkdirAll(fullPath, 0755)
-	if err != nil {
-		return fmt.Errorf("failed to create workspace directory: %w", err)
-	}
-
-	// Format the bmls name file
-	formattedName := strings.ReplaceAll(name, " ", "_")
-	bmlsFile := fmt.Sprintf("%s.bmls", formattedName)
-	bmlsFilePath := filepath.Join(fullPath, bmlsFile)
-
-	// Create the workspace info
-	workspaceInfos := workspaces.Workspace{
-		WorkspaceInfos: workspaces.WorkspaceInfos{
-			Name:      name,
-			Path:      fullPath,
-			CreatedAt: time.Now(),
-		},
-	}
-
-	// Convert workspace info to JSON
-	jsonData, err := json.MarshalIndent(workspaceInfos, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal workspace info: %w", err)
-	}
-
-	// Write JSON data to the .bmls file
-	err = os.WriteFile(bmlsFilePath, jsonData, 0644)
-	if err != nil {
-		return fmt.Errorf("failed to write .bmls file: %w", err)
-	}
-
-	// Update BOMulus.bmls
-	err = workspaces.UpdateBOMulusFile(workspaceInfos, workspaces.APIKeys{}, true, true, 3)
-	if err != nil {
-		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
-	}
-
-	return nil
-}
-
-// GetRecentWorkspaces returns the 3 most recently created workspaces
-func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	// Sort workspaces by creation date (most recent first)
-	sort.Slice(bomulusFile.Workspaces, func(i, j int) bool {
-		return bomulusFile.Workspaces[i].WorkspaceInfos.CreatedAt.After(bomulusFile.Workspaces[j].WorkspaceInfos.CreatedAt)
-	})
-
-	// Return up to 3 most recent workspaces
-	if len(bomulusFile.Workspaces) > 3 {
-		return bomulusFile.Workspaces[:3], nil
-	}
-	return bomulusFile.Workspaces, nil
-}
-
-func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return workspaces.APIKeys{}, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return workspaces.APIKeys{}, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	workspaces.API_KEYS = workspaces.APIKeys{
-		BOMulusApiKey: bomulusFile.ApiKeys.BOMulusApiKey,
-		MouserApiKey:  bomulusFile.ApiKeys.MouserApiKey,
-	}
-
-	return bomulusFile.ApiKeys, nil
-}
-
-// OpenFileDialog opens a file selection dialog
+// OpenFileDialog opens a file selection dialog and returns the selected file path.
 func (a *App) OpenFileDialog() (string, error) {
 	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Select File to Add",
@@ -338,124 +139,56 @@ func (a *App) OpenFileDialog() (string, error) {
 	return selection, nil
 }
 
-// AddFileToWorkspace copies a file to the active workspace directory and updates the .bmls file
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ WORKSPACE FUNCTIONS ══════════════╗*/
+
+// SetActiveWorkspace sets the active workspace path.
+func (a *App) SetActiveWorkspace(path string) {
+	workspaces.ActiveWorkspaceMutex.Lock()
+	defer workspaces.ActiveWorkspaceMutex.Unlock()
+	workspaces.ActiveWorkspacePath = path
+}
+
+// GetActiveWorkspace returns the active workspace path.
+func (a *App) GetActiveWorkspace() string {
+	workspaces.ActiveWorkspaceMutex.RLock()
+	defer workspaces.ActiveWorkspaceMutex.RUnlock()
+	return workspaces.ActiveWorkspacePath
+}
+
+// CreateWorkspace initiates the creation of a new workspace by delegating to the workspaces package.
+func (a *App) CreateWorkspace(path string, name string) error {
+	return workspaces.CreateWorkspace(path, name) // Delegate to workspaces package
+}
+
+// GetRecentWorkspaces retrieves the most recently created workspaces by delegating to the workspaces package.
+func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
+	return workspaces.GetRecentWorkspaces() // Delegate to workspaces package
+}
+
+// AddFileToWorkspace initiates adding a file to the active workspace by delegating to workspaces package.
 func (a *App) AddFileToWorkspace(filePath string) error {
-	workspacePath := a.GetActiveWorkspace()
-	if workspacePath == "" {
-		return fmt.Errorf("no active workspace set")
-	}
-
-	fileName := filepath.Base(filePath)
-	destPath := filepath.Join(workspacePath, fileName)
-
-	// Ouvrir le fichier source
-	srcFile, err := os.Open(filePath)
-	if err != nil {
-		return fmt.Errorf("error opening source file: %w", err)
-	}
-	defer srcFile.Close()
-
-	// Créer le fichier de destination
-	destFile, err := os.Create(destPath)
-	if err != nil {
-		return fmt.Errorf("error creating destination file: %w", err)
-	}
-	defer destFile.Close()
-
-	// Copier le contenu du fichier
-	_, err = io.Copy(destFile, srcFile)
-	if err != nil {
-		return fmt.Errorf("error copying file: %w", err)
-	}
-
-	// Mettre à jour le fichier .bmls avec les informations du nouveau fichier
-	return a.updateBMLSWithNewFile(workspacePath, fileName, destPath)
+	activeWorkspace := a.GetActiveWorkspace()                       // Get active workspace path
+	return workspaces.AddFileToWorkspace(activeWorkspace, filePath) // Delegate to workspaces package
 }
 
-// updateBMLSWithNewFile met à jour le fichier .bmls avec les informations du nouveau fichier ajouté
-func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
-	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
-
-	var workspace workspaces.Workspace
-
-	// Lire le fichier .bmls existant
-	data, err := os.ReadFile(bmlsFilePath)
-	if err == nil {
-		err = json.Unmarshal(data, &workspace)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal .bmls: %w", err)
-		}
-	}
-	components, filters := ComponentDetection(filePath)
-	// Ajouter les informations du nouveau fichier
-	workspace.Files = append(workspace.Files, workspaces.FileInfo{
-		Name:       fileName,
-		Path:       filePath,
-		Components: components,
-		Filters:    filters,
-	})
-
-	// Écrire les données mises à jour dans le fichier .bmls
-	jsonData, err := json.MarshalIndent(workspace, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal updated workspace: %w", err)
-	}
-
-	return os.WriteFile(bmlsFilePath, jsonData, 0644)
-}
-
-// GetFilesInWorkspaceInfo returns the list of files in the active workspace's .bmls file
+// GetFilesInWorkspaceInfo retrieves files in the active workspace's .bmls by delegating to workspaces package.
 func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
-	workspacePath := a.GetActiveWorkspace()
-	if workspacePath == "" {
-		return nil, fmt.Errorf("no active workspace set")
-	}
-
-	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
-
-	var workspace workspaces.Workspace
-
-	// Lire le fichier .bmls
-	data, err := os.ReadFile(bmlsFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read .bmls file: %w", err)
-	}
-
-	// Unmarshal le contenu JSON
-	err = json.Unmarshal(data, &workspace)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal .bmls: %w", err)
-	}
-
-	return workspace.Files, nil
+	activeWorkspace := a.GetActiveWorkspace()                  // Get active workspace path
+	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
-type PriceCalculationResult struct {
-	Quantity          int      `json:"quantity"`
-	OrderPrice        float64  `json:"orderPrice"`
-	UnitPrice         float64  `json:"unitPrice"`
-	UnitPriceDiff     float64  `json:"unitPriceDiff"`
-	Currency          string   `json:"currency"`
-	MinimumQuantities []string `json:"minimumQuantities"`
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ API KEY FUNCTIONS ══════════════╗*/
+
+// GetSavedAPIKeys retrieves saved API keys by delegating to the workspaces package.
+func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
+	return workspaces.GetSavedAPIKeys() // Delegate to workspaces package
 }
 
-func (a *App) PriceCalculator(quantity float64) (*PriceCalculationResult, error) {
-	intQuantity := int(quantity)
-
-	_, newPrice, unitPrice, unitPriceDiff, minimumQuantity, currency := components.QuantityPrice(intQuantity)
-
-	result := &PriceCalculationResult{
-		Quantity:          intQuantity,
-		OrderPrice:        newPrice,
-		UnitPrice:         unitPrice,
-		UnitPriceDiff:     unitPriceDiff,
-		Currency:          currency,
-		MinimumQuantities: minimumQuantity,
-	}
-
-	return result, nil
-}
-
+// TestMouserAPIKey tests if the provided Mouser API key is valid.
 func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {
 	err := components.TestAPIKey(apiKey, "mouser")
 	if err != nil {
@@ -464,12 +197,22 @@ func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {
 	return true, nil
 }
 
+// TestBOMulusAPIKey tests if the provided BOMulus API key is valid.
 func (a *App) TestBOMulusAPIKey(apiKey string) (bool, error) {
-	// Implémentez la logique de test pour l'API BOMulus
-	// Retournez true si la clé API est valide, false sinon
-	return true, nil
+	// Implement logic to test BOMulus API key here.
+	return true, nil // Return true if valid; otherwise false.
 }
 
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ ANALYSIS CONFIG FUNCTIONS ══════════════╗*/
+
+// GetAnalyzeSaveState retrieves the analyze save state by delegating to workspaces package.
+func (a *App) GetAnalyzeSaveState() (bool, error) {
+	return workspaces.GetAnalyzeSaveState() // Delegate to workspaces package
+}
+
+// SetAnalyzeSaveState sets the analyze save state by updating BOMulus.bmls.
 func (a *App) SetAnalyzeSaveState(state bool) error {
 	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true, -1)
 	if err != nil {
@@ -479,85 +222,12 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 	return nil
 }
 
-func (a *App) GetAnalyzeSaveState() (bool, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return false, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return false, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
-
-	return bomulusFile.AnalyzeSaveState, nil
-}
-
-func UpdateBMLSComponents(analyzedComponent core.Component) error {
-	if activeWorkspacePath == "" {
-		return fmt.Errorf("no active workspace set")
-	}
-
-	bmlsFilePath := filepath.Join(activeWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspacePath), " ", "_")))
-
-	var workspace workspaces.Workspace
-
-	// Lire le fichier .bmls
-	data, err := os.ReadFile(bmlsFilePath)
-	if err != nil {
-		fmt.Errorf("failed to read .bmls file: %w", err)
-	}
-
-	// Unmarshal le contenu JSON
-	err = json.Unmarshal(data, &workspace)
-	if err != nil {
-		fmt.Errorf("failed to unmarshal .bmls: %w", err)
-	}
-
-	for i := range workspace.Files {
-		for j := range workspace.Files[i].Components {
-			if workspace.Files[i].Components[j].Mpn == analyzedComponent.Mpn {
-				workspace.Files[i].Components[j] = analyzedComponent
-			}
-		}
-	}
-
-	jsonData, err := json.MarshalIndent(workspace, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal updated workspace: %w", err)
-	}
-
-	return os.WriteFile(bmlsFilePath, jsonData, 0644)
-}
-
+// GetAnalysisRefreshDays retrieves the analysis refresh days by delegating to workspaces package.
 func (a *App) GetAnalysisRefreshDays() (int, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-
-	var bomulusFile workspaces.BOMulusFile
-
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
-	if err != nil {
-		return -1, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
-	}
-
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return -1, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
-	}
-
-	config.ANALYSIS_REFRESH_DAYS = bomulusFile.AnalysisRefreshDays
-
-	return bomulusFile.AnalysisRefreshDays, nil
+	return workspaces.GetAnalysisRefreshDays() // Delegate to workspaces package
 }
 
+// SetAnalysisRefreshDays sets the analysis refresh days by updating BOMulus.bmls.
 func (a *App) SetAnalysisRefreshDays(refreshDays int) error {
 	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, refreshDays)
 	if err != nil {
@@ -566,3 +236,5 @@ func (a *App) SetAnalysisRefreshDays(refreshDays int) error {
 	config.ANALYSIS_REFRESH_DAYS = refreshDays
 	return nil
 }
+
+/*╚══════════════════════════════════════════════╝*/

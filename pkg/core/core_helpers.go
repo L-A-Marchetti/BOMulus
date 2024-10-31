@@ -1,14 +1,30 @@
+/*
+* Package: core
+* File: core_helpers.go
+*
+* Description:
+* This file contains helper functions for processing components and handling
+* Excel file operations. It includes functionality for validating file extensions,
+* checking for keywords, fixing row lengths, and grouping components by their
+* Manufacturer Part Number (MPN).
+*
+* Main Functions:
+* - HasValidExtension: Checks if a filename has a valid extension.
+* - ContainsKeywords: Determines if a string matches any defined keywords.
+* - blankTailsFix: Ensures all rows in the content have the same number of columns.
+* - fixLn: Removes newline characters from each cell in the provided rows.
+* - groupByMpn: Groups components by MPN and sums their quantities to avoid duplicates.
+ */
+
 package core
 
 import (
 	"config"
-	"io"
-	"os"
 	"path/filepath"
 	"strings"
 )
 
-// Helper function to check if the file has a valid extension
+// HasValidExtension checks if the given filename has a valid extension.
 func HasValidExtension(filename string) bool {
 	ext := strings.ToLower(filepath.Ext(filename))
 	for _, validExt := range config.FILE_EXT {
@@ -19,7 +35,7 @@ func HasValidExtension(filename string) bool {
 	return false
 }
 
-// Function to now if keywords contains s.
+// ContainsKeywords checks if the normalized input string matches any keywords defined in config.
 func ContainsKeywords(s string) bool {
 	normalizedInput := strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(s, " ", ""), "_", ""))
 	for _, keyword := range config.HEADER_KEYWORDS {
@@ -31,23 +47,7 @@ func ContainsKeywords(s string) bool {
 	return false
 }
 
-// Function to duplicate a file.
-func CopyFile(src, dst string) error {
-	if config.DEBUGGING {
-		defer StartBenchmark("CopyFile()", false).Stop()
-	}
-	sourceFile, err := os.Open(src)
-	ErrorsHandler(err)
-	defer sourceFile.Close()
-	destinationFile, err := os.Create(dst)
-	ErrorsHandler(err)
-	defer destinationFile.Close()
-	_, err = io.Copy(destinationFile, sourceFile)
-	ErrorsHandler(err)
-	return destinationFile.Sync()
-}
-
-// Fix the blank tails skipped by the GetRows function.
+// blankTailsFix ensures that all rows in the file.Content have the same number of columns.
 func blankTailsFix(file *XlsmFile) {
 	if config.DEBUGGING {
 		defer StartBenchmark("blankTailsFix()", false).Stop()
@@ -65,7 +65,7 @@ func blankTailsFix(file *XlsmFile) {
 	}
 }
 
-// New line filter helper for XlsmReader()
+// fixLn removes newline characters from each cell in the provided rows.
 func fixLn(rows [][]string) [][]string {
 	for i := range rows {
 		for j := range rows[i] {
@@ -75,7 +75,7 @@ func fixLn(rows [][]string) [][]string {
 	return rows
 }
 
-// Avoid duplicates by grouping components using their mpn and summing their quantities.
+// groupByMpn groups components by their MPN and sums their quantities.
 func groupByMpn(components []Component) []Component {
 	grouped := make(map[string]Component)
 	for _, component := range components {
