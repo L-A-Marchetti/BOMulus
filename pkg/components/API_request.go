@@ -52,6 +52,6 @@ func APIRequest(i int) error {
 		return errors.New("API connexion lost")
 	}
 	// Add some infos to the component.
-	appendAnalysis(apiResponse, i)
+	processAnalysis(apiResponse, i)
 	return nil
 }
