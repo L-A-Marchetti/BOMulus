@@ -46,54 +46,10 @@ func (a *App) GetComponent(i int) core.Component {
 	return core.Components[i]
 }
 
-// DisplayFileName returns file information with validation status
-func (a *App) DisplayFileName(fileName string) struct {
-	File  string
-	Color string
-} {
-	if core.HasValidExtension(fileName) {
-		return struct {
-			File  string
-			Color string
-		}{
-			File:  fmt.Sprintf("☑ %s", fileName),
-			Color: "valid",
-		}
-	}
-	return struct {
-		File  string
-		Color string
-	}{
-		File:  "☒ file not valid...",
-		Color: "invalid",
-	}
-}
-
-/*
-	func (a *App) UploadFile(name string, content []byte, idx int) error {
-		filePath := filepath.Join("./tmp", name)
-		core.XlsmFiles[idx-1].Path = filePath
-
-		file, err := os.Create(filePath)
-		if err != nil {
-			return fmt.Errorf("error creating the file: %w", err)
-		}
-		defer file.Close()
-
-		_, err = file.Write(content)
-		if err != nil {
-			return fmt.Errorf("error writing the file: %w", err)
-		}
-		return nil
-	}
-*/
 func (a *App) BtnCompare(v1, v2 []core.Component) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
 	}
-	//core.XlsmReader()
-	//components.HeaderDetection()
-	//components.ComponentsDetection()
 	core.ResetComponents()
 	core.XlsmDiff(v1, v2)
 	core.ResetAnalysisStatus()
@@ -109,11 +65,6 @@ func ComponentDetection(filePath string) ([]core.Component, core.Filter) {
 	return file.Components, file.Filters
 }
 
-/*
-	func (a *App) ResizeWindow(width, height int) {
-		runtime.WindowSetSize(a.ctx, width, height)
-	}
-*/
 func (a *App) GetAnalysisState() core.AnalysisStatus {
 	return core.AnalysisState
 }

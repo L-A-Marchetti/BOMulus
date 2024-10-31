@@ -37,8 +37,6 @@ type DiffSummary struct {
 
 var Diff = DiffSummary{}
 
-//var Filters = []Filter{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
-
 /*╚══════════════════════════════════════════╝*/
 
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
@@ -109,34 +107,6 @@ type AnalysisStatus struct {
 var AnalysisState AnalysisStatus
 
 /*╚═══════════════════════════════════════════════════╝*/
-
-/*╔══════════════ REPORT GRID MODEL ══════════════╗*/
-
-type ReportGrid struct {
-	ExpanderName       string
-	Headers            []string
-	RowsAttributes     []ComponentMethod
-	AttachmentsIter    ComponentMethodIter
-	AttachmentsIterMsg ComponentMethodIterMsg
-	Attachments        []Attachment
-	Jump               int
-	Components         []Component
-	ButtonIdx          []int
-	Msg                bool
-}
-
-type Attachment struct {
-	Attribute    ComponentMethod
-	AttributeMsg ComponentMethodMsg
-	Column       int
-}
-
-type ComponentMethod func(c *Component) string
-type ComponentMethodMsg func(s string) string
-type ComponentMethodIter func(c *Component) []Component
-type ComponentMethodIterMsg func(c *Component) []string
-
-/*╚════════════════════════════════════════════════╝*/
 
 /*╔══════════════ BENCHMARK MODEL ══════════════╗*/
 
