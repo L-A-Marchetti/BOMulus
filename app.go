@@ -381,30 +381,8 @@ func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
 	return workspace.Files, nil
 }
 
-type PriceCalculationResult struct {
-	Quantity          int      `json:"quantity"`
-	OrderPrice        float64  `json:"orderPrice"`
-	UnitPrice         float64  `json:"unitPrice"`
-	UnitPriceDiff     float64  `json:"unitPriceDiff"`
-	Currency          string   `json:"currency"`
-	MinimumQuantities []string `json:"minimumQuantities"`
-}
-
-func (a *App) PriceCalculator(quantity float64) (*PriceCalculationResult, error) {
-	intQuantity := int(quantity)
-
-	_, newPrice, unitPrice, unitPriceDiff, minimumQuantity, currency := components.QuantityPrice(intQuantity)
-
-	result := &PriceCalculationResult{
-		Quantity:          intQuantity,
-		OrderPrice:        newPrice,
-		UnitPrice:         unitPrice,
-		UnitPriceDiff:     unitPriceDiff,
-		Currency:          currency,
-		MinimumQuantities: minimumQuantity,
-	}
-
-	return result, nil
+func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResult, error) {
+	return components.QuantityPrice(int(quantity))
 }
 
 func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {

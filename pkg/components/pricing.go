@@ -1,3 +1,33 @@
+/*
+* Package: components
+* File: pricing.go
+*
+* Description:
+* This file contains functions for calculating prices of components based on
+* their quantities and price breaks.
+*
+* Main Functions:
+* - QuantityPrice: Calculates prices for all components based on a given quantity.
+* - priceCalculator: Calculates the price for a single component based on its
+*   quantity and price breaks also handle minimum quantity warnings.
+* - convertPrice: Converts a price string to a float64 value, handling different
+*   currency formats.
+*
+* Input:
+* - quantity (int): The number of electronic boards to be produced.
+* - core.Components ([]Component): A slice of components to process.
+*
+* Output:
+* - PriceCalculationResult: Contains the calculated prices and related information.
+* - error: Any error encountered during the calculation process.
+*
+* Note:
+* This code assumes that components have been previously analyzed and have
+* valid price breaks. It handles various component states (INSERT, DELETE,
+* EQUAL, UPDATE) and calculates prices accordingly. Error handling for
+* invalid inputs or unexpected scenarios is implemented throughout the code.
+ */
+
 package components
 
 import (
@@ -7,111 +37,141 @@ import (
 	"strings"
 )
 
-func QuantityPrice(quantity int) (float64, float64, float64, float64, []string, string) {
-	minimumQuantity := []string{}
-	oldPrice := 0.0
-	newPrice := 0.0
-	currency := ""
-	for _, component := range core.Components {
-		if component.Analyzed {
-			if len(component.PriceBreaks) == 0 {
-				continue
-			}
-			switch component.Operator {
-			case "INSERT":
-				price, minQty := priceCalculator(component.Quantity, quantity, component.PriceBreaks, component.Mpn, component.Operator, false, &currency)
-				newPrice += price
-				if len(minQty) != 0 {
-					minimumQuantity = append(minimumQuantity, minQty...)
-				}
-			case "DELETE":
-				price, _ := priceCalculator(component.Quantity, quantity, component.PriceBreaks, component.Mpn, component.Operator, false, &currency)
-				oldPrice += price
-			case "EQUAL":
-				price, minQty := priceCalculator(component.Quantity, quantity, component.PriceBreaks, component.Mpn, component.Operator, false, &currency)
-				newPrice += price
-				oldPrice += price
-				if len(minQty) != 0 {
-					minimumQuantity = append(minimumQuantity, minQty...)
-				}
-			case "UPDATE":
-				price, _ := priceCalculator(component.OldQuantity, quantity, component.PriceBreaks, component.Mpn, component.Operator, false, &currency)
-				oldPrice += price
-				price, minQty := priceCalculator(component.NewQuantity, quantity, component.PriceBreaks, component.Mpn, component.Operator, true, &currency)
-				newPrice += price
-				if len(minQty) != 0 {
-					minimumQuantity = append(minimumQuantity, minQty...)
-				}
-			}
-		}
-	}
-	priceDiff := newPrice - oldPrice
-	unitPrice := newPrice / float64(quantity)
-	unitPriceDiff := priceDiff / float64(quantity)
-	return oldPrice, newPrice, unitPrice, unitPriceDiff, minimumQuantity, currency
+type PriceCalculationResult struct {
+	Quantity          int     `json:"quantity"`
+	OrderPrice        float64 `json:"orderPrice"`
+	OldPrice          float64
+	UnitPrice         float64  `json:"unitPrice"`
+	UnitPriceDiff     float64  `json:"unitPriceDiff"`
+	Currency          string   `json:"currency"`
+	MinimumQuantities []string `json:"minimumQuantities"`
 }
 
-func priceCalculator(compQuantity, quantity int, priceBreaks []core.PriceBreak, mpn, operator string, isNewQuantity bool, currency *string) (float64, []string) {
-	minimumQuantity := []string{}
-	componentPrice := 0.0
-
-	if len(priceBreaks) == 0 {
-		fmt.Printf("priceCalculator: Pas de PriceBreaks pour le composant %s\n", mpn)
-		return 0.0, nil
-	}
-
-	if *currency == "" {
-		*currency = priceBreaks[0].Currency
-	}
-
-	totalQuantity := compQuantity * quantity
-
-	priceFound := false
-
-	for _, priceBreak := range priceBreaks {
-		pbQuantity := priceBreak.Quantity
-
-		convPrice := 0.0
-		var err error
-		if priceBreak.Currency == "EUR" {
-			convPrice, err = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(priceBreak.Price, " €"), ",", "."), 64)
-		} else if priceBreak.Currency == "USD" {
-			convPrice, err = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(priceBreak.Price, "$"), ",", "."), 64)
-		}
-		if err != nil {
-			fmt.Printf("priceCalculator: Erreur de conversion du prix pour %s: %v\n", mpn, err)
+// QuantityPrice calculates the price for a given quantity of components
+func QuantityPrice(quantity int) (PriceCalculationResult, error) {
+	result := PriceCalculationResult{}
+	// Initialize MinimumQuantities as an empty slice to avoid null in JSON
+	result.MinimumQuantities = []string{}
+	var currency string
+	// Iterate through all components
+	for _, component := range core.Components {
+		// Skip components that are not analyzed or have no price breaks
+		if !component.Analyzed || len(component.PriceBreaks) == 0 {
 			continue
 		}
-
-		if totalQuantity >= pbQuantity {
-			componentPrice = float64(totalQuantity) * convPrice
-			priceFound = true
-
+		// Process component based on its operator
+		switch component.Operator {
+		case "INSERT":
+			// Calculate price for a new component
+			price, minQty, err := priceCalculator(component, quantity, false, &currency)
+			if err != nil {
+				return result, err
+			}
+			result.OrderPrice += price
+			result.MinimumQuantities = append(result.MinimumQuantities, minQty...)
+		case "DELETE":
+			// Calculate price for a component being removed
+			price, _, err := priceCalculator(component, quantity, false, &currency)
+			if err != nil {
+				return result, err
+			}
+			result.OldPrice += price
+		case "EQUAL":
+			// Calculate price for an unchanged component
+			price, minQty, err := priceCalculator(component, quantity, false, &currency)
+			if err != nil {
+				return result, err
+			}
+			result.OrderPrice += price
+			result.OldPrice += price
+			result.MinimumQuantities = append(result.MinimumQuantities, minQty...)
+		case "UPDATE":
+			// Calculate old and new prices for an updated component
+			oldComponent := component
+			oldComponent.Quantity = component.OldQuantity
+			oldPrice, _, err := priceCalculator(oldComponent, quantity, false, &currency)
+			if err != nil {
+				return result, err
+			}
+			result.OldPrice += oldPrice
+			newComponent := component
+			newComponent.Quantity = component.NewQuantity
+			newPrice, minQty, err := priceCalculator(newComponent, quantity, true, &currency)
+			if err != nil {
+				return result, err
+			}
+			result.OrderPrice += newPrice
+			result.MinimumQuantities = append(result.MinimumQuantities, minQty...)
+		default:
+			return result, fmt.Errorf("unknown operator: %s", component.Operator)
 		}
 	}
+	// Calculate unit prices if quantity is greater than zero
+	if quantity > 0 {
+		result.UnitPrice = result.OrderPrice / float64(quantity)
+		result.UnitPriceDiff = (result.OrderPrice - result.OldPrice) / float64(quantity)
+	}
+	result.Currency = currency
+	result.Quantity = quantity
+	return result, nil
+}
 
-	if !priceFound {
-		// Aucun palier de prix trouvé pour la quantité donnée
-		convPrice := 0.0
-		var err error
-		lastPriceBreak := priceBreaks[0] // Par défaut, le premier palier
-		if len(priceBreaks) > 0 {
-			lastPriceBreak = priceBreaks[0]
-		}
-		if lastPriceBreak.Currency == "EUR" {
-			convPrice, err = strconv.ParseFloat(strings.ReplaceAll(strings.TrimRight(lastPriceBreak.Price, " €"), ",", "."), 64)
-		} else if lastPriceBreak.Currency == "USD" {
-			convPrice, err = strconv.ParseFloat(strings.ReplaceAll(strings.TrimLeft(lastPriceBreak.Price, "$"), ",", "."), 64)
-		}
+// priceCalculator calculates the price for a single component
+func priceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
+	totalQuantity := component.Quantity * quantity
+	var componentPrice float64
+	minimumQuantity := []string{}
+	// Check if there are any price breaks
+	if len(component.PriceBreaks) == 0 {
+		return 0, nil, fmt.Errorf("no PriceBreaks for component %s", component.Mpn)
+	}
+	// Set currency if not already set
+	if *currency == "" {
+		*currency = component.PriceBreaks[0].Currency
+	}
+	// Check if the total quantity is below the minimum quantity of the first price break
+	if totalQuantity < component.PriceBreaks[0].Quantity {
+		priceValue, err := convertPrice(component.PriceBreaks[0].Price, component.PriceBreaks[0].Currency)
 		if err != nil {
-			fmt.Printf("priceCalculator: Erreur de conversion du prix pour %s: %v\n", mpn, err)
-		} else {
-			componentPrice = float64(totalQuantity) * convPrice
+			return 0, nil, fmt.Errorf("error converting price for %s: %v", component.Mpn, err)
 		}
-		if (operator == "INSERT") || (operator == "EQUAL") || (operator == "UPDATE" && isNewQuantity) {
-			minimumQuantity = append(minimumQuantity, fmt.Sprintf("MOQ (%d) not reached for component : %s", lastPriceBreak.Quantity, mpn))
+		componentPrice = float64(totalQuantity) * priceValue
+		// Add minimum quantity warning if applicable
+		if isNewQuantity || component.Operator == "INSERT" || component.Operator == "EQUAL" {
+			minimumQuantity = append(minimumQuantity, fmt.Sprintf("MOQ (%d) not reached for component: %s", component.PriceBreaks[0].Quantity, component.Mpn))
 		}
-
+		return componentPrice, minimumQuantity, nil
 	}
-	return componentPrice, minimumQuantity
+	// Find the appropriate price break
+	for i, priceBreak := range component.PriceBreaks {
+		priceValue, err := convertPrice(priceBreak.Price, priceBreak.Currency)
+		if err != nil {
+			return 0, nil, fmt.Errorf("error converting price for %s: %v", component.Mpn, err)
+		}
+		if totalQuantity >= priceBreak.Quantity {
+			componentPrice = float64(totalQuantity) * priceValue
+			// If it's the last price break or the next one is higher than our quantity, we've found our price
+			if i == len(component.PriceBreaks)-1 || totalQuantity < component.PriceBreaks[i+1].Quantity {
+				return componentPrice, minimumQuantity, nil
+			}
+		}
+	}
+	// This should never happen if the price breaks are correctly ordered
+	return 0, nil, fmt.Errorf("unable to calculate price for component %s", component.Mpn)
+}
+
+// convertPrice converts a price string to a float64 value
+func convertPrice(price, currency string) (float64, error) {
+	// Remove whitespace and replace comma with dot for decimal
+	price = strings.TrimSpace(price)
+	price = strings.ReplaceAll(price, ",", ".")
+	// Remove currency symbols based on the currency type
+	switch currency {
+	case "EUR":
+		price = strings.TrimRight(price, "€")
+	case "USD":
+		price = strings.TrimLeft(price, "$")
+	}
+	// Convert string to float
+	return strconv.ParseFloat(price, 64)
 }
