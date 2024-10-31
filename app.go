@@ -50,6 +50,10 @@ func (a *App) GetComponent(i int) core.Component {
 	return core.Components[i]
 }
 
+func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResult, error) {
+	return components.QuantityPrice(int(quantity))
+}
+
 /*╚══════════════════════════════════════════════╝*/
 
 /*╔══════════════ ANALYSIS FUNCTIONS ══════════════╗*/
@@ -90,6 +94,16 @@ func (a *App) MaximizeWindow() {
 // CloseWindow closes the application window.
 func (a *App) CloseWindow() {
 	runtime.Quit(a.ctx)
+}
+
+// BtnCompare launch the diff processing.
+func (a *App) BtnCompare(v1, v2 []core.Component) {
+	if config.DEBUGGING {
+		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
+	}
+	core.ResetComponents()
+	core.XlsmDiff(v1, v2)
+	core.ResetAnalysisStatus()
 }
 
 /*╚══════════════════════════════════════════════╝*/

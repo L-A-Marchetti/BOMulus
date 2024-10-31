@@ -30,20 +30,16 @@ func XlsmDiff(v1, v2 []Component) {
 	if config.DEBUGGING {
 		defer StartBenchmark("XlsmDiff()", false).Stop()
 	}
-
 	// Group old components by Manufacturer Part Number (MPN)
 	oldComponentsGrouped := groupByMpn(v1)
 	var newComponentsGrouped []Component
-
 	// Group new components or use old components if v2 is nil
 	if v2 != nil {
 		newComponentsGrouped = groupByMpn(v2)
 	} else {
 		newComponentsGrouped = oldComponentsGrouped
 	}
-
 	compId := 0 // Initialize component ID counter
-
 	// Process new components to find matches with old components
 	for _, newComponent := range newComponentsGrouped {
 		matchFound := false // Flag to track if a match is found
@@ -75,7 +71,6 @@ func XlsmDiff(v1, v2 []Component) {
 			compId++ // Increment component ID counter for inserted component
 		}
 	}
-
 	// Process old components to find any that were deleted
 	for _, oldComponent := range oldComponentsGrouped {
 		matchFound := false // Flag to track if a match is found
