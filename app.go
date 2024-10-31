@@ -1,3 +1,13 @@
+/*
+* Package: main
+* File: app.go
+*
+* Description:
+* This file contains the main application logic for the Wails framework.
+* It defines the App structure and methods that connect the frontend with
+* the backend functionalities of the application.
+ */
+
 package main
 
 import (
@@ -28,40 +38,48 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+/*╔══════════════ COMPONENTS FUNCTIONS ══════════════╗*/
+
+// GetComponents retrieves all components.
 func (a *App) GetComponents() []core.Component {
 	return core.Components
 }
 
+// GetComponent retrieves a specific component by index.
 func (a *App) GetComponent(i int) core.Component {
 	return core.Components[i]
 }
 
-func (a *App) BtnCompare(v1, v2 []core.Component) {
-	if config.DEBUGGING {
-		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
-	}
-	core.ResetComponents()
-	core.XlsmDiff(v1, v2)
-	core.ResetAnalysisStatus()
-}
+/*╚══════════════════════════════════════════════╝*/
 
-func (a *App) GetAnalysisState() core.AnalysisStatus {
-	return core.AnalysisState
-}
+/*╔══════════════ ANALYSIS FUNCTIONS ══════════════╗*/
 
 // RunAnalysis initiates the analysis of components by calling the AnalyzeComponents function.
 func (a *App) RunAnalysis() error {
 	return components.AnalyzeComponents() // Delegate analysis to the components package
 }
 
+// GetAnalysisState retrieves the current analysis state.
+func (a *App) GetAnalysisState() core.AnalysisStatus {
+	return core.AnalysisState
+}
+
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ WINDOW FUNCTIONS ══════════════╗*/
+
+// OpenExternalLink opens an external link in the default browser.
 func (a *App) OpenExternalLink(s string) {
 	err := open.Run(s)
 	core.ErrorsHandler(err)
 }
 
+// MinimizeWindow minimizes the application window.
 func (a *App) MinimizeWindow() {
 	runtime.WindowMinimise(a.ctx)
 }
+
+// MaximizeWindow maximizes the application window if it is not already maximized.
 func (a *App) MaximizeWindow() {
 	isMaximised := runtime.WindowIsMaximised(a.ctx)
 	if !isMaximised {
@@ -69,11 +87,16 @@ func (a *App) MaximizeWindow() {
 	}
 }
 
+// CloseWindow closes the application window.
 func (a *App) CloseWindow() {
 	runtime.Quit(a.ctx)
 }
 
-// OpenDirectoryDialog opens a directory selection dialog
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ DIALOG FUNCTIONS ══════════════╗*/
+
+// OpenDirectoryDialog opens a directory selection dialog and returns the selected path.
 func (a *App) OpenDirectoryDialog() string {
 	selection, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Select Workspace Directory",
@@ -85,36 +108,7 @@ func (a *App) OpenDirectoryDialog() string {
 	return selection
 }
 
-// SetActiveWorkspace sets the active workspace path
-func (a *App) SetActiveWorkspace(path string) {
-	workspaces.ActiveWorkspaceMutex.Lock()
-	defer workspaces.ActiveWorkspaceMutex.Unlock()
-	workspaces.ActiveWorkspacePath = path
-}
-
-// GetActiveWorkspace returns the active workspace path
-func (a *App) GetActiveWorkspace() string {
-	workspaces.ActiveWorkspaceMutex.RLock()
-	defer workspaces.ActiveWorkspaceMutex.RUnlock()
-	return workspaces.ActiveWorkspacePath
-}
-
-// CreateWorkspace initiates the creation of a new workspace by delegating to the workspaces package.
-func (a *App) CreateWorkspace(path string, name string) error {
-	return workspaces.CreateWorkspace(path, name) // Delegate to workspaces package
-}
-
-// GetRecentWorkspaces retrieves the most recently created workspaces by delegating to the workspaces package.
-func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
-	return workspaces.GetRecentWorkspaces() // Delegate to workspaces package
-}
-
-// GetSavedAPIKeys retrieves saved API keys by delegating to the workspaces package.
-func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
-	return workspaces.GetSavedAPIKeys() // Delegate to workspaces package
-}
-
-// OpenFileDialog opens a file selection dialog
+// OpenFileDialog opens a file selection dialog and returns the selected file path.
 func (a *App) OpenFileDialog() (string, error) {
 	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Select File to Add",
@@ -131,6 +125,34 @@ func (a *App) OpenFileDialog() (string, error) {
 	return selection, nil
 }
 
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ WORKSPACE FUNCTIONS ══════════════╗*/
+
+// SetActiveWorkspace sets the active workspace path.
+func (a *App) SetActiveWorkspace(path string) {
+	workspaces.ActiveWorkspaceMutex.Lock()
+	defer workspaces.ActiveWorkspaceMutex.Unlock()
+	workspaces.ActiveWorkspacePath = path
+}
+
+// GetActiveWorkspace returns the active workspace path.
+func (a *App) GetActiveWorkspace() string {
+	workspaces.ActiveWorkspaceMutex.RLock()
+	defer workspaces.ActiveWorkspaceMutex.RUnlock()
+	return workspaces.ActiveWorkspacePath
+}
+
+// CreateWorkspace initiates the creation of a new workspace by delegating to the workspaces package.
+func (a *App) CreateWorkspace(path string, name string) error {
+	return workspaces.CreateWorkspace(path, name) // Delegate to workspaces package
+}
+
+// GetRecentWorkspaces retrieves the most recently created workspaces by delegating to the workspaces package.
+func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
+	return workspaces.GetRecentWorkspaces() // Delegate to workspaces package
+}
+
 // AddFileToWorkspace initiates adding a file to the active workspace by delegating to workspaces package.
 func (a *App) AddFileToWorkspace(filePath string) error {
 	activeWorkspace := a.GetActiveWorkspace()                       // Get active workspace path
@@ -143,15 +165,16 @@ func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
-// updateBMLSWithNewFile updates the .bmls file with information about a newly added file by delegating to workspaces package.
-func (a *App) updateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
-	return workspaces.UpdateBMLSWithNewFile(workspacePath, fileName, filePath) // Delegate to workspaces package
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ API KEY FUNCTIONS ══════════════╗*/
+
+// GetSavedAPIKeys retrieves saved API keys by delegating to the workspaces package.
+func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
+	return workspaces.GetSavedAPIKeys() // Delegate to workspaces package
 }
 
-func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResult, error) {
-	return components.QuantityPrice(int(quantity))
-}
-
+// TestMouserAPIKey tests if the provided Mouser API key is valid.
 func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {
 	err := components.TestAPIKey(apiKey, "mouser")
 	if err != nil {
@@ -160,12 +183,22 @@ func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {
 	return true, nil
 }
 
+// TestBOMulusAPIKey tests if the provided BOMulus API key is valid.
 func (a *App) TestBOMulusAPIKey(apiKey string) (bool, error) {
-	// Implémentez la logique de test pour l'API BOMulus
-	// Retournez true si la clé API est valide, false sinon
-	return true, nil
+	// Implement logic to test BOMulus API key here.
+	return true, nil // Return true if valid; otherwise false.
 }
 
+/*╚══════════════════════════════════════════════╝*/
+
+/*╔══════════════ ANALYSIS CONFIG FUNCTIONS ══════════════╗*/
+
+// GetAnalyzeSaveState retrieves the analyze save state by delegating to workspaces package.
+func (a *App) GetAnalyzeSaveState() (bool, error) {
+	return workspaces.GetAnalyzeSaveState() // Delegate to workspaces package
+}
+
+// SetAnalyzeSaveState sets the analyze save state by updating BOMulus.bmls.
 func (a *App) SetAnalyzeSaveState(state bool) error {
 	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true, -1)
 	if err != nil {
@@ -175,16 +208,12 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 	return nil
 }
 
-// GetAnalyzeSaveState retrieves the analyze save state by delegating to workspaces package.
-func (a *App) GetAnalyzeSaveState() (bool, error) {
-	return workspaces.GetAnalyzeSaveState() // Delegate to workspaces package
-}
-
 // GetAnalysisRefreshDays retrieves the analysis refresh days by delegating to workspaces package.
 func (a *App) GetAnalysisRefreshDays() (int, error) {
 	return workspaces.GetAnalysisRefreshDays() // Delegate to workspaces package
 }
 
+// SetAnalysisRefreshDays sets the analysis refresh days by updating BOMulus.bmls.
 func (a *App) SetAnalysisRefreshDays(refreshDays int) error {
 	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, refreshDays)
 	if err != nil {
@@ -193,3 +222,5 @@ func (a *App) SetAnalysisRefreshDays(refreshDays int) error {
 	config.ANALYSIS_REFRESH_DAYS = refreshDays
 	return nil
 }
+
+/*╚══════════════════════════════════════════════╝*/
