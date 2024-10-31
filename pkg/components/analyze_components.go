@@ -30,12 +30,10 @@ import (
 func AnalyzeComponents() error {
 	errChan := make(chan error, 1)
 	done := make(chan struct{})
-
 	go func() {
 		totalComponents := len(core.Components)
 		limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 		refreshThreshold := time.Now().AddDate(0, 0, -config.ANALYSIS_REFRESH_DAYS)
-
 		for i := 0; i < totalComponents; i++ {
 			select {
 			case <-done:
@@ -48,33 +46,27 @@ func AnalyzeComponents() error {
 						continue // Skip already analyzed components within refresh threshold
 					}
 				}
-
 				err := limiter.Wait(context.Background())
 				if err != nil {
 					log.Print(err) // Log any rate limiting errors
 					continue
 				}
-
 				APIErr := APIRequest(i) // Call the APIRequest function for analysis
 				if APIErr != nil {
 					errChan <- APIErr // Send error to channel if analysis fails
 					return
 				}
-
 				if config.ANALYZE_SAVE_STATE {
 					workspaces.UpdateBMLSComponents(core.Components[i]) // Save component state if configured to do so
 				}
-
 				core.AnalysisState.Current++
 				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
 			}
 		}
-
 		core.AnalysisState.InProgress = false
 		core.AnalysisState.Completed = true
 		close(errChan) // Close error channel when done
 	}()
-
 	select {
 	case err, ok := <-errChan:
 		if ok {
@@ -82,6 +74,5 @@ func AnalyzeComponents() error {
 			return err  // Return the error encountered during analysis
 		}
 	}
-
 	return nil // Return nil if no errors occurred during analysis
 }

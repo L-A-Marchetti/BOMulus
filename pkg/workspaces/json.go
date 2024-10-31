@@ -1,6 +1,7 @@
 package workspaces
 
 import (
+	"config"
 	"core"
 	"encoding/json"
 	"fmt"
@@ -309,6 +310,8 @@ func GetAnalyzeSaveState() (bool, error) {
 		return false, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
 	}
 
+	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
+
 	return bomulusFile.AnalyzeSaveState, nil
 }
 
@@ -328,6 +331,8 @@ func GetAnalysisRefreshDays() (int, error) {
 	if err != nil {
 		return -1, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
 	}
+
+	config.ANALYSIS_REFRESH_DAYS = bomulusFile.AnalysisRefreshDays
 
 	return bomulusFile.AnalysisRefreshDays, nil
 }
