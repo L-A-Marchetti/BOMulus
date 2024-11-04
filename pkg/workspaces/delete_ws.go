@@ -42,5 +42,10 @@ func DeleteWorkspace(path string) error {
 	if err != nil {
 		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
 	}
+	// Remove the workspace folder.
+	err = os.RemoveAll(path)
+	if err != nil {
+		return fmt.Errorf("failed to delete directory %s: %w", path, err)
+	}
 	return nil
 }
