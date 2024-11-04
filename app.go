@@ -147,6 +147,8 @@ func (a *App) OpenFileDialog() (string, error) {
 func (a *App) SetActiveWorkspace(path string) {
 	workspaces.ActiveWorkspaceMutex.Lock()
 	defer workspaces.ActiveWorkspaceMutex.Unlock()
+	// Reset components when an active workspace is set.
+	core.ResetComponents()
 	workspaces.ActiveWorkspacePath = path
 }
 
