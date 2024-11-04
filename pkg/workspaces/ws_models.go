@@ -7,9 +7,10 @@ import (
 )
 
 type WorkspaceInfos struct {
-	Name      string    `json:"name"`
-	Path      string    `json:"path"`
-	CreatedAt time.Time `json:"createdAt"`
+	Name       string    `json:"name"`
+	Path       string    `json:"path"`
+	CreatedAt  time.Time `json:"createdAt"`
+	LastOpened time.Time `json:"last_opened"`
 }
 
 type Workspace struct {
