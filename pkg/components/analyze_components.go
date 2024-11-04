@@ -10,6 +10,7 @@
 * Main Functions:
 * - AnalyzeComponents: Analyzes components and updates their state,
 *   handling progress tracking and error management.
+* - StopAnalysis: Use the done signal to stop the analysis when the active workspace changes.
  */
 
 package components
@@ -25,16 +26,26 @@ import (
 	"golang.org/x/time/rate"
 )
 
+var done chan struct{}
+
 // AnalyzeComponents analyzes the components and updates their state.
 // It tracks progress and handles errors during the analysis process.
 func AnalyzeComponents() error {
 	errChan := make(chan error, 1)
-	done := make(chan struct{})
+	if done != nil {
+		done = nil
+	}
+	done = make(chan struct{})
 	go func() {
 		totalComponents := len(core.Components)
 		limiter := rate.NewLimiter(rate.Every(2*time.Second), 1)
 		refreshThreshold := time.Now().AddDate(0, 0, -config.ANALYSIS_REFRESH_DAYS)
 		for i := 0; i < totalComponents; i++ {
+			err := limiter.Wait(context.Background())
+			if err != nil {
+				log.Print(err) // Log any rate limiting errors
+				continue
+			}
 			select {
 			case <-done:
 				return // Exit if done signal is received
@@ -45,11 +56,6 @@ func AnalyzeComponents() error {
 						core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
 						continue // Skip already analyzed components within refresh threshold
 					}
-				}
-				err := limiter.Wait(context.Background())
-				if err != nil {
-					log.Print(err) // Log any rate limiting errors
-					continue
 				}
 				APIErr := APIRequest(i) // Call the APIRequest function for analysis
 				if APIErr != nil {
@@ -75,4 +81,10 @@ func AnalyzeComponents() error {
 		}
 	}
 	return nil // Return nil if no errors occurred during analysis
+}
+
+// StopAnalysis signals the analysis to stop
+func StopAnalysis() {
+	close(done)
+	core.AnalysisState.InProgress = false
 }

@@ -31,7 +31,7 @@ import CompareView from './CompareView';
 import PinnedComponents from './PinnedComponents';
 import TopBar from './TopBar';
 import WorkspaceCreator from './WorkspaceCreator';
-import { MaximizeWindow, GetActiveWorkspace } from "../wailsjs/go/main/App";
+import { MaximizeWindow, GetActiveWorkspace, StopAnalysis } from "../wailsjs/go/main/App";
 import RightSidebar from './RightSideBar';
 import Button from './Button';
 
@@ -45,6 +45,7 @@ function App() {
 
     // Closes the compare view
     const handleCloseCompareView = () => {
+        StopAnalysis();
         setShowCompareView(false);
     };
 
