@@ -155,6 +155,8 @@ func (a *App) SetActiveWorkspace(path string) {
 	// Reset components when an active workspace is set.
 	core.ResetComponents()
 	workspaces.ActiveWorkspacePath = path
+	// Update the lastOpened time of the workspace
+	workspaces.UpdateLastOpened()
 }
 
 // GetActiveWorkspace returns the active workspace path.
