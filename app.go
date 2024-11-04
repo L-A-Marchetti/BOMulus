@@ -63,6 +63,11 @@ func (a *App) RunAnalysis() error {
 	return components.AnalyzeComponents() // Delegate analysis to the components package
 }
 
+// StopAnalysis send the done message to the analysis goroutine to stop it.
+func (a *App) StopAnalysis() {
+	components.StopAnalysis()
+}
+
 // GetAnalysisState retrieves the current analysis state.
 func (a *App) GetAnalysisState() core.AnalysisStatus {
 	return core.AnalysisState
