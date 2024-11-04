@@ -85,6 +85,8 @@ func AnalyzeComponents() error {
 
 // StopAnalysis signals the analysis to stop
 func StopAnalysis() {
-	close(done)
+	if done != nil {
+		close(done)
+	}
 	core.AnalysisState.InProgress = false
 }
