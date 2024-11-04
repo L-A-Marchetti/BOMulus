@@ -56,6 +56,7 @@ func UpdateLastOpened() error {
 	for i, workspace := range bomulusFile.Workspaces {
 		if workspace.WorkspaceInfos.Path == ActiveWorkspacePath {
 			bomulusFile.Workspaces[i].WorkspaceInfos.LastOpened = time.Now()
+			break
 		}
 	}
 	// Write updated data back to BOMulus.bmls
