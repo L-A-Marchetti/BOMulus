@@ -159,6 +159,10 @@ func (a *App) SetActiveWorkspace(path string) {
 	workspaces.UpdateLastOpened()
 }
 
+func (a *App) DeleteWorkspace(path string) {
+	workspaces.DeleteWorkspace(path)
+}
+
 // GetActiveWorkspace returns the active workspace path.
 func (a *App) GetActiveWorkspace() string {
 	workspaces.ActiveWorkspaceMutex.RLock()

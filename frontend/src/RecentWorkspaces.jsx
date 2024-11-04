@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { GetRecentWorkspaces, SetActiveWorkspace } from '../wailsjs/go/main/App';
+import { GetRecentWorkspaces, SetActiveWorkspace, DeleteWorkspace } from '../wailsjs/go/main/App';
 import Button from './Button';
 
 // Main RecentWorkspaces component
@@ -47,15 +47,33 @@ function RecentWorkspaces({ handleToggleCompareView }) {
         }
     };
 
+    // Function to handle click on delete workspace button
+    const handleWorkspaceDelete = async (workspace) => {
+        try {
+            await DeleteWorkspace(workspace.workspace_infos.path);
+        } catch (error) {
+            console.error("Error deleting workspace:", error);
+        }
+        loadRecentWorkspaces();
+    };
+
     return (
         <div>
             {recentWorkspaces.map((workspace, index) => (
-                <Button 
-                    key={index} 
-                    onClick={() => handleWorkspaceClick(workspace)}
-                >
-                    ☰ {workspace.workspace_infos.name}
-                </Button>
+                <>
+                    <Button 
+                        key={index} 
+                        onClick={() => handleWorkspaceClick(workspace)}
+                    >
+                        ☰ {workspace.workspace_infos.name}
+                    </Button>
+                    <Button
+                        key={index}
+                        onClick={() => handleWorkspaceDelete(workspace)}
+                    >
+                    ⌫
+                    </Button>
+                </>
             ))}
         </div>
     );
