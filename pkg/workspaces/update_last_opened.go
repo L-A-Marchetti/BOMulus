@@ -1,3 +1,29 @@
+/*
+* Package: workspaces
+* File: update_last_opened.go
+*
+* Description:
+* This file contains a function for updating the "last opened" timestamp
+* for workspaces in BOMulus. It updates this information both in the root
+* BOMulus.bmls file and in the individual workspace's .bmls file.
+*
+* Main Function:
+* - UpdateLastOpened: Updates the last opened timestamp for the active workspace
+*   in both the root BOMulus.bmls file and the workspace's specific .bmls file.
+*
+* Input:
+* - None directly, but relies on the global ActiveWorkspacePath variable.
+*
+* Output:
+* - error: Returns nil if the update is successful, or an error describing the issue
+*   if there are any problems during the update process.
+*
+* Note:
+* This function assumes that an active workspace is set (ActiveWorkspacePath is not empty).
+* It reads and writes JSON files, so it requires appropriate file permissions.
+* The function updates timestamps to the current time when called.
+ */
+
 package workspaces
 
 import (
