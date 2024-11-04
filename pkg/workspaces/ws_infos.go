@@ -73,7 +73,7 @@ func GetRecentWorkspaces() ([]Workspace, error) {
 	}
 	// Sort workspaces by creation date (most recent first)
 	sort.Slice(bomulusFile.Workspaces, func(i, j int) bool {
-		return bomulusFile.Workspaces[i].WorkspaceInfos.CreatedAt.After(bomulusFile.Workspaces[j].WorkspaceInfos.CreatedAt)
+		return bomulusFile.Workspaces[i].WorkspaceInfos.LastOpened.After(bomulusFile.Workspaces[j].WorkspaceInfos.LastOpened)
 	})
 	// Return up to 3 most recent workspaces
 	if len(bomulusFile.Workspaces) > 3 {
