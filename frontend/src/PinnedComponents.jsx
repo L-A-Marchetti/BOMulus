@@ -42,7 +42,7 @@ function PinnedComponents({ pinnedComponents, onPinToggle }) {
     useEffect(() => {
         const mainContent = document.getElementById('main-content');
         if (mainContent) {
-            mainContent.style.marginLeft = isVisible ? '300px' : '40px';
+            mainContent.style.marginLeft = isVisible ? '310px' : '10px';
         }
     }, [isVisible]);
 

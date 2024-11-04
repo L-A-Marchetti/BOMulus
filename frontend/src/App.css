@@ -146,6 +146,14 @@
 
 .close-button-container {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
     margin-bottom: 10px;
+    margin-left: 2rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 200;
+}
+
+.close-button-spacer {
+    display: flex;
+    flex-grow: 1;
 }
