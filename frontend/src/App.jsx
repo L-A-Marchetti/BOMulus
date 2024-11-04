@@ -110,7 +110,9 @@ const CompareViewLayout = ({ pinnedComponents, onPinToggle, compareKey, setCompo
         <RightSidebar />
         <main id="main-content" className="main-content">
             <div className="close-button-container">
-                <Button onClick={onClose}>{activeWorkspace.split('/').pop()} ☓</Button>
+                ☰ {activeWorkspace.split('/').pop()}
+                <div className='close-button-spacer'></div>
+                <Button onClick={onClose}>☓</Button>
             </div>
             <CompareView
                 key={compareKey}
