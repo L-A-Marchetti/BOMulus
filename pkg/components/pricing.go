@@ -168,7 +168,7 @@ func convertPrice(price, currency string) (float64, error) {
 	// Remove currency symbols based on the currency type
 	switch currency {
 	case "EUR":
-		price = strings.TrimRight(price, "€")
+		price = strings.TrimRight(price, " €")
 	case "USD":
 		price = strings.TrimLeft(price, "$")
 	}
