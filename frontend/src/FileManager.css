@@ -36,3 +36,12 @@
     margin-bottom: 5px; /* Space between buttons */
   }
   
+.file-btns {
+  display: flex;
+  align-items: center;
+}
+
+.delete-button {
+  text-align: left;
+  margin-bottom: 5px;
+}
