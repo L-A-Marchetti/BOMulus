@@ -18,7 +18,7 @@ import { DeleteBOMFile } from '../wailsjs/go/main/App';
 
 // Renders a list of files with selection functionality
 const FileList = ({ files, selectedFiles, onSelectFile, loadExistingFiles }) => {
-    // Function to handle click on delete workspace button
+    // Function to handle click on delete BOM file button
     const handleBOMDelete = async (filePath) => {
         try {
             await DeleteBOMFile(filePath);
