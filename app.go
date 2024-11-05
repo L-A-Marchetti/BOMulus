@@ -164,8 +164,7 @@ func (a *App) DeleteWorkspace(path string) {
 }
 
 func (a *App) DeleteBOMFile(filePath string) {
-	activeWorkspace := a.GetActiveWorkspace()
-	workspaces.DeleteBOMFile(activeWorkspace, filePath)
+	workspaces.DeleteBOMFile(filePath)
 }
 
 // GetActiveWorkspace returns the active workspace path.
