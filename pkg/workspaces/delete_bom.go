@@ -1,3 +1,34 @@
+/*
+* Package: workspaces
+* File: delete_bom.go
+*
+* Description:
+* This file contains a function for deleting a BOM file
+* from an active workspace. It updates the workspace's .bmls configuration file
+* to remove the reference to the deleted BOM file and also removes the physical
+* file from the filesystem.
+*
+* Main Function:
+* - DeleteBOMFile: Removes a specified BOM file from the active workspace's
+*   configuration and deletes the corresponding file from the filesystem.
+*
+* Input:
+* - filePath (string): The file path of the BOM file to be deleted. This should
+*   correspond to the file's path in the workspace configuration and on the filesystem.
+*
+* Output:
+* - error: Returns nil if the BOM file is successfully deleted, or an error
+*   describing the issue if there are any problems during the deletion process,
+*   such as no active workspace set, reading or writing the .bmls file,
+*   or removing the physical file.
+*
+* Note:
+* This function assumes that ActiveWorkspacePath is correctly set and that
+* the .bmls file for the active workspace exists and is properly formatted.
+* It also assumes that the specified BOM file exists both in the configuration
+* and on the filesystem.
+ */
+
 package workspaces
 
 import (
