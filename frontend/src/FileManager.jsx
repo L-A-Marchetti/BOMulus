@@ -111,6 +111,7 @@ function FileManager() {
             files={existingFiles} 
             selectedFiles={selectedFiles} 
             onSelectFile={handleSelectFile} 
+            loadExistingFiles={loadExistingFiles}
           />
         ) : (
           <p>No files found in the workspace.</p>

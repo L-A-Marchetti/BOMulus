@@ -163,6 +163,11 @@ func (a *App) DeleteWorkspace(path string) {
 	workspaces.DeleteWorkspace(path)
 }
 
+func (a *App) DeleteBOMFile(filePath string) {
+	activeWorkspace := a.GetActiveWorkspace()
+	workspaces.DeleteBOMFile(activeWorkspace, filePath)
+}
+
 // GetActiveWorkspace returns the active workspace path.
 func (a *App) GetActiveWorkspace() string {
 	workspaces.ActiveWorkspaceMutex.RLock()

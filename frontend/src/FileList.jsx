@@ -13,9 +13,21 @@
 import React from 'react';
 import Button from './Button';
 import './FileManager.css'; // Importing the external CSS file
+import { DeleteBOMFile } from '../wailsjs/go/main/App';
+
 
 // Renders a list of files with selection functionality
-const FileList = ({ files, selectedFiles, onSelectFile }) => {
+const FileList = ({ files, selectedFiles, onSelectFile, loadExistingFiles }) => {
+    // Function to handle click on delete workspace button
+    const handleBOMDelete = async (filePath) => {
+        try {
+            await DeleteBOMFile(filePath);
+        } catch (error) {
+            console.error("Error deleting BOM:", error);
+        }
+        loadExistingFiles();
+    };
+
     // Extracts the file name from the file path
     const getFileName = (filePath) => filePath.split('/').pop().split('\\').pop();
 
@@ -33,7 +45,8 @@ const FileList = ({ files, selectedFiles, onSelectFile }) => {
                             : getFileName(file.path)}
                     </Button>
                     <Button
-                        className={`delete-button`}    
+                        className={`delete-button`} 
+                        onClick={() => handleBOMDelete(file.path)}   
                     >
                         ⌫
                     </Button>
