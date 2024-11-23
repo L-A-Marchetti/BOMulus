@@ -26,6 +26,8 @@ import "./WorkspaceCreator.css"; // Importing the external CSS file
 import RecentWorkspaces from "./RecentWorkspaces";
 import AddCircleIcon from "./assets/images/add_circle.svg";
 import ImportIcon from "./assets/images/import_folder.svg";
+import WsName from "./assets/images/ws_name.svg";
+import WsPath from "./assets/images/ws_path.svg";
 
 function WorkspaceCreator({ handleToggleCompareView }) {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -96,20 +98,40 @@ function WorkspaceCreator({ handleToggleCompareView }) {
                 </>
             ) : (
                 <div className="wizard-content">
-                    <button onClick={chooseDirectory}>Workspace Directory: {workspacePath}</button>
-                    <input
-                        type="text"
-                        placeholder="Workspace Name"
-                        value={workspaceName}
-                        onChange={(e) => setWorkspaceName(e.target.value)}
-                    />
-                    <div>
-                        <button onClick={closeWizard}>Cancel</button>
-                        <button onClick={createWorkspace}>Create Workspace</button>
+                    <div className="input-container">
+                        <span className="input-icon">
+                            <img src={WsName} alt="ws name" />
+                        </span>
+                        <input
+                            className="wizard-input"
+                            type="text"
+                            placeholder="Workspace Name"
+                            value={workspaceName}
+                            onChange={(e) => setWorkspaceName(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-container" onClick={chooseDirectory}>
+                        <span className="input-icon">
+                            <img src={WsPath} alt="ws path" />
+                        </span>
+                        <span className="input-wspath-text">
+                            {workspacePath && workspacePath.length > 30
+                                ? `...${workspacePath.slice(-30)}` // Affiche les 15 derniers caractères précédés de "..."
+                                : workspacePath || "Select Workspace Path"}
+                        </span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row" }}>
+                        <div className="workspace-item" onClick={closeWizard} style={{ width: '183px' }}>
+                            CANCEL
+                        </div>
+                        <div className="workspace-item" onClick={createWorkspace} style={{ width: '183px' }}>
+                            CREATE
+                        </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
 

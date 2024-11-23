@@ -5,6 +5,7 @@
     align-items: center;
     height: 100vh;
     background-color: #252525;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Conteneur interne pour tout aligner */
@@ -63,7 +64,6 @@
     /* Taille du texte ou icône */
     color: white;
     cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 /* Effet hover sur les boutons */
@@ -108,7 +108,6 @@
 .workspace-item.light {
     background-color: #2c2c2c;
     /* Couleur du texte foncé */
-    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .workspace-item.light:hover {
@@ -154,4 +153,178 @@
 .delete-button:hover {
     color: red;
     /* Changement de couleur au survol */
+}
+
+/* Formulaire du wizard */
+.wizard-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    /* Espacement entre les champs */
+    width: 100%;
+    max-width: 400px;
+    /* Largeur maximale */
+}
+
+/* Actions (Cancel et Create) */
+.wizard-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    /* Espacement entre les boutons */
+    width: 100%;
+    /* Les boutons prennent toute la largeur disponible */
+}
+
+/* Inputs personnalisés pour le wizard */
+.wizard-input {
+    width: calc(100% - 50px);
+    /* Ajuste la largeur pour laisser de l'espace à l'icône */
+    padding: 10px;
+    border: none;
+    background-color: #2c2c2c;
+    color: white;
+    outline: none;
+}
+
+.wizard-input::placeholder {
+    color: #aaa;
+    /* Placeholder gris */
+}
+
+/* Texte dans les workspace-item (label ou placeholder) */
+.workspace-item span {
+    text-align: left;
+    color: white;
+}
+
+/* Boutons "Cancel" et "Create" */
+.workspace-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 130px;
+    height: 130px;
+    background-color: #1f1f1f;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.workspace-item:hover {
+    background-color: #383838;
+}
+
+/* Icônes dans les boutons */
+.workspace-item .icon {
+    width: 40px;
+    height: 40px;
+    /* Espacement entre l'icône et le texte */
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.wizard-content {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Input stylé comme un bouton */
+.wizard-input {
+    width: 130px;
+    /* Même largeur que les boutons */
+    height: 20px;
+    /* Même hauteur pour obtenir un carré */
+    background-color: #2c2c2c;
+    /* Fond sombre comme les boutons */
+    border: none;
+    /* Pas de bordure */
+    color: white;
+    /* Couleur du texte */
+    text-align: center;
+    /* Centrer le texte */
+    cursor: text;
+    /* Curseur textuel pour montrer que c'est un champ de saisie */
+    outline: none;
+}
+
+/* Placeholder du champ */
+.wizard-input::placeholder {
+    color: #aaa;
+    /* Texte gris clair pour le placeholder */
+    /* Taille légèrement plus petite */
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+/* Conteneur de l'input et de l'icône */
+.input-container {
+    display: flex;
+    align-items: center;
+    width: 380px;
+    /* Même largeur que l'input */
+    height: 40px;
+    /* Même hauteur que l'input */
+    background-color: #2c2c2c;
+    /* Fond sombre comme l'input */
+    border: none;
+    /* Pas de bordure */
+    position: relative;
+    overflow-x: visible;
+    /* S'assure que rien ne dépasse */
+}
+
+/* Icône à gauche de l'input */
+.input-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    /* Hauteur égale au conteneur */
+    /* Fond légèrement plus clair */
+    color: white;
+    margin: 10px;
+    /* Couleur de l'icône */
+}
+
+/* Style pour l'image de l'icône */
+.input-icon img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+/* Style de l'input avec un icône */
+.wizard-input {
+    flex: 1;
+    /* Laisse l'input occuper tout l'espace restant */
+    height: 100%;
+    padding-left: 10px;
+    /* Espacement à gauche pour éloigner le texte de l'icône */
+    border: none;
+    background: none;
+    /* Utilise le fond du conteneur parent */
+    color: white;
+    outline: none;
+    text-align: left;
+    /* Pas de contour bleu */
+}
+
+/* Placeholder du champ */
+.wizard-input::placeholder {
+    color: #aaa;
+    /* Texte gris clair */
+}
+
+.input-wspath-text {
+    font-size: 14px;
+    text-align: left;
+    margin-left: 10px;
+    color: #aaa;
 }
