@@ -28,6 +28,8 @@ import AddCircleIcon from "./assets/images/add_circle.svg";
 import ImportIcon from "./assets/images/import_folder.svg";
 import WsName from "./assets/images/ws_name.svg";
 import WsPath from "./assets/images/ws_path.svg";
+import WsCancel from "./assets/images/close.svg";
+import WsCreate from "./assets/images/check.svg";
 
 function WorkspaceCreator({ handleToggleCompareView }) {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -114,18 +116,27 @@ function WorkspaceCreator({ handleToggleCompareView }) {
                         <span className="input-icon">
                             <img src={WsPath} alt="ws path" />
                         </span>
-                        <span className="input-wspath-text">
+                        <span
+                            className={`input-wspath-text ${workspacePath ? "path-selected" : "path-unselected"
+                                }`}
+                        >
                             {workspacePath && workspacePath.length > 30
                                 ? `...${workspacePath.slice(-30)}` // Affiche les 15 derniers caractères précédés de "..."
                                 : workspacePath || "Select Workspace Path"}
                         </span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row" }}>
-                        <div className="workspace-item" onClick={closeWizard} style={{ width: '183px' }}>
-                            CANCEL
+                        <div className="workspace-item workspaceCreate " onClick={closeWizard} style={{ fontSize: '12px', width: '183px' }}>
+                            <span className="input-icon">
+                                <img src={WsCancel} alt="ws cancel" style={{ width: '30px', height: '30px' }} />
+                            </span>
+                            Cancel
                         </div>
-                        <div className="workspace-item" onClick={createWorkspace} style={{ width: '183px' }}>
-                            CREATE
+                        <div className="workspace-item light workspaceCreate" onClick={createWorkspace} style={{ fontSize: '12px', width: '183px' }}>
+                            <span className="input-icon">
+                                <img src={WsCreate} alt="ws create" style={{ width: '30px', height: '30px' }} />
+                            </span>
+                            Create
                         </div>
                     </div>
                 </div>

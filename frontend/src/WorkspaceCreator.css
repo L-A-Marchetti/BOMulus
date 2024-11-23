@@ -110,6 +110,12 @@
     /* Couleur du texte foncé */
 }
 
+.workspace-item.workspaceCreate {
+    font-size: 14px;
+    width: 183px;
+    height: 90px;
+}
+
 .workspace-item.light:hover {
     background-color: #383838;
     /* Fond légèrement plus foncé au hover */
@@ -128,6 +134,8 @@
     color: #ffffff;
     /* Texte foncé */
 }
+
+
 
 /* Bouton de suppression */
 .delete-button {
@@ -293,6 +301,7 @@
     /* Couleur de l'icône */
 }
 
+
 /* Style pour l'image de l'icône */
 .input-icon img {
     width: 16px;
@@ -313,7 +322,9 @@
     color: white;
     outline: none;
     text-align: left;
+    font-family: 'Poppins', sans-serif;
     /* Pas de contour bleu */
+    font-size: 14px
 }
 
 /* Placeholder du champ */
@@ -326,5 +337,15 @@
     font-size: 14px;
     text-align: left;
     margin-left: 10px;
+}
+
+.input-wspath-text.path-unselected {
     color: #aaa;
+    /* Gris clair */
+}
+
+/* Couleur blanche quand un chemin est sélectionné */
+.input-wspath-text.path-selected {
+    color: white;
+    /* Blanc */
 }
