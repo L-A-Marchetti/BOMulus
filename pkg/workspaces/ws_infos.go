@@ -76,8 +76,8 @@ func GetRecentWorkspaces() ([]Workspace, error) {
 		return bomulusFile.Workspaces[i].WorkspaceInfos.LastOpened.After(bomulusFile.Workspaces[j].WorkspaceInfos.LastOpened)
 	})
 	// Return up to 3 most recent workspaces
-	if len(bomulusFile.Workspaces) > 3 {
-		return bomulusFile.Workspaces[:3], nil
+	if len(bomulusFile.Workspaces) > 6 {
+		return bomulusFile.Workspaces[:6], nil
 	}
 	return bomulusFile.Workspaces, nil
 }

@@ -14,11 +14,11 @@
  * SetActiveWorkspace: Sets the active workspace in the backend.
  */
 
-import React, { useState, useEffect } from 'react';
-import { GetRecentWorkspaces, SetActiveWorkspace, DeleteWorkspace } from '../wailsjs/go/main/App';
-import Button from './Button';
+import React, { useState, useEffect } from "react";
+import { GetRecentWorkspaces, SetActiveWorkspace, DeleteWorkspace } from "../wailsjs/go/main/App";
+import ListIcon from "./assets/images/list.svg";
+import TrashIcon from "./assets/images/trash.svg";
 
-// Main RecentWorkspaces component
 function RecentWorkspaces({ handleToggleCompareView }) {
     const [recentWorkspaces, setRecentWorkspaces] = useState([]);
 
@@ -37,7 +37,7 @@ function RecentWorkspaces({ handleToggleCompareView }) {
         }
     };
 
-    // Function to handle click on a workspace button
+    // Function to handle click on a workspace
     const handleWorkspaceClick = async (workspace) => {
         try {
             await SetActiveWorkspace(workspace.workspace_infos.path);
@@ -47,7 +47,7 @@ function RecentWorkspaces({ handleToggleCompareView }) {
         }
     };
 
-    // Function to handle click on delete workspace button
+    // Function to handle deletion of a workspace
     const handleWorkspaceDelete = async (workspace) => {
         try {
             await DeleteWorkspace(workspace.workspace_infos.path);
@@ -57,26 +57,31 @@ function RecentWorkspaces({ handleToggleCompareView }) {
         loadRecentWorkspaces();
     };
 
-    return (
-        <div>
-            {recentWorkspaces.map((workspace, index) => (
-                <>
-                    <Button 
-                        key={index} 
-                        onClick={() => handleWorkspaceClick(workspace)}
-                    >
-                        ☰ {workspace.workspace_infos.name}
-                    </Button>
-                    <Button
-                        key={index}
-                        onClick={() => handleWorkspaceDelete(workspace)}
-                    >
-                    ⌫
-                    </Button>
-                </>
-            ))}
+    return recentWorkspaces.map((workspace, index) => (
+        <div
+            key={index}
+            className="workspace-item light"
+            onClick={() => handleWorkspaceClick(workspace)}
+        >
+            {/* Bouton de suppression */}
+            <button
+                className="delete-button"
+                onClick={(e) => {
+                    e.stopPropagation(); // Empêche de déclencher le clic du bouton principal
+                    handleWorkspaceDelete(workspace);
+                }}
+            >
+                x
+            </button>
+            {/* Icône et nom */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: ".3rem" }}>
+                <div className="icon"><img src={ListIcon} alt="List Icon" className="icon" /></div>
+                <span style={{ textAlign: "center", wordBreak: "break-word" }}>{workspace.workspace_infos.name}</span>
+            </div>
+
         </div>
-    );
+    ));
+
 }
 
 export default RecentWorkspaces;

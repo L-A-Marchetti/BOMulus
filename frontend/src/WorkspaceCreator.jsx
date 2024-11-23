@@ -20,17 +20,17 @@
  * OpenDirectoryDialog: Function to open a dialog for selecting a directory.
  */
 
-import React, { useState } from 'react';
-import { CreateWorkspace, OpenDirectoryDialog } from '../wailsjs/go/main/App';
-import Button from './Button';
-import './WorkspaceCreator.css'; // Importing the external CSS file
-import RecentWorkspaces from './RecentWorkspaces';
+import React, { useState } from "react";
+import { CreateWorkspace, OpenDirectoryDialog } from "../wailsjs/go/main/App";
+import "./WorkspaceCreator.css"; // Importing the external CSS file
+import RecentWorkspaces from "./RecentWorkspaces";
+import AddCircleIcon from "./assets/images/add_circle.svg";
+import ImportIcon from "./assets/images/import_folder.svg";
 
-// Main WorkspaceCreator component
 function WorkspaceCreator({ handleToggleCompareView }) {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
-    const [workspacePath, setWorkspacePath] = useState('');
-    const [workspaceName, setWorkspaceName] = useState('');
+    const [workspacePath, setWorkspacePath] = useState("");
+    const [workspaceName, setWorkspaceName] = useState("");
 
     // Opens the workspace creation wizard
     const openWizard = () => {
@@ -40,8 +40,8 @@ function WorkspaceCreator({ handleToggleCompareView }) {
     // Closes the wizard and resets the state
     const closeWizard = () => {
         setIsWizardOpen(false);
-        setWorkspacePath('');
-        setWorkspaceName('');
+        setWorkspacePath("");
+        setWorkspaceName("");
     };
 
     // Opens a directory dialog to select a workspace path
@@ -53,13 +53,13 @@ function WorkspaceCreator({ handleToggleCompareView }) {
     // Creates a new workspace with the specified path and name
     const createWorkspace = async () => {
         if (!workspacePath || !workspaceName) {
-            alert('Please select a directory and enter a workspace name.');
+            alert("Please select a directory and enter a workspace name.");
             return;
         }
 
         try {
             await CreateWorkspace(workspacePath, workspaceName);
-            alert('Workspace created successfully!');
+            alert("Workspace created successfully!");
             closeWizard();
         } catch (error) {
             alert(`Error creating workspace: ${error}`);
@@ -67,24 +67,45 @@ function WorkspaceCreator({ handleToggleCompareView }) {
     };
 
     return (
-        <div className='container'>
+        <div className="container">
             {!isWizardOpen ? (
                 <>
-                    <Button onClick={openWizard}>+ Workspace</Button>
-                    <RecentWorkspaces handleToggleCompareView={handleToggleCompareView} />
+                    {/* Colonne gauche avec les boutons fixes */}
+                    <div className="container">
+                        <div className="content-wrapper">
+                            {/* Colonne des boutons fixes */}
+                            <div className="fixed-buttons">
+                                <div className="workspace-item" onClick={openWizard}>
+                                    <span className="icon">
+                                        <img src={AddCircleIcon} alt="Add workspace" className="icon" />
+                                    </span>
+                                </div>
+                                <div className="workspace-item" onClick={chooseDirectory}>
+                                    <span className="icon">
+                                        <img src={ImportIcon} alt="Open directory" className="icon" />
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Grille des projets récents */}
+                            <div className="workspace-grid">
+                                <RecentWorkspaces handleToggleCompareView={handleToggleCompareView} />
+                            </div>
+                        </div>
+                    </div>
                 </>
             ) : (
                 <div className="wizard-content">
-                    <Button onClick={chooseDirectory}>Workspace Directory {workspacePath}</Button>
-                    <input 
-                        type="text" 
+                    <button onClick={chooseDirectory}>Workspace Directory: {workspacePath}</button>
+                    <input
+                        type="text"
                         placeholder="Workspace Name"
                         value={workspaceName}
                         onChange={(e) => setWorkspaceName(e.target.value)}
                     />
                     <div>
-                        <Button onClick={closeWizard}>Cancel</Button>
-                        <Button onClick={createWorkspace}>Create Workspace</Button>
+                        <button onClick={closeWizard}>Cancel</button>
+                        <button onClick={createWorkspace}>Create Workspace</button>
                     </div>
                 </div>
             )}

@@ -1,17 +1,157 @@
-/* WorkspaceCreator.css */
+/* Conteneur principal */
 .container {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    gap: 1rem;
+    background-color: #252525;
 }
 
-.wizard-content {
+/* Conteneur interne pour tout aligner */
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    /* Espacement entre la colonne fixe et la grille */
+    width: 100%;
+    max-width: 1200px;
+    /* Largeur maximale pour contenir tout le contenu */
+}
+
+/* Colonne des boutons fixes */
+.fixed-buttons {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    gap: 1rem;
+    gap: 10px;
+    /* Espacement entre les boutons */
+}
+
+/* Grille des projets */
+.workspace-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+    /* Colonnes dynamiques */
+    gap: 10px;
+    /* Espacement entre les boutons */
+    justify-content: center;
+    margin: 0;
+    width: 100%;
+}
+
+/* Styles des boutons (carrés) */
+.workspace-item {
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 200;
+    width: 130px;
+    /* Largeur fixe */
+    height: 130px;
+    /* Hauteur fixe pour faire un carré */
+    background-color: #1f1f1f;
+    /* Fond sombre */
+    border: none;
+    /* Coins légèrement arrondis */
+    display: flex;
+    justify-content: center;
+    /* Centrer horizontalement */
+    align-items: center;
+    /* Centrer verticalement */
+    font-size: 24px;
+    /* Taille du texte ou icône */
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Effet hover sur les boutons */
+.workspace-item:hover {
+    background-color: #383838;
+    /* Fond plus clair au survol */
+}
+
+/* Style de l'icône ou du texte dans les boutons */
+.workspace-item .icon {
+    width: 40px;
+    /* Taille fixe de l'icône */
+    height: 40px;
+    margin: 0;
+    /* Supprime les marges */
+    display: block;
+    /* Assure que l'image s'affiche comme un bloc */
+    object-fit: contain;
+    /* Garde les proportions de l'image */
+    flex-shrink: 0;
+    /* Empêche la réduction de l'icône */
+}
+
+/* Texte dans les boutons carrés */
+.workspace-item span {
+    font-size: 16px;
+    /* Réduire la taille du texte */
+
+    text-align: center;
+    /* Centrer le texte horizontalement */
+    word-wrap: break-word;
+    /* Permet de couper le texte s'il est trop long */
+    overflow: hidden;
+    /* Éviter le débordement */
+    white-space: normal;
+    /* Permet au texte de passer à la ligne */
+    color: white;
+    /* Couleur du texte */
+}
+
+/* Style des boutons light (workspaces récents) */
+.workspace-item.light {
+    background-color: #2c2c2c;
+    /* Couleur du texte foncé */
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.workspace-item.light:hover {
+    background-color: #383838;
+    /* Fond légèrement plus foncé au hover */
+}
+
+/* Texte dans les boutons light */
+.workspace-item.light span {
+    font-size: 14px;
+    /* Taille plus petite pour les boutons light */
+    text-align: center;
+    white-space: nowrap;
+    /* Empêche le texte de passer à la ligne */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Affiche "..." si le texte dépasse */
+    color: #ffffff;
+    /* Texte foncé */
+}
+
+/* Bouton de suppression */
+.delete-button {
+    position: absolute;
+    /* Position absolue par rapport au parent (workspace-item) */
+    top: 5px;
+    /* Distance depuis le haut */
+    right: 5px;
+    /* Distance depuis la droite */
+    background: none;
+    /* Pas de fond */
+    border: none;
+    /* Pas de bordure */
+    font-size: 16px;
+    /* Taille du texte ou de l'icône */
+    color: white;
+    /* Couleur blanche */
+    cursor: pointer;
+    /* Curseur pointer pour indiquer un clic */
+    transition: color 0.2s ease;
+}
+
+.delete-button:hover {
+    color: red;
+    /* Changement de couleur au survol */
 }

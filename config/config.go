@@ -4,8 +4,8 @@ package config
 
 const (
 	TITLE      string = "BOMulus"
-	WIN_WIDTH  int    = 700
-	WIN_HEIGHT int    = 250
+	WIN_WIDTH  int    = 1000
+	WIN_HEIGHT int    = 475
 	DEBUGGING  bool   = false
 )
 
