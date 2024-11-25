@@ -104,20 +104,16 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                     <div className="analyze-button-grid">
                         <div className="progress-bar-container">
                             <ProgressBar progress={progress} />
+                            <img
+                                src={AnalysisIcon}
+                                alt="Analyze"
+                                className="analyze-icon-overlay pulsating-icon" // Ajoutez la classe pulsating-icon ici
+                            />
                         </div>
                     </div>
                 );
             case 'error':
-                return (
-                    <div className="analyze-button-grid">
-                        <div className="error-container">
-                            <button onClick={handleClick} className="analyze-button error-button">
-                                Erreur : Réessayer l'analyse
-                            </button>
-                            {error && <p className="error-message">{error}</p>}
-                        </div>
-                    </div>
-                );
+            // ... gestion des erreurs ...
             default:
                 return null;
         }

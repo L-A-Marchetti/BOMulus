@@ -1,23 +1,10 @@
 /* ProgressBar.css */
 
 .progress-bar {
-    transform: rotate(-180deg);
-    /* Tourne le cercle pour que la progression commence en haut */
+    transform: rotate(0deg);
+    /* Ajustez la rotation si nécessaire */
 }
 
-.progress-bar-circle {
+.progress-bar rect {
     transition: stroke-dashoffset 0.5s ease-in-out;
-    transform: rotate(90deg);
-    /* Contre-rotation pour aligner le cercle correctement */
-    transform-origin: center;
-}
-
-
-.progress-bar-background,
-.progress-bar-circle {
-    /* Assurez-vous que ces styles s'appliquent aux deux cercles */
-    shape-rendering: geometricPrecision;
-    stroke-width: var(--strokeWidth);
-    /* Égale à strokeWidth */
-
 }

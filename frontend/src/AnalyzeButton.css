@@ -1,3 +1,5 @@
+/* AnalyzeButton.css */
+
 .analyze-button-container {
     display: flex;
     flex-direction: column;
@@ -20,6 +22,7 @@
     align-items: center;
     justify-content: center;
     width: 70px;
+    /* Correspond à la taille du carré dans ProgressBar.jsx */
     height: 70px;
 }
 
@@ -33,9 +36,44 @@
 }
 
 .progress-bar-container {
+    position: relative;
     width: 70px;
+    /* Correspond à la taille du carré */
     height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.analyze-icon-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.pulsating-icon {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    animation: pulsate 1s infinite;
 }
