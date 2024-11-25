@@ -22,7 +22,9 @@
 
 package core
 
-import "config"
+import (
+	"config"
+)
 
 // XlsmDiff compares two slices of components and updates the global Components slice
 // based on the differences found between them.
@@ -45,7 +47,11 @@ func XlsmDiff(v1, v2 []Component) {
 		matchFound := false // Flag to track if a match is found
 		for _, oldComponent := range oldComponentsGrouped {
 			if newComponent.Mpn == oldComponent.Mpn {
-				if newComponent.Quantity == oldComponent.Quantity {
+				if newComponent.Mpn == "" {
+					newComponent.Operator = "EQUAL"
+					newComponent.Id = compId
+					Components = append(Components, newComponent)
+				} else if newComponent.Quantity == oldComponent.Quantity {
 					// If quantities match, mark as EQUAL
 					newComponent.Operator = "EQUAL"
 					newComponent.Id = compId

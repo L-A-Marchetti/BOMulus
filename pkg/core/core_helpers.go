@@ -78,8 +78,12 @@ func fixLn(rows [][]string) [][]string {
 // groupByMpn groups components by their MPN and sums their quantities.
 func groupByMpn(components []Component) []Component {
 	grouped := make(map[string]Component)
+	var withoutMpn []Component
 	for _, component := range components {
-		if existing, found := grouped[component.Mpn]; found {
+		if component.Mpn == "" {
+			withoutMpn = append(withoutMpn, component)
+			continue
+		} else if existing, found := grouped[component.Mpn]; found {
 			existing.Quantity += component.Quantity
 			grouped[component.Mpn] = existing
 		} else {
@@ -90,6 +94,6 @@ func groupByMpn(components []Component) []Component {
 	for _, component := range grouped {
 		result = append(result, component)
 	}
-
+	result = append(result, withoutMpn...)
 	return result
 }
