@@ -1,41 +1,39 @@
 /*
  * AnalyzeButton.jsx
  * 
- * Controls the analysis process, displays progress, and handles errors.
- * Allows users to start analysis and view its status.
+ * Contrôle le processus d'analyse, affiche la progression et gère les erreurs.
+ * Permet aux utilisateurs de démarrer l'analyse et de voir son statut.
  *
  * Props:
- * onComponentAnalyzed: Function called when a component is analyzed.
+ * onComponentAnalyzed: Fonction appelée lorsqu'un composant est analysé.
  *
- * Sub-components:
- * ProgressBar: Displays the current progress of the analysis.
- * Button: Reusable button for starting analysis and error retry.
+ * Sous-composants:
+ * ProgressBar: Affiche la progression actuelle de l'analyse.
  *
- * States:
- * status: Current state of analysis ('idle', 'running', 'completed', 'error').
- * progress: Percentage of analysis completion.
- * lastAnalyzedComponent: Most recently analyzed component.
- * error: Error message if analysis fails.
+ * États:
+ * status: État actuel de l'analyse ('idle', 'running', 'completed', 'error').
+ * progress: Pourcentage d'achèvement de l'analyse.
+ * lastAnalyzedComponent: Dernier composant analysé.
+ * error: Message d'erreur si l'analyse échoue.
  *
- * Backend Dependencies:
- * GetAnalysisState: Retrieves current state of the analysis.
- * RunAnalysis: Initiates the analysis process.
+ * Dépendances Backend:
+ * GetAnalysisState: Récupère l'état actuel de l'analyse.
+ * RunAnalysis: Démarre le processus d'analyse.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { GetAnalysisState, RunAnalysis } from "../wailsjs/go/main/App";
-import Button from './Button';
-import ProgressBar from './ProgressBar';
 import './AnalyzeButton.css';
+import AnalysisIcon from "./assets/images/analysis.svg";
 
-// Main component for analysis control and status display
+// Composant principal pour le contrôle de l'analyse et l'affichage du statut
 export default function AnalyzeButton({ onComponentAnalyzed }) {
     const [status, setStatus] = useState('idle');
     const [progress, setProgress] = useState(0);
     const [lastAnalyzedComponent, setLastAnalyzedComponent] = useState(null);
     const [error, setError] = useState(null);
 
-    // Fetches and updates the current analysis state
+    // Récupère et met à jour l'état actuel de l'analyse
     const updateProgress = useCallback(async () => {
         try {
             const state = await GetAnalysisState();
@@ -45,13 +43,13 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                 setStatus('completed');
             }
         } catch (error) {
-            console.error("Error fetching analysis state:", error);
+            console.error("Erreur lors de la récupération de l'état de l'analyse :", error);
             setError(error.toString());
             setStatus('error');
         }
-    }, []);
+    }, [lastAnalyzedComponent]);
 
-    // Sets up intervals for progress updates and component analysis
+    // Configure les intervalles pour les mises à jour de progression et l'analyse des composants
     useEffect(() => {
         let progressInterval;
         let componentInterval;
@@ -72,7 +70,7 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
         };
     }, [status, updateProgress, onComponentAnalyzed, lastAnalyzedComponent]);
 
-    // Handles button click based on current status
+    // Gère le clic sur le bouton en fonction de l'état actuel
     const handleClick = async () => {
         if (status === 'idle' || status === 'error' || status === 'completed') {
             setStatus('running');
@@ -81,28 +79,42 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
             try {
                 await RunAnalysis();
             } catch (error) {
-                console.error("Error starting analysis:", error);
+                console.error("Erreur lors du démarrage de l'analyse :", error);
                 setStatus('error');
                 setError(error.toString());
             }
         }
     };
 
-    // Renders the appropriate button or progress bar based on status
+    // Rend le bouton approprié ou la barre de progression en fonction de l'état
     const renderContent = () => {
         switch (status) {
             case 'idle':
             case 'completed':
-                return <Button onClick={handleClick}>Analyze ↝</Button>;
+                return (
+                    <div className="analyze-button-grid">
+                        <button className="analyze-button" onClick={handleClick}>
+                            <img src={AnalysisIcon} alt="Analyze" />
+                        </button>
+                    </div>
+                );
             case 'running':
-                return <ProgressBar progress={progress} />;
+                return (
+                    <div className="analyze-button-grid">
+                        <div className="progress-bar-container">
+                            <ProgressBar progress={progress} />
+                        </div>
+                    </div>
+                );
             case 'error':
                 return (
-                    <div className="error-container">
-                        <Button onClick={handleClick} className="error-button">
-                            Error: Retry Analysis
-                        </Button>
-                        {error && <p className="error-message">{error}</p>}
+                    <div className="analyze-button-grid">
+                        <div className="error-container">
+                            <button onClick={handleClick} className="analyze-button error-button">
+                                Erreur : Réessayer l'analyse
+                            </button>
+                            {error && <p className="error-message">{error}</p>}
+                        </div>
                     </div>
                 );
             default:

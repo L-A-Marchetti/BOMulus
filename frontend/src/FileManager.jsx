@@ -95,7 +95,6 @@ function FileManager() {
 
   return (
     <div className="file-manager">
-      <h4 className="file-manager-header">File manager</h4>
       <div className="file-manager-grid">
         {/* Bouton Ajouter BOM */}
         <button onClick={handleFileSelection} className="button">
@@ -148,6 +147,7 @@ function FileManager() {
         <button onClick={handleCompare} className="button">
           OK
         </button>
+
 
       </div>
     </div>

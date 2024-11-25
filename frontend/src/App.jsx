@@ -35,6 +35,8 @@ import { MaximizeWindow, GetActiveWorkspace, StopAnalysis } from "../wailsjs/go/
 import RightSidebar from './RightSideBar';
 import Button from './Button';
 import FileManager from './FileManager';
+import AnalyzeButton from './AnalyzeButton';
+import TopMenu from './TopMenu';
 
 // Main application component
 function App() {
@@ -116,7 +118,8 @@ const CompareViewLayout = ({ pinnedComponents, onPinToggle, compareKey, setCompo
                 <div className='close-button-spacer'></div>
                 <Button onClick={onClose}>☓</Button>
             </div>
-            <FileManager />
+            <TopMenu />
+
             <CompareView
                 key={compareKey}
                 setComponents={setComponents}
