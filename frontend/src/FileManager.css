@@ -1,47 +1,104 @@
-/* FileManager.css */
 .file-manager {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-.file-manager-header {
-    padding: 20px;
-    font-family: 'Poppins', sans-serif;
-    background-color: rgb(39, 39, 39);
-    margin: 0;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-  
-.file-list-container {
-    overflow-y: auto;
-    flex-grow: 1;
-    padding: 10px;
-  }
-  
-.file-button {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 5px;
-  }
-  
-.file-button.selected {
-    background-color: rgb(51, 123, 156) !important;  /* Highlight selected files */
-  }
-  
-.full-width-button {
-    width: 100%;
-    margin-bottom: 5px; /* Space between buttons */
-  }
-  
-.file-btns {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Alignement à gauche */
+  justify-content: flex-start;
+  background-color: #2c2c2c;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  width: fit-content;
+  padding: 10px;
 }
 
-.delete-button {
-  text-align: left;
-  margin-bottom: 5px;
+
+.file-manager-header {
+  font-size: 15px;
+  margin: 0;
+}
+
+.file-manager-grid {
+  display: grid;
+  grid-template-columns: auto fit-content(250px) fit-content(250px) auto;
+  grid-template-rows: repeat(2, auto);
+  gap: 5px;
+  padding: 5px;
+  width: fit-content;
+}
+
+
+
+
+
+.file-select-dropdown {
+  flex-grow: 1;
+  width: 100%;
+  padding: 8px;
+  /* Réduit le padding */
+  background-color: #313f54;
+  border: none;
+  color: white;
+  font-size: 14px;
+}
+
+.file-select-dropdown:focus {
+  outline: none;
+  background-color: #2a4c76;
+}
+
+.file-select-dropdown option {
+  background-color: #1f3558;
+  color: white;
+}
+
+
+.file-version-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: auto;
+  /* Ajuste automatiquement à la hauteur du contenu */
+}
+
+
+
+.version-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.v1,
+.v2 {
+  grid-column: 2;
+}
+
+.v1 {
+  grid-row: 1;
+}
+
+.v2 {
+  grid-row: 2;
+}
+
+.button {
+  background-color: #353535;
+  grid-row: span 2;
+  color: white;
+  border: none;
+  font-size: 12px;
+  width: auto;
+  /* Supprimez width: 50px; */
+  height: auto;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:hover {
+  background-color: #383838;
 }

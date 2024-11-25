@@ -34,6 +34,7 @@ import WorkspaceCreator from './WorkspaceCreator';
 import { MaximizeWindow, GetActiveWorkspace, StopAnalysis } from "../wailsjs/go/main/App";
 import RightSidebar from './RightSideBar';
 import Button from './Button';
+import FileManager from './FileManager';
 
 // Main application component
 function App() {
@@ -89,7 +90,7 @@ function App() {
             {!showCompareView && (
                 <WorkspaceCreator handleToggleCompareView={handleToggleCompareView} />
             )}
-            {showCompareView && <CompareViewLayout 
+            {showCompareView && <CompareViewLayout
                 pinnedComponents={pinnedComponents}
                 onPinToggle={handlePinToggle}
                 compareKey={compareKey}
@@ -115,6 +116,7 @@ const CompareViewLayout = ({ pinnedComponents, onPinToggle, compareKey, setCompo
                 <div className='close-button-spacer'></div>
                 <Button onClick={onClose}>☓</Button>
             </div>
+            <FileManager />
             <CompareView
                 key={compareKey}
                 setComponents={setComponents}

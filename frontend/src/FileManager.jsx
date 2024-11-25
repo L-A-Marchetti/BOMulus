@@ -1,134 +1,154 @@
 /*
  * FileManager.jsx
- * 
- * Manages file operations within the workspace, allowing users to view,
- * add, and select files for comparison.
  *
- * Props: None
+ * Gère les opérations de fichiers dans l'espace de travail, permettant aux utilisateurs de sélectionner des fichiers pour la comparaison.
  *
- * Sub-components:
- * FileList: Displays existing files and handles selection.
- * Button: Reusable button for actions.
+ * Props: Aucune
  *
- * States:
- * selectedFile: The file currently selected for addition.
- * existingFiles: List of files currently in the workspace.
- * selectedFiles: Up to two files selected for comparison.
+ * États:
+ * existingFiles: Liste des fichiers actuellement dans l'espace de travail.
+ * selectedFiles: Jusqu'à deux fichiers sélectionnés pour la comparaison.
  *
- * Backend Dependencies:
- * OpenFileDialog: Opens a file selection dialog.
- * AddFileToWorkspace: Adds a file to the workspace.
- * GetFilesInWorkspaceInfo: Retrieves existing files info.
- * BtnCompare: Compares selected files.
+ * Dépendances Backend:
+ * OpenFileDialog: Ouvre une boîte de dialogue de sélection de fichier.
+ * AddFileToWorkspace: Ajoute un fichier à l'espace de travail.
+ * GetFilesInWorkspaceInfo: Récupère les informations des fichiers existants.
+ * BtnCompare: Compare les fichiers sélectionnés.
  */
 
-import React, { useState, useEffect } from 'react';
-import { OpenFileDialog, AddFileToWorkspace, GetFilesInWorkspaceInfo, BtnCompare } from '../wailsjs/go/main/App';
-import Button from './Button';
-import FileList from './FileList';
-import './FileManager.css';
+import React, { useState, useEffect } from "react";
+import {
+  OpenFileDialog,
+  AddFileToWorkspace,
+  GetFilesInWorkspaceInfo,
+  BtnCompare,
+} from "../wailsjs/go/main/App";
+import "./FileManager.css";
+import AddBom from "./assets/images/add_bom.svg";
 
-// Main component for managing files in the workspace
 function FileManager() {
-  const [selectedFile, setSelectedFile] = useState(null);
   const [existingFiles, setExistingFiles] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([null, null]); // [v1, v2]
 
-  // Load existing files on component mount
+  // Charger les fichiers existants au montage du composant
   useEffect(() => {
     loadExistingFiles();
   }, []);
 
-  // Fetch and set existing files from the workspace
   const loadExistingFiles = async () => {
     try {
       const files = await GetFilesInWorkspaceInfo();
       setExistingFiles(files || []);
     } catch (error) {
-      console.error("Failed to load existing files:", error);
+      console.error("Échec du chargement des fichiers existants :", error);
       setExistingFiles([]);
     }
   };
 
-  // Handle file selection using the OpenFileDialog
   const handleFileSelection = async () => {
     try {
       const filePath = await OpenFileDialog();
-      if (filePath) setSelectedFile(filePath);
+      if (filePath) {
+        await AddFileToWorkspace(filePath);
+        alert("Fichier ajouté avec succès");
+        loadExistingFiles();
+      }
     } catch (error) {
-      console.error("Error selecting file:", error);
-      alert("Failed to select file");
+      console.error("Erreur lors de la sélection du fichier :", error);
+      alert("Échec de la sélection du fichier");
     }
   };
 
-  // Add the selected file to the workspace
-  const handleAddFile = async () => {
-    if (!selectedFile) {
-      alert("Please select a file first");
+  const handleCompare = async () => {
+    if (!selectedFiles[0] && !selectedFiles[1]) {
+      alert("Veuillez sélectionner au moins un fichier pour la comparaison.");
       return;
     }
 
     try {
-      await AddFileToWorkspace(selectedFile);
-      alert("File added successfully");
-      setSelectedFile(null);
-      loadExistingFiles();
-    } catch (error) {
-      console.error("Error adding file to workspace:", error);
-      alert("Failed to add file to workspace");
-    }
-  };
-
-  // Toggle file selection for comparison
-  const handleSelectFile = (file) => {
-    setSelectedFiles(prevSelected => {
-      if (prevSelected.includes(file)) {
-        return prevSelected.filter(f => f !== file);
-      } else if (prevSelected.length < 2) {
-        return [...prevSelected, file];
+      if (selectedFiles[0] && !selectedFiles[1]) {
+        await BtnCompare(selectedFiles[0].components, null);
+        alert("Comparaison réussie avec un seul fichier.");
+      } else {
+        await BtnCompare(selectedFiles[0].components, selectedFiles[1].components);
+        alert("Comparaison réussie avec deux fichiers.");
       }
-      return prevSelected;
-    });
-  };
-
-  // Initiate file comparison
-  const handleCompare = async () => {
-    if (selectedFiles.length === 1) {
-      await BtnCompare(selectedFiles[0].components, null);
-    } else if (selectedFiles.length === 2) {
-      await BtnCompare(selectedFiles[0].components, selectedFiles[1].components);
-    } else {
-      alert("Please select 1 or 2 files for comparison.");
+    } catch (error) {
+      console.error("La comparaison a échoué :", error);
+      alert(`La comparaison a échoué : ${error.message || "Erreur inconnue"}`);
     }
   };
+
+
+
+  const handleSelectBom = (index, fileName) => {
+    const file = existingFiles.find((f) => f.name === fileName);
+    if (file) {
+      const updatedSelectedFiles = [...selectedFiles];
+      updatedSelectedFiles[index] = file;
+      setSelectedFiles(updatedSelectedFiles);
+    } else {
+      alert("Fichier non trouvé dans l'espace de travail.");
+    }
+  };
+
 
   return (
-    <div className='file-manager'>
-      <h4 className='file-manager-header'>File Manager</h4>
-      <div className='file-list-container'>
-        {existingFiles.length > 0 ? (
-          <FileList 
-            files={existingFiles} 
-            selectedFiles={selectedFiles} 
-            onSelectFile={handleSelectFile} 
-            loadExistingFiles={loadExistingFiles}
-          />
-        ) : (
-          <p>No files found in the workspace.</p>
-        )}
-        <Button onClick={handleFileSelection} className='full-width-button'>
-          {selectedFile ? selectedFile.split('/').pop().split('\\').pop() : "+ BOM"}
-        </Button>
-        {selectedFile && (
-          <Button onClick={handleAddFile} className='full-width-button'>Add to Workspace</Button>
-        )}
-        <Button 
-          onClick={handleCompare} 
-          disabled={selectedFiles.length === 0} 
-          className='full-width-button'
-        >
-          Compare Selected Files
-        </Button>
+    <div className="file-manager">
+      <h4 className="file-manager-header">File manager</h4>
+      <div className="file-manager-grid">
+        {/* Bouton Ajouter BOM */}
+        <button onClick={handleFileSelection} className="button">
+          <img src={AddBom} alt="Ajouter BOM" style={{ width: "20px", height: "20px" }} />
+        </button>
+
+        {/* Dropdown V1 */}
+        <div className="file-version v1">
+          <div className="file-version-row">
+            <p className="version-label">v1</p>
+            <select
+              className="file-select-dropdown"
+              value={selectedFiles[0]?.name || ""}
+              onChange={(e) => handleSelectBom(0, e.target.value)}
+            >
+              <option value="" disabled>
+                Sélectionnez le premier BOM
+              </option>
+              {existingFiles.map((file, index) => (
+                <option key={index} value={file.name}>
+                  {file.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Dropdown V2 */}
+        <div className="file-version v2">
+          <div className="file-version-row">
+            <p className="version-label">v2</p>
+            <select
+              className="file-select-dropdown"
+              value={selectedFiles[1]?.name || ""}
+              onChange={(e) => handleSelectBom(1, e.target.value)}
+            >
+              <option value="" disabled>
+                Sélectionnez le second BOM
+              </option>
+              {existingFiles.map((file, index) => (
+                <option key={index} value={file.name}>
+                  {file.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Bouton OK */}
+        <button onClick={handleCompare} className="button">
+          OK
+        </button>
+
       </div>
     </div>
   );
