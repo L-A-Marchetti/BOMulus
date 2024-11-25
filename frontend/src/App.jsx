@@ -34,8 +34,6 @@ import WorkspaceCreator from './WorkspaceCreator';
 import { MaximizeWindow, GetActiveWorkspace, StopAnalysis } from "../wailsjs/go/main/App";
 import RightSidebar from './RightSideBar';
 import Button from './Button';
-import FileManager from './FileManager';
-import AnalyzeButton from './AnalyzeButton';
 import TopMenu from './TopMenu';
 
 // Main application component
@@ -45,6 +43,20 @@ function App() {
     const [components, setComponents] = useState([]);
     const [pinnedComponents, setPinnedComponents] = useState([]);
     const [activeWorkspace, setActiveWorkspace] = useState(null);
+
+    // Fonction pour gérer un composant analysé
+    const onComponentAnalyzed = (component) => {
+        setComponents(prevComponents => {
+            const index = prevComponents.findIndex(c => c.id === component.id);
+            if (index !== -1) {
+                const updatedComponents = [...prevComponents];
+                updatedComponents[index] = component;
+                return updatedComponents;
+            } else {
+                return [...prevComponents, component];
+            }
+        });
+    };
 
     // Closes the compare view
     const handleCloseCompareView = () => {
@@ -92,20 +104,33 @@ function App() {
             {!showCompareView && (
                 <WorkspaceCreator handleToggleCompareView={handleToggleCompareView} />
             )}
-            {showCompareView && <CompareViewLayout
-                pinnedComponents={pinnedComponents}
-                onPinToggle={handlePinToggle}
-                compareKey={compareKey}
-                setComponents={setComponents}
-                onClose={handleCloseCompareView}
-                activeWorkspace={activeWorkspace}
-            />}
+            {showCompareView && (
+                <CompareViewLayout
+                    pinnedComponents={pinnedComponents}
+                    onPinToggle={handlePinToggle}
+                    compareKey={compareKey}
+                    components={components}
+                    setComponents={setComponents}
+                    onClose={handleCloseCompareView}
+                    activeWorkspace={activeWorkspace}
+                    onComponentAnalyzed={onComponentAnalyzed} // Ajouté ici
+                />
+            )}
         </>
     );
 }
 
 // Layout component for the compare view
-const CompareViewLayout = ({ pinnedComponents, onPinToggle, compareKey, setComponents, onClose, activeWorkspace }) => (
+const CompareViewLayout = ({
+    pinnedComponents,
+    onPinToggle,
+    compareKey,
+    components,
+    setComponents,
+    onClose,
+    activeWorkspace,
+    onComponentAnalyzed
+}) => (
     <div className="compare-view-layout">
         <PinnedComponents
             pinnedComponents={pinnedComponents}
@@ -114,14 +139,17 @@ const CompareViewLayout = ({ pinnedComponents, onPinToggle, compareKey, setCompo
         <RightSidebar />
         <main id="main-content" className="main-content">
             <div className="close-button-container">
-                ☰ {activeWorkspace.split('/').pop()}
+                ☰ Current workspace :&nbsp;
+                <span style={{ fontWeight: 'bold' }}>
+                    {activeWorkspace.replace(/\\/g, '/').split('/').pop()}
+                </span>
                 <div className='close-button-spacer'></div>
                 <Button onClick={onClose}>☓</Button>
             </div>
-            <TopMenu />
-
+            <TopMenu onComponentAnalyzed={onComponentAnalyzed} />
             <CompareView
                 key={compareKey}
+                components={components}
                 setComponents={setComponents}
                 onPinToggle={onPinToggle}
                 pinnedComponents={pinnedComponents}

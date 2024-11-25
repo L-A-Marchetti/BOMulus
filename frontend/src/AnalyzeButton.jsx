@@ -23,6 +23,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { GetAnalysisState, RunAnalysis } from "../wailsjs/go/main/App";
+import ProgressBar from './ProgressBar'; // Assurez-vous que ce chemin est correct
 import './AnalyzeButton.css';
 import AnalysisIcon from "./assets/images/analysis.svg";
 
@@ -43,11 +44,11 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                 setStatus('completed');
             }
         } catch (error) {
-            console.error("Erreur lors de la récupération de l'état de l'analyse :", error);
+            console.error("Error fetching analysis state:", error);
             setError(error.toString());
             setStatus('error');
         }
-    }, [lastAnalyzedComponent]);
+    }, []);
 
     // Configure les intervalles pour les mises à jour de progression et l'analyse des composants
     useEffect(() => {

@@ -9,7 +9,7 @@ function TopMenu({ onComponentAnalyzed }) {
     return (
         <div className="top-menu">
             <div className="left-side">
-                <h4 className="section-title">File Manager</h4>
+                <h4 className="section-title">File manager</h4>
                 <FileManager />
             </div>
             <div className="middle-side">

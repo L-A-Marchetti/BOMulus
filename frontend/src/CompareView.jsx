@@ -4,16 +4,15 @@
  * Displays and manages the comparison of components.
  *
  * Props:
+ * components: Array of all components.
  * setComponents: Function to update the parent's component state.
  * onPinToggle: Function to handle pinning/unpinning of components.
  * pinnedComponents: Array of currently pinned components.
  *
  * States:
- * components: Array of local components.
  * activeFilters: Object containing active filter states.
  *
  * Sub-components:
- * AnalyzeButton: Button to trigger component analysis.
  * OperatorExpander: Expandable section for each operator type.
  * Button: Reusable button component for filters.
  *
@@ -37,8 +36,7 @@ const OP_COLORS = {
 };
 
 // Main CompareView component
-function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
-    const [components, setLocalComponents] = useState([]);
+function CompareView({ components, setComponents, onPinToggle, pinnedComponents }) {
     const [activeFilters, setActiveFilters] = useState({
         outOfStock: false,
         riskyLifecycle: false,
@@ -50,7 +48,6 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
     const updateComponents = useCallback(async () => {
         try {
             const updatedComponents = await GetComponents();
-            setLocalComponents(updatedComponents);
             setComponents(updatedComponents);
         } catch (error) {
             console.error("Error fetching components:", error);
@@ -62,15 +59,6 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
         const intervalId = setInterval(updateComponents, 300);
         return () => clearInterval(intervalId);
     }, [updateComponents]);
-
-    // Handles component analysis update
-    const handleComponentAnalyzed = (currentIndex) => {
-        setLocalComponents(prevComponents =>
-            prevComponents.map((component, index) =>
-                index === currentIndex ? { ...component, Analyzed: true } : component
-            )
-        );
-    };
 
     // Toggles filter state
     const toggleFilter = (filterName) => {
@@ -91,13 +79,12 @@ function CompareView({ setComponents, onPinToggle, pinnedComponents }) {
     return (
         <div className="compare-grid">
             {components.length > 0 && (
-                <SummarySection 
+                <SummarySection
                     components={components}
                     operators={OPERATORS}
                     opColors={OP_COLORS}
                     activeFilters={activeFilters}
                     toggleFilter={toggleFilter}
-                    onComponentAnalyzed={handleComponentAnalyzed}
                 />
             )}
 

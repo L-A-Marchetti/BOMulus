@@ -1,22 +1,20 @@
 .analyze-button-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .analyze-button-grid {
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: repeat(2, auto);
-    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .analyze-button {
-    grid-row: span 2;
     background-color: #353535;
     color: white;
     border: none;
     font-size: 12px;
-    /* Ajustez cette valeur pour obtenir la hauteur désirée */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -32,4 +30,12 @@
 .analyze-button img {
     width: 30px;
     height: 30px;
+}
+
+.progress-bar-container {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

@@ -9,16 +9,15 @@
  * opColors: Object mapping operator types to colors.
  * activeFilters: Object containing the active state of filters.
  * toggleFilter: Function to toggle the active state of a filter.
- * onComponentAnalyzed: Function to handle component analysis.
  */
 
+
 import React from 'react';
-import AnalyzeButton from './AnalyzeButton';
 import Button from './Button';
 import './CompareView.css'; // Importing the external CSS file
 
 // Main SummarySection component
-function SummarySection({ components, operators, opColors, activeFilters, toggleFilter, onComponentAnalyzed }) {
+function SummarySection({ components, operators, opColors, activeFilters, toggleFilter }) {
     // Calculate counts for various statuses
     const getStatusCounts = () => ({
         outOfStockCount: components.filter(comp => comp.availability === "" && comp.analyzed).length,
@@ -46,28 +45,27 @@ function SummarySection({ components, operators, opColors, activeFilters, toggle
                         {operator}: {components.filter(comp => comp.Operator === operator).length}
                     </span>
                 ))}
-                <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
             </div>
             <div className="filter-buttons">
-                <FilterButton 
+                <FilterButton
                     label="Out of Stock"
                     count={statusCounts.outOfStockCount}
                     isActive={activeFilters.outOfStock}
                     onClick={() => toggleFilter('outOfStock')}
                 />
-                <FilterButton 
+                <FilterButton
                     label="Risky Lifecycle"
                     count={statusCounts.riskyLifecycleCount}
                     isActive={activeFilters.riskyLifecycle}
                     onClick={() => toggleFilter('riskyLifecycle')}
                 />
-                <FilterButton 
+                <FilterButton
                     label="Manufacturer Messages"
                     count={statusCounts.manufacturerMessagesCount}
                     isActive={activeFilters.manufacturerMessages}
                     onClick={() => toggleFilter('manufacturerMessages')}
                 />
-                <FilterButton 
+                <FilterButton
                     label="Mismatching MPN"
                     count={statusCounts.mismatchingMpnCount}
                     isActive={activeFilters.mismatchingMpn}
@@ -81,7 +79,7 @@ function SummarySection({ components, operators, opColors, activeFilters, toggle
 // Sub-component for individual filter buttons
 function FilterButton({ label, count, isActive, onClick }) {
     return (
-        <Button 
+        <Button
             onClick={onClick}
             className={`filter-button ${isActive ? 'active' : ''}`}
         >

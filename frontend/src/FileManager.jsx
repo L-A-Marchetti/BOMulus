@@ -68,10 +68,8 @@ function FileManager() {
     try {
       if (selectedFiles[0] && !selectedFiles[1]) {
         await BtnCompare(selectedFiles[0].components, null);
-        alert("Comparaison réussie avec un seul fichier.");
       } else {
         await BtnCompare(selectedFiles[0].components, selectedFiles[1].components);
-        alert("Comparaison réussie avec deux fichiers.");
       }
     } catch (error) {
       console.error("La comparaison a échoué :", error);
