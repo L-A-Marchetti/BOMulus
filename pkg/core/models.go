@@ -35,6 +35,7 @@ type Component struct {
 	Quantity                 int          `json:"quantity"`
 	Mpn                      string       `json:"mpn"`
 	Designator               string       `json:"designator"`
+	Designators              []Designator `json:"designators"`
 	ImagePath                string       `json:"image_path"`
 	Availability             string       `json:"availability"`
 	DataSheetUrl             string       `json:"datasheet_url"`
@@ -54,6 +55,11 @@ type Component struct {
 	LastRefresh              time.Time    `json:"last_refresh"`
 	Operator                 string
 	OldQuantity, NewQuantity int
+}
+
+type Designator struct {
+	Designator string `json:"designator"`
+	Label      string `json:"label"`
 }
 
 type PriceBreak struct {

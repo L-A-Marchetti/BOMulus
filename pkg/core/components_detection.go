@@ -55,6 +55,7 @@ func ComponentsDetection(file *XlsmFile) {
 				Mpn:              strings.TrimSpace(row[file.Filters.Mpn]),
 				UserDescription:  row[file.Filters.Description],
 				Designator:       row[file.Filters.Designator],
+				Designators:      designator_parser(row[file.Filters.Designator]),
 				UserManufacturer: row[file.Filters.Manufacturer],
 			}
 			// Add the new component to the Components slice
