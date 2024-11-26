@@ -4,6 +4,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
+    justify-content: center;
+    /* Centre verticalement */
+    min-width: 100px;
 }
 
 .analyze-button-grid {
@@ -21,9 +25,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px;
+    width: 100px;
     /* Correspond à la taille du carré dans ProgressBar.jsx */
-    height: 70px;
+    height: 100px;
 }
 
 .analyze-button:hover {
@@ -41,6 +45,7 @@
     /* Correspond à la taille du carré */
     height: 70px;
 }
+
 
 .analyze-icon-overlay {
     position: absolute;

@@ -3,6 +3,7 @@
 .progress-bar {
     transform: rotate(0deg);
     /* Ajustez la rotation si nécessaire */
+    margin: 0 auto;
 }
 
 .progress-bar rect {

@@ -1,18 +1,20 @@
 /* TopMenu.css */
 
+/* TopMenu.css */
+
 .top-menu {
     display: grid;
     grid-template-columns: auto auto auto;
-    /* Trois colonnes : left-side, middle-side, right-side */
     grid-template-rows: auto;
     gap: 20px;
     width: 70%;
-    background-color: #2c2c2c;
     padding: 10px;
     box-sizing: border-box;
-    align-items: start;
+    align-items: stretch;
+    /* Étire les enfants pour qu'ils aient la même hauteur */
     font-family: 'Poppins', sans-serif;
 }
+
 
 .left-side,
 .middle-side,
@@ -20,6 +22,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    height: 100%;
 }
 
 .section-title {
@@ -28,4 +31,21 @@
     margin: 0 0 5px 0;
 }
 
-/* ... le reste du code reste inchangé ... */
+
+.analysis-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+/* Assurez-vous que AnalyzeButton et Filters sont alignés en haut */
+.analyze-button-container,
+.filters {
+    margin-top: 0;
+}
+
+.filters,
+.file-manager {
+    height: 100%;
+    /* Étend la hauteur pour correspondre à leur conteneur parent */
+}
