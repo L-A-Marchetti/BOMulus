@@ -1,29 +1,4 @@
-/*
- * App.jsx
- * 
- * Main application component that manages the overall layout and state.
- * Controls the visibility of workspace creator and compare view.
- *
- * Props: None
- *
- * Sub-components:
- * TopBar: Renders the custom title bar.
- * WorkspaceCreator: Allows creation of a new workspace.
- * PinnedComponents: Displays pinned components.
- * RightSidebar: Renders the right sidebar.
- * CompareView: Main view for component comparison.
- *
- * States:
- * showCompareView: Boolean to toggle the compare view visibility.
- * compareKey: Key to force re-render of CompareView.
- * components: Array of all components.
- * pinnedComponents: Array of pinned components.
- * activeWorkspace: Name of the active workspace.
- *
- * Backend Dependencies:
- * MaximizeWindow: Maximizes the application window.
- * GetActiveWorkspace: Return the active workspace path.
- */
+// App.jsx
 
 import React, { useState, useEffect } from 'react';
 import './App.css';
@@ -36,13 +11,27 @@ import RightSidebar from './RightSideBar';
 import Button from './Button';
 import TopMenu from './TopMenu';
 
-// Main application component
+const OPERATORS = ["INSERT", "UPDATE", "DELETE", "EQUAL"];
+const OP_COLORS = {
+    INSERT: '#86b384',
+    UPDATE: '#8e84b3',
+    DELETE: '#cc7481',
+    EQUAL: '#636363',
+};
+
+
 function App() {
     const [showCompareView, setShowCompareView] = useState(false);
     const [compareKey, setCompareKey] = useState(0);
     const [components, setComponents] = useState([]);
     const [pinnedComponents, setPinnedComponents] = useState([]);
     const [activeWorkspace, setActiveWorkspace] = useState(null);
+    const [activeFilters, setActiveFilters] = useState({
+        operators: [],  // Modifié ici
+        warning: '',
+        filter3: '',
+        filter4: '',
+    });
 
     // Fonction pour gérer un composant analysé
     const onComponentAnalyzed = (component) => {
@@ -113,7 +102,11 @@ function App() {
                     setComponents={setComponents}
                     onClose={handleCloseCompareView}
                     activeWorkspace={activeWorkspace}
-                    onComponentAnalyzed={onComponentAnalyzed} // Ajouté ici
+                    onComponentAnalyzed={onComponentAnalyzed}
+                    activeFilters={activeFilters}           // Ajouté ici
+                    setActiveFilters={setActiveFilters}     // Ajouté ici
+                    operators={OPERATORS}
+                    opColors={OP_COLORS}
                 />
             )}
         </>
@@ -129,7 +122,11 @@ const CompareViewLayout = ({
     setComponents,
     onClose,
     activeWorkspace,
-    onComponentAnalyzed
+    onComponentAnalyzed,
+    activeFilters,
+    setActiveFilters,
+    operators,
+    opColors
 }) => (
     <div className="compare-view-layout">
         <PinnedComponents
@@ -146,13 +143,23 @@ const CompareViewLayout = ({
                 <div className='close-button-spacer'></div>
                 <Button onClick={onClose}>☓</Button>
             </div>
-            <TopMenu onComponentAnalyzed={onComponentAnalyzed} />
+            <TopMenu
+                onComponentAnalyzed={onComponentAnalyzed}
+                components={components}
+                operators={operators}
+                opColors={opColors}
+                activeFilters={activeFilters}
+                setActiveFilters={setActiveFilters}
+            />
             <CompareView
                 key={compareKey}
                 components={components}
                 setComponents={setComponents}
                 onPinToggle={onPinToggle}
                 pinnedComponents={pinnedComponents}
+                activeFilters={activeFilters}
+                operators={operators}
+                opColors={opColors}
             />
         </main>
     </div>

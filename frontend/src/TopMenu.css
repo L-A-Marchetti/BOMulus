@@ -2,17 +2,15 @@
 
 .top-menu {
     display: grid;
-    grid-template-columns: auto auto 1fr;
-    /* Trois colonnes */
+    grid-template-columns: auto auto auto;
+    /* Trois colonnes : left-side, middle-side, right-side */
     grid-template-rows: auto;
-    /* Une seule ligne */
     gap: 20px;
-    width: 100%;
+    width: 70%;
     background-color: #2c2c2c;
     padding: 10px;
     box-sizing: border-box;
     align-items: start;
-    /* Centre verticalement les éléments */
     font-family: 'Poppins', sans-serif;
 }
 
@@ -29,3 +27,5 @@
     color: white;
     margin: 0 0 5px 0;
 }
+
+/* ... le reste du code reste inchangé ... */

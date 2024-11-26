@@ -109,7 +109,7 @@ function FileManager() {
               onChange={(e) => handleSelectBom(0, e.target.value)}
             >
               <option value="" disabled>
-                Sélectionnez le premier BOM
+                Select first BOM...
               </option>
               {existingFiles.map((file, index) => (
                 <option key={index} value={file.name}>
@@ -130,7 +130,7 @@ function FileManager() {
               onChange={(e) => handleSelectBom(1, e.target.value)}
             >
               <option value="" disabled>
-                Sélectionnez le second BOM
+                Select second BOM...
               </option>
               {existingFiles.map((file, index) => (
                 <option key={index} value={file.name}>

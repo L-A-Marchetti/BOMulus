@@ -3,9 +3,10 @@
 import React from 'react';
 import FileManager from './FileManager';
 import AnalyzeButton from './AnalyzeButton';
+import Filters from './Filters';
 import './TopMenu.css';
 
-function TopMenu({ onComponentAnalyzed }) {
+function TopMenu({ onComponentAnalyzed, components, operators, activeFilters, setActiveFilters, opColors }) {
     return (
         <div className="top-menu">
             <div className="left-side">
@@ -17,7 +18,14 @@ function TopMenu({ onComponentAnalyzed }) {
                 <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
             </div>
             <div className="right-side">
-                {/* Vous pouvez ajouter d'autres composants ici */}
+                <h4 className="section-title">Filters</h4>
+                <Filters
+                    components={components}
+                    operators={operators}
+                    activeFilters={activeFilters}
+                    setActiveFilters={setActiveFilters}
+                    opColors={opColors}
+                />
             </div>
         </div>
     );

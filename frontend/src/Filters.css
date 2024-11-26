@@ -1,0 +1,85 @@
+/* Filters.css */
+
+.filters {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: 'Poppins', sans-serif;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, fit-content(250px));
+    grid-template-rows: repeat(2, 1fr);
+    gap: 5px;
+    align-items: stretch;
+    /* Modifié pour étirer les items */
+    height: 100%;
+}
+
+.filter-item {
+    width: 100%;
+}
+
+.filter-select-dropdown {
+    width: 100%;
+    height: 100%;
+    /* Assure que les dropdowns remplissent l'espace verticalement */
+    padding: 8px;
+    background-color: #313f54;
+    border: none;
+    color: white;
+    font-size: 14px;
+}
+
+.filter-select-dropdown option {
+    background-color: #2c2c2c;
+    color: white;
+}
+
+.filter-select-dropdown:focus {
+    outline: none;
+    background-color: #2a4c76;
+}
+
+.filters-button {
+    background-color: #353535;
+    color: white;
+    border: none;
+    font-size: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    grid-row: 1 / span 2;
+    /* Occupe les deux rangées */
+    grid-column: 3;
+    height: 100%;
+    /* Prend toute la hauteur disponible */
+    margin-left: 5px;
+}
+
+.filters-button:hover {
+    background-color: #383838;
+}
+
+.operator-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.operator-button {
+    padding: 0px;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
+.operator-button.active {
+    border: 2px solid white;
+}
+
+.operator-button:hover {
+    opacity: 0.8;
+}

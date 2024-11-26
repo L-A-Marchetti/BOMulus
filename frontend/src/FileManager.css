@@ -29,11 +29,23 @@
   flex-grow: 1;
   width: 100%;
   padding: 8px;
-  /* Réduit le padding */
   background-color: #313f54;
   border: none;
   color: white;
   font-size: 14px;
+  border-radius: 0;
+  /* Supprime les coins arrondis */
+
+}
+
+
+.file-select-dropdown option {
+  background-color: #2c2c2c;
+  color: white;
+  border-radius: 0 !important;
+
+  /* S'assure que les options n'ont pas de coins arrondis */
+
 }
 
 .file-select-dropdown:focus {
@@ -41,10 +53,6 @@
   background-color: #2a4c76;
 }
 
-.file-select-dropdown option {
-  background-color: #1f3558;
-  color: white;
-}
 
 
 .file-version-row {
