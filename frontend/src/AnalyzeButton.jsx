@@ -41,14 +41,18 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
             setProgress(state.Progress);
             setLastAnalyzedComponent(state.Current);
             if (state.Completed) {
-                setStatus('completed');
+                setProgress(100); // Assurez-vous que la progression est à 100%
+                // Retarder le changement d'état pour permettre l'affichage du dernier remplissage
+                setTimeout(() => {
+                    setStatus('completed');
+                }, 500); // Délai de 500 ms
             }
         } catch (error) {
             console.error("Error fetching analysis state:", error);
             setError(error.toString());
             setStatus('error');
         }
-    }, []);
+    }, [setProgress, setLastAnalyzedComponent, setStatus, setError]);
 
     // Configure les intervalles pour les mises à jour de progression et l'analyse des composants
     useEffect(() => {
@@ -56,13 +60,13 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
         let componentInterval;
 
         if (status === 'running') {
-            progressInterval = setInterval(updateProgress, 300);
+            progressInterval = setInterval(updateProgress, 100);
             componentInterval = setInterval(() => {
                 if (lastAnalyzedComponent !== null) {
                     onComponentAnalyzed(lastAnalyzedComponent);
                     setLastAnalyzedComponent(null);
                 }
-            }, 1000);
+            }, 100);
         }
 
         return () => {
@@ -91,11 +95,25 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
     const renderContent = () => {
         switch (status) {
             case 'idle':
-            case 'completed':
                 return (
                     <div className="analyze-button-grid">
                         <button className="analyze-button" onClick={handleClick}>
                             <img src={AnalysisIcon} alt="Analyze" />
+                        </button>
+                    </div>
+                );
+            case 'completed':
+                return (
+                    <div className="analyze-button-grid">
+                        <button className="analyze-button" onClick={handleClick}>
+                            <div className="progress-bar-container">
+                                <ProgressBar progress={100} />
+                                <img
+                                    src={AnalysisIcon}
+                                    alt="Analyze"
+                                    className="analyze-icon-overlay"
+                                />
+                            </div>
                         </button>
                     </div>
                 );
@@ -107,17 +125,28 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                             <img
                                 src={AnalysisIcon}
                                 alt="Analyze"
-                                className="analyze-icon-overlay pulsating-icon" // Ajoutez la classe pulsating-icon ici
+                                className="analyze-icon-overlay pulsating-icon"
                             />
                         </div>
                     </div>
                 );
             case 'error':
-            // ... gestion des erreurs ...
+                // ... gestion des erreurs ...
+                return (
+                    <div className="analyze-button-grid">
+                        <div className="error-container">
+                            <button onClick={handleClick} className="analyze-button error-button">
+                                Erreur : Réessayer l'analyse
+                            </button>
+                            {error && <p className="error-message">{error}</p>}
+                        </div>
+                    </div>
+                );
             default:
                 return null;
         }
     };
+
 
     return (
         <div className="analyze-button-container">
