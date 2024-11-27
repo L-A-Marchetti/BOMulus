@@ -81,27 +81,29 @@ function Filters({ components, operators, activeFilters, setActiveFilters, opCol
 
                 {/* Dropdown Warnings */}
                 <div className="filter-item">
-                    <WarningToolTip totalWarnings={totalWarnings} />
-                    <select
-                        name="warning"
-                        value={activeFilters.warning || ""}
-                        onChange={handleFilterChange}
-                        className="filter-select-dropdown"
-                    >
-                        <option value="" > > Warnings</option>
-                        <option value="outOfStock">
-                            Out of Stock: {warningsCounts.outOfStock}
-                        </option>
-                        <option value="riskyLifecycle">
-                            Risky Lifecycle: {warningsCounts.riskyLifecycle}
-                        </option>
-                        <option value="manufacturerMessages">
-                            Manufacturer Messages: {warningsCounts.manufacturerMessages}
-                        </option>
-                        <option value="mismatchingMpn">
-                            Mismatching MPN: {warningsCounts.mismatchingMpn}
-                        </option>
-                    </select>
+                    <div className="dropdown-container">
+                        <WarningToolTip totalWarnings={totalWarnings} />
+                        <select
+                            name="warning"
+                            value={activeFilters.warning || ""}
+                            onChange={handleFilterChange}
+                            className="filter-select-dropdown"
+                        >
+                            <option value="" > > Warnings</option>
+                            <option value="outOfStock">
+                                Out of Stock: {warningsCounts.outOfStock}
+                            </option>
+                            <option value="riskyLifecycle">
+                                Risky Lifecycle: {warningsCounts.riskyLifecycle}
+                            </option>
+                            <option value="manufacturerMessages">
+                                Manufacturer Messages: {warningsCounts.manufacturerMessages}
+                            </option>
+                            <option value="mismatchingMpn">
+                                Mismatching MPN: {warningsCounts.mismatchingMpn}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
                 {/* Dropdown Filter 3 */}

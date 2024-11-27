@@ -9,6 +9,16 @@
     padding: 10px;
 }
 
+.dropdown-container {
+    position: relative;
+    /* Parent positionné pour ancrer la tooltip */
+    display: flex;
+    /* Flexbox pour faciliter le positionnement */
+    align-items: center;
+    /* Aligner verticalement si nécessaire */
+}
+
+
 .filters-grid {
     display: grid;
     grid-template-columns: repeat(2, fit-content(250px));
@@ -40,6 +50,7 @@ select {
     color: white;
     font-size: 14px;
     min-width: 150px;
+    height: 38px;
     padding-left: 10px;
     appearance: none;
 }

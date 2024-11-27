@@ -1,10 +1,8 @@
 .warning-tooltip {
     position: absolute;
-    margin-left: 160px;
+    left: 90%;
     background-color: #acacac;
     color: #2c2c2c;
-    width: 30px;
-    height: 38px;
     text-align: center;
     /* Centrage horizontal du texte (utile pour plusieurs lignes) */
     font-size: 14px;
@@ -15,4 +13,13 @@
     /* Centre verticalement */
     justify-content: center;
     /* Centre horizontalement */
+    white-space: nowrap;
+    width: 20px;
+    height: 38px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.warning-tooltip.updating {
+    transform: scale(1.1);
+    background-color: #e0e0e0;
 }
