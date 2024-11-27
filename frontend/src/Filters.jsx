@@ -3,6 +3,7 @@
 import React from 'react';
 import './Filters.css';
 import BookmarkIcon from "./assets/images/bookmark.svg";
+import WarningToolTip from './WarningToolTip';
 
 function Filters({ components, operators, activeFilters, setActiveFilters, opColors }) {
     // Calculer les quantités pour chaque opérateur
@@ -27,6 +28,8 @@ function Filters({ components, operators, activeFilters, setActiveFilters, opCol
             comp.mismatch_mpn !== null && comp.analyzed
         ).length,
     };
+
+    const totalWarnings = warningsCounts.outOfStock + warningsCounts.riskyLifecycle + warningsCounts.manufacturerMessages + warningsCounts.mismatchingMpn;
 
     // Gérer le clic sur un opérateur
     const handleOperatorClick = (operator) => {
@@ -75,15 +78,17 @@ function Filters({ components, operators, activeFilters, setActiveFilters, opCol
                     </div>
                 </div>
 
+
                 {/* Dropdown Warnings */}
                 <div className="filter-item">
+                    <WarningToolTip totalWarnings={totalWarnings} />
                     <select
                         name="warning"
                         value={activeFilters.warning || ""}
                         onChange={handleFilterChange}
                         className="filter-select-dropdown"
                     >
-                        <option value="" >Warnings</option>
+                        <option value="" > > Warnings</option>
                         <option value="outOfStock">
                             Out of Stock: {warningsCounts.outOfStock}
                         </option>

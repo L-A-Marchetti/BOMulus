@@ -1,0 +1,18 @@
+.warning-tooltip {
+    position: absolute;
+    margin-left: 160px;
+    background-color: #acacac;
+    color: #2c2c2c;
+    width: 30px;
+    height: 38px;
+    text-align: center;
+    /* Centrage horizontal du texte (utile pour plusieurs lignes) */
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    /* Active le modèle flexbox */
+    align-items: center;
+    /* Centre verticalement */
+    justify-content: center;
+    /* Centre horizontalement */
+}
