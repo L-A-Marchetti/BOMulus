@@ -2,22 +2,23 @@
 
 .analyze-button-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
     justify-content: center;
-    /* Centre verticalement */
-    min-width: 100px;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+    position: relative;
 }
 
 .analyze-button-grid {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 .analyze-button {
-    background-color: #353535;
+    background-color: #2e2e2e;
     color: white;
     border: none;
     font-size: 12px;
@@ -25,9 +26,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100px;
-    /* Correspond à la taille du carré dans ProgressBar.jsx */
-    height: 100px;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    /* Remove any default padding */
+}
+
+.progress-bar-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .analyze-button:hover {
@@ -39,12 +50,7 @@
     height: 30px;
 }
 
-.progress-bar-container {
-    position: relative;
-    width: 70px;
-    /* Correspond à la taille du carré */
-    height: 70px;
-}
+
 
 
 .analyze-icon-overlay {
@@ -52,8 +58,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
+    width: 20%;
+    /* or a percentage of the container */
+    height: 20%;
+    /* or a percentage of the container */
 }
 
 @keyframes pulsate {

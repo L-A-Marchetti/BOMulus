@@ -83,7 +83,7 @@ function Filters({ components, operators, activeFilters, setActiveFilters, opCol
                         onChange={handleFilterChange}
                         className="filter-select-dropdown"
                     >
-                        <option value="">Warnings</option>
+                        <option value="" >Warnings</option>
                         <option value="outOfStock">
                             Out of Stock: {warningsCounts.outOfStock}
                         </option>

@@ -36,6 +36,7 @@
   font-size: 14px;
   border-radius: 0;
   /* Supprime les coins arrondis */
+  min-width: 150px;
 
 }
 
