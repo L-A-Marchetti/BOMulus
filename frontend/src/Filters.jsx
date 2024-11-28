@@ -114,7 +114,7 @@ function Filters({ components, operators, activeFilters, setActiveFilters, opCol
                         onChange={handleFilterChange}
                         className="filter-select-dropdown"
                     >
-                        <option value="">Functions</option>
+                        <option value="">> Functions</option>
                         {/* Ajoutez vos options ici */}
                     </select>
                 </div>
@@ -127,7 +127,7 @@ function Filters({ components, operators, activeFilters, setActiveFilters, opCol
                         onChange={handleFilterChange}
                         className="filter-select-dropdown"
                     >
-                        <option value="">Suggestions</option>
+                        <option value="">> Suggestions</option>
                         {/* Ajoutez vos options ici */}
                     </select>
                 </div>

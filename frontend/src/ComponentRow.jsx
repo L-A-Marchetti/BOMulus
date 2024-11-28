@@ -21,6 +21,9 @@
 import React, { useState } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
+import BookmarkIcon from "./assets/images/bookmark.svg";
+import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
+import InfosIcon from "./assets/images/info.svg";
 
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
     const [expanded, setExpanded] = useState(false);
@@ -160,8 +163,8 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                 <td>{component.mpn}</td>
                 {!isPinned && (
                     <>
-                    <td>{component.designator}</td>
-                    <td>{component.user_description}</td>
+                        <td>{component.designator}</td>
+                        <td>{component.user_description}</td>
                     </>
                 )}
                 <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
@@ -169,7 +172,11 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                         <>
                             <div style={{ display: 'flex' }}>
                                 <Button onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
-                                    {isPinned ? '→' : '←'}
+                                    <img
+                                        src={isPinned ? BookmarkFilledIcon : BookmarkIcon}
+                                        alt={isPinned ? "Pinned" : "Unpinned"}
+                                        style={{ width: '16px', height: '16px' }}
+                                    />
                                 </Button>
                                 <Button onClick={() => setExpanded(!expanded)}>&ensp;</Button>
                             </div>
@@ -179,9 +186,19 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                         <>
                             <div style={{ display: 'flex' }}>
                                 <Button onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
-                                    {isPinned ? '→' : '←'}
+                                    <img
+                                        src={isPinned ? BookmarkFilledIcon : BookmarkIcon}
+                                        alt={isPinned ? "Pinned" : "Unpinned"}
+                                        style={{ width: '16px', height: '16px' }}
+                                    />
                                 </Button>
-                                <Button onClick={() => setExpanded(!expanded)}>{expanded ? '˅' : '>'}</Button>
+                                <Button onClick={() => setExpanded(!expanded)}>{ }
+                                    <img
+                                        src={InfosIcon}
+                                        alt={"Infos"}
+                                        style={{ width: '16px', height: '16px' }}
+                                    />
+                                </Button>
                             </div>
                         </>
                     )}
