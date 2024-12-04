@@ -6,33 +6,32 @@ function WarningToolTip({ totalWarnings }) {
     const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
-        let start = displayedWarnings;
-        const end = totalWarnings;
-
-        if (start === end) return;
+        if (displayedWarnings === totalWarnings) return;
 
         setIsUpdating(true); // Active la classe "updating"
-        const increment = end > start ? 1 : -1;
-        const duration = 300;
-        const stepTime = Math.abs(Math.floor(duration / Math.abs(end - start)));
+        const increment = totalWarnings > displayedWarnings ? 1 : -1;
+        const duration = 300; // Durée totale de l'animation
+        const stepTime = Math.max(Math.abs(Math.floor(duration / (totalWarnings - displayedWarnings))), 20);
 
         const timer = setInterval(() => {
-            start += increment;
-            setDisplayedWarnings(start);
-
-            if (start === end) {
-                clearInterval(timer);
-                setTimeout(() => {
-                    setIsUpdating(false); // Retarde la désactivation pour permettre l'animation
-                }, 200); // Délai supplémentaire (en ms)
-            }
+            setDisplayedWarnings((prev) => {
+                const nextValue = prev + increment;
+                if (nextValue === totalWarnings) {
+                    clearInterval(timer);
+                    setTimeout(() => setIsUpdating(false), 200); // Désactiver "updating" après l'animation
+                }
+                return nextValue;
+            });
         }, stepTime);
 
-        return () => clearInterval(timer);
+        return () => clearInterval(timer); // Nettoyage si le composant est démonté
     }, [totalWarnings, displayedWarnings]);
 
     return (
-        <div className={`warning-tooltip ${isUpdating ? "updating" : ""}`}>
+        <div
+            className={`warning-tooltip ${isUpdating ? "updating" : ""}`}
+            aria-label={`Total warnings: ${totalWarnings}`}
+        >
             {displayedWarnings}
         </div>
     );

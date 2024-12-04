@@ -106,8 +106,13 @@ func (a *App) BtnCompare(v1, v2 []core.Component) {
 	if config.DEBUGGING {
 		defer core.StartBenchmark("gui.BtnCompare()", true).Stop()
 	}
+	fmt.Println("Backend - BtnCompare called with v1:", v1)
+	fmt.Println("Backend - BtnCompare called with v2:", v2)
+
 	core.ResetComponents()
 	core.XlsmDiff(v1, v2)
+
+	fmt.Println("Backend - Components after XlsmDiff:", core.Components)
 	core.ResetAnalysisStatus()
 }
 

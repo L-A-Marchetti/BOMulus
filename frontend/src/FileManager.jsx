@@ -1,34 +1,24 @@
-/*
- * FileManager.jsx
- *
- * Gère les opérations de fichiers dans l'espace de travail, permettant aux utilisateurs de sélectionner des fichiers pour la comparaison.
- *
- * Props: Aucune
- *
- * États:
- * existingFiles: Liste des fichiers actuellement dans l'espace de travail.
- * selectedFiles: Jusqu'à deux fichiers sélectionnés pour la comparaison.
- *
- * Dépendances Backend:
- * OpenFileDialog: Ouvre une boîte de dialogue de sélection de fichier.
- * AddFileToWorkspace: Ajoute un fichier à l'espace de travail.
- * GetFilesInWorkspaceInfo: Récupère les informations des fichiers existants.
- * BtnCompare: Compare les fichiers sélectionnés.
- */
-
 import React, { useState, useEffect } from "react";
 import {
   OpenFileDialog,
   AddFileToWorkspace,
   GetFilesInWorkspaceInfo,
   BtnCompare,
+  GetComponents,
 } from "../wailsjs/go/main/App";
 import "./FileManager.css";
 import AddBom from "./assets/images/add_bom.svg";
 
-function FileManager() {
+function FileManager({ onCompare }) {
   const [existingFiles, setExistingFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([null, null]); // [v1, v2]
+
+  // Vérifie que la prop onCompare est une fonction
+  if (typeof onCompare !== "function") {
+    console.error("FileManager.jsx - onCompare n'est pas une fonction valide.");
+    return null;
+  }
+  console.log("FileManager.jsx - onCompare:", onCompare);
 
   // Charger les fichiers existants au montage du composant
   useEffect(() => {
@@ -38,10 +28,10 @@ function FileManager() {
   const loadExistingFiles = async () => {
     try {
       const files = await GetFilesInWorkspaceInfo();
-      setExistingFiles(files || []);
+      setExistingFiles(files || []); // Vérifie que les fichiers sont bien un tableau
     } catch (error) {
       console.error("Échec du chargement des fichiers existants :", error);
-      setExistingFiles([]);
+      setExistingFiles([]); // Réinitialise en cas d'erreur
     }
   };
 
@@ -60,16 +50,36 @@ function FileManager() {
   };
 
   const handleCompare = async () => {
-    if (!selectedFiles[0] && !selectedFiles[1]) {
+    console.log("FileManager.jsx - handleCompare called with selectedFiles:", selectedFiles);
+
+    const file1 = selectedFiles[0];
+    const file2 = selectedFiles[1];
+
+    if (!file1 && !file2) {
       alert("Veuillez sélectionner au moins un fichier pour la comparaison.");
       return;
     }
 
     try {
-      if (selectedFiles[0] && !selectedFiles[1]) {
-        await BtnCompare(selectedFiles[0].components, null);
+      if (file1 && file2) {
+        // Deux fichiers sélectionnés
+        console.log("FileManager.jsx - Comparing two files:", file1, file2);
+        await BtnCompare(file1.components, file2.components);
       } else {
-        await BtnCompare(selectedFiles[0].components, selectedFiles[1].components);
+        // Un seul fichier sélectionné
+        const fileToCompare = file1 || file2;
+        console.log("FileManager.jsx - Comparing single file to itself:", fileToCompare);
+        await BtnCompare(fileToCompare.components, null);
+      }
+
+      // Après la comparaison, récupérer les composants mis à jour depuis le backend
+      const comparisonResult = await GetComponents();
+      console.log("FileManager.jsx - comparisonResult:", comparisonResult);
+
+      if (comparisonResult && comparisonResult.length > 0) {
+        onCompare(comparisonResult); // Transmettre les résultats au parent
+      } else {
+        alert("Aucune donnée disponible après la comparaison.");
       }
     } catch (error) {
       console.error("La comparaison a échoué :", error);
@@ -89,7 +99,6 @@ function FileManager() {
       alert("Fichier non trouvé dans l'espace de travail.");
     }
   };
-
 
   return (
     <div className="file-manager">
@@ -145,8 +154,6 @@ function FileManager() {
         <button onClick={handleCompare} className="button">
           OK
         </button>
-
-
       </div>
     </div>
   );

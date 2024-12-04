@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import OperatorExpander from './Expander'; 
+import OperatorExpander from './Expander';
 import FileManager from './FileManager';
 import Button from './Button';
 import './PinnedComponents.css';
@@ -48,10 +48,10 @@ function PinnedComponents({ pinnedComponents, onPinToggle }) {
 
     return (
         <div className={`pinned-components-sidebar ${isVisible ? 'visible' : 'hidden'}`}>
-            <SidebarContent 
-                isVisible={isVisible} 
-                pinnedComponents={pinnedComponents} 
-                onPinToggle={onPinToggle} 
+            <SidebarContent
+                isVisible={isVisible}
+                pinnedComponents={pinnedComponents}
+                onPinToggle={onPinToggle}
             />
             <ToggleButton isVisible={isVisible} onClick={toggleVisibility} />
         </div>
@@ -104,7 +104,7 @@ function PinnedComponentsList({ pinnedComponents, onPinToggle }) {
 function FileManagerSection() {
     return (
         <div className="file-manager-section">
-            <FileManager />
+
         </div>
     );
 }

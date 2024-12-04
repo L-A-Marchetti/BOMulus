@@ -1,0 +1,21 @@
+.bookmark-tooltip {
+    position: absolute;
+    left: 87%;
+    background-color: #acacac;
+    color: #2c2c2c;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    width: 20px;
+    height: 38px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.bookmark-tooltip.updating {
+    transform: scale(1.1);
+    background-color: #e0e0e0;
+}

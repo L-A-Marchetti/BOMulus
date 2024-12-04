@@ -1,33 +1,13 @@
-/*
- * Expander.jsx
- * 
- * Expandable section for displaying components grouped by operator.
- *
- * Props:
- * operator: String representing the operator type (e.g., "INSERT", "UPDATE").
- * components: Array of components associated with this operator.
- * color: Color associated with this operator.
- * count: Number of components for this operator.
- * onPinToggle: Function to handle pinning/unpinning of components.
- * pinnedComponents: Array of currently pinned components.
- *
- * States:
- * expanded: Boolean to control the expanded/collapsed state of the section.
- *
- * Sub-components:
- * ComponentRow: Renders individual component rows.
- */
-
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import ComponentRow from './ComponentRow';
 import './Expander.css';
 
 // OperatorExpander component
 function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents }) {
     const [expanded, setExpanded] = useState(true);
-    
-    // Check if all components of this operator are pinned
-    const allPinned = components.every(component => 
+
+    // Vérifie si tous les composants sont épinglés
+    const allPinned = components.every(component =>
         pinnedComponents.some(pinned => pinned.id === component.id)
     );
 
@@ -36,22 +16,22 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
 
     return (
         <div className="expander">
-            <ExpanderHeader 
-                operator={operator} 
-                color={color} 
-                count={count} 
-                expanded={expanded} 
-                onClick={toggleExpanded} 
+            <ExpanderHeader
+                operator={operator}
+                color={color}
+                count={count}
+                expanded={expanded}
+                onClick={toggleExpanded}
             />
 
             {expanded && (
-                <ComponentTable 
-                    components={components} 
-                    operator={operator} 
-                    color={color} 
-                    onPinToggle={onPinToggle} 
-                    pinnedComponents={pinnedComponents} 
-                    allPinned={allPinned} 
+                <ComponentTable
+                    components={components}
+                    operator={operator}
+                    color={color}
+                    onPinToggle={onPinToggle}
+                    pinnedComponents={pinnedComponents}
+                    allPinned={allPinned}
                 />
             )}
         </div>
@@ -61,15 +41,20 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
 // Header component for the expander
 function ExpanderHeader({ operator, color, count, expanded, onClick }) {
     return (
-        <h4 className="expander-header" style={{ color }} onClick={onClick}>
+        <h4
+            className="expander-header"
+            style={{ color }}
+            onClick={onClick}
+            aria-expanded={expanded}
+        >
             <span className="expander-icon">{expanded ? '▾' : '▸'}</span>
-            {operator}&nbsp;&nbsp;&nbsp;&nbsp;⚐&nbsp;&nbsp;&nbsp;&nbsp;{count}
+            {operator} ⚐ {count}
         </h4>
     );
 }
 
 // Table component for displaying components
-function ComponentTable({ components, operator, color, onPinToggle, pinnedComponents, allPinned }) {
+const ComponentTable = memo(({ components, operator, color, onPinToggle, pinnedComponents, allPinned }) => {
     return (
         <table className="component-table">
             <thead>
@@ -78,16 +63,15 @@ function ComponentTable({ components, operator, color, onPinToggle, pinnedCompon
                     <th>MPN</th>
                     {!allPinned && (
                         <>
-                        <th>☸</th>
-                        <th>☰</th>
+                            <th>☸</th>
+                            <th>☰</th>
                         </>
                     )}
                     <th></th>
                 </tr>
             </thead>
-
             <tbody style={{ backgroundColor: color }}>
-                {components.map((component) => (
+                {components.map(component => (
                     <ComponentRow
                         key={component.id}
                         component={component}
@@ -100,6 +84,6 @@ function ComponentTable({ components, operator, color, onPinToggle, pinnedCompon
             </tbody>
         </table>
     );
-}
+});
 
-export default OperatorExpander;
+export default memo(OperatorExpander);

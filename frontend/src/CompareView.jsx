@@ -1,71 +1,90 @@
-// CompareView.jsx
-
-import React, { useEffect, useCallback } from 'react';
-import { GetComponents } from "../wailsjs/go/main/App";
+import React from 'react';
 import './CompareView.css';
 import OperatorExpander from './Expander';
 import SummarySection from './SummarySection';
+import PinnedComponents from './PinnedComponents';
+import RightSidebar from './RightSideBar';
+import Button from './Button';
+import TopMenu from './TopMenu'; // Ajout de TopMenu
 
-function CompareView({ components, setComponents, onPinToggle, pinnedComponents, activeFilters, operators, opColors }) {
-    // Fetches and updates components
-    const updateComponents = useCallback(async () => {
-        try {
-            const updatedComponents = await GetComponents();
-            setComponents(updatedComponents);
-        } catch (error) {
-            console.error("Error fetching components:", error);
-        }
-    }, [setComponents]);
+function CompareView({
+    onComponentAnalyzed,
+    components,
+    onCompare,
+    onPinToggle,
+    pinnedComponents = [], // Valeur par défaut
+    operators,
+    opColors,
+    onClose,
+    activeWorkspace,
+    activeFilters,
+    setActiveFilters, // Props nécessaires pour TopMenu
+    warningCounts,
+    totalWarnings,
+}) {
+    console.log("CompareView.jsx - onCompare:", onCompare);
 
-    useEffect(() => {
-        updateComponents();
-        const intervalId = setInterval(updateComponents, 300);
-        return () => clearInterval(intervalId);
-    }, [updateComponents]);
-
-    // Filters components based on active filters
-    const filterComponents = (components) => {
-        return components.filter(comp => {
-            // Filtrer par opérateurs sélectionnés
-            if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(comp.Operator)) {
-                return false;
-            }
-            // Filtrer par avertissements
-            if (activeFilters.warning) {
-                if (activeFilters.warning === 'outOfStock' && (comp.availability !== "" || !comp.analyzed)) return false;
-                if (activeFilters.warning === 'riskyLifecycle' && (comp.lifecycle_status === "" || comp.lifecycle_status === "New Product" || comp.lifecycle_status === "New at Mouser" || !comp.analyzed)) return false;
-                if (activeFilters.warning === 'manufacturerMessages' && (comp.info_messages === null || !comp.analyzed)) return false;
-                if (activeFilters.warning === 'mismatchingMpn' && (comp.mismatch_mpn === null || !comp.analyzed)) return false;
-            }
-            // Autres filtres si nécessaire
-            return true;
-        });
-    };
+    // Calculer operatorCounts
+    const operatorCounts = operators.map((operator) => {
+        const count = components.filter((comp) => comp.Operator === operator).length;
+        return { operator, count };
+    });
 
     return (
-        <div className="compare-grid">
-            {components.length > 0 && (
-                <SummarySection
-                    components={components}
+        <div className="compare-view-layout">
+            {/* Main content */}
+            <main id="main-content" className="main-content">
+                {/* Workspace header with close button */}
+                <div className="close-button-container">
+                    ☰ Current workspace :&nbsp;
+                    <span style={{ fontWeight: 'bold' }}>
+                        {activeWorkspace?.replace(/\\/g, '/').split('/').pop()}
+                    </span>
+                    <div className="close-button-spacer"></div>
+                    <Button onClick={onClose}>☓</Button>
+                </div>
+                <RightSidebar />
+                {/* Top menu bar */}
+                <TopMenu
+                    onComponentAnalyzed={onComponentAnalyzed}
+                    onCompare={onCompare}
                     operators={operators}
+                    operatorCounts={operatorCounts}
+                    activeFilters={activeFilters}
+                    setActiveFilters={setActiveFilters}
                     opColors={opColors}
+                    warningCounts={warningCounts}
+                    totalWarnings={totalWarnings}
                 />
-            )}
 
-            {operators.map((operator) => {
-                const filteredComponents = filterComponents(components.filter(comp => comp.Operator === operator));
-                return filteredComponents.length > 0 ? (
-                    <OperatorExpander
-                        key={operator}
-                        operator={operator}
-                        components={filteredComponents}
-                        color={opColors[operator]}
-                        count={filteredComponents.length}
-                        onPinToggle={onPinToggle}
-                        pinnedComponents={pinnedComponents}
+                {/* Summary section */}
+                {components.length > 0 && (
+                    <SummarySection
+                        operatorCounts={operatorCounts}
+                        opColors={opColors}
                     />
-                ) : null;
-            })}
+                )}
+
+                {/* Operator-specific components */}
+                <div className="operator-sections">
+                    {operators.map((operator) => {
+                        const operatorComponents = components.filter(
+                            (comp) => comp.Operator === operator
+                        );
+                        return operatorComponents.length > 0 ? (
+                            <OperatorExpander
+                                key={operator}
+                                operator={operator}
+                                components={operatorComponents}
+                                color={opColors[operator]}
+                                count={operatorComponents.length}
+                                onPinToggle={onPinToggle}
+                                pinnedComponents={pinnedComponents}
+                            />
+                        ) : null;
+                    })}
+                </div>
+            </main>
         </div>
     );
 }

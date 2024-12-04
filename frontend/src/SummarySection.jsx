@@ -1,20 +1,18 @@
-// SummarySection.jsx
-
 import React from 'react';
 import './CompareView.css'; // Importing the external CSS file
 
 // Main SummarySection component
-function SummarySection({ components, operators, opColors }) {
+function SummarySection({ operatorCounts, opColors }) {
     return (
         <div className="summary-section">
             <div className="operator-summary">
-                {operators.map((operator) => (
+                {operatorCounts.map(({ operator, count }) => (
                     <span key={operator} style={{ color: opColors[operator], marginRight: '20px' }}>
-                        {operator}: {components.filter(comp => comp.Operator === operator).length}
+                        {operator}: {count}
                     </span>
                 ))}
             </div>
-            {/* Vous pouvez ajouter d'autres informations ici */}
+            {/* Ajoutez d'autres informations si nécessaire */}
         </div>
     );
 }
