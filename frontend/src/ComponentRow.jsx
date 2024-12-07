@@ -26,6 +26,7 @@ import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import InfosIcon from "./assets/images/info.svg";
 
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
+    console.log(`Rendering ComponentRow for ID ${component.id} - analyzed: ${component.analyzed}`);
     const [expanded, setExpanded] = useState(false);
 
     // Opens an external link

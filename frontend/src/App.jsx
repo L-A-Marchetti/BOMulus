@@ -28,18 +28,19 @@ function App() {
         filter4: '',
     });
 
-    const onComponentAnalyzed = (component) => {
-        setComponents(prevComponents => {
-            const index = prevComponents.findIndex(c => c.id === component.id);
-            if (index !== -1) {
-                const updatedComponents = [...prevComponents];
-                updatedComponents[index] = component;
-                return updatedComponents;
-            } else {
-                return [...prevComponents, component];
-            }
-        });
+    const handleComponentAnalyzed = async (updatedComponent) => {
+        console.log("handleComponentAnalyzed - Updated Component:", updatedComponent);
+
+        // Au lieu de tenter de mettre à jour juste un composant, on récupère la liste complète
+        try {
+            const updatedComponents = await GetComponents();
+            setComponents(updatedComponents);
+        } catch (error) {
+            console.error("Error fetching components after analysis:", error);
+        }
     };
+
+
 
     // Déplacer les fonctions ici avant leur utilisation
     const calculateOperatorCounts = () => {
@@ -158,7 +159,7 @@ function App() {
             )}
             {showCompareView && (
                 <CompareView
-                    onComponentAnalyzed={onComponentAnalyzed}
+                    onComponentAnalyzed={handleComponentAnalyzed}
                     onCompare={handleComparison} // Transmet la fonction à CompareView
                     onPinToggle={handlePinToggle}
                     compareKey={compareKey}
