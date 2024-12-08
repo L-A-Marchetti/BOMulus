@@ -21,14 +21,14 @@
 
 .filters-grid {
     display: grid;
-    grid-template-columns: repeat(3, fit-content(250px));
+    grid-template-columns: repeat(2, fit-content(250px));
     grid-template-rows: repeat(2, 1fr);
     gap: 5px;
     align-items: stretch;
-    /* Modifié pour étirer les items */
     height: 100%;
-    width: fit-content
+    width: fit-content;
 }
+
 
 .filter-item {
     width: 100%;

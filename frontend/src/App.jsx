@@ -179,11 +179,14 @@ function App() {
 
     // Comptons le nombre de composants procurés chez Mouser.
     // On part du principe qu'un composant est "procuré" si `supplier_manufacturer === "Mouser"` et `analyzed === true`.
-    const mouserCount = components.filter(comp => comp.supplier_manufacturer === "Mouser" && comp.analyzed).length;
+    const mouserCount = components.filter(comp =>
+        comp.analyzed &&
+        comp.mismatch_mpn === null // Aucune MPN mismatch
+    ).length;
 
     // Si vous prévoyez d'autres fournisseurs plus tard, vous pourrez ajouter digiKeyCount, etc.
     // Pour l'instant, disons qu'un composant non procuré c'est tout ce qui n'est pas Mouser et est analysé.
-    const unprocuredCount = components.filter(comp => comp.analyzed && comp.supplier_manufacturer !== "Mouser").length;
+    const unprocuredCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn != null).length;
 
     // BOM Coverage : (mouserCount / total) * 100
     const coverage = totalComponents > 0 ? (mouserCount / totalComponents) * 100 : 0;

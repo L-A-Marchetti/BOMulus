@@ -1,8 +1,8 @@
 import React from 'react';
 import './TopMenu.css';
-import FileManager from './FileManager'; // Ajout de l'import manquant
-import AnalyzeButton from './AnalyzeButton'; // Ajout de l'import manquant
-import Filters from './Filters'; // Ajout de l'import manquant
+import FileManager from './FileManager';
+import AnalyzeButton from './AnalyzeButton';
+import Filters from './Filters';
 import Stats from './Stats';
 
 function TopMenu({
@@ -16,7 +16,7 @@ function TopMenu({
     totalWarnings,
     onCompare,
     pinnedComponents,
-    statsData // Ajout
+    statsData
 }) {
     return (
         <div className="top-menu">
@@ -45,8 +45,6 @@ function TopMenu({
                 <Stats statsData={statsData} />
             </div>
         </div>
-
-
     );
 }
 

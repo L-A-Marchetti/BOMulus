@@ -6,7 +6,7 @@ function Stats({ statsData }) {
 
     // Donut coverage
     // coverage% un gradient, le reste gris
-    const coverageBg = `conic-gradient(#a250ff 0% ${coverage}%, #565656 ${coverage}% 100%)`;
+    const coverageBg = `conic-gradient(#8e84b3 0% ${coverage}%, #565656 ${coverage}% 100%)`;
 
     // Donut availability
     const inStockPct = total > 0 ? (inStockCount / total) * 100 : 0;
@@ -14,9 +14,9 @@ function Stats({ statsData }) {
     const insufficientPct = total > 0 ? (insufficientCount / total) * 100 : 0;
 
     const availabilityBg = `conic-gradient(
-    #00ff00 0% ${inStockPct}%,
-    #ff0000 ${inStockPct}% ${inStockPct + outOfStockPct}%,
-    #ffac00 ${inStockPct + outOfStockPct}% ${inStockPct + outOfStockPct + insufficientPct}%,
+    #86b384 0% ${inStockPct}%,
+    #cc7481 ${inStockPct}% ${inStockPct + outOfStockPct}%,
+    #86b384 ${inStockPct + outOfStockPct}% ${inStockPct + outOfStockPct + insufficientPct}%,
     #565656 ${inStockPct + outOfStockPct + insufficientPct}% 100%
   )`;
 
@@ -26,7 +26,7 @@ function Stats({ statsData }) {
                 <div className="donut" style={{ background: coverageBg }}></div>
                 <div className="stats-labels">
                     <h5>BOM COVERAGE: {Math.round(coverage)}%</h5>
-                    <p style={{ color: '#a250ff' }}>Mouser: {mouserCount}</p>
+                    <p style={{ color: '#8e84b3' }}>Mouser: {mouserCount}</p>
                     <p style={{ color: '#acacac' }}>Unprocured: {unprocuredCount}</p>
                 </div>
             </div>
@@ -35,8 +35,8 @@ function Stats({ statsData }) {
                 <div className="donut" style={{ background: availabilityBg }}></div>
                 <div className="stats-labels">
                     <h5>AVAILABILITY</h5>
-                    <p style={{ color: '#00ff00' }}>In stock: {inStockCount}</p>
-                    <p style={{ color: '#ff0000' }}>Out of stock: {outOfStockCount}</p>
+                    <p style={{ color: '#86b384' }}>In stock: {inStockCount}</p>
+                    <p style={{ color: '#cc7481' }}>Out of stock: {outOfStockCount}</p>
                     <p style={{ color: '#ffac00' }}>Insufficient: {insufficientCount}</p>
                 </div>
             </div>
