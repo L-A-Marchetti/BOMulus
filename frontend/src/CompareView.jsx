@@ -21,6 +21,7 @@ function CompareView({
     setActiveFilters,
     warningCounts,
     totalWarnings,
+    statsData = { statsData }
 }) {
     console.log("CompareView.jsx - onCompare:", onCompare);
 
@@ -56,6 +57,7 @@ function CompareView({
                     warningCounts={warningCounts}
                     totalWarnings={totalWarnings}
                     pinnedComponents={pinnedComponents}
+                    statsData={statsData}
                 />
 
                 {/* Summary section */}

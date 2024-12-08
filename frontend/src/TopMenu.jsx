@@ -3,6 +3,7 @@ import './TopMenu.css';
 import FileManager from './FileManager'; // Ajout de l'import manquant
 import AnalyzeButton from './AnalyzeButton'; // Ajout de l'import manquant
 import Filters from './Filters'; // Ajout de l'import manquant
+import Stats from './Stats';
 
 function TopMenu({
     onComponentAnalyzed,
@@ -14,7 +15,8 @@ function TopMenu({
     warningCounts,
     totalWarnings,
     onCompare,
-    pinnedComponents // Ajout
+    pinnedComponents,
+    statsData // Ajout
 }) {
     return (
         <div className="top-menu">
@@ -26,20 +28,25 @@ function TopMenu({
                 <h4 className="section-title">Analysis</h4>
                 <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
             </div>
-            <div className="right-side">
-                <h4 className="section-title">Filters</h4>
-                <Filters
-                    operators={operators}
-                    operatorCounts={operatorCounts}
-                    activeFilters={activeFilters}
-                    setActiveFilters={setActiveFilters}
-                    opColors={opColors}
-                    warningCounts={warningCounts}
-                    totalWarnings={totalWarnings}
-                    pinnedComponents={pinnedComponents} // Ajout
-                />
+            <div className="right-side" style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'nowrap' }}>
+                <div>
+                    <h4 className="section-title">Filters</h4>
+                    <Filters
+                        operators={operators}
+                        operatorCounts={operatorCounts}
+                        activeFilters={activeFilters}
+                        setActiveFilters={setActiveFilters}
+                        opColors={opColors}
+                        warningCounts={warningCounts}
+                        totalWarnings={totalWarnings}
+                        pinnedComponents={pinnedComponents}
+                    />
+                </div>
+                <Stats statsData={statsData} />
             </div>
         </div>
+
+
     );
 }
 

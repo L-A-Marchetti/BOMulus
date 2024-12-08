@@ -3,17 +3,15 @@
 /* TopMenu.css */
 
 .top-menu {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: auto;
+    display: flex;
     gap: 20px;
-    width: 70%;
+    width: 100%;
     padding: 10px;
     box-sizing: border-box;
     align-items: stretch;
-    /* Étire les enfants pour qu'ils aient la même hauteur */
     font-family: 'Poppins', sans-serif;
 }
+
 
 
 .left-side,

@@ -174,7 +174,37 @@ function App() {
 
 
     console.log("App.jsx - handleComparison:", handleComparison);
+    // Dans App.jsx, juste avant le return
+    const totalComponents = components.length;
 
+    // Comptons le nombre de composants procurés chez Mouser.
+    // On part du principe qu'un composant est "procuré" si `supplier_manufacturer === "Mouser"` et `analyzed === true`.
+    const mouserCount = components.filter(comp => comp.supplier_manufacturer === "Mouser" && comp.analyzed).length;
+
+    // Si vous prévoyez d'autres fournisseurs plus tard, vous pourrez ajouter digiKeyCount, etc.
+    // Pour l'instant, disons qu'un composant non procuré c'est tout ce qui n'est pas Mouser et est analysé.
+    const unprocuredCount = components.filter(comp => comp.analyzed && comp.supplier_manufacturer !== "Mouser").length;
+
+    // BOM Coverage : (mouserCount / total) * 100
+    const coverage = totalComponents > 0 ? (mouserCount / totalComponents) * 100 : 0;
+
+    // Availability (déjà une partie de la logique) :
+    // in stock: availability !== "" && analyzed
+    const inStockCount = components.filter(comp => comp.availability !== "" && comp.analyzed).length;
+    // out of stock: availability === "" && analyzed
+    const outOfStockCount = components.filter(comp => comp.availability === "" && comp.analyzed).length;
+    // insuffisant stock : selon votre logique, si vous n'en avez pas pour l'instant, mettez 0 ou un calcul simplifié
+    const insufficientCount = 0; // à ajuster selon vos besoins
+
+    const statsData = {
+        coverage,        // Pour le donut coverage
+        mouserCount,
+        unprocuredCount,
+        inStockCount,
+        outOfStockCount,
+        insufficientCount,
+        total: totalComponents,
+    };
     return (
         <>
             <TopBar />
@@ -199,6 +229,7 @@ function App() {
                     warningCounts={warningCounts}
                     totalWarnings={warningCounts.totalWarnings}
                     pinnedComponents={pinnedComponents} // Ajout
+                    statsData={statsData}
                 />
             )}
 
