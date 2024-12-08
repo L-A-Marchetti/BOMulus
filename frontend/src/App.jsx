@@ -30,6 +30,21 @@ function App() {
         pinned: false, // Ajout
     });
 
+    useEffect(() => {
+        if (showCompareView) {
+            (async () => {
+                try {
+                    const workspace = await GetActiveWorkspace();
+                    setActiveWorkspace(workspace);
+                } catch (error) {
+                    console.error("Error fetching active workspace:", error);
+                }
+            })();
+        } else {
+            setActiveWorkspace(null);
+        }
+    }, [showCompareView]);
+
     const handleComponentAnalyzed = async (updatedComponent) => {
         console.log("handleComponentAnalyzed - Updated Component:", updatedComponent);
 
