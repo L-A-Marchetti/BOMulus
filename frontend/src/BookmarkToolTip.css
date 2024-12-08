@@ -1,6 +1,10 @@
 .bookmark-tooltip {
     position: absolute;
-    left: 87%;
+    /* Place la tooltip au-dessus du bouton */
+    bottom: 78%;
+    left: 50%;
+    transform: translateX(-50%);
+
     background-color: #acacac;
     color: #2c2c2c;
     text-align: center;
@@ -10,12 +14,14 @@
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    width: 20px;
-    height: 38px;
+
+    width: 43px;
+    height: 19px;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    font-family: 'poppins', sans-serif;
 }
 
 .bookmark-tooltip.updating {
-    transform: scale(1.1);
+    transform: translateX(-50%) scale(1.1);
     background-color: #e0e0e0;
 }

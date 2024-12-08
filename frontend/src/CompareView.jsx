@@ -12,13 +12,13 @@ function CompareView({
     components,
     onCompare,
     onPinToggle,
-    pinnedComponents = [], // Valeur par défaut
+    pinnedComponents = [],
     operators,
     opColors,
     onClose,
     activeWorkspace,
     activeFilters,
-    setActiveFilters, // Props nécessaires pour TopMenu
+    setActiveFilters,
     warningCounts,
     totalWarnings,
 }) {
@@ -55,6 +55,7 @@ function CompareView({
                     opColors={opColors}
                     warningCounts={warningCounts}
                     totalWarnings={totalWarnings}
+                    pinnedComponents={pinnedComponents}
                 />
 
                 {/* Summary section */}

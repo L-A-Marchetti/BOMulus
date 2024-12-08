@@ -21,11 +21,13 @@ function App() {
     const [compareKey, setCompareKey] = useState(0);
     const [components, setComponents] = useState([]);
     const [activeWorkspace, setActiveWorkspace] = useState(null);
+    const [pinnedComponents, setPinnedComponents] = useState([]); // Ajout
     const [activeFilters, setActiveFilters] = useState({
         operators: [],
         warning: '',
         filter3: '',
         filter4: '',
+        pinned: false, // Ajout
     });
 
     const handleComponentAnalyzed = async (updatedComponent) => {
@@ -121,9 +123,16 @@ function App() {
                 // Ajouter d'autres logiques de filtrage si nécessaire
             }
 
-            return true; // Conserver l'élément si tous les filtres passent
+            // Filtre par pinned
+            if (activeFilters.pinned) {
+                const isPinned = pinnedComponents.some(p => p.id === comp.id);
+                if (!isPinned) return false;
+            }
+
+            return true;
         });
     };
+
 
     // Gérer le pin/unpin des composants
     const handlePinToggle = (id) => {
@@ -160,10 +169,10 @@ function App() {
             {showCompareView && (
                 <CompareView
                     onComponentAnalyzed={handleComponentAnalyzed}
-                    onCompare={handleComparison} // Transmet la fonction à CompareView
+                    onCompare={handleComparison}
                     onPinToggle={handlePinToggle}
                     compareKey={compareKey}
-                    components={getFilteredComponents()} // Composants filtrés
+                    components={getFilteredComponents()}
                     setComponents={setComponents}
                     onClose={handleCloseCompareView}
                     activeWorkspace={activeWorkspace}
@@ -171,12 +180,13 @@ function App() {
                     setActiveFilters={setActiveFilters}
                     operators={OPERATORS}
                     opColors={OP_COLORS}
-                    operatorCounts={operatorCounts} // Ajouté
-                    warningCounts={warningCounts}   // Ajouté
-                    totalWarnings={warningCounts.totalWarnings} // Ajouté
+                    operatorCounts={operatorCounts}
+                    warningCounts={warningCounts}
+                    totalWarnings={warningCounts.totalWarnings}
+                    pinnedComponents={pinnedComponents} // Ajout
                 />
-
             )}
+
         </>
     );
 }

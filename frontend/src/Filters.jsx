@@ -2,8 +2,10 @@ import React from 'react';
 import './Filters.css';
 import BookmarkIcon from "./assets/images/bookmark.svg";
 import WarningToolTip from './WarningToolTip';
+import BookmarkToolTip from './BookmarkToolTip'; // Ajout
+import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg"; // Ajout
 
-function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings }) {
+function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents }) {
     // Gérer le clic sur un opérateur
     const handleOperatorClick = (operator) => {
         setActiveFilters(prevFilters => {
@@ -24,10 +26,16 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
         }));
     };
 
+    const handlePinnedToggle = () => {
+        setActiveFilters(prevFilters => ({
+            ...prevFilters,
+            pinned: !prevFilters.pinned // Bascule le filtre pinned
+        }));
+    };
+
     return (
         <div className="filters">
             <div className="filters-grid">
-                {/* Boutons des opérateurs */}
                 <div className="filter-item">
                     <div className="filter-item operator-buttons">
                         {operatorCounts && operatorCounts.map(({ operator, count }) => (
@@ -37,14 +45,12 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                                 style={{ backgroundColor: opColors[operator] }}
                                 onClick={() => handleOperatorClick(operator)}
                             >
-                                {operator} ({count})
+                                {count}
                             </button>
                         ))}
-
                     </div>
                 </div>
 
-                {/* Dropdown Warnings */}
                 <div className="filter-item">
                     <div className="dropdown-container">
                         <WarningToolTip totalWarnings={totalWarnings} />
@@ -57,18 +63,24 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                             <option value="">> Warnings</option>
                             {warningCounts && (
                                 <>
-                                    <option value="outOfStock">Out of Stock: {warningCounts.outOfStock}</option>
-                                    <option value="riskyLifecycle">Risky Lifecycle: {warningCounts.riskyLifecycle}</option>
-                                    <option value="manufacturerMessages">Manufacturer Messages: {warningCounts.manufacturerMessages}</option>
-                                    <option value="mismatchingMpn">Mismatching MPN: {warningCounts.mismatchingMpn}</option>
+                                    <option value="outOfStock">
+                                        Out of Stock: {warningCounts.outOfStock}
+                                    </option>
+                                    <option value="riskyLifecycle">
+                                        Risky Lifecycle: {warningCounts.riskyLifecycle}
+                                    </option>
+                                    <option value="manufacturerMessages">
+                                        Manufacturer Messages: {warningCounts.manufacturerMessages}
+                                    </option>
+                                    <option value="mismatchingMpn">
+                                        Mismatching MPN: {warningCounts.mismatchingMpn}
+                                    </option>
                                 </>
                             )}
                         </select>
-
                     </div>
                 </div>
 
-                {/* Dropdown Filter 3 */}
                 <div className="filter-item">
                     <select
                         name="filter3"
@@ -77,11 +89,9 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                         className="filter-select-dropdown"
                     >
                         <option value="">> Functions</option>
-                        {/* Ajoutez vos options ici */}
                     </select>
                 </div>
 
-                {/* Dropdown Filter 4 */}
                 <div className="filter-item">
                     <select
                         name="filter4"
@@ -90,22 +100,25 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                         className="filter-select-dropdown"
                     >
                         <option value="">> Suggestions</option>
-                        {/* Ajoutez vos options ici */}
                     </select>
                 </div>
 
-                {/* Bouton pour réinitialiser les filtres */}
+
+
                 <button
-                    onClick={() => setActiveFilters({
-                        operators: [],
-                        warning: '',
-                        filter3: '',
-                        filter4: ''
-                    })}
-                    className="filters-button"
+                    onClick={() => setActiveFilters(prevFilters => ({ ...prevFilters, pinned: !prevFilters.pinned }))}
+                    className={`filters-button ${activeFilters.pinned ? 'active' : ''}`}
+                    style={{ position: 'relative' }} // Ajouté
                 >
-                    <img src={BookmarkIcon} alt="Reset filters" style={{ width: "20px", height: "20px" }} />
+                    <BookmarkToolTip totalBookmarks={pinnedComponents.length} />
+                    <img
+                        src={activeFilters.pinned ? BookmarkFilledIcon : BookmarkIcon}
+                        alt="Toggle pinned filter"
+                        style={{ width: "20px", height: "20px" }}
+                    />
                 </button>
+
+
             </div>
         </div>
     );
