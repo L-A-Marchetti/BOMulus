@@ -27,16 +27,15 @@
 
 
 .file-select-dropdown {
-  flex-grow: 1;
-  width: 100%;
-  padding: 8px;
-  background-color: #313f54;
+  background-color: #323232;
   border: none;
   color: white;
   font-size: 14px;
-  border-radius: 0;
-  /* Supprime les coins arrondis */
   min-width: 150px;
+  height: 38px;
+  padding-left: 10px;
+  appearance: none;
+  width: auto;
 
 }
 
@@ -52,7 +51,6 @@
 
 .file-select-dropdown:focus {
   outline: none;
-  background-color: #2a4c76;
 }
 
 

@@ -1,50 +1,58 @@
-/* Filters.css */
-
 .filters {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto;
+    gap: 5px;
     font-family: 'Poppins', sans-serif;
     background-color: #2e2e2e;
     padding: 10px;
-}
-
-.dropdown-container {
-    position: relative;
-    /* Parent positionné pour ancrer la tooltip */
-    display: flex;
-    /* Flexbox pour faciliter le positionnement */
     align-items: center;
-    /* Aligner verticalement si nécessaire */
+    /* Centre verticalement dans la grille */
 }
 
-
-.filters-grid {
-    display: grid;
-    grid-template-columns: repeat(2, fit-content(250px));
-    grid-template-rows: repeat(2, 1fr);
+/* L'operator-buttons en (1,1) */
+.operator-buttons {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
     gap: 5px;
-    align-items: stretch;
-    height: 100%;
-    width: fit-content;
+    min-width: 150px;
 }
 
-
-.filter-item {
-    width: 100%;
-    height: 100%;
+/* Warnings select en (1,2) */
+.warnings-select {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    align-items: center;
     position: relative;
 }
 
-select {
-    font-family: 'Poppins', sans-serif;
+/* Bouton bookmark en (1,3) sur deux rangées */
+.filters-button {
+    position: relative;
+    grid-row: 1 / span 2;
+    /* occupe 2 rangées */
+    grid-column: 3;
+    background-color: #353535;
+    color: white;
+    border: none;
+    font-size: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-left: 5px;
+    align-self: stretch;
+    /* S'étend verticalement dans les deux rangées */
 }
 
+.filters-button:hover {
+    background-color: #383838;
+}
 
-.filter-select-dropdown {
-    width: 100%;
-    height: 100%;
-    /* Assure que les dropdowns remplissent l'espace verticalement */
+/* Functions en (2,1) */
+.functions-select {
+    grid-row: 2;
+    grid-column: 1;
     background-color: #323232;
     border: none;
     color: white;
@@ -53,40 +61,35 @@ select {
     height: 38px;
     padding-left: 10px;
     appearance: none;
+    width: auto;
 }
 
-.filter-select-dropdown option {
-    background-color: #2c2c2c;
-    color: white;
-}
-
-.filter-select-dropdown:focus {
-    outline: none;
-}
-
-.filters-button {
-    background-color: #353535;
-    color: white;
+/* Suggestions en (2,2) */
+.suggestions-select {
+    grid-row: 2;
+    grid-column: 2;
+    background-color: #323232;
     border: none;
-    font-size: 12px;
-    padding: 8px 12px;
-    cursor: pointer;
-    grid-row: 1 / span 2;
-    /* Occupe les deux rangées */
-    grid-column: 3;
-    height: 100%;
-    /* Prend toute la hauteur disponible */
-    margin-left: 5px;
-}
-
-.filters-button:hover {
-    background-color: #383838;
-}
-
-.operator-buttons {
-    display: flex;
-    gap: 5px;
+    color: white;
+    font-size: 14px;
     min-width: 150px;
+    height: 38px;
+    padding-left: 10px;
+    appearance: none;
+    width: auto;
+}
+
+.dropdown-container select.filter-select-dropdown {
+    /* Style commun aux dropdowns si besoin */
+    background-color: #323232;
+    border: none;
+    color: white;
+    font-size: 14px;
+    min-width: 150px;
+    height: 38px;
+    padding-left: 10px;
+    appearance: none;
+    width: auto;
 }
 
 .operator-button {
@@ -96,7 +99,7 @@ select {
     font-size: 14px;
     cursor: pointer;
     width: 100%;
-    height: 100%;
+    height: 38px;
 }
 
 .operator-button.active {
@@ -105,4 +108,13 @@ select {
 
 .operator-button:hover {
     opacity: 0.8;
+}
+
+.filter-select-dropdown option {
+    background-color: #2c2c2c;
+    color: white;
+}
+
+.filter-select-dropdown:focus {
+    outline: none;
 }

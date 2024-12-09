@@ -14,7 +14,6 @@ function SummarySection({ operatorCounts, opColors, statsData }) {
                 ))}
             </div>
             {/* Ajoutez d'autres informations si nécessaire */}
-            <Stats statsData={statsData} />
         </div>
     );
 }

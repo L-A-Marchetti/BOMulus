@@ -24,11 +24,15 @@ function TopMenu({
                 <h4 className="section-title">File manager</h4>
                 {onCompare && <FileManager onCompare={onCompare} />}
             </div>
+
             <div className="middle-side">
                 <h4 className="section-title">Analysis</h4>
                 <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
             </div>
-            <div className="right-side" style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'nowrap' }}>
+
+            {/* On crée un conteneur flex pour Stats et Filters */}
+            <div className="stats-filters-container" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <Stats statsData={statsData} />
                 <div>
                     <h4 className="section-title">Filters</h4>
                     <Filters
@@ -42,7 +46,6 @@ function TopMenu({
                         pinnedComponents={pinnedComponents}
                     />
                 </div>
-                <Stats statsData={statsData} />
             </div>
         </div>
     );

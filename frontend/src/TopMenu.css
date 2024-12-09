@@ -1,26 +1,37 @@
-/* TopMenu.css */
-
-/* TopMenu.css */
-
 .top-menu {
     display: flex;
     gap: 20px;
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
-    align-items: stretch;
+    align-items: center;
+    /* centre verticalement */
     font-family: 'Poppins', sans-serif;
 }
 
-
-
-.left-side,
-.middle-side,
-.right-side {
+.left-side {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     height: 100%;
+    flex: 0;
+    /* Garde left-side expansée si souhaité */
+}
+
+.middle-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+    flex: 0;
+    /* Retirer flex:1, ainsi .middle-side se limite à la taille de son contenu */
+}
+
+/* Pas de flex:1 sur stats-filters-container, pour ne pas l’étirer */
+.stats-filters-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .section-title {
@@ -29,21 +40,13 @@
     margin: 0 0 5px 0;
 }
 
-
 .analysis-container {
     display: flex;
     align-items: flex-start;
     gap: 20px;
 }
 
-/* Assurez-vous que AnalyzeButton et Filters sont alignés en haut */
 .analyze-button-container,
 .filters {
     margin-top: 0;
-}
-
-.filters,
-.file-manager {
-    height: 100%;
-    /* Étend la hauteur pour correspondre à leur conteneur parent */
 }

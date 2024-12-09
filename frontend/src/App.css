@@ -135,14 +135,15 @@
 }
 
 .main-content {
+    /* Ajustez la valeur selon vos besoins */
     flex-grow: 1;
     transition: margin-left 0.3s ease-in-out;
-    margin-left: 300px;
     padding: 50px;
     box-sizing: border-box;
     width: 100%;
     overflow-x: hidden;
 }
+
 
 .close-button-container {
     display: flex;

@@ -9,15 +9,16 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    /* Espace entre la donut et les labels */
-    /* On reste en flex row pour mettre la donut à gauche et les labels à droite */
+    margin-top: 20px;
 }
 
 .donut {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     position: relative;
+    flex-shrink: 0;
+    /* Empêche le donut de se réduire */
 }
 
 .donut::before {
@@ -25,8 +26,8 @@
     position: absolute;
     background: #2c2c2c;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     top: 10px;
     left: 10px;
 }
@@ -36,12 +37,10 @@
     font-size: 12px;
     margin-top: 0;
     line-height: 1.2;
-    /* Ajustez la valeur pour réduire l'espace vertical entre les lignes */
 }
 
 .stats-labels p,
 .stats-labels span {
     margin: 0;
-    /* Supprimer toute marge verticale par défaut */
     padding: 0;
 }
