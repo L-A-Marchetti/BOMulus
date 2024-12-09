@@ -65,6 +65,7 @@ function CompareView({
                     <SummarySection
                         operatorCounts={operatorCounts}
                         opColors={opColors}
+                        statsData={statsData}
                     />
                 )}
 

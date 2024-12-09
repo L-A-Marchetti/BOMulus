@@ -1,10 +1,11 @@
 import React from 'react';
 import './CompareView.css'; // Importing the external CSS file
+import Stats from './Stats';
 
 // Main SummarySection component
-function SummarySection({ operatorCounts, opColors }) {
+function SummarySection({ operatorCounts, opColors, statsData }) {
     return (
-        <div className="summary-section">
+        <div className="summary-section" >
             <div className="operator-summary">
                 {operatorCounts.map(({ operator, count }) => (
                     <span key={operator} style={{ color: opColors[operator], marginRight: '20px' }}>
@@ -13,6 +14,7 @@ function SummarySection({ operatorCounts, opColors }) {
                 ))}
             </div>
             {/* Ajoutez d'autres informations si nécessaire */}
+            <Stats statsData={statsData} />
         </div>
     );
 }
