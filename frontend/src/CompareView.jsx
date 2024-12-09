@@ -6,6 +6,7 @@ import PinnedComponents from './PinnedComponents';
 import RightSidebar from './RightSideBar';
 import Button from './Button';
 import TopMenu from './TopMenu'; // Ajout de TopMenu
+import DesignatorEditor from "./DesignatorEditor";
 
 function CompareView({
     onComponentAnalyzed,
@@ -68,6 +69,11 @@ function CompareView({
                         statsData={statsData}
                     />
                 )}
+
+                <div>
+                  <h1>Designator Edit Test</h1>
+                  <DesignatorEditor />
+                </div>
 
                 {/* Operator-specific components */}
                 <div className="operator-sections">
