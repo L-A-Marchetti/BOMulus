@@ -201,6 +201,13 @@ func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
+func (a *App) UpdateDesignator(designator, function string) error {
+	var d core.Designator
+	d.Designator = designator
+	d.Label = function
+	return workspaces.UpdateDesignator(d)
+}
+
 /*╚══════════════════════════════════════════════╝*/
 
 /*╔══════════════ API KEY FUNCTIONS ══════════════╗*/

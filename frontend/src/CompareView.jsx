@@ -4,6 +4,7 @@ import OperatorExpander from './Expander';
 import Button from './Button';
 import TopMenu from './TopMenu'; // Ajout de TopMenu
 import SettingsIcon from "./assets/images/settings.svg";
+import DesignatorEditor from "./DesignatorEditor";
 
 function CompareView({
     onComponentAnalyzed,
@@ -62,6 +63,11 @@ function CompareView({
                 />
 
 
+
+                <div>
+                    <h1>Designator Edit Test</h1>
+                    <DesignatorEditor />
+                </div>
 
                 {/* Operator-specific components */}
                 <div className="operator-sections">
