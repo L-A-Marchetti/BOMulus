@@ -9,6 +9,7 @@ import DesignatorEditor from "./DesignatorEditor";
 function CompareView({
     onComponentAnalyzed,
     components,
+    componentsAll,
     onCompare,
     onPinToggle,
     pinnedComponents = [],
@@ -30,6 +31,7 @@ function CompareView({
         const count = components.filter((comp) => comp.Operator === operator).length;
         return { operator, count };
     });
+    console.log("2. Updated Components:", componentsAll);
 
     return (
         <div className="compare-view-layout">
@@ -49,6 +51,7 @@ function CompareView({
                 </div>
                 {/* Top menu bar */}
                 <TopMenu
+                    componentsAll={componentsAll}
                     onComponentAnalyzed={onComponentAnalyzed}
                     onCompare={onCompare}
                     operators={operators}

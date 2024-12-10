@@ -3,12 +3,10 @@ import './App.css';
 import CompareView from './CompareView';
 import TopBar from './TopBar';
 import WorkspaceCreator from './WorkspaceCreator';
-import { MaximizeWindow, GetComponents, GetActiveWorkspace, StopAnalysis } from "../wailsjs/go/main/App";
-// On ne va plus appeler RightSidebar
-// import RightSidebar from './RightSideBar';
+import { MaximizeWindow, GetComponents, GetActiveWorkspace, StopAnalysis, GetSavedAPIKeys, GetAnalyzeSaveState, GetAnalysisRefreshDays } from "../wailsjs/go/main/App";
 import Button from './Button';
 import TopMenu from './TopMenu';
-import Modal from './Modal'; // Le nouveau composant Modal
+import Modal from './Modal';
 import PricingCalculator from './PricingCalculator';
 import Settings from './Settings';
 
@@ -34,7 +32,13 @@ function App() {
         pinned: false,
     });
 
-    const [showSettingsModal, setShowSettingsModal] = useState(false); // Ajout du state pour le modal
+    // Ajout des states pour stocker les clés API et paramètres
+    const [mouserApiKey, setMouserApiKey] = useState('');
+    const [bomulusApiKey, setBomulusApiKey] = useState('');
+    const [analyzeSaveState, setAnalyzeSaveStateState] = useState(false);
+    const [analysisRefreshDays, setAnalysisRefreshDays] = useState(0);
+
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     useEffect(() => {
         if (showCompareView) {
@@ -42,6 +46,8 @@ function App() {
                 try {
                     const workspace = await GetActiveWorkspace();
                     setActiveWorkspace(workspace);
+                    // Charger les clés et paramètres dès que la CompareView est affichée
+                    await loadInitialSettings();
                 } catch (error) {
                     console.error("Error fetching active workspace:", error);
                 }
@@ -51,10 +57,30 @@ function App() {
         }
     }, [showCompareView]);
 
+    // Cette fonction charge les clés et paramètres sans attendre l'ouverture du modal
+    const loadInitialSettings = async () => {
+        try {
+            const savedKeys = await GetSavedAPIKeys();
+            setMouserApiKey(savedKeys.mouser_api_key || '');
+            setBomulusApiKey(savedKeys.bomulus_api_key || '');
+
+            const state = await GetAnalyzeSaveState();
+            setAnalyzeSaveStateState(state);
+
+            const days = await GetAnalysisRefreshDays();
+            setAnalysisRefreshDays(days);
+
+            console.log("API keys, analyze state and refresh days loaded.");
+        } catch (error) {
+            console.error("Error loading initial settings:", error);
+        }
+    };
+
     const handleComponentAnalyzed = async (updatedComponent) => {
         console.log("handleComponentAnalyzed - Updated Component:", updatedComponent);
         try {
             const updatedComponents = await GetComponents();
+            console.log("1. Updated Components:", componentsAll);
             setComponents(updatedComponents);
         } catch (error) {
             console.error("Error fetching components after analysis:", error);
@@ -114,7 +140,7 @@ function App() {
     };
 
     const handleSettings = () => {
-        setShowSettingsModal(true); // Affiche le modal lorsque le bouton Settings est cliqué
+        setShowSettingsModal(true);
     };
 
     const getFilteredComponents = () => {
@@ -186,6 +212,7 @@ function App() {
                     onPinToggle={handlePinToggle}
                     compareKey={compareKey}
                     components={getFilteredComponents()}
+                    componentsAll={components} // On passe aussi le tableau complet
                     setComponents={setComponents}
                     onClose={handleCloseCompareView}
                     onSettings={handleSettings}
@@ -204,11 +231,11 @@ function App() {
 
             {showSettingsModal && (
                 <Modal onClose={() => setShowSettingsModal(false)}>
-                    {/* Contenu du Modal, par exemple la partie Pricing et Settings */}
                     <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Pricing</h4>
                     <PricingCalculator />
 
                     <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Settings</h4>
+                    {/* Vous pouvez également transmettre mouserApiKey, bomulusApiKey, etc. si nécessaire */}
                     <Settings />
                 </Modal>
             )}

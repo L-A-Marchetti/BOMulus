@@ -1,11 +1,18 @@
 import React from 'react';
+import { useState } from 'react';
 import './Filters.css';
 import BookmarkIcon from "./assets/images/bookmark.svg";
 import WarningToolTip from './WarningToolTip';
 import BookmarkToolTip from './BookmarkToolTip';
 import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
+import Modal from './Modal';
+import FunctionManager from './FunctionManager';
 
-function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents }) {
+function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll }) {
+    console.log("4. Updated Components:", componentsAll);
+    const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
+
+
     const handleOperatorClick = (operator) => {
         setActiveFilters(prevFilters => {
             const isSelected = prevFilters.operators.includes(operator);
@@ -30,6 +37,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
             pinned: !prevFilters.pinned
         }));
     };
+
 
     return (
         <div className="filters">
@@ -81,14 +89,33 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
             </button>
 
             {/* Deuxième ligne : Functions et Suggestions */}
-            <select
-                name="filter3"
-                value={activeFilters.filter3 || ""}
-                onChange={handleFilterChange}
-                className="filter-select-dropdown functions-select"
-            >
-                <option value="">> Functions</option>
-            </select>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <select
+                    name="filter3"
+                    value={activeFilters.filter3 || ""}
+                    onChange={handleFilterChange}
+                    className="filter-select-dropdown functions-select"
+                >
+                    <option value="">> Functions</option>
+                    {/* ici, plus tard, vous injecterez les fonctions depuis le backend */}
+                </select>
+
+                {/* Bouton pour gérer les fonctions */}
+                <button
+                    onClick={() => setShowFunctionManagerModal(true)}
+                    style={{
+                        backgroundColor: '#353535',
+                        color: 'white',
+                        border: 'none',
+                        fontSize: '12px',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    Manage Functions
+                </button>
+            </div>
 
             <select
                 name="filter4"
@@ -98,6 +125,11 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
             >
                 <option value="">> Suggestions</option>
             </select>
+            {showFunctionManagerModal && (
+                <Modal onClose={() => setShowFunctionManagerModal(false)}>
+                    <FunctionManager onClose={() => setShowFunctionManagerModal(false)} componentsAll={componentsAll} />
+                </Modal>
+            )}
         </div>
     );
 }

@@ -16,8 +16,10 @@ function TopMenu({
     totalWarnings,
     onCompare,
     pinnedComponents,
-    statsData
+    statsData,
+    componentsAll
 }) {
+    console.log("3. Updated Components:", componentsAll);
     return (
         <div className="top-menu">
             <div className="left-side">
@@ -44,6 +46,7 @@ function TopMenu({
                         warningCounts={warningCounts}
                         totalWarnings={totalWarnings}
                         pinnedComponents={pinnedComponents}
+                        componentsAll={componentsAll}
                     />
                 </div>
             </div>
