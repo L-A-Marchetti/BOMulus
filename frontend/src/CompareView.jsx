@@ -1,7 +1,6 @@
 import React from 'react';
 import './CompareView.css';
 import OperatorExpander from './Expander';
-import RightSidebar from './RightSideBar';
 import Button from './Button';
 import TopMenu from './TopMenu'; // Ajout de TopMenu
 import SettingsIcon from "./assets/images/settings.svg";
@@ -47,7 +46,6 @@ function CompareView({
                     </Button>
                     <Button onClick={onClose}>☓</Button>
                 </div>
-                <RightSidebar />
                 {/* Top menu bar */}
                 <TopMenu
                     onComponentAnalyzed={onComponentAnalyzed}
