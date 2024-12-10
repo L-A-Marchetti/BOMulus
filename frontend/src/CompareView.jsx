@@ -1,11 +1,10 @@
 import React from 'react';
 import './CompareView.css';
 import OperatorExpander from './Expander';
-import SummarySection from './SummarySection';
-import PinnedComponents from './PinnedComponents';
 import RightSidebar from './RightSideBar';
 import Button from './Button';
 import TopMenu from './TopMenu'; // Ajout de TopMenu
+import SettingsIcon from "./assets/images/settings.svg";
 
 function CompareView({
     onComponentAnalyzed,
@@ -16,6 +15,7 @@ function CompareView({
     operators,
     opColors,
     onClose,
+    onSettings,
     activeWorkspace,
     activeFilters,
     setActiveFilters,
@@ -42,6 +42,9 @@ function CompareView({
                         {activeWorkspace?.replace(/\\/g, '/').split('/').pop()}
                     </span>
                     <div className="close-button-spacer"></div>
+                    <Button style={{ marginRight: '10px' }} onClick={onSettings}>
+                        <img style={{ width: '15px', height: '18px' }} src={SettingsIcon} alt="Settings Icon" />
+                    </Button>
                     <Button onClick={onClose}>☓</Button>
                 </div>
                 <RightSidebar />
@@ -60,14 +63,7 @@ function CompareView({
                     statsData={statsData}
                 />
 
-                {/* Summary section */}
-                {components.length > 0 && (
-                    <SummarySection
-                        operatorCounts={operatorCounts}
-                        opColors={opColors}
-                        statsData={statsData}
-                    />
-                )}
+
 
                 {/* Operator-specific components */}
                 <div className="operator-sections">

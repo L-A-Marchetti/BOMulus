@@ -1,0 +1,38 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* overlay semi-transparent */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    /* Au-dessus de tout */
+}
+
+.modal-content {
+    background-color: #272727;
+    padding: 20px;
+    position: relative;
+    width: 600px;
+    /* Ajustez selon besoin */
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+}

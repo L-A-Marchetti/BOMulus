@@ -4,9 +4,13 @@ import CompareView from './CompareView';
 import TopBar from './TopBar';
 import WorkspaceCreator from './WorkspaceCreator';
 import { MaximizeWindow, GetComponents, GetActiveWorkspace, StopAnalysis } from "../wailsjs/go/main/App";
-import RightSidebar from './RightSideBar';
+// On ne va plus appeler RightSidebar
+// import RightSidebar from './RightSideBar';
 import Button from './Button';
 import TopMenu from './TopMenu';
+import Modal from './Modal'; // Le nouveau composant Modal
+import PricingCalculator from './PricingCalculator';
+import Settings from './Settings';
 
 const OPERATORS = ["INSERT", "UPDATE", "DELETE", "EQUAL"];
 const OP_COLORS = {
@@ -21,14 +25,16 @@ function App() {
     const [compareKey, setCompareKey] = useState(0);
     const [components, setComponents] = useState([]);
     const [activeWorkspace, setActiveWorkspace] = useState(null);
-    const [pinnedComponents, setPinnedComponents] = useState([]); // Ajout
+    const [pinnedComponents, setPinnedComponents] = useState([]);
     const [activeFilters, setActiveFilters] = useState({
         operators: [],
         warning: '',
         filter3: '',
         filter4: '',
-        pinned: false, // Ajout
+        pinned: false,
     });
+
+    const [showSettingsModal, setShowSettingsModal] = useState(false); // Ajout du state pour le modal
 
     useEffect(() => {
         if (showCompareView) {
@@ -47,8 +53,6 @@ function App() {
 
     const handleComponentAnalyzed = async (updatedComponent) => {
         console.log("handleComponentAnalyzed - Updated Component:", updatedComponent);
-
-        // Au lieu de tenter de mettre à jour juste un composant, on récupère la liste complète
         try {
             const updatedComponents = await GetComponents();
             setComponents(updatedComponents);
@@ -57,9 +61,6 @@ function App() {
         }
     };
 
-
-
-    // Déplacer les fonctions ici avant leur utilisation
     const calculateOperatorCounts = () => {
         return OPERATORS.map((operator) => {
             const count = components.filter((comp) => comp.Operator === operator).length;
@@ -92,16 +93,13 @@ function App() {
         return { ...counts, totalWarnings: Object.values(counts).reduce((a, b) => a + b, 0) };
     };
 
-    // Calculer les opérateurs et warnings
     const operatorCounts = calculateOperatorCounts();
     const warningCounts = calculateWarningCounts();
 
-
-    // Charger les composants à partir des fichiers Excel
     const handleToggleCompareView = async () => {
         MaximizeWindow();
         try {
-            const updatedComponents = await GetComponents(); // Charger les composants ici
+            const updatedComponents = await GetComponents();
             setComponents(updatedComponents);
         } catch (error) {
             console.error("Error fetching components:", error);
@@ -110,46 +108,31 @@ function App() {
         setCompareKey((prevKey) => prevKey + 1);
     };
 
-    // Fermer la vue de comparaison
     const handleCloseCompareView = () => {
         StopAnalysis();
         setShowCompareView(false);
     };
 
-    // Appliquer les filtres sur les composants
+    const handleSettings = () => {
+        setShowSettingsModal(true); // Affiche le modal lorsque le bouton Settings est cliqué
+    };
+
     const getFilteredComponents = () => {
         return components.filter((comp) => {
-            // Filtrer par opérateurs
-            if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(comp.Operator)) {
-                return false;
-            }
-
-            // Filtrer par avertissements
+            if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(comp.Operator)) return false;
             if (activeFilters.warning) {
-                if (activeFilters.warning === 'outOfStock' && (comp.availability !== "" || !comp.analyzed)) {
-                    return false;
-                }
-                if (
-                    activeFilters.warning === 'riskyLifecycle' &&
-                    (comp.lifecycle_status === "" || comp.lifecycle_status === "New Product" || !comp.analyzed)
-                ) {
-                    return false;
-                }
-                // Ajouter d'autres logiques de filtrage si nécessaire
+                if (activeFilters.warning === 'outOfStock' && (comp.availability !== "" || !comp.analyzed)) return false;
+                if (activeFilters.warning === 'riskyLifecycle' &&
+                    (comp.lifecycle_status === "" || comp.lifecycle_status === "New Product" || !comp.analyzed)) return false;
             }
-
-            // Filtre par pinned
             if (activeFilters.pinned) {
                 const isPinned = pinnedComponents.some(p => p.id === comp.id);
                 if (!isPinned) return false;
             }
-
             return true;
         });
     };
 
-
-    // Gérer le pin/unpin des composants
     const handlePinToggle = (id) => {
         setPinnedComponents((prevPinned) => {
             const isAlreadyPinned = prevPinned.some((component) => component.id === id);
@@ -172,35 +155,16 @@ function App() {
         }
     };
 
-
-    console.log("App.jsx - handleComparison:", handleComparison);
-    // Dans App.jsx, juste avant le return
     const totalComponents = components.length;
-
-    // Comptons le nombre de composants procurés chez Mouser.
-    // On part du principe qu'un composant est "procuré" si `supplier_manufacturer === "Mouser"` et `analyzed === true`.
-    const mouserCount = components.filter(comp =>
-        comp.analyzed &&
-        comp.mismatch_mpn === null // Aucune MPN mismatch
-    ).length;
-
-    // Si vous prévoyez d'autres fournisseurs plus tard, vous pourrez ajouter digiKeyCount, etc.
-    // Pour l'instant, disons qu'un composant non procuré c'est tout ce qui n'est pas Mouser et est analysé.
+    const mouserCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn === null).length;
     const unprocuredCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn != null).length;
-
-    // BOM Coverage : (mouserCount / total) * 100
     const coverage = totalComponents > 0 ? (mouserCount / totalComponents) * 100 : 0;
-
-    // Availability (déjà une partie de la logique) :
-    // in stock: availability !== "" && analyzed
     const inStockCount = components.filter(comp => comp.availability !== "" && comp.analyzed).length;
-    // out of stock: availability === "" && analyzed
     const outOfStockCount = components.filter(comp => comp.availability === "" && comp.analyzed).length;
-    // insuffisant stock : selon votre logique, si vous n'en avez pas pour l'instant, mettez 0 ou un calcul simplifié
-    const insufficientCount = 0; // à ajuster selon vos besoins
+    const insufficientCount = 0;
 
     const statsData = {
-        coverage,        // Pour le donut coverage
+        coverage,
         mouserCount,
         unprocuredCount,
         inStockCount,
@@ -208,6 +172,7 @@ function App() {
         insufficientCount,
         total: totalComponents,
     };
+
     return (
         <>
             <TopBar />
@@ -223,6 +188,7 @@ function App() {
                     components={getFilteredComponents()}
                     setComponents={setComponents}
                     onClose={handleCloseCompareView}
+                    onSettings={handleSettings}
                     activeWorkspace={activeWorkspace}
                     activeFilters={activeFilters}
                     setActiveFilters={setActiveFilters}
@@ -231,11 +197,21 @@ function App() {
                     operatorCounts={operatorCounts}
                     warningCounts={warningCounts}
                     totalWarnings={warningCounts.totalWarnings}
-                    pinnedComponents={pinnedComponents} // Ajout
+                    pinnedComponents={pinnedComponents}
                     statsData={statsData}
                 />
             )}
 
+            {showSettingsModal && (
+                <Modal onClose={() => setShowSettingsModal(false)}>
+                    {/* Contenu du Modal, par exemple la partie Pricing et Settings */}
+                    <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Pricing</h4>
+                    <PricingCalculator />
+
+                    <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Settings</h4>
+                    <Settings />
+                </Modal>
+            )}
         </>
     );
 }
