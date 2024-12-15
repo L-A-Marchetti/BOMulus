@@ -6,6 +6,7 @@ import Filters from './Filters';
 import Stats from './Stats';
 
 function TopMenu({
+    onRefreshComponents,
     onComponentAnalyzed,
     operators,
     operatorCounts,
@@ -38,6 +39,7 @@ function TopMenu({
                 <div>
                     <h4 className="section-title">Filters</h4>
                     <Filters
+                        onRefreshComponents={onRefreshComponents}
                         operators={operators}
                         operatorCounts={operatorCounts}
                         activeFilters={activeFilters}

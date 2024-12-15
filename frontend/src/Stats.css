@@ -1,6 +1,6 @@
 .stats-container {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     color: #fff;
 }
@@ -21,6 +21,16 @@
     /* Empêche le donut de se réduire */
 }
 
+.donut p {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    font-size: 14px;
+
+}
+
 .donut::before {
     content: '';
     position: absolute;
@@ -33,10 +43,15 @@
 }
 
 .stats-labels {
+    position: relative;
     text-align: left;
-    font-size: 12px;
+    font-size: 10px;
     margin-top: 0;
     line-height: 1.2;
+}
+
+.stats-labels h5 {
+    font-size: 12px;
 }
 
 .stats-labels p,

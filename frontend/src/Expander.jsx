@@ -61,7 +61,7 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
 // Header component for the expander
 function ExpanderHeader({ operator, color, count, expanded, onClick }) {
     return (
-        <h4 className="expander-header" style={{ color }} onClick={onClick}>
+        <h4 className="expander-header" onClick={onClick}>
             <span className="expander-icon">{expanded ? '▾' : '▸'}</span>
             {operator}&nbsp;&nbsp;&nbsp;&nbsp;⚐&nbsp;&nbsp;&nbsp;&nbsp;{count}
         </h4>

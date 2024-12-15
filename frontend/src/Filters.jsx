@@ -8,7 +8,7 @@ import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
 
-function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll }) {
+function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
     console.log("4. Updated Components:", componentsAll);
     const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
 
@@ -50,6 +50,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                         style={{ backgroundColor: opColors[operator] }}
                         onClick={() => handleOperatorClick(operator)}
                     >
+                        {console.log("OPERATOR COUNT :", operator, count)}
                         {count}
                     </button>
                 ))}
@@ -127,7 +128,14 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
             </select>
             {showFunctionManagerModal && (
                 <Modal onClose={() => setShowFunctionManagerModal(false)}>
-                    <FunctionManager onClose={() => setShowFunctionManagerModal(false)} componentsAll={componentsAll} />
+                    <FunctionManager
+                        onClose={() => setShowFunctionManagerModal(false)}
+                        componentsAll={componentsAll}
+                        onRefreshComponents={(updatedComponents) => {
+                            console.log("Filters - Refreshing components with:", updatedComponents);
+                            onRefreshComponents(updatedComponents); // Passe les nouveaux composants au parent
+                        }}
+                    />
                 </Modal>
             )}
         </div>

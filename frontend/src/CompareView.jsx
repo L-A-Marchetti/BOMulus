@@ -7,6 +7,7 @@ import SettingsIcon from "./assets/images/settings.svg";
 import DesignatorEditor from "./DesignatorEditor";
 
 function CompareView({
+    onRefreshComponents,
     onComponentAnalyzed,
     components,
     componentsAll,
@@ -51,6 +52,7 @@ function CompareView({
                 </div>
                 {/* Top menu bar */}
                 <TopMenu
+                    onRefreshComponents={onRefreshComponents}
                     componentsAll={componentsAll}
                     onComponentAnalyzed={onComponentAnalyzed}
                     onCompare={onCompare}
@@ -67,10 +69,7 @@ function CompareView({
 
 
 
-                <div>
-                    <h1>Designator Edit Test</h1>
-                    <DesignatorEditor />
-                </div>
+
 
                 {/* Operator-specific components */}
                 <div className="operator-sections">

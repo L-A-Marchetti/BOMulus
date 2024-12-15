@@ -15,7 +15,7 @@ const OP_COLORS = {
     INSERT: '#86b384',
     UPDATE: '#8e84b3',
     DELETE: '#cc7481',
-    EQUAL: '#636363',
+    EQUAL: '#323232',
 };
 
 function App() {
@@ -80,7 +80,6 @@ function App() {
         console.log("handleComponentAnalyzed - Updated Component:", updatedComponent);
         try {
             const updatedComponents = await GetComponents();
-            console.log("1. Updated Components:", componentsAll);
             setComponents(updatedComponents);
         } catch (error) {
             console.error("Error fetching components after analysis:", error);
@@ -90,6 +89,7 @@ function App() {
     const calculateOperatorCounts = () => {
         return OPERATORS.map((operator) => {
             const count = components.filter((comp) => comp.Operator === operator).length;
+            console.log("OPERATOR:", operator, "COUNT:", count);
             return { operator, count };
         });
     };
@@ -144,6 +144,7 @@ function App() {
     };
 
     const getFilteredComponents = () => {
+
         return components.filter((comp) => {
             if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(comp.Operator)) return false;
             if (activeFilters.warning) {
@@ -199,6 +200,12 @@ function App() {
         total: totalComponents,
     };
 
+    const refreshComponents = async (newComponents) => {
+        // Le parent met à jour son state components avec les nouveaux
+        //setComponents(newComponents);
+    };
+
+
     return (
         <>
             <TopBar />
@@ -207,6 +214,7 @@ function App() {
             )}
             {showCompareView && (
                 <CompareView
+                    onRefreshComponents={refreshComponents}
                     onComponentAnalyzed={handleComponentAnalyzed}
                     onCompare={handleComparison}
                     onPinToggle={handlePinToggle}

@@ -11,6 +11,7 @@
     justify-content: center;
     z-index: 2000;
     /* Au-dessus de tout */
+    font-family: 'Poppins', sans-serif;
 }
 
 .modal-content {

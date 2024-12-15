@@ -23,16 +23,16 @@ function Stats({ statsData }) {
     return (
         <div className="stats-container">
             <div className="donut-container">
-                <div className="donut" style={{ background: coverageBg }}></div>
+                <div className="donut" style={{ background: coverageBg }}><p>{Math.round(coverage)}%</p></div>
                 <div className="stats-labels">
-                    <h5>BOM COVERAGE: {Math.round(coverage)}%</h5>
+                    <h5>BOM COVERAGE</h5>
                     <p style={{ color: '#8e84b3' }}>Mouser: {mouserCount}</p>
                     <p style={{ color: '#acacac' }}>Unprocured: {unprocuredCount}</p>
                 </div>
             </div>
 
             <div className="donut-container">
-                <div className="donut" style={{ background: availabilityBg }}></div>
+                <div className="donut" style={{ background: availabilityBg }}><p>{Math.round(inStockPct)}%</p></div>
                 <div className="stats-labels">
                     <h5>AVAILABILITY</h5>
                     <p style={{ color: '#86b384' }}>In stock: {inStockCount}</p>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { UpdateDesignator } from '../wailsjs/go/main/App';
+import { UpdateDesignator, GetComponents } from '../wailsjs/go/main/App';
 
-function FunctionManager({ onClose, componentsAll }) {
+function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
     const [designators, setDesignators] = useState([]);
     const [functions, setFunctions] = useState([]);
     const [selectedFunction, setSelectedFunction] = useState('');
@@ -10,16 +10,28 @@ function FunctionManager({ onClose, componentsAll }) {
     const [assignedDesignators, setAssignedDesignators] = useState([]);
     const [availableDesignators, setAvailableDesignators] = useState([]);
 
-    console.log("5. Updated Components:", componentsAll);
 
     useEffect(() => {
+        console.log("ComponentsAll updated in FunctionManager:", componentsAll);
         loadData();
     }, [componentsAll]);
 
-    const loadData = () => {
+    useEffect(() => {
+        return () => {
+            // Réinitialisez les états locaux pour éviter des données obsolètes
+            setDesignators([]);
+            setFunctions([]);
+            setSelectedFunction('');
+            setAssignedDesignators([]);
+            setAvailableDesignators([]);
+        };
+    }, []);
+
+
+
+    const loadData = (components = componentsAll) => {
         let allDesignators = [];
-        for (const c of componentsAll) {
-            // Vérifiez bien la casse : c.designators si c'est ce qui apparaît dans la console
+        for (const c of components) {
             if (c.designators && c.designators.length > 0) {
                 allDesignators = allDesignators.concat(c.designators);
             }
@@ -27,8 +39,6 @@ function FunctionManager({ onClose, componentsAll }) {
 
         setDesignators(allDesignators);
 
-        // Les functions sont basées sur le champ label des designators
-        // Dans la console, c'est `label` (tout en minuscule)
         const uniqueLabels = new Set();
         allDesignators.forEach(d => {
             if (d.label && d.label.trim() !== '') {
@@ -37,6 +47,7 @@ function FunctionManager({ onClose, componentsAll }) {
         });
         setFunctions(Array.from(uniqueLabels));
     };
+
 
     const handleFunctionSelection = (funcName) => {
         setSelectedFunction(funcName);
@@ -76,17 +87,30 @@ function FunctionManager({ onClose, componentsAll }) {
         const updatedDesignators = [...assignedDesignators, ...availableDesignators];
 
         for (const d of updatedDesignators) {
-            try {
-                // UpdateDesignator attend sûrement (designator, label)
+            const original = designators.find(x => x.designator === d.designator);
+            if (original && original.label !== d.label) {
                 await UpdateDesignator(d.designator, d.label || '');
-                console.log(`${d.designator} updated successfully`);
-            } catch (error) {
-                console.error(`Failed to update ${d.designator}:`, error);
             }
         }
+
         alert("Designators updated successfully!");
+
+        // Récupérer la nouvelle liste de composants mise à jour
+        const updatedComponents = await GetComponents();
+
+        // Appeler le callback du parent avec ces nouveaux composants
+        onRefreshComponents(updatedComponents);
+
+        // Rafraîchir les données localement
+        loadData(updatedComponents);
+
         onClose();
     };
+
+
+
+
+
 
     return (
         <div style={{ padding: '20px', maxWidth: '600px', color: 'white', fontFamily: 'Poppins, sans-serif' }}>
