@@ -30,8 +30,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import ApiKeyInput from './ApiKeyInput'; // Importing the new component
 import { 
+    GetApiPriority, 
+    SetApiPriority, 
     TestMouserAPIKey,
     TestDKCredentials, 
     TestBOMulusAPIKey, 
@@ -43,7 +47,52 @@ import {
 } from '../wailsjs/go/main/App';
 import './Settings.css'; // External CSS file
 
+const ItemTypes = {
+    API: 'api'
+};
+
+const DraggableItem = ({ api, index, moveItem }) => {
+    const [{ isDragging }, drag] = useDrag({
+        type: ItemTypes.API,
+        item: { index },
+        collect: (monitor) => ({
+            isDragging: !!monitor.isDragging()
+        })
+    });
+
+    const [, drop] = useDrop({
+        accept: ItemTypes.API,
+        hover(item) {
+            if (item.index !== index) {
+                moveItem(item.index, index);
+                item.index = index;
+            }
+        }
+    });
+
+    return (
+        <div 
+            ref={(node) => drag(drop(node))} 
+            className="priority-item" 
+            style={{
+                padding: '10px',
+                margin: '5px 0',
+                backgroundColor: 'inherit',
+                border: '1px solid #ddd',
+                borderRadius: '5px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                opacity: isDragging ? 0.5 : 1,
+                cursor: isDragging ? 'grabbing' : 'grab'  // Curseur grab ajouté ici
+            }}
+        >
+            {api}
+        </div>
+    );
+    
+};
+
 function Settings() {
+    const [apiPriority, setApiPriority] = useState([]);
     const [mouserApiKey, setMouserApiKey] = useState('');
     const [dkClientID, setDkClientID] = useState('');
     const [dkSecret, setDkSecret] = useState('');
@@ -65,7 +114,34 @@ function Settings() {
         loadSavedAPIKeys();
         loadAnalyzeSaveState();
         loadAnalysisRefreshDays();
+        loadApiPriority();
     }, []);
+
+    const loadApiPriority = async () => {
+        try {
+            const priority = await GetApiPriority();
+            setApiPriority(priority || []);
+        } catch (error) {
+            console.error("Error loading API priority:", error);
+        }
+    };
+
+    const handleApiPriorityChange = async (newPriority) => {
+        setApiPriority(newPriority);
+        try {
+            await SetApiPriority(newPriority);
+        } catch (error) {
+            console.error("Error saving API priority:", error);
+        }
+    };
+
+    const moveItem = (fromIndex, toIndex) => {
+        const updatedPriority = Array.from(apiPriority);
+        const [movedItem] = updatedPriority.splice(fromIndex, 1);
+        updatedPriority.splice(toIndex, 0, movedItem);
+        setApiPriority(updatedPriority);
+        handleApiPriorityChange(updatedPriority);
+    };
 
     // Load number of days for refreshing analysis results
     const loadAnalysisRefreshDays = async () => {
@@ -257,6 +333,18 @@ function Settings() {
                  status={bomulusApiStatus}
                  error={bomulusError}
              />
+
+<h3>API Priority</h3>
+            <DndProvider backend={HTML5Backend}>
+                {apiPriority.map((api, index) => (
+                    <DraggableItem
+                        key={api}
+                        api={api}
+                        index={index}
+                        moveItem={moveItem}
+                    />
+                ))}
+            </DndProvider>
 
              <div className="checkbox-container">
                  <label>

@@ -30,6 +30,7 @@ var (
 	//DIGIKEY_API_KEY       string = ""
 	ANALYZE_SAVE_STATE    bool
 	ANALYSIS_REFRESH_DAYS int
+	API_PRIORITY          []string = nil
 )
 
 /*╚═══════════════════════════════════════════════╝*/

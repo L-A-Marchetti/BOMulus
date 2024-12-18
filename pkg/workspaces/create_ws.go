@@ -67,7 +67,7 @@ func CreateWorkspace(path string, name string) error {
 		return fmt.Errorf("failed to write .bmls file: %w", err)
 	}
 	// Update BOMulus.bmls
-	err = UpdateBOMulusFile(workspaceInfos, APIKeys{}, true, true, 3)
+	err = UpdateBOMulusFile(workspaceInfos, APIKeys{}, true, true, 3, []string{"Digikey", "Mouser", "BOMulus"})
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}

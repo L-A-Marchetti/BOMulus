@@ -50,7 +50,7 @@ type Component struct {
 	SupplierDescription      string       `json:"supplier_description"`
 	UserManufacturer         string       `json:"user_manufacturer"`
 	SupplierManufacturer     string       `json:"supplier_manufacturer"`
-	Category                 string       `json:"category"`
+	Category                 []MSValue    `json:"category"`
 	ProductDetailUrl         []MSValue    `json:"product_detail_url"`
 	LastRefresh              time.Time    `json:"last_refresh"`
 	Operator                 string

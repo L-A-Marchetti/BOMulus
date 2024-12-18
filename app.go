@@ -252,11 +252,26 @@ func (a *App) GetAnalyzeSaveState() (bool, error) {
 
 // SetAnalyzeSaveState sets the analyze save state by updating BOMulus.bmls.
 func (a *App) SetAnalyzeSaveState(state bool) error {
-	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true, -1)
+	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true, -1, nil)
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}
 	config.ANALYZE_SAVE_STATE = state
+	return nil
+}
+
+// GetApiPriority retrieves the user API priority by delegating to workspaces package.
+func (a *App) GetApiPriority() ([]string, error) {
+	return workspaces.GetApiPriority() // Delegate to workspaces package
+}
+
+// SetApiPriority sets the user api priority by updating BOMulus.bmls.
+func (a *App) SetApiPriority(priority []string) error {
+	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, -1, priority)
+	if err != nil {
+		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
+	}
+	config.API_PRIORITY = priority
 	return nil
 }
 
@@ -267,7 +282,7 @@ func (a *App) GetAnalysisRefreshDays() (int, error) {
 
 // SetAnalysisRefreshDays sets the analysis refresh days by updating BOMulus.bmls.
 func (a *App) SetAnalysisRefreshDays(refreshDays int) error {
-	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, refreshDays)
+	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, refreshDays, nil)
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}

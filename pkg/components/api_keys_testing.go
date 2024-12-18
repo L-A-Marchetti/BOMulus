@@ -93,7 +93,7 @@ func TestAPIKey(apiKey, clientID, clientSecret string, supplier string) error {
 			workspaces.API_KEYS.MouserApiKey = apiKey
 			workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{
 				MouserApiKey: apiKey,
-			}, false, false, -1)
+			}, false, false, -1, nil)
 		} else {
 			return errors.New("Your API key is wrong...")
 		}
@@ -146,7 +146,7 @@ func TestAPIKey(apiKey, clientID, clientSecret string, supplier string) error {
 			workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{
 				DKClientId: clientID,
 				DKSecret:   clientSecret,
-			}, false, false, -1)
+			}, false, false, -1, nil)
 		}
 	}
 	return nil

@@ -23,6 +23,7 @@ type BOMulusFile struct {
 	ApiKeys             APIKeys     `json:"api_keys"`
 	AnalyzeSaveState    bool        `json:"analyze_save_state"`
 	AnalysisRefreshDays int         `json:"analysis_refresh_days"`
+	ApiPriority         []string    `json:"api_priority"`
 }
 
 type FileInfo struct {

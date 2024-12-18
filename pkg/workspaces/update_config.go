@@ -38,7 +38,7 @@ import (
 // UpdateBOMulusFile updates the BOMulus.bmls file with new workspace info.
 // This function reads the existing BOMulus.bmls file, updates it with the new workspace,
 // API keys, and other settings, and then writes the updated data back to the file.
-func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState, saveStateMustChange bool, analysisRefreshDays int) error {
+func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState, saveStateMustChange bool, analysisRefreshDays int, apiPriority []string) error {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 	var bomulusFile BOMulusFile
 	// Read existing BOMulus.bmls file if it exists
@@ -76,6 +76,9 @@ func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState
 	// Update analysis refresh days if specified
 	if analysisRefreshDays != -1 {
 		bomulusFile.AnalysisRefreshDays = analysisRefreshDays
+	}
+	if apiPriority != nil {
+		bomulusFile.ApiPriority = apiPriority
 	}
 	// Write updated data back to BOMulus.bmls
 	jsonData, err := json.MarshalIndent(bomulusFile, "", "  ")

@@ -53,6 +53,27 @@ func GetAnalyzeSaveState() (bool, error) {
 	return bomulusFile.AnalyzeSaveState, nil
 }
 
+// GetApiPriority retrieves the user api priority from the BOMulus.bmls file.
+// It reads the BOMulus.bmls file, unmarshals its content, and updates the
+// global configuration with the api priority array.
+func GetApiPriority() ([]string, error) {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+	var bomulusFile BOMulusFile
+	// Read BOMulus.bmls file
+	data, err := os.ReadFile(bomulusPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+	}
+	// Unmarshal JSON data into bomulusFile structure
+	err = json.Unmarshal(data, &bomulusFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	}
+	// Update global configuration with api priority
+	config.API_PRIORITY = bomulusFile.ApiPriority
+	return bomulusFile.ApiPriority, nil
+}
+
 // GetAnalysisRefreshDays retrieves the analysis refresh days from the BOMulus.bmls file.
 // It reads the BOMulus.bmls file, unmarshals its content, and updates the
 // global configuration with the analysis refresh days value.
