@@ -51,10 +51,15 @@ type Component struct {
 	UserManufacturer         string       `json:"user_manufacturer"`
 	SupplierManufacturer     string       `json:"supplier_manufacturer"`
 	Category                 string       `json:"category"`
-	ProductDetailUrl         string       `json:"product_detail_url"`
+	ProductDetailUrl         []MSValue    `json:"product_detail_url"`
 	LastRefresh              time.Time    `json:"last_refresh"`
 	Operator                 string
 	OldQuantity, NewQuantity int
+}
+
+type MSValue struct {
+	Supplier string `json:"supplier"`
+	Value    string `json:"value"`
 }
 
 type Designator struct {

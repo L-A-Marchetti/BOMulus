@@ -93,11 +93,14 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
 
                     {/* Buttons for URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
-                        {comp.product_detail_url && (
-                            <Button onClick={() => openExternalLink(comp.product_detail_url)}>
-                                Product Details ↝
+                        {comp.product_detail_url && Array.isArray(comp.product_detail_url) && comp.product_detail_url.map((url, index) => (
+                            <Button
+                                key={index} 
+                                onClick={() => openExternalLink(url.value)}
+                            >
+                                {`Product Details (${url.supplier}) ↝`}
                             </Button>
-                        )}
+                        ))}
                         {comp.datasheet_url && (
                             <Button onClick={() => openExternalLink(comp.datasheet_url)}>
                                 Data Sheet ↝

@@ -158,7 +158,7 @@ type FilterValue struct {
 type TopCategory struct {
 	RootCategory FilterOption `json:"RootCategory"`
 	Category     FilterOption `json:"Category"`
-	Score        int          `json:"Score"`
+	Score        float64      `json:"Score"`
 	ImageUrl     string       `json:"ImageUrl"`
 }
 

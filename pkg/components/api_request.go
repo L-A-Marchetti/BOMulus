@@ -83,6 +83,6 @@ func APIRequest(i int) error {
 		return errors.New("API connexion lost")
 	}
 	// Add some infos to the component.
-	processAnalysis(apiResponse, i)
+	processAnalysis(apiResponse, Response{}, i, "Mouser")
 	return nil
 }

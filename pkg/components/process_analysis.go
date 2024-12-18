@@ -31,32 +31,87 @@ import (
 
 // processAnalysis processes the API response and updates the component information
 // It handles both exact matches and alternative components
-func processAnalysis(apiResponse ApiResponse, i int) {
-	// Get the analyzed components from the API response
-	analyzedComponents := apiResponse.SearchResults.Parts
-	// Get a reference to the current component being processed
-	currentComponent := &core.Components[i]
-	// Check if the current component's MPN matches 100% the API response
-	if currentComponent.Mpn == analyzedComponents[0].ManufacturerPartNumber {
-		// Update the existing component with the analyzed data
-		processComponent(currentComponent, analyzedComponents[0], true)
-	} else {
-		// If no exact match, process all analyzed components as alternatives
-		for _, analyzedPart := range analyzedComponents {
-			alternativeMpn := processComponent(nil, analyzedPart, false)
-			currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
+func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier string) {
+	switch supplier {
+	case "Mouser":
+		// Get the analyzed components from the API response
+		analyzedComponents := apiResponse.SearchResults.Parts
+		// Get a reference to the current component being processed
+		currentComponent := &core.Components[i]
+		// Check if the current component's MPN matches 100% the API response
+		if currentComponent.Mpn == analyzedComponents[0].ManufacturerPartNumber {
+			// Update the existing component with the analyzed data
+			processComponent(currentComponent, analyzedComponents[0], true, supplier)
+		} else {
+			// If no exact match, process all analyzed components as alternatives
+			for _, analyzedPart := range analyzedComponents {
+				alternativeMpn := processComponent(nil, analyzedPart, false, supplier)
+				currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
+			}
+		}
+		// Validate the analysis
+		if len(apiResponse.Errors) == 0 {
+			currentComponent.Analyzed = true
+			currentComponent.LastRefresh = time.Now()
+		}
+	case "Digikey":
+		// Get the analyzed components from the API response
+		analyzedComponents := response.ExactMatches
+		// Get a reference to the current component being processed
+		currentComponent := &core.Components[i]
+		// Check if the current component's MPN matches 100% the API response
+		if currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
+			// Update the existing component with the analyzed data
+			dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier)
+		} else {
+			// If no exact match, process all analyzed components as alternatives
+			//for _, analyzedPart := range analyzedComponents {
+			//	alternativeMpn := processComponent(nil, analyzedPart, false, supplier)
+			//	currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
+			//}
+		}
+		// Validate the analysis
+		if len(response.ExactMatches) != 0 {
+			currentComponent.Analyzed = true
+			currentComponent.LastRefresh = time.Now()
 		}
 	}
-	// Validate the analysis
-	if len(apiResponse.Errors) == 0 {
-		currentComponent.Analyzed = true
-		currentComponent.LastRefresh = time.Now()
+}
+
+// dkProcessComponent updates an existing component or creates a new one
+// based on the analyzed part data
+func dkProcessComponent(existingComponent *core.Component, analyzed Product, isUpdate bool, supplier string) core.Component {
+	// Check if th call is an update or an alternative component.
+	var component core.Component
+	if isUpdate {
+		component = *existingComponent
+	} else {
+		component = core.Component{}
 	}
+	// Update component fields with analyzed data
+	//component.Mpn = analyzed.ManufacturerPartNumber
+	//component.ImagePath = analyzed.ImagePath
+	//component.Availability = analyzed.Availability
+	//component.DataSheetUrl = analyzed.DataSheetUrl
+	//component.LifecycleStatus = analyzed.LifecycleStatus
+	//component.ROHSStatus = analyzed.ROHSStatus
+	//component.SuggestedReplacement = analyzed.SuggestedReplacement
+	//component.PriceBreaks = convertPriceBreaks(analyzed.PriceBreaks)
+	//component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
+	//component.SupplierDescription = analyzed.Description
+	//component.SupplierManufacturer = analyzed.Manufacturer
+	//component.Category = analyzed.Category
+	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSValue{Supplier: supplier, Value: analyzed.ProductUrl})
+	// If updating an existing component, update the original
+	if isUpdate {
+		*existingComponent = component
+	}
+	return component
 }
 
 // processComponent updates an existing component or creates a new one
 // based on the analyzed part data
-func processComponent(existingComponent *core.Component, analyzed Part, isUpdate bool) core.Component {
+func processComponent(existingComponent *core.Component, analyzed Part, isUpdate bool, supplier string) core.Component {
 	// Check if th call is an update or an alternative component.
 	var component core.Component
 	if isUpdate {
@@ -77,7 +132,7 @@ func processComponent(existingComponent *core.Component, analyzed Part, isUpdate
 	component.SupplierDescription = analyzed.Description
 	component.SupplierManufacturer = analyzed.Manufacturer
 	component.Category = analyzed.Category
-	component.ProductDetailUrl = analyzed.ProductDetailUrl
+	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSValue{Supplier: supplier, Value: analyzed.ProductDetailUrl})
 	// If updating an existing component, update the original
 	if isUpdate {
 		*existingComponent = component

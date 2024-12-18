@@ -5,6 +5,7 @@ import (
 	"config"
 	"core"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -56,6 +57,14 @@ func APIRequestToDigiKey(i int) error {
 	var apiResponse Response
 	err = json.Unmarshal(body, &apiResponse)
 	core.ErrorsHandler(err)
+	if len(apiResponse.ExactMatches) == 0 {
+		return errors.New("API connexion lost")
+	}
+	processAnalysis(ApiResponse{}, apiResponse, i, "Digikey")
+	jsonResponse, _ := json.MarshalIndent(apiResponse, "", "  ")
+	fmt.Println("DK START")
+	fmt.Println(string(jsonResponse))
+	fmt.Println("DK END")
 	return nil
 }
 
