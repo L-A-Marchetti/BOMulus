@@ -23,7 +23,7 @@ import ComponentRow from './ComponentRow';
 import './Expander.css';
 
 // OperatorExpander component
-function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents }) {
+function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents, apiPriority }) {
     const [expanded, setExpanded] = useState(true);
 
     // Check if all components of this operator are pinned
@@ -52,6 +52,7 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
                     onPinToggle={onPinToggle}
                     pinnedComponents={pinnedComponents}
                     allPinned={allPinned}
+                    apiPriority={apiPriority}
                 />
             )}
         </div>
@@ -69,7 +70,7 @@ function ExpanderHeader({ operator, color, count, expanded, onClick }) {
 }
 
 // Table component for displaying components
-function ComponentTable({ components, operator, color, onPinToggle, pinnedComponents, allPinned }) {
+function ComponentTable({ components, operator, color, onPinToggle, pinnedComponents, allPinned, apiPriority }) {
     return (
         <table className="component-table">
             <thead>
@@ -95,6 +96,7 @@ function ComponentTable({ components, operator, color, onPinToggle, pinnedCompon
                         onPinToggle={onPinToggle}
                         pinnedComponents={pinnedComponents}
                         showExtraColumns={!allPinned}
+                        apiPriority={apiPriority}
                     />
                 ))}
             </tbody>

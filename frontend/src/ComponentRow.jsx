@@ -25,7 +25,7 @@ import BookmarkIcon from "./assets/images/bookmark.svg";
 import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import InfosIcon from "./assets/images/info.svg";
 
-function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
+function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority }) {
     const [expanded, setExpanded] = useState(false);
 
     // Opens an external link
@@ -85,7 +85,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
                                     <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
                                     <p><strong>Supplier Description:</strong> {comp.supplier_description || 'N/A'}</p>
                                     <p><strong>Supplier Manufacturer:</strong> {comp.supplier_manufacturer || 'N/A'}</p>
-                                    <p><strong>Category:</strong> {comp.category || 'N/A'}</p>
+                                    {/*<p><strong>Category:</strong> {comp.category || 'N/A'}</p>*/}
                                 </td>
                             </tr>
                         </tbody>
@@ -93,14 +93,18 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents }) {
 
                     {/* Buttons for URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
-                        {comp.product_detail_url && Array.isArray(comp.product_detail_url) && comp.product_detail_url.map((url, index) => (
-                            <Button
-                                key={index} 
-                                onClick={() => openExternalLink(url.value)}
-                            >
-                                {`Product Details (${url.supplier}) ↝`}
-                            </Button>
-                        ))}
+                    {apiPriority.map(api => {
+                        const productDetails = comp.product_detail_url?.find(url => url.supplier === api);
+                        if (productDetails) {
+                            return (
+                                <Button key={api} onClick={() => openExternalLink(productDetails.value)}>
+                                    {`Product Details (${api}) ↝`}
+                                </Button>
+                            );
+                        }
+                        return null;
+                    }).find(el => el)} 
+
                         {comp.datasheet_url && (
                             <Button onClick={() => openExternalLink(comp.datasheet_url)}>
                                 Data Sheet ↝

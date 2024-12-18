@@ -1,5 +1,6 @@
-import React from 'react';
 import './CompareView.css';
+import React, { useState, useEffect } from 'react';
+import { GetApiPriority } from '../wailsjs/go/main/App';
 import OperatorExpander from './Expander';
 import Button from './Button';
 import TopMenu from './TopMenu'; // Ajout de TopMenu
@@ -26,6 +27,20 @@ function CompareView({
     statsData = { statsData }
 }) {
     console.log("CompareView.jsx - onCompare:", onCompare);
+    const [apiPriority, setApiPriority] = useState([]);
+
+    useEffect(() => {
+        loadApiPriority();
+    }, []);
+
+    const loadApiPriority = async () => {
+        try {
+            const priority = await GetApiPriority();
+            setApiPriority(priority || []);
+        } catch (error) {
+            console.error("Error loading API priority:", error);
+        }
+    };
 
     // Calculer operatorCounts
     const operatorCounts = operators.map((operator) => {
@@ -86,6 +101,7 @@ function CompareView({
                                 count={operatorComponents.length}
                                 onPinToggle={onPinToggle}
                                 pinnedComponents={pinnedComponents}
+                                apiPriority={apiPriority}
                             />
                         ) : null;
                     })}
