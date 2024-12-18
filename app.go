@@ -219,7 +219,16 @@ func (a *App) GetSavedAPIKeys() (workspaces.APIKeys, error) {
 
 // TestMouserAPIKey tests if the provided Mouser API key is valid.
 func (a *App) TestMouserAPIKey(apiKey string) (bool, error) {
-	err := components.TestAPIKey(apiKey, "mouser")
+	err := components.TestAPIKey(apiKey, "", "", "mouser")
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// TestDKCredentials tests if the provided digikey API credentials are valid.
+func (a *App) TestDKCredentials(clientID, clientSecret string) (bool, error) {
+	err := components.TestAPIKey("", clientID, clientSecret, "dk")
 	if err != nil {
 		return false, err
 	}

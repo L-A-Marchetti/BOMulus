@@ -58,6 +58,7 @@ func AnalyzeComponents() error {
 					}
 				}
 				APIErr := APIRequest(i) // Call the APIRequest function for analysis
+				APIRequestToDigiKey(i)
 				if APIErr != nil {
 					errChan <- APIErr // Send error to channel if analysis fails
 					return

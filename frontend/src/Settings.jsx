@@ -32,7 +32,8 @@
 import React, { useState, useEffect } from 'react';
 import ApiKeyInput from './ApiKeyInput'; // Importing the new component
 import { 
-    TestMouserAPIKey, 
+    TestMouserAPIKey,
+    TestDKCredentials, 
     TestBOMulusAPIKey, 
     GetSavedAPIKeys, 
     SetAnalyzeSaveState, 
@@ -44,12 +45,17 @@ import './Settings.css'; // External CSS file
 
 function Settings() {
     const [mouserApiKey, setMouserApiKey] = useState('');
+    const [dkClientID, setDkClientID] = useState('');
+    const [dkSecret, setDkSecret] = useState('');
     const [bomulusApiKey, setBomulusApiKey] = useState('');
     const [mouserApiStatus, setMouserApiStatus] = useState('');
+    const [dkApiStatus, setDkApiStatus] = useState('');
     const [bomulusApiStatus, setBomulusApiStatus] = useState('');
     const [mouserError, setMouserError] = useState('');
+    const [dkError, setDkError] = useState('');
     const [bomulusError, setBomulusError] = useState('');
     const [isTestingMouser, setIsTestingMouser] = useState(false);
+    const [isTestingDk, setIsTestingDk] = useState(false);
     const [isTestingBOMulus, setIsTestingBOMulus] = useState(false);
     const [analyzeSaveState, setAnalyzeSaveState] = useState(false);
     const [analysisRefreshDays, setAnalysisRefreshDays] = useState(0);
@@ -92,6 +98,8 @@ function Settings() {
             const savedKeys = await GetSavedAPIKeys();
             setMouserApiKey(savedKeys.mouser_api_key || '');
             setBomulusApiKey(savedKeys.bomulus_api_key || '');
+            setDkClientID(savedKeys.dk_client_id || '');
+            setDkSecret(savedKeys.dk_secret || '');
         } catch (error) {
             console.error("Error loading saved API keys:", error);
         }
@@ -127,6 +135,20 @@ function Settings() {
         setMouserError('');
     };
 
+    // Handle changes to Digikey API client ID
+    const handleDkClientIDChange = (e) => {
+        setDkClientID(e.target.value);
+        setDkApiStatus('');
+        setDkError('');
+    };
+
+    // Handle changes to Digikey API secret
+    const handleDkSecretChange = (e) => {
+        setDkSecret(e.target.value);
+        setDkApiStatus('');
+        setDkError('');
+    };
+
     // Handle changes to BOMulus API key input
     const handleBomulusApiKeyChange = (e) => {
         setBomulusApiKey(e.target.value);
@@ -152,6 +174,27 @@ function Settings() {
             setMouserError(error.toString());
         } finally {
             setIsTestingMouser(false);
+        }
+    };
+
+    // Test Digikey API credentials validity
+    const testDKCredentials = async () => {
+        setIsTestingDk(true);
+        try {
+            const result = await TestDKCredentials(dkClientID, dkSecret);
+            if (result) {
+                setDkApiStatus('API credentials are valid');
+                setDkError('');
+            } else {
+                setDkApiStatus('API credentials are invalid');
+                setDkError('');
+            }
+        } catch (error) {
+            console.error("Error testing Digikey API credentials:", error);
+            setDkApiStatus('');
+            setDkError(error.toString());
+        } finally {
+            setIsTestingDk(false);
         }
     };
 
@@ -188,6 +231,20 @@ function Settings() {
                  isTesting={isTestingMouser}
                  status={mouserApiStatus}
                  error={mouserError}
+             />
+
+             <ApiKeyInput
+                 id="dkCredentials"
+                 label="DigiKey API Credentials"
+                 value={dkClientID}
+                 onChange={handleDkClientIDChange}
+                 clientSecret={dkSecret}
+                 onClientSecretChange={handleDkSecretChange}
+                 onTest={testDKCredentials}
+                 isTesting={isTestingDk}
+                 status={dkApiStatus}
+                 error={dkError}
+                 isCredentials={true} // Activate credentials configuration
              />
 
              <ApiKeyInput 

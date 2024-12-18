@@ -94,6 +94,8 @@ func GetSavedAPIKeys() (APIKeys, error) {
 	API_KEYS = APIKeys{
 		BOMulusApiKey: bomulusFile.ApiKeys.BOMulusApiKey,
 		MouserApiKey:  bomulusFile.ApiKeys.MouserApiKey,
+		DKClientId:    bomulusFile.ApiKeys.DKClientId,
+		DKSecret:      bomulusFile.ApiKeys.DKSecret,
 	}
 	return bomulusFile.ApiKeys, nil
 }

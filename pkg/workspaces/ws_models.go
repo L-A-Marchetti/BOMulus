@@ -35,11 +35,15 @@ type FileInfo struct {
 type APIKeys struct {
 	MouserApiKey  string `json:"mouser_api_key"`
 	BOMulusApiKey string `json:"bomulus_api_key"`
+	DKClientId    string `json:"dk_client_id"`
+	DKSecret      string `json:"dk_secret"`
 }
 
 var API_KEYS = APIKeys{
 	BOMulusApiKey: "",
 	MouserApiKey:  "",
+	DKClientId:    "",
+	DKSecret:      "",
 }
 
 var (

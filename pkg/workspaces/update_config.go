@@ -64,6 +64,10 @@ func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState
 		if apiKeys.MouserApiKey != "" {
 			bomulusFile.ApiKeys.MouserApiKey = apiKeys.MouserApiKey
 		}
+		if apiKeys.DKClientId != "" && apiKeys.DKSecret != "" {
+			bomulusFile.ApiKeys.DKClientId = apiKeys.DKClientId
+			bomulusFile.ApiKeys.DKSecret = apiKeys.DKSecret
+		}
 	}
 	// Update save state if required
 	if saveStateMustChange {
