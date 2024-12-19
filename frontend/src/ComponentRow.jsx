@@ -23,7 +23,14 @@ import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
 import BookmarkIcon from "./assets/images/bookmark.svg";
 import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
+import Mouser from "./assets/images/mouser.svg";
+import Digikey from "./assets/images/digikey.svg";
 import InfosIcon from "./assets/images/info.svg";
+
+const supplierIcons = {
+    Mouser: Mouser,
+    Digikey: Digikey,
+};
 
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority }) {
     const [expanded, setExpanded] = useState(false);
@@ -98,7 +105,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         if (productDetails) {
                             return (
                                 <Button key={api} onClick={() => openExternalLink(productDetails.value)}>
-                                    {`Product Details (${api}) ↝`}
+                                    <img src={supplierIcons[api]} alt={`${api} logo`} style={{marginRight: '7px', width: '7px', height: 'auto'}}/>{`Product Details (${api}) ↝`}
                                 </Button>
                             );
                         }

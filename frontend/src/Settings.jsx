@@ -33,6 +33,8 @@ import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import ApiKeyInput from './ApiKeyInput'; // Importing the new component
+import Mouser from "./assets/images/mouser.svg";
+import Digikey from "./assets/images/digikey.svg";
 import { 
     GetApiPriority, 
     SetApiPriority, 
@@ -49,6 +51,11 @@ import './Settings.css'; // External CSS file
 
 const ItemTypes = {
     API: 'api'
+};
+
+const supplierIcons = {
+    Mouser: Mouser,
+    Digikey: Digikey,
 };
 
 const DraggableItem = ({ api, index, moveItem }) => {
@@ -85,7 +92,7 @@ const DraggableItem = ({ api, index, moveItem }) => {
                 cursor: isDragging ? 'grabbing' : 'grab'  // Curseur grab ajouté ici
             }}
         >
-            {api}
+          <img src={supplierIcons[api]} alt={`${api} logo`} style={{width: '7px', height: 'auto'}}/>  {api}
         </div>
     );
     
@@ -334,7 +341,7 @@ function Settings() {
                  error={bomulusError}
              />
 
-<h3>API Priority</h3>
+            <h3>API Priority</h3>
             <DndProvider backend={HTML5Backend}>
                 {apiPriority.map((api, index) => (
                     <DraggableItem
