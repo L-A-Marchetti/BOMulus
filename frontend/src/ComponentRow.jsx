@@ -80,37 +80,148 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         <tbody>
                             <tr>
                                 <td style={{ width: '30%', verticalAlign: 'top', padding: '10px' }}>
-                                    <img src={comp.image_path} alt="Component" style={{ maxWidth: '100%' }} />
+                                    {apiPriority.map(api => {
+                                        const imageDetails = comp.image_path?.find(detail => detail.supplier === api);
+                                        return imageDetails ? (
+                                            <img
+                                                key={api}
+                                                src={imageDetails.value}
+                                                alt={`${api} Component`}
+                                                style={{ maxWidth: '100%' }}
+                                            />
+                                        ) : null;
+                                    }).find(el => el) || <p>No Image Available</p>}
                                 </td>
                                 <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
-                                    <p><strong>Availability:</strong> {comp.availability || 'N/A'}</p>
-                                    <p><strong>Lifecycle Status:</strong> {comp.lifecycle_status || 'N/A'}</p>
-                                    <p><strong>ROHS Status:</strong> {comp.rohs_status || 'N/A'}</p>
-                                    <p><strong>Suggested Replacement:</strong> {comp.suggested_replacement || 'N/A'}</p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const availability = comp.availability?.find(detail => detail.supplier === api);
+                                            return availability ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />Availability: </strong>
+
+                                                    {availability.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const lifecycle = comp.lifecycle_status?.find(detail => detail.supplier === api);
+                                            return lifecycle ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />Lifecycle Status: </strong>
+                                                    {lifecycle.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const rohs = comp.rohs_status?.find(detail => detail.supplier === api);
+                                            return rohs ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />ROHS Status: </strong>
+                                                    {rohs.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const replacement = comp.suggested_replacement?.find(detail => detail.supplier === api);
+                                            return replacement ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />Suggested Replacement: </strong>
+                                                    {replacement.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
                                 </td>
                                 <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
                                     <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
-                                    <p><strong>Supplier Description:</strong> {comp.supplier_description || 'N/A'}</p>
-                                    <p><strong>Supplier Manufacturer:</strong> {comp.supplier_manufacturer || 'N/A'}</p>
-                                    {/*<p><strong>Category:</strong> {comp.category || 'N/A'}</p>*/}
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const description = comp.supplier_description?.find(detail => detail.supplier === api);
+                                            return description ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />Supplier Description: </strong>
+                                                    {description.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const manufacturer = comp.supplier_manufacturer?.find(detail => detail.supplier === api);
+                                            return manufacturer ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />Supplier Manufacturer: </strong>
+                                                    {manufacturer.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const category = comp.category?.find(detail => detail.supplier === api);
+                                            return category ? (
+                                                <>
+                                                    <strong><img
+                                                        src={supplierIcons[api]}
+                                                        alt={`${api} icon`}
+                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />Category: </strong>
+                                                    {category.value}
+                                                </>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
 
+
                     {/* Buttons for URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
-                    {apiPriority.map(api => {
-                        const productDetails = comp.product_detail_url?.find(url => url.supplier === api);
-                        if (productDetails) {
-                            return (
-                                <Button key={api} onClick={() => openExternalLink(productDetails.value)}>
-                                    <img src={supplierIcons[api]} alt={`${api} logo`} style={{marginRight: '7px', width: '7px', height: 'auto'}}/>{`Product Details (${api}) ↝`}
-                                </Button>
-                            );
-                        }
-                        return null;
-                    }).find(el => el)} 
+                        {apiPriority.map(api => {
+                            const productDetails = comp.product_detail_url?.find(url => url.supplier === api);
+                            if (productDetails) {
+                                return (
+                                    <Button key={api} onClick={() => openExternalLink(productDetails.value)}>
+                                        <img src={supplierIcons[api]} alt={`${api} icon`} style={{ marginRight: '7px', width: '7px', height: 'auto' }} />
+                                        Product Details ↝
+                                    </Button>
+                                );
+                            }
+                            return null;
+                        }).find(el => el)}
 
                         {comp.datasheet_url && (
                             <Button onClick={() => openExternalLink(comp.datasheet_url)}>

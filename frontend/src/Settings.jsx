@@ -92,7 +92,7 @@ const DraggableItem = ({ api, index, moveItem }) => {
                 cursor: isDragging ? 'grabbing' : 'grab'  // Curseur grab ajouté ici
             }}
         >
-          <img src={supplierIcons[api]} alt={`${api} logo`} style={{width: '7px', height: 'auto'}}/>  {api}
+          <img src={supplierIcons[api]} alt={`${api} icon`} style={{width: '7px', height: 'auto'}}/>  {api}
         </div>
     );
     
