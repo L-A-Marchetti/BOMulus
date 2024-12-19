@@ -93,13 +93,13 @@ func dkProcessComponent(existingComponent *core.Component, analyzed Product, isU
 	component.Mpn = analyzed.ManufacturerProductNumber
 	component.ImagePath = append(component.ImagePath, core.MSValue{Supplier: supplier, Value: analyzed.PhotoUrl})
 	component.Availability = append(component.Availability, core.MSValue{Supplier: supplier, Value: strconv.Itoa(analyzed.QuantityAvailable)})
-	//component.DataSheetUrl = analyzed.DataSheetUrl
+	component.DataSheetUrl = append(component.DataSheetUrl, core.MSValue{Supplier: supplier, Value: analyzed.DatasheetUrl})
 	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.ProductStatus.Status})
 	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.Classifications.RohsStatus})
 	//component.SuggestedReplacement = analyzed.SuggestedReplacement
 	//component.PriceBreaks = convertPriceBreaks(analyzed.PriceBreaks)
 	//component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
-	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description.ProductDescription + analyzed.Description.DetailedDescription})
+	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description.ProductDescription + " | " + analyzed.Description.DetailedDescription})
 	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer.Name})
 	component.Category = append(component.Category, core.MSValue{Supplier: supplier, Value: analyzed.Category.Name})
 	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSValue{Supplier: supplier, Value: analyzed.ProductUrl})
@@ -124,7 +124,7 @@ func processComponent(existingComponent *core.Component, analyzed Part, isUpdate
 	component.Mpn = analyzed.ManufacturerPartNumber
 	component.ImagePath = append(component.ImagePath, core.MSValue{Supplier: supplier, Value: analyzed.ImagePath})
 	component.Availability = append(component.Availability, core.MSValue{Supplier: supplier, Value: analyzed.Availability})
-	component.DataSheetUrl = analyzed.DataSheetUrl
+	component.DataSheetUrl = append(component.DataSheetUrl, core.MSValue{Supplier: supplier, Value: analyzed.DataSheetUrl})
 	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.LifecycleStatus})
 	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.ROHSStatus})
 	component.SuggestedReplacement = append(component.SuggestedReplacement, core.MSValue{Supplier: supplier, Value: analyzed.SuggestedReplacement})

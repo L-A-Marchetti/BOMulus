@@ -87,7 +87,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                                 key={api}
                                                 src={imageDetails.value}
                                                 alt={`${api} Component`}
-                                                style={{ maxWidth: '100%' }}
+                                                style={{ maxWidth: '120px' }}
                                             />
                                         ) : null;
                                     }).find(el => el) || <p>No Image Available</p>}
@@ -223,11 +223,19 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                             return null;
                         }).find(el => el)}
 
-                        {comp.datasheet_url && (
-                            <Button onClick={() => openExternalLink(comp.datasheet_url)}>
-                                Data Sheet ↝
-                            </Button>
-                        )}
+
+                        {apiPriority.map(api => {
+                            const dataSheet = comp.datasheet_url?.find(url => url.supplier === api);
+                            if (dataSheet) {
+                                return (
+                                    <Button key={api} onClick={() => openExternalLink(dataSheet.value)}>
+                                        <img src={supplierIcons[api]} alt={`${api} icon`} style={{ marginRight: '7px', width: '7px', height: 'auto' }} />
+                                        Data Sheet ↝
+                                    </Button>
+                                );
+                            }
+                            return null;
+                        }).find(el => el)}
                     </div>
 
                     {/* Info Messages */}

@@ -38,7 +38,7 @@ type Component struct {
 	Designators              []Designator `json:"designators"`
 	ImagePath                []MSValue    `json:"image_path"`
 	Availability             []MSValue    `json:"availability"`
-	DataSheetUrl             string       `json:"datasheet_url"`
+	DataSheetUrl             []MSValue    `json:"datasheet_url"`
 	LifecycleStatus          []MSValue    `json:"lifecycle_status"`
 	ROHSStatus               []MSValue    `json:"rohs_status"`
 	SuggestedReplacement     []MSValue    `json:"suggested_replacement"`
@@ -55,6 +55,11 @@ type Component struct {
 	LastRefresh              time.Time    `json:"last_refresh"`
 	Operator                 string
 	OldQuantity, NewQuantity int
+}
+
+type MSPriceBreaks struct {
+	Supplier string       `json:"supplier"`
+	Value    []PriceBreak `json:"value"`
 }
 
 type MSValue struct {
