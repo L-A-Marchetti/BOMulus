@@ -256,28 +256,40 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                     <div>
                         <strong>Price Breaks:</strong>
                         {comp.price_breaks && comp.price_breaks.length > 0 ? (
-                            <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '10px' }}>
-                                <thead>
-                                    <tr>
-                                        <th style={tableHeaderStyle}>Quantity</th>
-                                        <th style={tableHeaderStyle}>Price</th>
-                                        <th style={tableHeaderStyle}>Currency</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {comp.price_breaks.map((priceBreak, index) => (
-                                        <tr key={index}>
-                                            <td style={tableCellStyle}>{priceBreak.Quantity}</td>
-                                            <td style={tableCellStyle}>{priceBreak.Price}</td>
-                                            <td style={tableCellStyle}>{priceBreak.Currency}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                            <div>
+                                {comp.price_breaks.map((supplierPriceBreak, supplierIndex) => (
+                                    <div key={supplierIndex} style={{ marginBottom: '20px' }}>
+                                        <h4>Supplier: {supplierPriceBreak.supplier}</h4>
+                                        {supplierPriceBreak.value && supplierPriceBreak.value.length > 0 ? (
+                                            <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '10px' }}>
+                                                <thead>
+                                                    <tr>
+                                                        <th style={tableHeaderStyle}>Quantity</th>
+                                                        <th style={tableHeaderStyle}>Price</th>
+                                                        <th style={tableHeaderStyle}>Currency</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {supplierPriceBreak.value.map((priceBreak, priceIndex) => (
+                                                        <tr key={priceIndex}>
+                                                            <td style={tableCellStyle}>{priceBreak.Quantity}</td>
+                                                            <td style={tableCellStyle}>{priceBreak.Price}</td>
+                                                            <td style={tableCellStyle}>{priceBreak.Currency}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        ) : (
+                                            <p style={{ fontStyle: 'italic', color: 'gray' }}>No price breaks available for this supplier.</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         ) : (
                             <p>No price available.</p>
                         )}
                     </div>
+
 
                 </div>
             </td>

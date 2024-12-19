@@ -26,6 +26,7 @@ package components
 
 import (
 	"core"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -63,7 +64,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 		// Check if the current component's MPN matches 100% the API response
 		if currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
 			// Update the existing component with the analyzed data
-			dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier)
+			dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier, response.SearchLocaleUsed.Currency)
 		} else {
 			// If no exact match, process all analyzed components as alternatives
 			//for _, analyzedPart := range analyzedComponents {
@@ -81,7 +82,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 
 // dkProcessComponent updates an existing component or creates a new one
 // based on the analyzed part data
-func dkProcessComponent(existingComponent *core.Component, analyzed Product, isUpdate bool, supplier string) core.Component {
+func dkProcessComponent(existingComponent *core.Component, analyzed Product, isUpdate bool, supplier string, currency string) core.Component {
 	// Check if th call is an update or an alternative component.
 	var component core.Component
 	if isUpdate {
@@ -97,7 +98,7 @@ func dkProcessComponent(existingComponent *core.Component, analyzed Product, isU
 	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.ProductStatus.Status})
 	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.Classifications.RohsStatus})
 	//component.SuggestedReplacement = analyzed.SuggestedReplacement
-	//component.PriceBreaks = convertPriceBreaks(analyzed.PriceBreaks)
+	component.PriceBreaks = append(component.PriceBreaks, core.MSPriceBreaks{Supplier: supplier, Value: dkConvertPriceBreaks(analyzed.ProductVariations[1].StandardPricing, currency)})
 	//component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
 	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description.ProductDescription + " | " + analyzed.Description.DetailedDescription})
 	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer.Name})
@@ -128,7 +129,7 @@ func processComponent(existingComponent *core.Component, analyzed Part, isUpdate
 	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.LifecycleStatus})
 	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.ROHSStatus})
 	component.SuggestedReplacement = append(component.SuggestedReplacement, core.MSValue{Supplier: supplier, Value: analyzed.SuggestedReplacement})
-	component.PriceBreaks = convertPriceBreaks(analyzed.PriceBreaks)
+	component.PriceBreaks = append(component.PriceBreaks, core.MSPriceBreaks{Supplier: supplier, Value: convertPriceBreaks(analyzed.PriceBreaks)})
 	component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
 	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description})
 	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer})
@@ -146,6 +147,15 @@ func convertPriceBreaks(apiPriceBreaks []PriceBreak) []core.PriceBreak {
 	priceBreaks := make([]core.PriceBreak, len(apiPriceBreaks))
 	for i, pb := range apiPriceBreaks {
 		priceBreaks[i] = core.PriceBreak(pb)
+	}
+	return priceBreaks
+}
+
+// dkConvertPriceBreaks converts dk API price breaks to core price breaks
+func dkConvertPriceBreaks(apiPriceBreaks []Pricing, currency string) []core.PriceBreak {
+	priceBreaks := make([]core.PriceBreak, len(apiPriceBreaks))
+	for i, pb := range apiPriceBreaks {
+		priceBreaks[i] = core.PriceBreak{Quantity: pb.BreakQuantity, Price: fmt.Sprintf("%f", pb.UnitPrice), Currency: currency}
 	}
 	return priceBreaks
 }

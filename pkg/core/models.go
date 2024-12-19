@@ -31,28 +31,28 @@ type Filter struct {
 /*╔══════════════ COMPONENT MODELS ══════════════╗*/
 
 type Component struct {
-	Id                       int          `json:"id"`
-	Quantity                 int          `json:"quantity"`
-	Mpn                      string       `json:"mpn"`
-	Designator               string       `json:"designator"`
-	Designators              []Designator `json:"designators"`
-	ImagePath                []MSValue    `json:"image_path"`
-	Availability             []MSValue    `json:"availability"`
-	DataSheetUrl             []MSValue    `json:"datasheet_url"`
-	LifecycleStatus          []MSValue    `json:"lifecycle_status"`
-	ROHSStatus               []MSValue    `json:"rohs_status"`
-	SuggestedReplacement     []MSValue    `json:"suggested_replacement"`
-	PriceBreaks              []PriceBreak `json:"price_breaks"`
-	InfoMessages             []string     `json:"info_messages"`
-	Analyzed                 bool         `json:"analyzed"`
-	MismatchMpn              []Component  `json:"mismatch_mpn"`
-	UserDescription          string       `json:"user_description"`
-	SupplierDescription      []MSValue    `json:"supplier_description"`
-	UserManufacturer         string       `json:"user_manufacturer"`
-	SupplierManufacturer     []MSValue    `json:"supplier_manufacturer"`
-	Category                 []MSValue    `json:"category"`
-	ProductDetailUrl         []MSValue    `json:"product_detail_url"`
-	LastRefresh              time.Time    `json:"last_refresh"`
+	Id                       int             `json:"id"`
+	Quantity                 int             `json:"quantity"`
+	Mpn                      string          `json:"mpn"`
+	Designator               string          `json:"designator"`
+	Designators              []Designator    `json:"designators"`
+	ImagePath                []MSValue       `json:"image_path"`
+	Availability             []MSValue       `json:"availability"`
+	DataSheetUrl             []MSValue       `json:"datasheet_url"`
+	LifecycleStatus          []MSValue       `json:"lifecycle_status"`
+	ROHSStatus               []MSValue       `json:"rohs_status"`
+	SuggestedReplacement     []MSValue       `json:"suggested_replacement"`
+	PriceBreaks              []MSPriceBreaks `json:"price_breaks"`
+	InfoMessages             []string        `json:"info_messages"`
+	Analyzed                 bool            `json:"analyzed"`
+	MismatchMpn              []Component     `json:"mismatch_mpn"`
+	UserDescription          string          `json:"user_description"`
+	SupplierDescription      []MSValue       `json:"supplier_description"`
+	UserManufacturer         string          `json:"user_manufacturer"`
+	SupplierManufacturer     []MSValue       `json:"supplier_manufacturer"`
+	Category                 []MSValue       `json:"category"`
+	ProductDetailUrl         []MSValue       `json:"product_detail_url"`
+	LastRefresh              time.Time       `json:"last_refresh"`
 	Operator                 string
 	OldQuantity, NewQuantity int
 }
