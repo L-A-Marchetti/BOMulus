@@ -35,7 +35,7 @@ func APIRequestToDigiKey(i int) error {
 	core.ErrorsHandler(err)
 	// Add headers
 	req.Header.Add("Content-Type", "application/json")
-	OAuthToken, _ := getOAuthToken(workspaces.API_KEYS.DKSecret) // Get an access token from the authorization server's token endpoint
+	OAuthToken, _ := getOAuthToken(workspaces.API_KEYS.DKSecret, workspaces.API_KEYS.DKClientId) // Get an access token from the authorization server's token endpoint
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", OAuthToken))
 	req.Header.Add("X-DIGIKEY-Client-Id", workspaces.API_KEYS.DKClientId)
 	req.Header.Add("X-DIGIKEY-Locale-Language", "en")
@@ -68,7 +68,7 @@ func APIRequestToDigiKey(i int) error {
 	return nil
 }
 
-func getOAuthToken(clientSecret string) (string, error) {
+func getOAuthToken(clientSecret, clientID string) (string, error) {
 	// Prepare data for request.
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
@@ -77,7 +77,7 @@ func getOAuthToken(clientSecret string) (string, error) {
 	core.ErrorsHandler(err)
 	// Add HTTP headers
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.SetBasicAuth(workspaces.API_KEYS.DKClientId, clientSecret)
+	req.SetBasicAuth(clientID, clientSecret)
 	// Send request
 	client := &http.Client{}
 	resp, err := client.Do(req)

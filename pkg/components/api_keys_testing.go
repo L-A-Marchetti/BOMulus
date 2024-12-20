@@ -116,7 +116,7 @@ func TestAPIKey(apiKey, clientID, clientSecret string, supplier string) error {
 		}
 		// Add headers
 		req.Header.Add("Content-Type", "application/json")
-		OAuthToken, err := getOAuthToken(clientSecret) // Get an access token from the authorization server's token endpoint
+		OAuthToken, err := getOAuthToken(clientSecret, clientID) // Get an access token from the authorization server's token endpoint
 		if err != nil {
 			return errors.New("Wrong Client Secret.")
 		}
