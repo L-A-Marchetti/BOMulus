@@ -104,20 +104,32 @@ function App() {
                 totalWarnings: 0,
             };
         }
+    
         const counts = {
-            outOfStock: components.filter((comp) => comp.availability === "" && comp.analyzed).length,
-            riskyLifecycle: components.filter(
-                (comp) =>
-                    comp.lifecycle_status !== "" &&
-                    comp.lifecycle_status !== "New Product" &&
-                    comp.lifecycle_status !== "New at Mouser" &&
-                    comp.analyzed
+            outOfStock: components.filter((comp) =>
+                comp.analyzed &&
+                comp.availability?.every(avail => avail.value.trim() === "")
             ).length,
-            manufacturerMessages: components.filter((comp) => comp.info_messages !== null && comp.analyzed).length,
-            mismatchingMpn: components.filter((comp) => comp.mismatch_mpn !== null && comp.analyzed).length,
+            riskyLifecycle: components.filter((comp) =>
+                comp.analyzed &&
+                comp.lifecycle_status?.some(lcs =>
+                    lcs.value.trim() !== "" &&
+                    !["New Product", "New at Mouser", "Active"].includes(lcs.value.trim())
+                )
+            ).length,
+            manufacturerMessages: components.filter((comp) =>
+                comp.analyzed &&
+                comp.info_messages?.some(msg => msg.trim() !== "")
+            ).length,
+            mismatchingMpn: components.filter((comp) =>
+                comp.analyzed &&
+                comp.mismatch_mpn?.some(mismatch => mismatch !== null)
+            ).length,
         };
+    
         return { ...counts, totalWarnings: Object.values(counts).reduce((a, b) => a + b, 0) };
     };
+    
 
     const operatorCounts = calculateOperatorCounts();
     const warningCounts = calculateWarningCounts();
@@ -182,10 +194,18 @@ function App() {
         }
     };
 
+    const countBySupplier = (components, supplier) => 
+        components.filter(comp => 
+            comp.analyzed && 
+            comp.mismatch_mpn === null && 
+            comp.sources.some(source => source === supplier)
+        ).length;
+
     const totalComponents = components.length;
-    const mouserCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn === null).length;
+    const mouserCount = countBySupplier(components, "Mouser");
+    const digikeyCount = countBySupplier(components, "Digikey");
     const unprocuredCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn != null).length;
-    const coverage = totalComponents > 0 ? (mouserCount / totalComponents) * 100 : 0;
+    const coverage = totalComponents > 0 ? (components.filter(comp => comp.analyzed && comp.mismatch_mpn === null).length / totalComponents) * 100 : 0;
     const inStockCount = components.filter(comp => comp.availability !== "" && comp.analyzed).length;
     const outOfStockCount = components.filter(comp => comp.availability === "" && comp.analyzed).length;
     const insufficientCount = 0;
@@ -193,6 +213,7 @@ function App() {
     const statsData = {
         coverage,
         mouserCount,
+        digikeyCount,
         unprocuredCount,
         inStockCount,
         outOfStockCount,

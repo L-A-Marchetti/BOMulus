@@ -65,7 +65,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
 
     const hasMismatchMpn = component.analyzed &&
         operator !== 'DELETE' &&
-        component.mismatch_mpn?.some(mismatch => mismatch.trim() !== "");
+        component.mismatch_mpn?.some(mismatch => mismatch !== null);
     const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
 
     const messages = [];
@@ -110,21 +110,22 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                 </td>
                                 <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
                                     <p>
+                                        <strong>Availability:</strong>
                                         {apiPriority.map(api => {
                                             const availability = comp.availability?.find(detail => detail.supplier === api);
                                             return availability ? (
-                                                <>
-                                                    <strong><img
+                                                <React.Fragment key={api}>
+                                                    <img
                                                         src={supplierIcons[api]}
                                                         alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />Availability: </strong>
-
-                                                    {availability.value}
-                                                </>
+                                                        style={{ marginLeft: '7px', marginRight: '7px', width: '7px', height: 'auto' }}
+                                                    />
+                                                    {availability.value === "" || availability.value === "0" ? "Out of Stock" : availability.value}
+                                                </React.Fragment>
                                             ) : null;
-                                        }).find(value => value) || 'N/A'}
+                                        }).reduce((prev, curr) => [prev, ' ', curr]) || ' N/A'}
                                     </p>
+
                                     <p>
                                         {apiPriority.map(api => {
                                             const lifecycle = comp.lifecycle_status?.find(detail => detail.supplier === api);
@@ -161,7 +162,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                                 const replacement = comp.suggested_replacement?.find(detail => detail.supplier === api);
                                                 return replacement && replacement.value?.trim() ? (
                                                     <>
-                                                        <strong>
+                                                        <strong style={{ marginRight: '10px' }}>
                                                             <img
                                                                 src={supplierIcons[api]}
                                                                 alt={`${api} icon`}

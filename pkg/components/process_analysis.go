@@ -55,6 +55,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 		// Validate the analysis
 		if len(apiResponse.Errors) == 0 {
 			currentComponent.Analyzed = true
+			currentComponent.Sources = append(currentComponent.Sources, "Mouser")
 			currentComponent.LastRefresh = time.Now()
 		}
 	case "Digikey":
@@ -76,6 +77,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 		// Validate the analysis
 		if len(response.ExactMatches) != 0 {
 			currentComponent.Analyzed = true
+			currentComponent.Sources = append(currentComponent.Sources, "Digikey")
 			currentComponent.LastRefresh = time.Now()
 		}
 	}

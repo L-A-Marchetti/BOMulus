@@ -2,7 +2,7 @@ import React from 'react';
 import './Stats.css';
 
 function Stats({ statsData }) {
-    const { coverage, mouserCount, unprocuredCount, inStockCount, outOfStockCount, insufficientCount, total } = statsData;
+    const { coverage, mouserCount, digikeyCount, unprocuredCount, inStockCount, outOfStockCount, insufficientCount, total } = statsData;
 
     // Donut coverage
     // coverage% un gradient, le reste gris
@@ -26,7 +26,8 @@ function Stats({ statsData }) {
                 <div className="donut" style={{ background: coverageBg }}><p>{Math.round(coverage)}%</p></div>
                 <div className="stats-labels">
                     <h5>BOM COVERAGE</h5>
-                    <p style={{ color: '#8e84b3' }}>Mouser: {mouserCount}</p>
+                    <p style={{ color: '#007BFF' }}>Mouser: {mouserCount}</p>
+                    <p style={{ color: '#FF2100' }}>Digikey: {digikeyCount}</p>
                     <p style={{ color: '#acacac' }}>Unprocured: {unprocuredCount}</p>
                 </div>
             </div>
