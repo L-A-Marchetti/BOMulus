@@ -104,7 +104,7 @@ function App() {
                 totalWarnings: 0,
             };
         }
-    
+
         const counts = {
             outOfStock: components.filter((comp) =>
                 comp.analyzed &&
@@ -126,10 +126,10 @@ function App() {
                 comp.mismatch_mpn?.some(mismatch => mismatch !== null)
             ).length,
         };
-    
+
         return { ...counts, totalWarnings: Object.values(counts).reduce((a, b) => a + b, 0) };
     };
-    
+
 
     const operatorCounts = calculateOperatorCounts();
     const warningCounts = calculateWarningCounts();
@@ -156,21 +156,54 @@ function App() {
     };
 
     const getFilteredComponents = () => {
-
         return components.filter((comp) => {
-            if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(comp.Operator)) return false;
-            if (activeFilters.warning) {
-                if (activeFilters.warning === 'outOfStock' && (comp.availability !== "" || !comp.analyzed)) return false;
-                if (activeFilters.warning === 'riskyLifecycle' &&
-                    (comp.lifecycle_status === "" || comp.lifecycle_status === "New Product" || !comp.analyzed)) return false;
+            // 1) Filtre sur operators
+            if (activeFilters.operators.length > 0 && !activeFilters.operators.includes(comp.Operator)) {
+                return false;
             }
+
+            // 2) Filtre sur warnings
+            if (activeFilters.warning === 'outOfStock') {
+                const isOutOfStock = comp.analyzed &&
+                    comp.availability &&
+                    comp.availability.every(avail => avail.value.trim() === "");
+                if (!isOutOfStock) return false;
+            }
+
+            if (activeFilters.warning === 'riskyLifecycle') {
+                const isRiskyLifecycle = comp.analyzed &&
+                    comp.lifecycle_status &&
+                    comp.lifecycle_status.some(lcs =>
+                        lcs.value.trim() !== "" &&
+                        !["New Product", "New at Mouser", "Active"].includes(lcs.value.trim())
+                    );
+                if (!isRiskyLifecycle) return false;
+            }
+
+            if (activeFilters.warning === 'manufacturerMessages') {
+                const hasMessages = comp.analyzed &&
+                    comp.info_messages &&
+                    comp.info_messages.some(msg => msg.trim() !== "");
+                if (!hasMessages) return false;
+            }
+
+            if (activeFilters.warning === 'mismatchingMpn') {
+                const hasMismatch = comp.analyzed &&
+                    comp.mismatch_mpn &&
+                    comp.mismatch_mpn.some(mismatch => mismatch !== null);
+                if (!hasMismatch) return false;
+            }
+
+            // 3) Filtre sur pinned
             if (activeFilters.pinned) {
                 const isPinned = pinnedComponents.some(p => p.id === comp.id);
                 if (!isPinned) return false;
             }
+
             return true;
         });
     };
+
 
     const handlePinToggle = (id) => {
         setPinnedComponents((prevPinned) => {
@@ -194,10 +227,10 @@ function App() {
         }
     };
 
-    const countBySupplier = (components, supplier) => 
-        components.filter(comp => 
-            comp.analyzed && 
-            comp.mismatch_mpn === null && 
+    const countBySupplier = (components, supplier) =>
+        components.filter(comp =>
+            comp.analyzed &&
+            comp.mismatch_mpn === null &&
             comp.sources.some(source => source === supplier)
         ).length;
 
