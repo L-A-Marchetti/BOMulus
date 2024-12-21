@@ -46,10 +46,26 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
         : false;
 
     // Checks various conditions to determine if there are warnings
-    const isOutOfStock = component.analyzed && operator !== 'DELETE' && component.availability === "";
-    const isLCSRisky = component.analyzed && operator !== 'DELETE' && component.lifecycle_status !== "" && component.lifecycle_status !== "New Product" && component.lifecycle_status !== "New at Mouser";
-    const hasMessages = component.analyzed && operator !== 'DELETE' && component.info_messages !== null;
-    const hasMismatchMpn = component.analyzed && operator !== 'DELETE' && component.mismatch_mpn && component.mismatch_mpn !== null;
+    const isOutOfStock = component.analyzed &&
+        operator !== 'DELETE' &&
+        component.availability?.every(avail => avail.value.trim() === "");
+
+    const isLCSRisky = component.analyzed &&
+        operator !== 'DELETE' &&
+        component.lifecycle_status?.some(lcs =>
+            lcs.value !== "" &&
+            lcs.value !== "New Product" &&
+            lcs.value !== "New at Mouser" &&
+            lcs.value !== "Active"
+        );
+
+    const hasMessages = component.analyzed &&
+        operator !== 'DELETE' &&
+        component.info_messages?.some(msg => msg.trim() !== "");
+
+    const hasMismatchMpn = component.analyzed &&
+        operator !== 'DELETE' &&
+        component.mismatch_mpn?.some(mismatch => mismatch.trim() !== "");
     const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
 
     const messages = [];
@@ -140,20 +156,30 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                         }).find(value => value) || 'N/A'}
                                     </p>
                                     <p>
-                                        {apiPriority.map(api => {
-                                            const replacement = comp.suggested_replacement?.find(detail => detail.supplier === api);
-                                            return replacement ? (
+                                        {apiPriority
+                                            .map(api => {
+                                                const replacement = comp.suggested_replacement?.find(detail => detail.supplier === api);
+                                                return replacement && replacement.value?.trim() ? (
+                                                    <>
+                                                        <strong>
+                                                            <img
+                                                                src={supplierIcons[api]}
+                                                                alt={`${api} icon`}
+                                                                style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                                            />
+                                                            Suggested Replacement:
+                                                        </strong>
+                                                        {replacement.value}
+                                                    </>
+                                                ) : null;
+                                            })
+                                            .find(value => value) || (
                                                 <>
-                                                    <strong><img
-                                                        src={supplierIcons[api]}
-                                                        alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />Suggested Replacement: </strong>
-                                                    {replacement.value}
+                                                    <strong>Suggested Replacement:</strong> N/A
                                                 </>
-                                            ) : null;
-                                        }).find(value => value) || 'N/A'}
+                                            )}
                                     </p>
+
                                 </td>
                                 <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
                                     <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
