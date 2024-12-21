@@ -27,6 +27,7 @@ package components
 import (
 	"core"
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -98,7 +99,7 @@ func dkProcessComponent(existingComponent *core.Component, analyzed Product, isU
 	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.ProductStatus.Status})
 	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.Classifications.RohsStatus})
 	//component.SuggestedReplacement = analyzed.SuggestedReplacement
-	component.PriceBreaks = append(component.PriceBreaks, core.MSPriceBreaks{Supplier: supplier, Value: dkConvertPriceBreaks(analyzed.ProductVariations[1].StandardPricing, currency)})
+	component.PriceBreaks = append(component.PriceBreaks, core.MSPriceBreaks{Supplier: supplier, Value: dkConsolidatePriceBreaks(analyzed.ProductVariations, currency)})
 	//component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
 	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description.ProductDescription + " | " + analyzed.Description.DetailedDescription})
 	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer.Name})
@@ -151,11 +152,47 @@ func convertPriceBreaks(apiPriceBreaks []PriceBreak) []core.PriceBreak {
 	return priceBreaks
 }
 
+/*
 // dkConvertPriceBreaks converts dk API price breaks to core price breaks
 func dkConvertPriceBreaks(apiPriceBreaks []Pricing, currency string) []core.PriceBreak {
 	priceBreaks := make([]core.PriceBreak, len(apiPriceBreaks))
 	for i, pb := range apiPriceBreaks {
 		priceBreaks[i] = core.PriceBreak{Quantity: pb.BreakQuantity, Price: fmt.Sprintf("%f", pb.UnitPrice), Currency: currency}
 	}
+	return priceBreaks
+}
+*/
+
+func dkConsolidatePriceBreaks(productVariations []ProductVariation, currency string) []core.PriceBreak {
+	priceMap := make(map[int]core.PriceBreak)
+	// check each package variations.
+	for _, variation := range productVariations {
+		for _, pb := range variation.StandardPricing {
+			// If a quantity already exists we keep the best pricing.
+			if existing, exists := priceMap[pb.BreakQuantity]; exists {
+				existingPrice, _ := strconv.ParseFloat(existing.Price, 64)
+				if pb.UnitPrice < existingPrice {
+					priceMap[pb.BreakQuantity] = core.PriceBreak{
+						Quantity: pb.BreakQuantity,
+						Price:    fmt.Sprintf("%f", pb.UnitPrice),
+						Currency: currency,
+					}
+				}
+			} else {
+				priceMap[pb.BreakQuantity] = core.PriceBreak{
+					Quantity: pb.BreakQuantity,
+					Price:    fmt.Sprintf("%f", pb.UnitPrice),
+					Currency: currency,
+				}
+			}
+		}
+	}
+	priceBreaks := make([]core.PriceBreak, 0, len(priceMap))
+	for _, pb := range priceMap {
+		priceBreaks = append(priceBreaks, pb)
+	}
+	sort.Slice(priceBreaks, func(i, j int) bool {
+		return priceBreaks[i].Quantity < priceBreaks[j].Quantity
+	})
 	return priceBreaks
 }
