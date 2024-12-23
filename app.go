@@ -260,6 +260,18 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 	return nil
 }
 
+// GetProductionQuantity retrieves the selected production quantity by delegating to workspaces package.
+func (a *App) GetProductionQuantity() (string, error) {
+	activeWorkspace := a.GetActiveWorkspace()
+	return workspaces.GetProductionQuantity(activeWorkspace) // Delegate to workspaces package
+}
+
+// SetProductionQuantity sets the selected production quantity by updating BOMulus.bmls.
+func (a *App) SetProductionQuantity(productionQuantity string) error {
+	config.PRODUCTION_QUANTITY = productionQuantity
+	return workspaces.SetProductionQuantity(productionQuantity)
+}
+
 // GetApiPriority retrieves the user API priority by delegating to workspaces package.
 func (a *App) GetApiPriority() ([]string, error) {
 	return workspaces.GetApiPriority() // Delegate to workspaces package

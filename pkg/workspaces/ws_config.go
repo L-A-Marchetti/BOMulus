@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // GetAnalyzeSaveState retrieves the analyze save state from the BOMulus.bmls file.
@@ -51,6 +52,88 @@ func GetAnalyzeSaveState() (bool, error) {
 	// Update global configuration with analyze save state
 	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
 	return bomulusFile.AnalyzeSaveState, nil
+}
+
+// GetProductionQuantity retrieves the production quantity in the specified .bmls file.
+// It reads the .bmls file, unmarshals its content, and updates the
+// global configuration with the production quantity value.
+func GetProductionQuantity(workspacePath string) (string, error) {
+	if workspacePath == "" {
+		return "", fmt.Errorf("no active workspace set")
+	}
+	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return "", fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	config.PRODUCTION_QUANTITY = workspace.WorkspaceInfos.ProductionQuantity
+	return workspace.WorkspaceInfos.ProductionQuantity, nil
+}
+
+// SetProductionQuantity update the production quantity in the specified .bmls file.
+// It reads the .bmls file, unmarshals its content, and updates the
+// global configuration with the production quantity value.
+func SetProductionQuantity(productionQuantity string) error {
+	if ActiveWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal the JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	workspace.WorkspaceInfos.ProductionQuantity = productionQuantity
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+	if ActiveWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+	// Update the root BOMulus file
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+	var bomulusFile BOMulusFile
+	// Read existing BOMulus.bmls file if it exists
+	if _, err := os.Stat(bomulusPath); err == nil {
+		data, err := os.ReadFile(bomulusPath)
+		if err != nil {
+			return fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+		}
+		err = json.Unmarshal(data, &bomulusFile)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+		}
+	}
+	for i, workspace := range bomulusFile.Workspaces {
+		if workspace.WorkspaceInfos.Path == ActiveWorkspacePath {
+			bomulusFile.Workspaces[i].WorkspaceInfos.ProductionQuantity = productionQuantity
+			break
+		}
+	}
+	// Write updated data back to BOMulus.bmls
+	jsonDataRoot, err := json.MarshalIndent(bomulusFile, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal BOMulus file: %w", err)
+	}
+	err = os.WriteFile(bomulusPath, jsonDataRoot, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
+	}
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
 
 // GetApiPriority retrieves the user api priority from the BOMulus.bmls file.

@@ -17,9 +17,10 @@
  * PriceCalculator: Function from Wails backend to calculate prices.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from './Button';
-import { PriceCalculator } from '../wailsjs/go/main/App';
+import { PriceCalculator, GetProductionQuantity, 
+    SetProductionQuantity } from '../wailsjs/go/main/App';
 import './PricingCalculator.css';
 
 // Main PricingCalculator component
@@ -27,6 +28,19 @@ function PricingCalculator() {
     const [quantity, setQuantity] = useState('');
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        loadProductionQuantity();
+    }, []);
+
+    const loadProductionQuantity = async () => {
+        try {
+            const quantity = await GetProductionQuantity();
+            setQuantity(quantity || '');
+        } catch (error) {
+            console.error("Error loading production quantity:", error);
+        }
+    };
 
     // Handles quantity input changes
     const handleQuantityChange = (e) => {
@@ -39,6 +53,11 @@ function PricingCalculator() {
 
     // Triggers price calculation
     const handleCalculate = async () => {
+        try {
+            await SetProductionQuantity(quantity);
+        } catch (error) {
+            console.error("Error saving production quantity:", error);
+        }
         if (quantity === '') {
             setError('Please enter a quantity');
             return;
