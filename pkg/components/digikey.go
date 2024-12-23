@@ -5,7 +5,6 @@ import (
 	"config"
 	"core"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -18,7 +17,7 @@ import (
 func APIRequestToDigiKey(i int) error {
 	// Check if a MPN was found.
 	if core.Components[i].Mpn == "" {
-		core.Components[i].Mpn = "MPN not found."
+		//core.Components[i].Mpn = "MPN not found."
 		return nil
 	}
 	// Create the request payload
@@ -57,14 +56,12 @@ func APIRequestToDigiKey(i int) error {
 	var apiResponse Response
 	err = json.Unmarshal(body, &apiResponse)
 	core.ErrorsHandler(err)
-	if len(apiResponse.ExactMatches) == 0 {
-		return errors.New("API connexion lost")
-	}
+	/*
+		if len(apiResponse.ExactMatches) == 0 {
+			return errors.New("DK API connexion lost")
+		}
+	*/
 	processAnalysis(ApiResponse{}, apiResponse, i, "Digikey")
-	jsonResponse, _ := json.MarshalIndent(apiResponse, "", "  ")
-	fmt.Println("DK START")
-	fmt.Println(string(jsonResponse))
-	fmt.Println("DK END")
 	return nil
 }
 

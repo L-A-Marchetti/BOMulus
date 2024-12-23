@@ -196,8 +196,9 @@ function App() {
 
     const countBySupplier = (components, supplier) => 
         components.filter(comp => 
-            comp.analyzed && 
-            comp.mismatch_mpn === null && 
+            comp.analyzed &&
+            comp.mismatch_mpn === null &&
+            Array.isArray(comp.sources) && // Vérifie que sources est une array
             comp.sources.some(source => source === supplier)
         ).length;
 

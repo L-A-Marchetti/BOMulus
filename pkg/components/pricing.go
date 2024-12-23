@@ -185,7 +185,7 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 
 	// Iterate through suppliers to find the best price
 	for _, msPriceBreak := range component.PriceBreaks {
-		price, minQtyWarnings, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency)
+		price, minQtyWarnings, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency, component)
 		if err != nil {
 			// Add warning for this supplier if price calculation fails
 			warnings = append(warnings, fmt.Sprintf("Error for supplier %s, component %s: %v", msPriceBreak.Supplier, component.Mpn, err))
@@ -204,7 +204,7 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 
 	// If no valid price was found, return an error with collected warnings
 	if bestPrice == 0 {
-		return 0, warnings, fmt.Errorf("unable to calculate price for component %s", component.Mpn)
+		return 0, warnings, nil
 	}
 
 	// If a valid price was found, clear warnings
@@ -212,7 +212,7 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 }
 
 // bestPriceFromSupplier determines the best price from a single supplier's price breaks
-func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, currency *string) (float64, []string, error) {
+func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, currency *string, component core.Component) (float64, []string, error) {
 	var componentPrice float64
 	var warnings []string
 
@@ -229,7 +229,7 @@ func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, c
 	// Check if total quantity is below the minimum price break quantity
 	if totalQuantity < msPriceBreak.Value[0].Quantity {
 		// Log a warning but do not calculate price
-		warnings = append(warnings, fmt.Sprintf("MOQ (%d) not reached for supplier: %s", msPriceBreak.Value[0].Quantity, msPriceBreak.Supplier))
+		warnings = append(warnings, fmt.Sprintf("[%s] MOQ (%d) not reached for supplier: %s", component.Mpn, msPriceBreak.Value[0].Quantity, msPriceBreak.Supplier))
 		return 0, warnings, nil
 	}
 
