@@ -181,34 +181,40 @@ func convertPrice(price, currency string) (float64, error) {
 func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	var bestPrice float64
-	var minimumQuantity []string
+	var warnings []string // To collect warnings if no valid price is found
 
 	// Iterate through suppliers to find the best price
 	for _, msPriceBreak := range component.PriceBreaks {
-		price, minQty, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency)
+		price, minQtyWarnings, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency, component)
 		if err != nil {
 			// Add warning for this supplier if price calculation fails
-			minimumQuantity = append(minimumQuantity, fmt.Sprintf("Error for supplier %s, component %s: %v", msPriceBreak.Supplier, component.Mpn, err))
+			warnings = append(warnings, fmt.Sprintf("Error for supplier %s, component %s: %v", msPriceBreak.Supplier, component.Mpn, err))
 			continue
 		}
+		// If no valid price is found for this supplier, add its MOQ warnings
+		if price == 0 {
+			warnings = append(warnings, minQtyWarnings...)
+			continue
+		}
+		// Update best price if found
 		if bestPrice == 0 || price < bestPrice {
 			bestPrice = price
-			minimumQuantity = minQty
 		}
 	}
 
-	// If no valid price was found, return an error
+	// If no valid price was found, return an error with collected warnings
 	if bestPrice == 0 {
-		return 0, nil, fmt.Errorf("unable to calculate price for component %s", component.Mpn)
+		return 0, warnings, nil
 	}
 
-	return bestPrice, minimumQuantity, nil
+	// If a valid price was found, clear warnings
+	return bestPrice, nil, nil
 }
 
 // bestPriceFromSupplier determines the best price from a single supplier's price breaks
-func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, currency *string) (float64, []string, error) {
+func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, currency *string, component core.Component) (float64, []string, error) {
 	var componentPrice float64
-	minimumQuantity := []string{}
+	var warnings []string
 
 	// Ensure there are price breaks to analyze
 	if len(msPriceBreak.Value) == 0 {
@@ -222,13 +228,9 @@ func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, c
 
 	// Check if total quantity is below the minimum price break quantity
 	if totalQuantity < msPriceBreak.Value[0].Quantity {
-		priceValue, err := convertPrice(msPriceBreak.Value[0].Price, msPriceBreak.Value[0].Currency)
-		if err != nil {
-			return 0, nil, fmt.Errorf("error converting price for supplier %s: %v", msPriceBreak.Supplier, err)
-		}
-		componentPrice = float64(totalQuantity) * priceValue
-		minimumQuantity = append(minimumQuantity, fmt.Sprintf("MOQ (%d) not reached for supplier: %s", msPriceBreak.Value[0].Quantity, msPriceBreak.Supplier))
-		return componentPrice, minimumQuantity, nil
+		// Log a warning but do not calculate price
+		warnings = append(warnings, fmt.Sprintf("[%s] MOQ (%d) not reached for supplier: %s", component.Mpn, msPriceBreak.Value[0].Quantity, msPriceBreak.Supplier))
+		return 0, warnings, nil
 	}
 
 	// Find the appropriate price break
@@ -241,7 +243,7 @@ func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, c
 			componentPrice = float64(totalQuantity) * priceValue
 			// If it's the last price break or the next one exceeds the quantity, return the price
 			if i == len(msPriceBreak.Value)-1 || totalQuantity < msPriceBreak.Value[i+1].Quantity {
-				return componentPrice, minimumQuantity, nil
+				return componentPrice, nil, nil
 			}
 		}
 	}

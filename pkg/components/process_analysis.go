@@ -64,18 +64,12 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 		// Get a reference to the current component being processed
 		currentComponent := &core.Components[i]
 		// Check if the current component's MPN matches 100% the API response
-		if currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
+		if len(response.ExactMatches) > 0 && currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
 			// Update the existing component with the analyzed data
 			dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier, response.SearchLocaleUsed.Currency)
-		} else {
-			// If no exact match, process all analyzed components as alternatives
-			//for _, analyzedPart := range analyzedComponents {
-			//	alternativeMpn := processComponent(nil, analyzedPart, false, supplier)
-			//	currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
-			//}
 		}
 		// Validate the analysis
-		if len(response.ExactMatches) != 0 {
+		if len(response.ExactMatches) > 0 {
 			currentComponent.Analyzed = true
 			currentComponent.Sources = append(currentComponent.Sources, "Digikey")
 			currentComponent.LastRefresh = time.Now()

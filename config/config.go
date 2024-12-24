@@ -30,6 +30,7 @@ var (
 	//DIGIKEY_API_KEY       string = ""
 	ANALYZE_SAVE_STATE    bool
 	ANALYSIS_REFRESH_DAYS int
+	PRODUCTION_QUANTITY   string   = "1"
 	API_PRIORITY          []string = nil
 )
 

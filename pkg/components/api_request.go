@@ -46,7 +46,7 @@ import (
 func APIRequest(i int) error {
 	// Check if a MPN was found.
 	if core.Components[i].Mpn == "" {
-		core.Components[i].Mpn = "MPN not found."
+		//core.Components[i].Mpn = "MPN not found."
 		return nil
 	}
 	// Create the request payload
@@ -80,7 +80,8 @@ func APIRequest(i int) error {
 	err = json.Unmarshal(body, &apiResponse)
 	core.ErrorsHandler(err)
 	if apiResponse.SearchResults.NumberOfResult == 0 {
-		return errors.New("API connexion lost")
+		errorTxt := fmt.Sprintf("Mouser API lost on component : %s", core.Components[i].Mpn)
+		return errors.New(errorTxt)
 	}
 	// Add some infos to the component.
 	processAnalysis(apiResponse, Response{}, i, "Mouser")

@@ -51,9 +51,10 @@ func CreateWorkspace(path string, name string) error {
 	// Create the workspace info
 	workspaceInfos := Workspace{
 		WorkspaceInfos: WorkspaceInfos{
-			Name:      name,
-			Path:      fullPath,
-			CreatedAt: time.Now(),
+			Name:               name,
+			Path:               fullPath,
+			CreatedAt:          time.Now(),
+			ProductionQuantity: "1",
 		},
 	}
 	// Convert workspace info to JSON
