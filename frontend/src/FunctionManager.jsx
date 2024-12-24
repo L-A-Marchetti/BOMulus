@@ -73,6 +73,7 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
     };
 
     const moveToAssigned = (designator) => {
+        console.log("moveToAssigned called with", designator, "selectedFunction =", selectedFunction);
         // Mettre à jour le label du designator
         setAvailableDesignators(availableDesignators.filter(d => d.designator !== designator.designator));
         setAssignedDesignators([...assignedDesignators, { ...designator, label: selectedFunction }]);
@@ -87,6 +88,7 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
         const updatedDesignators = [...assignedDesignators, ...availableDesignators];
 
         for (const d of updatedDesignators) {
+            console.log("Will update", d.designator, "label:", d.label);
             const original = designators.find(x => x.designator === d.designator);
             if (original && original.label !== d.label) {
                 await UpdateDesignator(d.designator, d.label || '');
@@ -97,7 +99,7 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
 
         // Récupérer la nouvelle liste de composants mise à jour
         const updatedComponents = await GetComponents();
-
+        console.log(">>> [FunctionManager] updatedComponents after UpdateDesignator:", updatedComponents);
         // Appeler le callback du parent avec ces nouveaux composants
         onRefreshComponents(updatedComponents);
 

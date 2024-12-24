@@ -22,6 +22,7 @@ function CompareView({
     activeWorkspace,
     activeFilters,
     setActiveFilters,
+    functionsList,
     warningCounts,
     totalWarnings,
     statsData = { statsData }
@@ -78,6 +79,7 @@ function CompareView({
                     opColors={opColors}
                     warningCounts={warningCounts}
                     totalWarnings={totalWarnings}
+                    functionsList={functionsList}
                     pinnedComponents={pinnedComponents}
                     statsData={statsData}
                 />

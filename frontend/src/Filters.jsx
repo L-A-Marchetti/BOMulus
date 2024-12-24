@@ -8,7 +8,7 @@ import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
 
-function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
+function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, functionsList, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
     console.log("4. Updated Components:", componentsAll);
     const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
 
@@ -98,7 +98,9 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                     className="filter-select-dropdown functions-select"
                 >
                     <option value="">> Functions</option>
-                    {/* ici, plus tard, vous injecterez les fonctions depuis le backend */}
+                    {functionsList && functionsList.map(fn => (
+                        <option key={fn} value={fn}>{fn}</option>
+                    ))}
                 </select>
 
                 {/* Bouton pour gérer les fonctions */}

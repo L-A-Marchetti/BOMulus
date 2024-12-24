@@ -18,7 +18,8 @@ function TopMenu({
     onCompare,
     pinnedComponents,
     statsData,
-    componentsAll
+    componentsAll,
+    functionsList,
 }) {
     console.log("3. Updated Components:", componentsAll);
     return (
@@ -47,6 +48,7 @@ function TopMenu({
                         opColors={opColors}
                         warningCounts={warningCounts}
                         totalWarnings={totalWarnings}
+                        functionsList={functionsList}
                         pinnedComponents={pinnedComponents}
                         componentsAll={componentsAll}
                     />

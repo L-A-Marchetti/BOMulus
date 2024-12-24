@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import CompareView from './CompareView';
@@ -17,6 +18,26 @@ const OP_COLORS = {
     DELETE: '#cc7481',
     EQUAL: '#323232',
 };
+
+// Déclaration en dehors (fonction "libre")
+function extractFunctionsFromComponents(componentsArr) {
+    if (!Array.isArray(componentsArr)) {
+        return [];
+    }
+    const labelSet = new Set();
+    for (const c of componentsArr) {
+        if (c.designators) {
+            c.designators.forEach(d => {
+                if (d.label && d.label.trim() !== '') {
+                    labelSet.add(d.label.trim());
+                }
+            });
+        }
+    }
+
+    console.log("extractFunctionsFromComponents - labelSet:", labelSet);
+    return [...labelSet];
+}
 
 function App() {
     const [showCompareView, setShowCompareView] = useState(false);
@@ -40,6 +61,7 @@ function App() {
 
     const [showSettingsModal, setShowSettingsModal] = useState(false);
 
+    const [functionsList, setFunctionsList] = useState([]); // On stocke la liste des fonctions
     useEffect(() => {
         if (showCompareView) {
             (async () => {
@@ -139,6 +161,8 @@ function App() {
         try {
             const updatedComponents = await GetComponents();
             setComponents(updatedComponents);
+            const updatedFunctions = extractFunctionsFromComponents(updatedComponents);
+            setFunctionsList(updatedFunctions);
         } catch (error) {
             console.error("Error fetching components:", error);
         }
@@ -200,6 +224,15 @@ function App() {
                 if (!isPinned) return false;
             }
 
+            // 4) Filtre sur la fonction (filter3)
+            if (activeFilters.filter3) {
+                // On veut garder seulement les composants qui ont un designator "label" = activeFilters.filter3
+                const hasDesignator = comp.designators?.some(d => d.label === activeFilters.filter3);
+                if (!hasDesignator) {
+                    return false;
+                }
+            }
+
             return true;
         });
     };
@@ -255,9 +288,15 @@ function App() {
     };
 
     const refreshComponents = async (newComponents) => {
-        // Le parent met à jour son state components avec les nouveaux
-        //setComponents(newComponents);
+        console.log(">>> [App] refreshComponents received:", newComponents);
+        setComponents(newComponents);
+
+        const updatedFunctions = extractFunctionsFromComponents(newComponents);
+        console.log(">>> [App] updatedFunctions from BOM:", updatedFunctions);
+
+        setFunctionsList(updatedFunctions);
     };
+
 
 
     return (
@@ -276,6 +315,7 @@ function App() {
                     components={getFilteredComponents()}
                     componentsAll={components} // On passe aussi le tableau complet
                     setComponents={setComponents}
+                    functionsList={functionsList}
                     onClose={handleCloseCompareView}
                     onSettings={handleSettings}
                     activeWorkspace={activeWorkspace}
