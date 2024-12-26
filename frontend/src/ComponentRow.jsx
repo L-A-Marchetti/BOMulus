@@ -331,7 +331,49 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                 </td>
             )}
             <tr className={`grid-row ${operator.toLowerCase()}`} style={isWarning ? { border: '4px solid #fff98f' } : {}}>
-                <td>{operator === 'UPDATE' ? `${component.OldQuantity} → ${component.NewQuantity}` : component.quantity}</td>
+                <td style={{ padding: 0, whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        {/* Best Price */}
+                        <div
+                            style={{
+                                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                padding: '10px',
+                                textAlign: 'center',
+                                borderBottom: '1px solid rgb(39, 39, 39)',
+                                width: '100%',
+                                boxSizing: 'border-box',
+                            }}
+                        >
+                            {component.calculated_price?.best_price ? (
+                                <>
+                                    <img
+                                        src={supplierIcons[component.calculated_price.best_supplier]}
+                                        alt={`${component.calculated_price.best_supplier} icon`}
+                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                    />
+                                    {parseFloat(component.calculated_price.best_price).toFixed(2)} | {parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u
+                                </>
+                            ) : "-"}
+
+                        </div>
+
+                        {/* Quantity */}
+                        <div
+                            style={{
+                                padding: '10px',
+                                textAlign: 'center',
+                                width: '100%', // S'adapte automatiquement au contenu
+                                boxSizing: 'border-box',
+                            }}
+                        >
+                            {operator === 'UPDATE'
+                                ? `${component.OldQuantity} → ${component.NewQuantity}`
+                                : component.quantity}
+                        </div>
+                    </div>
+                </td>
+
+
                 <td>{component.mpn}</td>
                 {!isPinned && (
                     <>
