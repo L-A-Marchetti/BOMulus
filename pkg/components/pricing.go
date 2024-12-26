@@ -55,7 +55,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 	result.MinimumQuantities = []string{}
 	var currency string
 	// Iterate through all components
-	for _, component := range core.Components {
+	for i, component := range core.Components {
 		// Skip components that are not analyzed or have no price breaks
 		if !component.Analyzed || len(component.PriceBreaks) == 0 {
 			continue
@@ -64,7 +64,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 		switch component.Operator {
 		case "INSERT":
 			// Calculate price for a new component
-			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency)
+			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -72,14 +72,14 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 			result.MinimumQuantities = append(result.MinimumQuantities, minQty...)
 		case "DELETE":
 			// Calculate price for a component being removed
-			price, _, err := multisourcePriceCalculator(component, quantity, false, &currency)
+			price, _, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
 			result.OldPrice += price
 		case "EQUAL":
 			// Calculate price for an unchanged component
-			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency)
+			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -90,14 +90,14 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 			// Calculate old and new prices for an updated component
 			oldComponent := component
 			oldComponent.Quantity = component.OldQuantity
-			oldPrice, _, err := multisourcePriceCalculator(oldComponent, quantity, false, &currency)
+			oldPrice, _, err := multisourcePriceCalculator(oldComponent, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
 			result.OldPrice += oldPrice
 			newComponent := component
 			newComponent.Quantity = component.NewQuantity
-			newPrice, minQty, err := multisourcePriceCalculator(newComponent, quantity, true, &currency)
+			newPrice, minQty, err := multisourcePriceCalculator(newComponent, quantity, true, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -179,7 +179,7 @@ func convertPrice(price, currency string) (float64, error) {
 }
 
 // multisourcePriceCalculator calculates the price for a single component across multiple suppliers
-func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
+func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, i int) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	var bestPrice float64
 	var bestSupplier string
@@ -212,10 +212,10 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 	}
 
 	// If a valid price was found, clear warnings
-	component.CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
-	component.CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
-	component.CalculatedPrice.BestSupplier = bestSupplier
-	workspaces.UpdateBMLSPricing(component)
+	core.Components[i].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
+	core.Components[i].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
+	core.Components[i].CalculatedPrice.BestSupplier = bestSupplier
+	workspaces.UpdateBMLSPricing(core.Components[i])
 	return bestPrice, nil, nil
 }
 

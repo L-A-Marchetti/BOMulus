@@ -18,7 +18,7 @@
  * OpenExternalLink: Function from Wails backend to open external links.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
 import BookmarkIcon from "./assets/images/bookmark.svg";
@@ -34,7 +34,7 @@ const supplierIcons = {
 
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority }) {
     const [expanded, setExpanded] = useState(false);
-
+    
     // Opens an external link
     const openExternalLink = (link) => {
         OpenExternalLink(link);

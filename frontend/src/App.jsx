@@ -262,7 +262,9 @@ function App() {
             {showSettingsModal && (
                 <Modal onClose={() => setShowSettingsModal(false)}>
                     <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Pricing</h4>
-                    <PricingCalculator />
+                    <PricingCalculator
+                        onQuantityUpdated={handleComponentAnalyzed}
+                    />
 
                     <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Settings</h4>
                     {/* Vous pouvez également transmettre mouserApiKey, bomulusApiKey, etc. si nécessaire */}

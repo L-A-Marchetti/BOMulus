@@ -24,7 +24,7 @@ import { PriceCalculator, GetProductionQuantity,
 import './PricingCalculator.css';
 
 // Main PricingCalculator component
-function PricingCalculator() {
+function PricingCalculator( {onQuantityUpdated} ) {
     const [quantity, setQuantity] = useState('');
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
@@ -78,6 +78,8 @@ function PricingCalculator() {
             setError('An error occurred while calculating the price');
             setResult(null);
         }
+
+        onQuantityUpdated();
     };
 
     // Formats price based on currency

@@ -39,6 +39,11 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 	case "Mouser":
 		// Get the analyzed components from the API response
 		analyzedComponents := apiResponse.SearchResults.Parts
+		// Test to improve multithreadbreak
+		if analyzedComponents == nil {
+			return
+		}
+		// End of test
 		// Get a reference to the current component being processed
 		currentComponent := &core.Components[i]
 		// Check if the current component's MPN matches 100% the API response
@@ -61,6 +66,11 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 	case "Digikey":
 		// Get the analyzed components from the API response
 		analyzedComponents := response.ExactMatches
+		// Test to improve multithreadbreak
+		if analyzedComponents == nil {
+			return
+		}
+		// End of test
 		// Get a reference to the current component being processed
 		currentComponent := &core.Components[i]
 		// Check if the current component's MPN matches 100% the API response
