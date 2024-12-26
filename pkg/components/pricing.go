@@ -35,6 +35,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"workspaces"
 )
 
 type PriceCalculationResult struct {
@@ -181,11 +182,13 @@ func convertPrice(price, currency string) (float64, error) {
 func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	var bestPrice float64
+	var bestSupplier string
 	var warnings []string // To collect warnings if no valid price is found
 
 	// Iterate through suppliers to find the best price
-	for _, msPriceBreak := range component.PriceBreaks {
+	for i, msPriceBreak := range component.PriceBreaks {
 		price, minQtyWarnings, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency, component)
+		supplier := component.PriceBreaks[i].Supplier
 		if err != nil {
 			// Add warning for this supplier if price calculation fails
 			warnings = append(warnings, fmt.Sprintf("Error for supplier %s, component %s: %v", msPriceBreak.Supplier, component.Mpn, err))
@@ -199,6 +202,7 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 		// Update best price if found
 		if bestPrice == 0 || price < bestPrice {
 			bestPrice = price
+			bestSupplier = supplier
 		}
 	}
 
@@ -208,6 +212,10 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 	}
 
 	// If a valid price was found, clear warnings
+	component.CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
+	component.CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
+	component.CalculatedPrice.BestSupplier = bestSupplier
+	workspaces.UpdateBMLSPricing(component)
 	return bestPrice, nil, nil
 }
 
