@@ -146,10 +146,15 @@ function App() {
         setCompareKey((prevKey) => prevKey + 1);
     };
 
-    const handleCloseCompareView = () => {
-        StopAnalysis();
-        setShowCompareView(false);
+    const handleCloseCompareView = async () => {
+        try {
+            await StopAnalysis();
+            setShowCompareView(false);
+        } catch (error) {
+            console.error("Erreur lors de l'arrêt de l'analyse:", error);
+        }
     };
+    
 
     const handleSettings = () => {
         setShowSettingsModal(true);

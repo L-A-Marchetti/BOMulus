@@ -179,7 +179,7 @@ func convertPrice(price, currency string) (float64, error) {
 }
 
 // multisourcePriceCalculator calculates the price for a single component across multiple suppliers
-func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, i int) (float64, []string, error) {
+func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, id int) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	var bestPrice float64
 	var bestSupplier string
@@ -212,10 +212,10 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 	}
 
 	// If a valid price was found, clear warnings
-	core.Components[i].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
-	core.Components[i].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
-	core.Components[i].CalculatedPrice.BestSupplier = bestSupplier
-	workspaces.UpdateBMLSPricing(core.Components[i])
+	core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
+	core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
+	core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
+	workspaces.UpdateBMLSPricing(core.Components[id])
 	return bestPrice, nil, nil
 }
 
