@@ -117,51 +117,6 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 	return result, nil
 }
 
-/*
-// priceCalculator calculates the price for a single component
-func priceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
-	totalQuantity := component.Quantity * quantity
-	var componentPrice float64
-	minimumQuantity := []string{}
-	// Check if there are any price breaks
-	if len(component.PriceBreaks) == 0 {
-		return 0, nil, fmt.Errorf("no PriceBreaks for component %s", component.Mpn)
-	}
-	// Set currency if not already set
-	if *currency == "" {
-		*currency = component.PriceBreaks[0].Currency
-	}
-	// Check if the total quantity is below the minimum quantity of the first price break
-	if totalQuantity < component.PriceBreaks[0].Quantity {
-		priceValue, err := convertPrice(component.PriceBreaks[0].Price, component.PriceBreaks[0].Currency)
-		if err != nil {
-			return 0, nil, fmt.Errorf("error converting price for %s: %v", component.Mpn, err)
-		}
-		componentPrice = float64(totalQuantity) * priceValue
-		// Add minimum quantity warning if applicable
-		if isNewQuantity || component.Operator == "INSERT" || component.Operator == "EQUAL" {
-			minimumQuantity = append(minimumQuantity, fmt.Sprintf("MOQ (%d) not reached for component: %s", component.PriceBreaks[0].Quantity, component.Mpn))
-		}
-		return componentPrice, minimumQuantity, nil
-	}
-	// Find the appropriate price break
-	for i, priceBreak := range component.PriceBreaks {
-		priceValue, err := convertPrice(priceBreak.Price, priceBreak.Currency)
-		if err != nil {
-			return 0, nil, fmt.Errorf("error converting price for %s: %v", component.Mpn, err)
-		}
-		if totalQuantity >= priceBreak.Quantity {
-			componentPrice = float64(totalQuantity) * priceValue
-			// If it's the last price break or the next one is higher than our quantity, we've found our price
-			if i == len(component.PriceBreaks)-1 || totalQuantity < component.PriceBreaks[i+1].Quantity {
-				return componentPrice, minimumQuantity, nil
-			}
-		}
-	}
-	// This should never happen if the price breaks are correctly ordered
-	return 0, nil, fmt.Errorf("unable to calculate price for component %s", component.Mpn)
-}
-*/
 // convertPrice converts a price string to a float64 value
 func convertPrice(price, currency string) (float64, error) {
 	// Remove whitespace and replace comma with dot for decimal
