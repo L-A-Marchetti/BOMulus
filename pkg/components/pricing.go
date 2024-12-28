@@ -136,13 +136,14 @@ func convertPrice(price, currency string) (float64, error) {
 // multisourcePriceCalculator calculates the price for a single component across multiple suppliers
 func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, id int) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
+	bestMoq := 0
 	var bestPrice float64
 	var bestSupplier string
 	var warnings []string // To collect warnings if no valid price is found
 
 	// Iterate through suppliers to find the best price
 	for i, msPriceBreak := range component.PriceBreaks {
-		price, minQtyWarnings, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency, component)
+		price, minQtyWarnings, moq, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency, component)
 		supplier := component.PriceBreaks[i].Supplier
 		if err != nil {
 			// Add warning for this supplier if price calculation fails
@@ -152,6 +153,10 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 		// If no valid price is found for this supplier, add its MOQ warnings
 		if price == 0 {
 			warnings = append(warnings, minQtyWarnings...)
+			if bestMoq == 0 || moq < bestMoq {
+				bestMoq = moq
+				bestSupplier = supplier
+			}
 			continue
 		}
 		// Update best price if found
@@ -163,6 +168,10 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 
 	// If no valid price was found, return an error with collected warnings
 	if bestPrice == 0 {
+		core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("< %d", bestMoq)
+		core.Components[id].CalculatedPrice.BestUnitPrice = "MOQ"
+		core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
+		workspaces.UpdateBMLSPricing(core.Components[id])
 		return 0, warnings, nil
 	}
 
@@ -175,13 +184,13 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 }
 
 // bestPriceFromSupplier determines the best price from a single supplier's price breaks
-func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, currency *string, component core.Component) (float64, []string, error) {
+func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, currency *string, component core.Component) (float64, []string, int, error) {
 	var componentPrice float64
 	var warnings []string
 
 	// Ensure there are price breaks to analyze
 	if len(msPriceBreak.Value) == 0 {
-		return 0, nil, fmt.Errorf("no PriceBreaks for supplier %s", msPriceBreak.Supplier)
+		return 0, nil, -1, fmt.Errorf("no PriceBreaks for supplier %s", msPriceBreak.Supplier)
 	}
 
 	// Set currency if not already set
@@ -193,24 +202,24 @@ func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, c
 	if totalQuantity < msPriceBreak.Value[0].Quantity {
 		// Log a warning but do not calculate price
 		warnings = append(warnings, fmt.Sprintf("[%s] MOQ (%d) not reached for supplier: %s", component.Mpn, msPriceBreak.Value[0].Quantity, msPriceBreak.Supplier))
-		return 0, warnings, nil
+		return 0, warnings, msPriceBreak.Value[0].Quantity, nil
 	}
 
 	// Find the appropriate price break
 	for i, priceBreak := range msPriceBreak.Value {
 		priceValue, err := convertPrice(priceBreak.Price, priceBreak.Currency)
 		if err != nil {
-			return 0, nil, fmt.Errorf("error converting price for supplier %s: %v", msPriceBreak.Supplier, err)
+			return 0, nil, -1, fmt.Errorf("error converting price for supplier %s: %v", msPriceBreak.Supplier, err)
 		}
 		if totalQuantity >= priceBreak.Quantity {
 			componentPrice = float64(totalQuantity) * priceValue
 			// If it's the last price break or the next one exceeds the quantity, return the price
 			if i == len(msPriceBreak.Value)-1 || totalQuantity < msPriceBreak.Value[i+1].Quantity {
-				return componentPrice, nil, nil
+				return componentPrice, nil, -1, nil
 			}
 		}
 	}
 
 	// This should never happen if price breaks are correctly ordered
-	return 0, nil, fmt.Errorf("unable to calculate price for supplier %s", msPriceBreak.Supplier)
+	return 0, nil, -1, fmt.Errorf("unable to calculate price for supplier %s", msPriceBreak.Supplier)
 }

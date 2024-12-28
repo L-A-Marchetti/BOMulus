@@ -34,7 +34,7 @@ const supplierIcons = {
 
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority }) {
     const [expanded, setExpanded] = useState(false);
-    
+
     // Opens an external link
     const openExternalLink = (link) => {
         OpenExternalLink(link);
@@ -336,7 +336,14 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         {/* Best Price */}
                         <div
                             style={{
-                                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                backgroundColor:
+                                    component.calculated_price?.best_unit_price === "MOQ"
+                                        ? 'rgb(255, 249, 143)'
+                                        : 'rgba(0, 0, 0, 0.2)',
+                                color:
+                                    component.calculated_price?.best_unit_price === "MOQ"
+                                        ? 'black'
+                                        : '',
                                 padding: '10px',
                                 textAlign: 'center',
                                 borderBottom: '1px solid rgb(39, 39, 39)',
@@ -351,18 +358,22 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                         alt={`${component.calculated_price.best_supplier} icon`}
                                         style={{ marginRight: '7px', width: '7px', height: 'auto' }}
                                     />
-                                    {parseFloat(component.calculated_price.best_price).toFixed(2)} | {parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u
+                                    {isNaN(parseFloat(component.calculated_price.best_price)) ? (
+                                        `${component.calculated_price.best_price} | ${component.calculated_price.best_unit_price}`
+                                    ) : (
+                                        `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    )}
                                 </>
                             ) : "-"}
-
                         </div>
+
 
                         {/* Quantity */}
                         <div
                             style={{
                                 padding: '10px',
                                 textAlign: 'center',
-                                width: '100%', // S'adapte automatiquement au contenu
+                                width: '100%',
                                 boxSizing: 'border-box',
                             }}
                         >
