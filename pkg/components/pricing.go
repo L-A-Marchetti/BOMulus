@@ -35,6 +35,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"workspaces"
 )
 
 type PriceCalculationResult struct {
@@ -54,7 +55,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 	result.MinimumQuantities = []string{}
 	var currency string
 	// Iterate through all components
-	for _, component := range core.Components {
+	for i, component := range core.Components {
 		// Skip components that are not analyzed or have no price breaks
 		if !component.Analyzed || len(component.PriceBreaks) == 0 {
 			continue
@@ -63,7 +64,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 		switch component.Operator {
 		case "INSERT":
 			// Calculate price for a new component
-			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency)
+			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -71,14 +72,14 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 			result.MinimumQuantities = append(result.MinimumQuantities, minQty...)
 		case "DELETE":
 			// Calculate price for a component being removed
-			price, _, err := multisourcePriceCalculator(component, quantity, false, &currency)
+			price, _, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
 			result.OldPrice += price
 		case "EQUAL":
 			// Calculate price for an unchanged component
-			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency)
+			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -89,14 +90,14 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 			// Calculate old and new prices for an updated component
 			oldComponent := component
 			oldComponent.Quantity = component.OldQuantity
-			oldPrice, _, err := multisourcePriceCalculator(oldComponent, quantity, false, &currency)
+			oldPrice, _, err := multisourcePriceCalculator(oldComponent, quantity, false, &currency, i)
 			if err != nil {
 				return result, err
 			}
 			result.OldPrice += oldPrice
 			newComponent := component
 			newComponent.Quantity = component.NewQuantity
-			newPrice, minQty, err := multisourcePriceCalculator(newComponent, quantity, true, &currency)
+			newPrice, minQty, err := multisourcePriceCalculator(newComponent, quantity, true, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -116,51 +117,6 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 	return result, nil
 }
 
-/*
-// priceCalculator calculates the price for a single component
-func priceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
-	totalQuantity := component.Quantity * quantity
-	var componentPrice float64
-	minimumQuantity := []string{}
-	// Check if there are any price breaks
-	if len(component.PriceBreaks) == 0 {
-		return 0, nil, fmt.Errorf("no PriceBreaks for component %s", component.Mpn)
-	}
-	// Set currency if not already set
-	if *currency == "" {
-		*currency = component.PriceBreaks[0].Currency
-	}
-	// Check if the total quantity is below the minimum quantity of the first price break
-	if totalQuantity < component.PriceBreaks[0].Quantity {
-		priceValue, err := convertPrice(component.PriceBreaks[0].Price, component.PriceBreaks[0].Currency)
-		if err != nil {
-			return 0, nil, fmt.Errorf("error converting price for %s: %v", component.Mpn, err)
-		}
-		componentPrice = float64(totalQuantity) * priceValue
-		// Add minimum quantity warning if applicable
-		if isNewQuantity || component.Operator == "INSERT" || component.Operator == "EQUAL" {
-			minimumQuantity = append(minimumQuantity, fmt.Sprintf("MOQ (%d) not reached for component: %s", component.PriceBreaks[0].Quantity, component.Mpn))
-		}
-		return componentPrice, minimumQuantity, nil
-	}
-	// Find the appropriate price break
-	for i, priceBreak := range component.PriceBreaks {
-		priceValue, err := convertPrice(priceBreak.Price, priceBreak.Currency)
-		if err != nil {
-			return 0, nil, fmt.Errorf("error converting price for %s: %v", component.Mpn, err)
-		}
-		if totalQuantity >= priceBreak.Quantity {
-			componentPrice = float64(totalQuantity) * priceValue
-			// If it's the last price break or the next one is higher than our quantity, we've found our price
-			if i == len(component.PriceBreaks)-1 || totalQuantity < component.PriceBreaks[i+1].Quantity {
-				return componentPrice, minimumQuantity, nil
-			}
-		}
-	}
-	// This should never happen if the price breaks are correctly ordered
-	return 0, nil, fmt.Errorf("unable to calculate price for component %s", component.Mpn)
-}
-*/
 // convertPrice converts a price string to a float64 value
 func convertPrice(price, currency string) (float64, error) {
 	// Remove whitespace and replace comma with dot for decimal
@@ -178,14 +134,16 @@ func convertPrice(price, currency string) (float64, error) {
 }
 
 // multisourcePriceCalculator calculates the price for a single component across multiple suppliers
-func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string) (float64, []string, error) {
+func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, id int) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	var bestPrice float64
+	var bestSupplier string
 	var warnings []string // To collect warnings if no valid price is found
 
 	// Iterate through suppliers to find the best price
-	for _, msPriceBreak := range component.PriceBreaks {
+	for i, msPriceBreak := range component.PriceBreaks {
 		price, minQtyWarnings, err := bestPriceFromSupplier(msPriceBreak, totalQuantity, currency, component)
+		supplier := component.PriceBreaks[i].Supplier
 		if err != nil {
 			// Add warning for this supplier if price calculation fails
 			warnings = append(warnings, fmt.Sprintf("Error for supplier %s, component %s: %v", msPriceBreak.Supplier, component.Mpn, err))
@@ -199,6 +157,7 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 		// Update best price if found
 		if bestPrice == 0 || price < bestPrice {
 			bestPrice = price
+			bestSupplier = supplier
 		}
 	}
 
@@ -208,6 +167,10 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 	}
 
 	// If a valid price was found, clear warnings
+	core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
+	core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
+	core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
+	workspaces.UpdateBMLSPricing(core.Components[id])
 	return bestPrice, nil, nil
 }
 

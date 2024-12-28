@@ -43,47 +43,52 @@ import (
 
 // APIRequest retrieves information based on the MPN
 // and updates the corresponding component
-func APIRequest(i int) error {
-	// Check if a MPN was found.
-	if core.Components[i].Mpn == "" {
-		//core.Components[i].Mpn = "MPN not found."
+func APIRequest(i int, done *chan struct{}) error {
+	select {
+	case <-*done:
+		return errors.New("stop signal received") // Exit if done signal is received
+	default:
+		// Check if a MPN was found.
+		if core.Components[i].Mpn == "" {
+			//core.Components[i].Mpn = "MPN not found."
+			return nil
+		}
+		// Create the request payload
+		payload := RequestPayload{
+			SearchByPartRequest: SearchByPartRequest{
+				MouserPartNumber:  core.Components[i].Mpn,
+				PartSearchOptions: "1", // 1: several matching results 2: Exact result.
+			},
+		}
+		// Encode the payload to JSON
+		jsonData, err := json.Marshal(payload)
+		core.ErrorsHandler(err)
+		// Construct the full URL with the API key
+		fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, workspaces.API_KEYS.MouserApiKey)
+		// Create a new HTTP POST request
+		req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
+		core.ErrorsHandler(err)
+		// Add headers
+		req.Header.Add("Content-Type", "application/json")
+		req.Header.Add("Accept", "application/json")
+		// Create an HTTP client and make the request
+		client := &http.Client{}
+		response, err := client.Do(req)
+		core.ErrorsHandler(err)
+		defer response.Body.Close()
+		// Read the response body
+		body, err := ioutil.ReadAll(response.Body)
+		core.ErrorsHandler(err)
+		// Unmarshal the JSON data into the ApiResponse struct
+		var apiResponse ApiResponse
+		err = json.Unmarshal(body, &apiResponse)
+		core.ErrorsHandler(err)
+		if apiResponse.SearchResults.NumberOfResult == 0 {
+			errorTxt := fmt.Sprintf("Mouser API lost on component : %s", core.Components[i].Mpn)
+			return errors.New(errorTxt)
+		}
+		// Add some infos to the component.
+		processAnalysis(apiResponse, Response{}, i, "Mouser", done)
 		return nil
 	}
-	// Create the request payload
-	payload := RequestPayload{
-		SearchByPartRequest: SearchByPartRequest{
-			MouserPartNumber:  core.Components[i].Mpn,
-			PartSearchOptions: "1", // 1: several matching results 2: Exact result.
-		},
-	}
-	// Encode the payload to JSON
-	jsonData, err := json.Marshal(payload)
-	core.ErrorsHandler(err)
-	// Construct the full URL with the API key
-	fullURL := fmt.Sprintf("%s?apiKey=%s", config.API_URL, workspaces.API_KEYS.MouserApiKey)
-	// Create a new HTTP POST request
-	req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
-	core.ErrorsHandler(err)
-	// Add headers
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
-	// Create an HTTP client and make the request
-	client := &http.Client{}
-	response, err := client.Do(req)
-	core.ErrorsHandler(err)
-	defer response.Body.Close()
-	// Read the response body
-	body, err := ioutil.ReadAll(response.Body)
-	core.ErrorsHandler(err)
-	// Unmarshal the JSON data into the ApiResponse struct
-	var apiResponse ApiResponse
-	err = json.Unmarshal(body, &apiResponse)
-	core.ErrorsHandler(err)
-	if apiResponse.SearchResults.NumberOfResult == 0 {
-		errorTxt := fmt.Sprintf("Mouser API lost on component : %s", core.Components[i].Mpn)
-		return errors.New(errorTxt)
-	}
-	// Add some infos to the component.
-	processAnalysis(apiResponse, Response{}, i, "Mouser")
-	return nil
 }

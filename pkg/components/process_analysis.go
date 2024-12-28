@@ -25,6 +25,7 @@
 package components
 
 import (
+	"config"
 	"core"
 	"fmt"
 	"sort"
@@ -34,45 +35,65 @@ import (
 
 // processAnalysis processes the API response and updates the component information
 // It handles both exact matches and alternative components
-func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier string) {
-	switch supplier {
-	case "Mouser":
-		// Get the analyzed components from the API response
-		analyzedComponents := apiResponse.SearchResults.Parts
-		// Get a reference to the current component being processed
-		currentComponent := &core.Components[i]
-		// Check if the current component's MPN matches 100% the API response
-		if currentComponent.Mpn == analyzedComponents[0].ManufacturerPartNumber {
-			// Update the existing component with the analyzed data
-			processComponent(currentComponent, analyzedComponents[0], true, supplier)
-		} else {
-			// If no exact match, process all analyzed components as alternatives
-			for _, analyzedPart := range analyzedComponents {
-				alternativeMpn := processComponent(nil, analyzedPart, false, supplier)
-				currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
+func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier string, done *chan struct{}) {
+	select {
+	case <-*done:
+		return // Exit if done signal is received
+	default:
+		currency := ""
+		switch supplier {
+		case "Mouser":
+			// Get the analyzed components from the API response
+			analyzedComponents := apiResponse.SearchResults.Parts
+			// Test to improve multithreadbreak
+			if analyzedComponents == nil {
+				return
 			}
-		}
-		// Validate the analysis
-		if len(apiResponse.Errors) == 0 {
-			currentComponent.Analyzed = true
-			currentComponent.Sources = append(currentComponent.Sources, "Mouser")
-			currentComponent.LastRefresh = time.Now()
-		}
-	case "Digikey":
-		// Get the analyzed components from the API response
-		analyzedComponents := response.ExactMatches
-		// Get a reference to the current component being processed
-		currentComponent := &core.Components[i]
-		// Check if the current component's MPN matches 100% the API response
-		if len(response.ExactMatches) > 0 && currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
-			// Update the existing component with the analyzed data
-			dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier, response.SearchLocaleUsed.Currency)
-		}
-		// Validate the analysis
-		if len(response.ExactMatches) > 0 {
-			currentComponent.Analyzed = true
-			currentComponent.Sources = append(currentComponent.Sources, "Digikey")
-			currentComponent.LastRefresh = time.Now()
+			// End of test
+			// Get a reference to the current component being processed
+			currentComponent := &core.Components[i]
+			// Check if the current component's MPN matches 100% the API response
+			if currentComponent.Mpn == analyzedComponents[0].ManufacturerPartNumber {
+				// Update the existing component with the analyzed data
+				processComponent(currentComponent, analyzedComponents[0], true, supplier)
+			} else {
+				// If no exact match, process all analyzed components as alternatives
+				for _, analyzedPart := range analyzedComponents {
+					alternativeMpn := processComponent(nil, analyzedPart, false, supplier)
+					currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
+				}
+			}
+			// Validate the analysis
+			if len(apiResponse.Errors) == 0 {
+				currentComponent.Analyzed = true
+				currentComponent.Sources = append(currentComponent.Sources, "Mouser")
+				currentComponent.LastRefresh = time.Now()
+				productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
+				multisourcePriceCalculator(core.Components[i], productionQuantity, false, &currency, i)
+			}
+		case "Digikey":
+			// Get the analyzed components from the API response
+			analyzedComponents := response.ExactMatches
+			// Test to improve multithreadbreak
+			if analyzedComponents == nil {
+				return
+			}
+			// End of test
+			// Get a reference to the current component being processed
+			currentComponent := &core.Components[i]
+			// Check if the current component's MPN matches 100% the API response
+			if len(response.ExactMatches) > 0 && currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
+				// Update the existing component with the analyzed data
+				dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier, response.SearchLocaleUsed.Currency)
+			}
+			// Validate the analysis
+			if len(response.ExactMatches) > 0 {
+				currentComponent.Analyzed = true
+				currentComponent.Sources = append(currentComponent.Sources, "Digikey")
+				currentComponent.LastRefresh = time.Now()
+				productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
+				multisourcePriceCalculator(core.Components[i], productionQuantity, false, &currency, i)
+			}
 		}
 	}
 }

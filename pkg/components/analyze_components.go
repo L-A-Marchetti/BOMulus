@@ -72,20 +72,25 @@ func AnalyzeComponents() error {
 					log.Print(err) // Log Mouser rate limit errors
 					continue
 				}
-				if err := APIRequest(i); err != nil {
+				if err := APIRequest(i, &done); err != nil {
 					log.Println(err)
 					errChan <- err // Send error to channel if analysis fails
 					return
 				}
 				// Mises à jour partagées
-				mu.Lock()
-				//core.Components[i].Analyzed = true
-				core.AnalysisState.Current++
-				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-				if config.ANALYZE_SAVE_STATE {
-					workspaces.UpdateBMLSComponents(core.Components[i])
+				select {
+				case <-done:
+					return // Exit if done signal is received
+				default:
+					mu.Lock()
+					core.Components[i].Analyzed = true
+					core.AnalysisState.Current++
+					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
+					if config.ANALYZE_SAVE_STATE {
+						workspaces.UpdateBMLSComponents(core.Components[i])
+					}
+					mu.Unlock()
 				}
-				mu.Unlock()
 			}
 		}
 	}()
@@ -111,20 +116,25 @@ func AnalyzeComponents() error {
 					log.Print(err) // Log DigiKey rate limit errors
 					continue
 				}
-				if err := APIRequestToDigiKey(i); err != nil {
+				if err := APIRequestToDigiKey(i, &done); err != nil {
 					log.Println(err)
 					errChan <- err // Send error to channel if analysis fails
 					return
 				}
 				// Mises à jour partagées
-				mu.Lock()
-				core.Components[i].Analyzed = true
-				core.AnalysisState.Current++
-				core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-				if config.ANALYZE_SAVE_STATE {
-					workspaces.UpdateBMLSComponents(core.Components[i])
+				select {
+				case <-done:
+					return // Exit if done signal is received
+				default:
+					mu.Lock()
+					core.Components[i].Analyzed = true
+					core.AnalysisState.Current++
+					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
+					if config.ANALYZE_SAVE_STATE {
+						workspaces.UpdateBMLSComponents(core.Components[i])
+					}
+					mu.Unlock()
 				}
-				mu.Unlock()
 			}
 		}
 	}()
@@ -139,8 +149,8 @@ func AnalyzeComponents() error {
 	select {
 	case err, ok := <-errChan:
 		if ok {
-			close(done) // Signal the goroutine to stop if an error occurs
-			return err  // Return the error encountered during analysis
+			StopAnalysis() // Signal the goroutine to stop if an error occurs
+			return err     // Return the error encountered during analysis
 		}
 	}
 

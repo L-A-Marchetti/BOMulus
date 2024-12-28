@@ -43,6 +43,7 @@ type Component struct {
 	ROHSStatus               []MSValue       `json:"rohs_status"`
 	SuggestedReplacement     []MSValue       `json:"suggested_replacement"`
 	PriceBreaks              []MSPriceBreaks `json:"price_breaks"`
+	CalculatedPrice          MSPricing       `json:"calculated_price"`
 	InfoMessages             []string        `json:"info_messages"`
 	Analyzed                 bool            `json:"analyzed"`
 	Sources                  []string        `json:"sources"`
@@ -56,6 +57,12 @@ type Component struct {
 	LastRefresh              time.Time       `json:"last_refresh"`
 	Operator                 string
 	OldQuantity, NewQuantity int
+}
+
+type MSPricing struct {
+	BestSupplier  string `json:"best_supplier"`
+	BestPrice     string `json:"best_price"`
+	BestUnitPrice string `json:"best_unit_price"`
 }
 
 type MSPriceBreaks struct {

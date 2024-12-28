@@ -170,10 +170,15 @@ function App() {
         setCompareKey((prevKey) => prevKey + 1);
     };
 
-    const handleCloseCompareView = () => {
-        StopAnalysis();
-        setShowCompareView(false);
+    const handleCloseCompareView = async () => {
+        try {
+            await StopAnalysis();
+            setShowCompareView(false);
+        } catch (error) {
+            console.error("Erreur lors de l'arrêt de l'analyse:", error);
+        }
     };
+    
 
     const handleSettings = () => {
         setShowSettingsModal(true);
@@ -308,7 +313,7 @@ function App() {
             )}
             {showCompareView && (
                 <CompareView
-                    onRefreshComponents={refreshComponents}
+                    onRefreshComponents={handleComponentAnalyzed}
                     onComponentAnalyzed={handleComponentAnalyzed}
                     onCompare={handleComparison}
                     onPinToggle={handlePinToggle}
@@ -335,7 +340,9 @@ function App() {
             {showSettingsModal && (
                 <Modal onClose={() => setShowSettingsModal(false)}>
                     <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Pricing</h4>
-                    <PricingCalculator />
+                    <PricingCalculator
+                        onQuantityUpdated={handleComponentAnalyzed}
+                    />
 
                     <h4 style={{ color: 'white', fontFamily: 'Poppins, sans-serif' }}>Settings</h4>
                     {/* Vous pouvez également transmettre mouserApiKey, bomulusApiKey, etc. si nécessaire */}

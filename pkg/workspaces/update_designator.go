@@ -34,6 +34,13 @@ func UpdateDesignator(d core.Designator) error {
 			}
 		}
 	}
+	for i := range core.Components {
+		for j := range core.Components[i].Designators {
+			if d.Designator == core.Components[i].Designators[j].Designator {
+				core.Components[i].Designators[j].Label = d.Label
+			}
+		}
+	}
 	jsonData, err := json.MarshalIndent(workspace, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
