@@ -137,6 +137,7 @@ func convertPrice(price, currency string) (float64, error) {
 func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, id int) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	bestMoq := 0
+	bestMoqPrice := .0
 	var bestPrice float64
 	var bestSupplier string
 	var warnings []string // To collect warnings if no valid price is found
@@ -151,11 +152,12 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 			continue
 		}
 		// If no valid price is found for this supplier, add its MOQ warnings
-		if price == 0 {
+		if moq != -1 {
 			warnings = append(warnings, minQtyWarnings...)
-			if bestMoq == 0 || moq < bestMoq {
+			if bestMoq == 0 || price < bestMoqPrice {
 				bestMoq = moq
 				bestSupplier = supplier
+				bestMoqPrice = price
 			}
 			continue
 		}
@@ -168,11 +170,13 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 
 	// If no valid price was found, return an error with collected warnings
 	if bestPrice == 0 {
-		core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("< %d", bestMoq)
-		core.Components[id].CalculatedPrice.BestUnitPrice = "MOQ"
+		core.Components[id].CalculatedPrice.IsMoqNotReached = true
+		core.Components[id].CalculatedPrice.Moq = strconv.Itoa(bestMoq)
+		core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestMoqPrice)
+		core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestMoqPrice/float64(totalQuantity))
 		core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
 		workspaces.UpdateBMLSPricing(core.Components[id])
-		return 0, warnings, nil
+		return bestMoqPrice, warnings, nil
 	}
 
 	// If a valid price was found, clear warnings
@@ -202,7 +206,11 @@ func bestPriceFromSupplier(msPriceBreak core.MSPriceBreaks, totalQuantity int, c
 	if totalQuantity < msPriceBreak.Value[0].Quantity {
 		// Log a warning but do not calculate price
 		warnings = append(warnings, fmt.Sprintf("[%s] MOQ (%d) not reached for supplier: %s", component.Mpn, msPriceBreak.Value[0].Quantity, msPriceBreak.Supplier))
-		return 0, warnings, msPriceBreak.Value[0].Quantity, nil
+		priceValue, err := convertPrice(msPriceBreak.Value[0].Price, msPriceBreak.Value[0].Currency)
+		if err != nil {
+			return 0, nil, -1, fmt.Errorf("error converting price for supplier %s: %v", msPriceBreak.Supplier, err)
+		}
+		return float64(msPriceBreak.Value[0].Quantity) * priceValue, warnings, msPriceBreak.Value[0].Quantity, nil
 	}
 
 	// Find the appropriate price break
