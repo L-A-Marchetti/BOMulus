@@ -40,6 +40,12 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
             const state = await GetAnalysisState();
             setProgress(state.Progress);
             setLastAnalyzedComponent(state.Current);
+            if (state.MouserErr != "") {
+                setError(state.MouserErr);
+            }
+            if (state.DigikeyErr != "") {
+                setError(state.DigikeyErr);
+            }
             if (state.Completed) {
                 setProgress(100); // Assurez-vous que la progression est à 100%
                 // Retarder le changement d'état pour permettre l'affichage du dernier remplissage
@@ -119,6 +125,7 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                 );
             case 'running':
                 return (
+                    <>
                     <div className="analyze-button-grid">
                         <div className="progress-bar-container">
                             <ProgressBar progress={progress} />
@@ -128,7 +135,9 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                                 className="analyze-icon-overlay pulsating-icon"
                             />
                         </div>
+                        <div className='dyn-error-message'>{error && <p className="dyn-error-message">{error}</p>}</div>
                     </div>
+                    </>
                 );
             case 'error':
                 // ... gestion des erreurs ...

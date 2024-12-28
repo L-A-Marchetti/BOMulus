@@ -122,6 +122,8 @@ type AnalysisStatus struct {
 	KeyIsValid bool
 	IdxStart   int
 	IdxEnd     int
+	MouserErr  string
+	DigikeyErr string
 }
 
 var AnalysisState AnalysisStatus
