@@ -250,6 +250,10 @@ func (a *App) GetAnalyzeSaveState() (bool, error) {
 	return workspaces.GetAnalyzeSaveState() // Delegate to workspaces package
 }
 
+func (a *App) GetApiCount() (int, error) {
+	return workspaces.GetApiCount()
+}
+
 // SetAnalyzeSaveState sets the analyze save state by updating BOMulus.bmls.
 func (a *App) SetAnalyzeSaveState(state bool) error {
 	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, state, true, -1, nil)

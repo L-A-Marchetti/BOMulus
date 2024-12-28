@@ -6,6 +6,8 @@ import BookmarkToolTip from './BookmarkToolTip';
 import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
+import SettingsIcon from "./assets/images/settings.svg";
+
 
 function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
     console.log("4. Updated Components:", componentsAll);
@@ -134,17 +136,9 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                 {/* Bouton pour gérer les fonctions */}
                 <button
                     onClick={() => setShowFunctionManagerModal(true)}
-                    style={{
-                        backgroundColor: '#353535',
-                        color: 'white',
-                        border: 'none',
-                        fontSize: '12px',
-                        padding: '8px 12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
+                    className={`settings-button`}
                 >
-                    Manage Functions
+                    <img style={{ width: '15px', height: '18px' }} src={SettingsIcon} alt="Settings Icon" />
                 </button>
             </div>
 

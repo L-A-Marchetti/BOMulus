@@ -102,11 +102,29 @@
     height: 38px;
 }
 
-.operator-button.active {
+.settings-button {
+    background-color: #353535;
+    /* Couleur de fond habituelle */
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    transition: background-color 0.3s;
+}
+
+.operator-button.active,
+.settings-button.active {
     border: 2px solid white;
 }
 
-.operator-button:hover {
+.operator-button:hover,
+.settings-button:hover {
     opacity: 0.8;
 }
 

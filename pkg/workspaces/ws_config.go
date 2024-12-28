@@ -28,6 +28,7 @@ import (
 	"config"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,6 +53,34 @@ func GetAnalyzeSaveState() (bool, error) {
 	// Update global configuration with analyze save state
 	config.ANALYZE_SAVE_STATE = bomulusFile.AnalyzeSaveState
 	return bomulusFile.AnalyzeSaveState, nil
+}
+
+// GetApiCount retrieves the number of API keys saved in the BOMulus.bmls file.
+func GetApiCount() (int, error) {
+	bomulusPath := filepath.Join("./", "BOMulus.bmls")
+	var bomulusFile BOMulusFile
+
+	count := 0
+	// Read BOMulus.bmls file
+	data, err := os.ReadFile(bomulusPath)
+	if err != nil {
+		return -1, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+	}
+	// Unmarshal JSON data into bomulusFile structure
+	err = json.Unmarshal(data, &bomulusFile)
+	if err != nil {
+		return -1, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	}
+
+	if bomulusFile.ApiKeys.MouserApiKey != "" {
+		count++
+	}
+	if bomulusFile.ApiKeys.DKClientId != "" {
+		count++
+	}
+	log.Println("API count: ", count)
+
+	return count, nil
 }
 
 // GetProductionQuantity retrieves the production quantity in the specified .bmls file.
