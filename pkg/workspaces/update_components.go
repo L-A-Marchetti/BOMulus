@@ -55,14 +55,20 @@ func UpdateBMLSComponents(analyzedComponent core.Component) error {
 	for i := range workspace.Files {
 		for j := range workspace.Files[i].Components {
 			if workspace.Files[i].Components[j].Mpn == analyzedComponent.Mpn {
-				// Create a new component without the Quantity field
-				updatedComponent := analyzedComponent
-				updatedComponent.Quantity = workspace.Files[i].Components[j].Quantity // Preserve the original quantity
-				// Update the existing component with the new values (excluding Quantity)
-				workspace.Files[i].Components[j] = updatedComponent
+				// if the quantity is equal update all the component
+				if workspace.Files[i].Components[j].Quantity == analyzedComponent.Quantity {
+					workspace.Files[i].Components[j] = analyzedComponent
+				} else {
+					// if the quantity is different we keep the original quantity and the original calculated price.
+					updatedComponent := analyzedComponent
+					updatedComponent.Quantity = workspace.Files[i].Components[j].Quantity               // Conserver l'ancienne quantité
+					updatedComponent.CalculatedPrice = workspace.Files[i].Components[j].CalculatedPrice // Conserver l'ancien Pricing
+					workspace.Files[i].Components[j] = updatedComponent
+				}
 			}
 		}
 	}
+
 	jsonData, err := json.MarshalIndent(workspace, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
