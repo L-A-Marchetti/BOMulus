@@ -89,6 +89,7 @@ function TopMenu({
                 setOrderPrice(0);
             }
         }
+        onComponentAnalyzed();
     };
 
     // --------------------------------------------------------------------------
