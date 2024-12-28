@@ -209,7 +209,7 @@ function App() {
             // 4) Filtre sur la fonction (filter3)
             if (activeFilters.filter3) {
                 // On veut garder seulement les composants qui ont un designator "label" = activeFilters.filter3
-                const hasDesignator = comp.designators?.some(d => d.label === activeFilters.filter3);
+                const hasDesignator = comp.designators?.some(d => d.label.name === activeFilters.filter3);
                 if (!hasDesignator) {
                     return false;
                 }

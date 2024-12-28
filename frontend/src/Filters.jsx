@@ -10,7 +10,7 @@ import SettingsIcon from "./assets/images/settings.svg";
 
 
 function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
-    console.log("4. Updated Components:", componentsAll);
+
     const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
 
 
@@ -37,6 +37,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
     const [functions, setFunctions] = useState([]);
 
     const loadData = (components = componentsAll) => {
+        console.log("Loading data for FunctionManager with components:", components);
         let allDesignators = [];
         for (const c of components) {
             if (c.designators && c.designators.length > 0) {
@@ -48,8 +49,8 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
 
         const uniqueLabels = new Set();
         allDesignators.forEach(d => {
-            if (d.label && d.label.trim() !== '') {
-                uniqueLabels.add(d.label);
+            if (d.label.name && d.label.name.trim() !== '') {
+                uniqueLabels.add(d.label.name.trim());
             }
         });
         setFunctions(Array.from(uniqueLabels));
@@ -67,6 +68,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
         }));
     };
 
+    console.log("4. Updated Components:", componentsAll);
 
     return (
         <div className="filters">

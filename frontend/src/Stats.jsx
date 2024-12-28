@@ -2,24 +2,23 @@ import React from 'react';
 import './Stats.css';
 
 function Stats({ statsData, componentsAll }) {
+    function chooseColorForFunction(funcName, componentsAll) {
+        const matchingDesignators = componentsAll.flatMap(comp => comp.designators || [])
+            .filter(d => d.label?.name === funcName);
 
-    function chooseColorForFunction(funcName) {
-        const colorMap = {
-            Power: '#86b384',
-            USB: '#cc7481',
-            Audio: '#ffac00',
-            // etc.
-        };
-        return colorMap[funcName] || '#007BFF';
+        if (matchingDesignators.length > 0) {
+            console.log(`Found matching designators for ${funcName}:`, matchingDesignators);
+            return matchingDesignators[0].label.color; // Prend la couleur du premier trouvé
+        }
+
+        console.log(`No matching designators for ${funcName}, using default color`);
+        return '#007BFF'; // Couleur par défaut
     }
 
 
     const { coverage, mouserCount, digikeyCount, unprocuredCount, inStockCount, outOfStockCount, insufficientCount, total } = statsData;
 
-
-
     // Donut coverage
-    // coverage% un gradient, le reste gris
     const coverageBg = `conic-gradient(#8e84b3 0% ${coverage}%, #565656 ${coverage}% 100%)`;
 
     // Donut availability
@@ -28,17 +27,15 @@ function Stats({ statsData, componentsAll }) {
     const insufficientPct = total > 0 ? (insufficientCount / total) * 100 : 0;
 
     const availabilityBg = `conic-gradient(
-    #86b384 0% ${inStockPct}%,
-    #cc7481 ${inStockPct}% ${inStockPct + outOfStockPct}%,
-    #86b384 ${inStockPct + outOfStockPct}% ${inStockPct + outOfStockPct + insufficientPct}%,
-    #565656 ${inStockPct + outOfStockPct + insufficientPct}% 100%
-  )`;
+        #86b384 0% ${inStockPct}%,
+        #cc7481 ${inStockPct}% ${inStockPct + outOfStockPct}%,
+        #86b384 ${inStockPct + outOfStockPct}% ${inStockPct + outOfStockPct + insufficientPct}%,
+        #565656 ${inStockPct + outOfStockPct + insufficientPct}% 100%
+    )`;
 
-
-    // === Nouveau : calcul de la répartition de prix par fonction ===
+    // Calcule la répartition des prix par fonction
     const functionPriceMap = computePriceByFunction(componentsAll);
 
-    // Convertir en tableau pour faciliter le conic-gradient
     const sumAllPrices = Object.values(functionPriceMap).reduce((acc, val) => acc + val, 0);
     const distribution = Object.entries(functionPriceMap).map(([func, price]) => ({
         func,
@@ -52,27 +49,24 @@ function Stats({ statsData, componentsAll }) {
         const startAngle = currentAngle;
         const endAngle = currentAngle + item.pct;
         currentAngle = endAngle;
-        // Choisir une couleur par fonction : soit un map, soit au hasard
-        const color = chooseColorForFunction(item.func);
+
+        // Utilise la couleur dynamique
+        const color = chooseColorForFunction(item.func, componentsAll);
         return `${color} ${startAngle}% ${endAngle}%`;
     }).join(', ');
 
     const functionDonutBg = `conic-gradient(${segments}, #565656 ${currentAngle}% 100%)`;
 
-
-    // Calcule la répartition du prix par fonction
     function computePriceByFunction(componentsAll) {
         const functionPriceMap = {};
 
         componentsAll.forEach(comp => {
-            // Récupérer la “best_unit_price” (string) et convertir en float
             const bestUnitPriceStr = comp?.calculated_price?.best_unit_price;
-            if (!bestUnitPriceStr) return;  // Composant non analysé ou pas de prix
+            if (!bestUnitPriceStr) return;
 
             const bestUnitPrice = parseFloat(bestUnitPriceStr);
             if (isNaN(bestUnitPrice)) return;
 
-            // Déterminer la quantité effective
             let qty = comp.quantity;
             if (comp.operator === 'UPDATE' && comp.NewQuantity) {
                 qty = comp.NewQuantity;
@@ -80,15 +74,13 @@ function Stats({ statsData, componentsAll }) {
 
             const totalCompPrice = bestUnitPrice * qty;
 
-            // S’il n’y a pas de designators, on ignore
             if (!comp.designators || comp.designators.length === 0) return;
 
-            // Répartir ce totalCompPrice sur les designators
             const pricePerDesignator = totalCompPrice / comp.designators.length;
 
             comp.designators.forEach(d => {
-                const funcLabel = d.label?.trim() || "";
-                if (!funcLabel) return; // designator sans fonction
+                const funcLabel = d.label?.name.trim() || "";
+                if (!funcLabel) return;
                 if (!functionPriceMap[funcLabel]) {
                     functionPriceMap[funcLabel] = 0;
                 }
@@ -99,10 +91,8 @@ function Stats({ statsData, componentsAll }) {
         return functionPriceMap;
     }
 
-
     return (
         <div className="stats-container">
-            {/* 1er donut : BOM COVERAGE */}
             <div className="donut-container">
                 <div className="donut" style={{ background: coverageBg }}>
                     <p>{Math.round(coverage)}%</p>
@@ -115,7 +105,6 @@ function Stats({ statsData, componentsAll }) {
                 </div>
             </div>
 
-            {/* 2ème donut : AVAILABILITY */}
             <div className="donut-container">
                 <div className="donut" style={{ background: availabilityBg }}>
                     <p>{Math.round(inStockPct)}%</p>
@@ -128,15 +117,14 @@ function Stats({ statsData, componentsAll }) {
                 </div>
             </div>
 
-            {/* 3ème donut : PRICE BY FUNCTION */}
             <div className="donut-container">
                 <div className="donut" style={{ background: functionDonutBg }}>
-                    <p>100%</p>{/* ou un autre texte, ou rien */}
+                    <p>100%</p>
                 </div>
                 <div className="stats-labels">
                     <h5>PRICE BY FUNCTION</h5>
                     {distribution.map(item => (
-                        <p key={item.func} style={{ color: chooseColorForFunction(item.func) }}>
+                        <p key={item.func} style={{ color: chooseColorForFunction(item.func, componentsAll) }}>
                             {item.func}: ${item.price.toFixed(2)} ({item.pct.toFixed(1)}%)
                         </p>
                     ))}
@@ -144,7 +132,6 @@ function Stats({ statsData, componentsAll }) {
             </div>
         </div>
     );
-
 }
 
 export default Stats;
