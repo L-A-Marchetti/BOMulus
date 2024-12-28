@@ -241,7 +241,7 @@ function App() {
             )}
             {showCompareView && (
                 <CompareView
-                    onRefreshComponents={refreshComponents}
+                    onRefreshComponents={handleComponentAnalyzed}
                     onComponentAnalyzed={handleComponentAnalyzed}
                     onCompare={handleComparison}
                     onPinToggle={handlePinToggle}
