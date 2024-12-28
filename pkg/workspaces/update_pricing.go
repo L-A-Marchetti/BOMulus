@@ -66,3 +66,39 @@ func UpdateBMLSPricing(analyzedComponent core.Component) error {
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
+
+// UpdateAllBMLSPricing updates the .bmls file with information about analyzed components.
+// This function searches for a component in the current workspace's .bmls file and updates
+// it with the provided analyzed component if a match is found.
+func UpdateAllBMLSPricing() error {
+	if ActiveWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal the JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	for k := range core.Components {
+		for i := range workspace.Files {
+			for j := range workspace.Files[i].Components {
+				if workspace.Files[i].Components[j].Mpn == core.Components[k].Mpn &&
+					workspace.Files[i].Components[j].Quantity == core.Components[k].Quantity {
+					workspace.Files[i].Components[j] = core.Components[k]
+				}
+			}
+		}
+	}
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
