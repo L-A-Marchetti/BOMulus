@@ -201,10 +201,11 @@ func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
-func (a *App) UpdateDesignator(designator, function string) error {
+func (a *App) UpdateDesignator(designator, function, color string) error {
 	var d core.Designator
 	d.Designator = designator
-	d.Label = function
+	d.Label.Name = function
+	d.Label.Color = color
 	return workspaces.UpdateDesignator(d)
 }
 

@@ -79,7 +79,12 @@ type MSValue struct {
 
 type Designator struct {
 	Designator string `json:"designator"`
-	Label      string `json:"label"`
+	Label      Label  `json:"label"`
+}
+
+type Label struct {
+	Name  string `json:"name"`
+	Color string `json:"color"`
 }
 
 type PriceBreak struct {

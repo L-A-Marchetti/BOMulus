@@ -334,43 +334,43 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                 <td style={{ padding: 0, whiteSpace: 'nowrap' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         {/* Best Price */}
-<div
-    style={{
-        backgroundColor:
-            component.calculated_price?.is_moq_not_reached
-                ? 'rgb(255, 249, 143)' // Fond jaune si MOQ n'est pas atteint
-                : 'rgba(0, 0, 0, 0.2)', // Fond noir transparent sinon
-        color:
-            component.calculated_price?.is_moq_not_reached
-                ? 'black' // Texte noir pour plus de lisibilité sur fond jaune
-                : '',
-        padding: '10px',
-        textAlign: 'center',
-        borderBottom: '1px solid rgb(39, 39, 39)',
-        width: '100%',
-        boxSizing: 'border-box',
-    }}
->
-    {component.calculated_price?.best_price ? (
-        <>
-            <img
-                src={supplierIcons[component.calculated_price.best_supplier]}
-                alt={`${component.calculated_price.best_supplier} icon`}
-                style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-            />
-            {component.calculated_price?.is_moq_not_reached ? (
-                // Si MOQ n'est pas atteint
-                `< ${component.calculated_price.moq} | ${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
-            ) : (
-                // Sinon afficher les prix normalement
-                `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
-            )}
-        </>
-    ) : (
-        // Sinon afficher "-"
-        "-"
-    )}
-</div>
+                        <div
+                            style={{
+                                backgroundColor:
+                                    component.calculated_price?.is_moq_not_reached
+                                        ? 'rgb(255, 249, 143)' // Fond jaune si MOQ n'est pas atteint
+                                        : 'rgba(0, 0, 0, 0.2)', // Fond noir transparent sinon
+                                color:
+                                    component.calculated_price?.is_moq_not_reached
+                                        ? 'black' // Texte noir pour plus de lisibilité sur fond jaune
+                                        : '',
+                                padding: '10px',
+                                textAlign: 'center',
+                                borderBottom: '1px solid rgb(39, 39, 39)',
+                                width: '100%',
+                                boxSizing: 'border-box',
+                            }}
+                        >
+                            {component.calculated_price?.best_price ? (
+                                <>
+                                    <img
+                                        src={supplierIcons[component.calculated_price.best_supplier]}
+                                        alt={`${component.calculated_price.best_supplier} icon`}
+                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
+                                    />
+                                    {component.calculated_price?.is_moq_not_reached ? (
+                                        // Si MOQ n'est pas atteint
+                                        `< ${component.calculated_price.moq} | ${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    ) : (
+                                        // Sinon afficher les prix normalement
+                                        `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    )}
+                                </>
+                            ) : (
+                                // Sinon afficher "-"
+                                "-"
+                            )}
+                        </div>
 
 
 
