@@ -30,7 +30,10 @@ func designator_parser(designators string) []Designator {
 	for i := range splitted {
 		tmp := Designator{
 			Designator: splitted[i],
-			Label:      "not assigned",
+			Label: Label{
+				Name:  "not assigned",
+				Color: "#FFFFFF",
+			},
 		}
 		d = append(d, tmp)
 	}
