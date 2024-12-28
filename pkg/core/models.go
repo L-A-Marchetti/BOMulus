@@ -60,9 +60,11 @@ type Component struct {
 }
 
 type MSPricing struct {
-	BestSupplier  string `json:"best_supplier"`
-	BestPrice     string `json:"best_price"`
-	BestUnitPrice string `json:"best_unit_price"`
+	BestSupplier    string `json:"best_supplier"`
+	BestPrice       string `json:"best_price"`
+	BestUnitPrice   string `json:"best_unit_price"`
+	IsMoqNotReached bool   `json:"is_moq_not_reached"`
+	Moq             string `json:"moq"`
 }
 
 type MSPriceBreaks struct {
