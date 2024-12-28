@@ -19,26 +19,6 @@ const OP_COLORS = {
     EQUAL: '#323232',
 };
 
-// Déclaration en dehors (fonction "libre")
-function extractFunctionsFromComponents(componentsArr) {
-    if (!Array.isArray(componentsArr)) {
-        return [];
-    }
-    const labelSet = new Set();
-    for (const c of componentsArr) {
-        if (c.designators) {
-            c.designators.forEach(d => {
-                if (d.label && d.label.trim() !== '') {
-                    labelSet.add(d.label.trim());
-                }
-            });
-        }
-    }
-
-    console.log("extractFunctionsFromComponents - labelSet:", labelSet);
-    return [...labelSet];
-}
-
 function App() {
     const [showCompareView, setShowCompareView] = useState(false);
     const [compareKey, setCompareKey] = useState(0);
@@ -61,7 +41,6 @@ function App() {
 
     const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-    const [functionsList, setFunctionsList] = useState([]); // On stocke la liste des fonctions
     useEffect(() => {
         if (showCompareView) {
             (async () => {
@@ -161,8 +140,6 @@ function App() {
         try {
             const updatedComponents = await GetComponents();
             setComponents(updatedComponents);
-            const updatedFunctions = extractFunctionsFromComponents(updatedComponents);
-            setFunctionsList(updatedFunctions);
         } catch (error) {
             console.error("Error fetching components:", error);
         }
@@ -178,7 +155,7 @@ function App() {
             console.error("Erreur lors de l'arrêt de l'analyse:", error);
         }
     };
-    
+
 
     const handleSettings = () => {
         setShowSettingsModal(true);
@@ -293,16 +270,6 @@ function App() {
         total: totalComponents,
     };
 
-    const refreshComponents = async (newComponents) => {
-        console.log(">>> [App] refreshComponents received:", newComponents);
-        setComponents(newComponents);
-
-        const updatedFunctions = extractFunctionsFromComponents(newComponents);
-        console.log(">>> [App] updatedFunctions from BOM:", updatedFunctions);
-
-        setFunctionsList(updatedFunctions);
-    };
-
 
 
     return (
@@ -321,7 +288,6 @@ function App() {
                     components={getFilteredComponents()}
                     componentsAll={components} // On passe aussi le tableau complet
                     setComponents={setComponents}
-                    functionsList={functionsList}
                     onClose={handleCloseCompareView}
                     onSettings={handleSettings}
                     activeWorkspace={activeWorkspace}

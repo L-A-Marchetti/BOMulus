@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Filters.css';
 import BookmarkIcon from "./assets/images/bookmark.svg";
 import WarningToolTip from './WarningToolTip';
@@ -8,10 +7,12 @@ import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
 
-function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, functionsList, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
+function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
     console.log("4. Updated Components:", componentsAll);
     const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
 
+
+    const [designators, setDesignators] = useState([]);
 
     const handleOperatorClick = (operator) => {
         setActiveFilters(prevFilters => {
@@ -30,6 +31,32 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
             [name]: value,
         }));
     };
+
+    const [functions, setFunctions] = useState([]);
+
+    const loadData = (components = componentsAll) => {
+        let allDesignators = [];
+        for (const c of components) {
+            if (c.designators && c.designators.length > 0) {
+                allDesignators = allDesignators.concat(c.designators);
+            }
+        }
+
+        setDesignators(allDesignators);
+
+        const uniqueLabels = new Set();
+        allDesignators.forEach(d => {
+            if (d.label && d.label.trim() !== '') {
+                uniqueLabels.add(d.label);
+            }
+        });
+        setFunctions(Array.from(uniqueLabels));
+    };
+
+    useEffect(() => {
+        console.log("ComponentsAll updated in FunctionManager:", componentsAll);
+        loadData();
+    }, [componentsAll]);
 
     const handlePinnedToggle = () => {
         setActiveFilters(prevFilters => ({
@@ -98,9 +125,10 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                     className="filter-select-dropdown functions-select"
                 >
                     <option value="">> Functions</option>
-                    {functionsList && functionsList.map(fn => (
-                        <option key={fn} value={fn}>{fn}</option>
+                    >{functions.map(f => (
+                        <option key={f} value={f}>{f}</option>
                     ))}
+
                 </select>
 
                 {/* Bouton pour gérer les fonctions */}

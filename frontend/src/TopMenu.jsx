@@ -48,7 +48,6 @@ function TopMenu({
                         opColors={opColors}
                         warningCounts={warningCounts}
                         totalWarnings={totalWarnings}
-                        functionsList={functionsList}
                         pinnedComponents={pinnedComponents}
                         componentsAll={componentsAll}
                     />
