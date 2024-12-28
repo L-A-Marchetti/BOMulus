@@ -114,6 +114,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 	}
 	result.Currency = currency
 	result.Quantity = quantity
+	workspaces.UpdateAllBMLSPricing()
 	return result, nil
 }
 
@@ -175,15 +176,17 @@ func multisourcePriceCalculator(component core.Component, quantity int, isNewQua
 		core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestMoqPrice)
 		core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestMoqPrice/float64(totalQuantity))
 		core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
-		workspaces.UpdateBMLSPricing(core.Components[id])
+		//workspaces.UpdateBMLSPricing(core.Components[id])
 		return bestMoqPrice, warnings, nil
 	}
 
 	// If a valid price was found, clear warnings
+	core.Components[id].CalculatedPrice.IsMoqNotReached = false
+	core.Components[id].CalculatedPrice.Moq = ""
 	core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestPrice)
 	core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestPrice/float64(totalQuantity))
 	core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
-	workspaces.UpdateBMLSPricing(core.Components[id])
+	//workspaces.UpdateBMLSPricing(core.Components[id])
 	return bestPrice, nil, nil
 }
 
