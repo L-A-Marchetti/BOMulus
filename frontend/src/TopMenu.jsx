@@ -136,61 +136,56 @@ function TopMenu({
 
                 <div className="middle-side">
                     <h4 className="section-title">Analysis</h4>
-                    <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
-                </div>
-
-                <div
-                    className="stats-filters-container"
-                    style={{ display: 'flex', alignItems: 'center', gap: '20px' }}
-                >
-                    <div>
-                        <h4 className="section-title">Filters</h4>
-                        <Filters
-                            onRefreshComponents={onRefreshComponents}
-                            operators={operators}
-                            operatorCounts={operatorCounts}
-                            activeFilters={activeFilters}
-                            setActiveFilters={setActiveFilters}
-                            opColors={opColors}
-                            warningCounts={warningCounts}
-                            totalWarnings={totalWarnings}
-                            pinnedComponents={pinnedComponents}
-                            componentsAll={componentsAll}
-                        />
+                    <div className="analyze-and-price">
+                        <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
+                        <div className="price-editor-container">
+                            <div className="boards-control">
+                                <label className="price-label" htmlFor="boards-input">
+                                    Boards
+                                </label>
+                                <input
+                                    id="boards-input"
+                                    type="text"
+                                    value={boards}
+                                    onChange={handleBoardsChange}
+                                />
+                                {error && <p style={{ color: 'red', margin: 0 }}>{error}</p>}
+                            </div>
+                            <div className="price-info-container">
+                                <div className="price-per-board">
+                                    <label className="price-label">Price per Board</label>
+                                    <span className="price-value">{formatPrice(pricePerBoard)}</span>
+                                </div>
+                                <div className="order-price">
+                                    <label className="price-label">Order Price</label>
+                                    <span className="price-value">{formatPrice(orderPrice)}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <div className="filters-container">
+                    <h4 className="section-title" style={{ textAlign: 'left' }}>Filters</h4>
+                    <Filters
+                        onRefreshComponents={onRefreshComponents}
+                        operators={operators}
+                        operatorCounts={operatorCounts}
+                        activeFilters={activeFilters}
+                        setActiveFilters={setActiveFilters}
+                        opColors={opColors}
+                        warningCounts={warningCounts}
+                        totalWarnings={totalWarnings}
+                        pinnedComponents={pinnedComponents}
+                        componentsAll={componentsAll}
+                    />
+                </div>
+
             </div>
 
             {/* ===================== Deuxième ligne (boards + prix + Stats) ===================== */}
             <div className="bottom-row">
-                <div className="price-editor-container">
 
-                    {/* Nombre de boards (input) */}
-                    <div className="boards-control">
-                        <label className="price-label" htmlFor="boards-input">
-                            Boards
-                        </label>
-                        <input
-                            id="boards-input"
-                            type="text"     // on autorise text pour gérer la validation
-                            value={boards}
-                            onChange={handleBoardsChange}
-                        />
-                        {error && <p style={{ color: 'red', margin: 0 }}>{error}</p>}
-                    </div>
-
-                    {/* Prix unitaire et total (calculés) */}
-                    <div className="price-info-container">
-                        <div className="price-per-board">
-                            <label className="price-label">Price per Board</label>
-                            <span className="price-value">{formatPrice(pricePerBoard)}</span>
-                        </div>
-                        <div className="order-price">
-                            <label className="price-label">Order Price</label>
-                            <span className="price-value">{formatPrice(orderPrice)}</span>
-                        </div>
-                    </div>
-                </div>
 
                 {/* Les Stats préexistantes */}
                 <Stats

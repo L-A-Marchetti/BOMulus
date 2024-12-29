@@ -8,20 +8,30 @@
 }
 
 /* Chaque "ligne" de même épaisseur */
-.top-row,
-.bottom-row {
+.top-row {
     display: flex;
+    justify-content: space-between;
+    /* Sépare les colonnes */
     align-items: center;
-    justify-content: center;
-    /* <-- Ajouté pour centrer horizontalement */
+    /* Aligne les éléments verticalement */
     gap: 20px;
     padding: 10px;
     width: 100%;
     box-sizing: border-box;
 }
 
+.bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Centre le contenu horizontalement */
+    gap: 20px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
 
-/* Styles existants */
+/* Styles pour la colonne gauche */
 .left-side {
     display: flex;
     flex-direction: column;
@@ -30,18 +40,100 @@
     flex: 0;
 }
 
+/* Section Analysis */
 .middle-side {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    height: 100%;
-    flex: 0;
+    justify-content: center;
+    flex: 1;
 }
 
-.stats-filters-container {
+/* Conteneur pour le bouton Analyze et le price editor */
+.analyze-and-price {
     display: flex;
     align-items: center;
+    /* Aligne verticalement */
     gap: 20px;
+    /* Espacement horizontal */
+    width: 100%;
+}
+
+/* Conteneur des prix */
+.price-editor-container {
+    display: flex;
+    flex-direction: row;
+    /* Les éléments dans une ligne */
+    align-items: center;
+    /* Aligne verticalement les éléments */
+    gap: 20px;
+    margin-left: 20%;
+    /* Espacement horizontal entre boards et infos prix */
+}
+
+/* Alignement des boards */
+.boards-control {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+/* label et input des boards */
+.price-label {
+    color: white;
+    font-size: 13px;
+}
+
+#boards-input {
+    font-size: 20px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #555;
+    width: 60px;
+    text-align: center;
+    /* Centre le texte dans l'input */
+    outline: none;
+}
+
+#boards-input:focus {
+    border-bottom: 1px solid #999;
+}
+
+/* Informations sur les prix */
+.price-info-container {
+    display: flex;
+    gap: 20px;
+    /* Espacement horizontal entre Price per Board et Order Price */
+}
+
+.price-per-board,
+.order-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.price-value {
+    font-size: 20px;
+    color: white;
+}
+
+/* Colonne des filtres à droite */
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* Alignement à gauche */
+    gap: 10px;
+}
+
+.filters-container.right-align {
+    margin-left: auto;
+    /* Pousse le conteneur à droite */
+
 }
 
 .section-title {
@@ -50,81 +142,35 @@
     margin: 0 0 5px 0;
 }
 
-.analysis-container {
+/* Espacement et alignement des filtres */
+.stats-filters-container {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 20px;
 }
 
-.analyze-button-container,
-.filters {
-    margin-top: 0;
-}
+/* Responsive design */
+@media (max-width: 768px) {
+    .top-row {
+        flex-direction: column;
+        gap: 15px;
+    }
 
-/* ---------------------------------------------------------------- */
-/*                   Nouveaux styles pour la 2e ligne               */
-/* ---------------------------------------------------------------- */
+    .middle-side,
+    .filters-container,
+    .left-side {
+        align-items: center;
+        text-align: center;
+    }
 
-/* Conteneur global pour boards + price */
-.price-editor-container {
-    display: flex;
-    align-items: flex-end;
-    gap: 30px;
-    /* espace entre "boards" et "price-info-container" */
-}
+    .filters-container {
+        align-items: flex-start;
+        text-align: left;
+    }
 
-/* Nombre de boards */
-.boards-control {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-}
-
-/* label, input, etc. */
-.price-label {
-    color: white;
-    font-size: 13px;
-    /* Petit label en haut */
-}
-
-#boards-input {
-    font-size: 20px;
-    /* Même taille que les prix */
-    color: white;
-    background-color: transparent;
-    border: none;
-    border-bottom: 1px solid #555;
-    /* Un petit trait pour signaler l'input */
-    width: 60px;
-    /* Ajustez la largeur selon l'UI */
-    text-align: center;
-    /* Centrer le nombre */
-    outline: none;
-    /* Retirer le highlight par défaut */
-}
-
-/* On peut changer le style au focus si on veut. */
-#boards-input:focus {
-    border-bottom: 1px solid #999;
-}
-
-/* price-info-container : groupement de Price per Board et Order Price */
-.price-info-container {
-    display: flex;
-    gap: 20px;
-}
-
-/* Chaque bloc "price" (label + span) */
-.price-per-board,
-.order-price {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-/* Valeurs des prix (similaire à input) */
-.price-value {
-    font-size: 20px;
-    color: white;
+    .analyze-and-price {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
 }
