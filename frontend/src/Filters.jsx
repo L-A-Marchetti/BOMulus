@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Filters.css';
 import BookmarkIcon from "./assets/images/bookmark.svg";
 import WarningToolTip from './WarningToolTip';
@@ -7,11 +6,15 @@ import BookmarkToolTip from './BookmarkToolTip';
 import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
+import SettingsIcon from "./assets/images/settings.svg";
+
 
 function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, opColors, warningCounts, totalWarnings, pinnedComponents, componentsAll, onRefreshComponents }) {
-    console.log("4. Updated Components:", componentsAll);
+
     const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
 
+
+    const [designators, setDesignators] = useState([]);
 
     const handleOperatorClick = (operator) => {
         setActiveFilters(prevFilters => {
@@ -31,6 +34,33 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
         }));
     };
 
+    const [functions, setFunctions] = useState([]);
+
+    const loadData = (components = componentsAll) => {
+        console.log("Loading data for FunctionManager with components:", components);
+        let allDesignators = [];
+        for (const c of components) {
+            if (c.designators && c.designators.length > 0) {
+                allDesignators = allDesignators.concat(c.designators);
+            }
+        }
+
+        setDesignators(allDesignators);
+
+        const uniqueLabels = new Set();
+        allDesignators.forEach(d => {
+            if (d.label.name && d.label.name.trim() !== '') {
+                uniqueLabels.add(d.label.name.trim());
+            }
+        });
+        setFunctions(Array.from(uniqueLabels));
+    };
+
+    useEffect(() => {
+        console.log("ComponentsAll updated in FunctionManager:", componentsAll);
+        loadData();
+    }, [componentsAll]);
+
     const handlePinnedToggle = () => {
         setActiveFilters(prevFilters => ({
             ...prevFilters,
@@ -38,6 +68,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
         }));
     };
 
+    console.log("4. Updated Components:", componentsAll);
 
     return (
         <div className="filters">
@@ -98,23 +129,18 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                     className="filter-select-dropdown functions-select"
                 >
                     <option value="">> Functions</option>
-                    {/* ici, plus tard, vous injecterez les fonctions depuis le backend */}
+                    >{functions.map(f => (
+                        <option key={f} value={f}>{f}</option>
+                    ))}
+
                 </select>
 
                 {/* Bouton pour gérer les fonctions */}
                 <button
                     onClick={() => setShowFunctionManagerModal(true)}
-                    style={{
-                        backgroundColor: '#353535',
-                        color: 'white',
-                        border: 'none',
-                        fontSize: '12px',
-                        padding: '8px 12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
+                    className={`settings-button`}
                 >
-                    Manage Functions
+                    <img style={{ width: '15px', height: '18px' }} src={SettingsIcon} alt="Settings Icon" />
                 </button>
             </div>
 

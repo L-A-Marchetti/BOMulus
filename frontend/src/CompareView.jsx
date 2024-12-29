@@ -44,7 +44,7 @@ function CompareView({
 
     // Calculer operatorCounts
     const operatorCounts = operators.map((operator) => {
-        const count = components.filter((comp) => comp.Operator === operator).length;
+        const count = componentsAll.filter((comp) => comp.Operator === operator).length;
         return { operator, count };
     });
     console.log("2. Updated Components:", componentsAll);

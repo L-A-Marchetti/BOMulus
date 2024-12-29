@@ -1,21 +1,33 @@
+/* .top-menu : conteneur vertical pour 2 lignes */
 .top-menu {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
     width: 100%;
-    padding: 10px;
     box-sizing: border-box;
-    align-items: center;
-    /* centre verticalement */
     font-family: 'Poppins', sans-serif;
 }
 
+/* Chaque "ligne" de même épaisseur */
+.top-row,
+.bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* <-- Ajouté pour centrer horizontalement */
+    gap: 20px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* Styles existants */
 .left-side {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     height: 100%;
     flex: 0;
-    /* Garde left-side expansée si souhaité */
 }
 
 .middle-side {
@@ -24,10 +36,8 @@
     align-items: flex-start;
     height: 100%;
     flex: 0;
-    /* Retirer flex:1, ainsi .middle-side se limite à la taille de son contenu */
 }
 
-/* Pas de flex:1 sur stats-filters-container, pour ne pas l’étirer */
 .stats-filters-container {
     display: flex;
     align-items: center;
@@ -49,4 +59,72 @@
 .analyze-button-container,
 .filters {
     margin-top: 0;
+}
+
+/* ---------------------------------------------------------------- */
+/*                   Nouveaux styles pour la 2e ligne               */
+/* ---------------------------------------------------------------- */
+
+/* Conteneur global pour boards + price */
+.price-editor-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 30px;
+    /* espace entre "boards" et "price-info-container" */
+}
+
+/* Nombre de boards */
+.boards-control {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+/* label, input, etc. */
+.price-label {
+    color: white;
+    font-size: 13px;
+    /* Petit label en haut */
+}
+
+#boards-input {
+    font-size: 20px;
+    /* Même taille que les prix */
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #555;
+    /* Un petit trait pour signaler l'input */
+    width: 60px;
+    /* Ajustez la largeur selon l'UI */
+    text-align: center;
+    /* Centrer le nombre */
+    outline: none;
+    /* Retirer le highlight par défaut */
+}
+
+/* On peut changer le style au focus si on veut. */
+#boards-input:focus {
+    border-bottom: 1px solid #999;
+}
+
+/* price-info-container : groupement de Price per Board et Order Price */
+.price-info-container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Chaque bloc "price" (label + span) */
+.price-per-board,
+.order-price {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Valeurs des prix (similaire à input) */
+.price-value {
+    font-size: 20px;
+    color: white;
 }

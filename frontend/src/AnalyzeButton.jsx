@@ -22,10 +22,11 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { GetAnalysisState, RunAnalysis } from "../wailsjs/go/main/App";
+import { GetAnalysisState, RunAnalysis, GetApiCount } from "../wailsjs/go/main/App";
 import ProgressBar from './ProgressBar'; // Assurez-vous que ce chemin est correct
 import './AnalyzeButton.css';
 import AnalysisIcon from "./assets/images/analysis.svg";
+import { use } from 'react';
 
 // Composant principal pour le contrôle de l'analyse et l'affichage du statut
 export default function AnalyzeButton({ onComponentAnalyzed }) {
@@ -33,12 +34,28 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
     const [progress, setProgress] = useState(0);
     const [lastAnalyzedComponent, setLastAnalyzedComponent] = useState(null);
     const [error, setError] = useState(null);
+    const [apiCount, setApiCount] = useState(0);
+
+    useEffect(() => {
+        handleApiCount();
+    }, []);
+
+    const handleApiCount = async () => {
+        try {
+            const count = await GetApiCount();
+            setApiCount(count);
+        } catch (error) {
+            console.error("Erreur lors du count", error);
+        }
+    };
 
     // Récupère et met à jour l'état actuel de l'analyse
     const updateProgress = useCallback(async () => {
         try {
             const state = await GetAnalysisState();
-            setProgress(state.Progress);
+
+            setProgress(state.Progress / apiCount);
+            console.log("Progress: ", apiCount);
             setLastAnalyzedComponent(state.Current);
             if (state.MouserErr != "") {
                 setError(state.MouserErr);
