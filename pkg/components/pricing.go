@@ -171,11 +171,13 @@ func multisourcePriceCalculator(component core.Component, quantity int, currency
 
 	// If no valid price was found, return an error with collected warnings
 	if bestPrice == 0 {
-		core.Components[id].CalculatedPrice.IsMoqNotReached = true
-		core.Components[id].CalculatedPrice.Moq = strconv.Itoa(bestMoq)
-		core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestMoqPrice)
-		core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestMoqPrice/float64(totalQuantity))
-		core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
+		if len(component.PriceBreaks) > 0 {
+			core.Components[id].CalculatedPrice.IsMoqNotReached = true
+			core.Components[id].CalculatedPrice.Moq = strconv.Itoa(bestMoq)
+			core.Components[id].CalculatedPrice.BestPrice = fmt.Sprintf("%f", bestMoqPrice)
+			core.Components[id].CalculatedPrice.BestUnitPrice = fmt.Sprintf("%f", bestMoqPrice/float64(totalQuantity))
+			core.Components[id].CalculatedPrice.BestSupplier = bestSupplier
+		}
 		return bestMoqPrice, warnings, nil
 	}
 
