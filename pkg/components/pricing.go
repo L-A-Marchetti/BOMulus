@@ -64,7 +64,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 		switch component.Operator {
 		case "INSERT":
 			// Calculate price for a new component
-			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
+			price, minQty, err := multisourcePriceCalculator(component, quantity, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -72,14 +72,14 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 			result.MinimumQuantities = append(result.MinimumQuantities, minQty...)
 		case "DELETE":
 			// Calculate price for a component being removed
-			price, _, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
+			price, _, err := multisourcePriceCalculator(component, quantity, &currency, i)
 			if err != nil {
 				return result, err
 			}
 			result.OldPrice += price
 		case "EQUAL":
 			// Calculate price for an unchanged component
-			price, minQty, err := multisourcePriceCalculator(component, quantity, false, &currency, i)
+			price, minQty, err := multisourcePriceCalculator(component, quantity, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -90,14 +90,14 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 			// Calculate old and new prices for an updated component
 			oldComponent := component
 			oldComponent.Quantity = component.OldQuantity
-			oldPrice, _, err := multisourcePriceCalculator(oldComponent, quantity, false, &currency, i)
+			oldPrice, _, err := multisourcePriceCalculator(oldComponent, quantity, &currency, i)
 			if err != nil {
 				return result, err
 			}
 			result.OldPrice += oldPrice
 			newComponent := component
 			newComponent.Quantity = component.NewQuantity
-			newPrice, minQty, err := multisourcePriceCalculator(newComponent, quantity, true, &currency, i)
+			newPrice, minQty, err := multisourcePriceCalculator(newComponent, quantity, &currency, i)
 			if err != nil {
 				return result, err
 			}
@@ -135,7 +135,7 @@ func convertPrice(price, currency string) (float64, error) {
 }
 
 // multisourcePriceCalculator calculates the price for a single component across multiple suppliers
-func multisourcePriceCalculator(component core.Component, quantity int, isNewQuantity bool, currency *string, id int) (float64, []string, error) {
+func multisourcePriceCalculator(component core.Component, quantity int, currency *string, id int) (float64, []string, error) {
 	totalQuantity := component.Quantity * quantity
 	bestMoq := 0
 	bestMoqPrice := .0

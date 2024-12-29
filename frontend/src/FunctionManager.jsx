@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UpdateDesignator, GetComponents } from '../wailsjs/go/main/App';
+import { UpdateDesignator, GetComponents, UpdateBMLSDesignators } from '../wailsjs/go/main/App';
 
 /**
  * FunctionManager.jsx
@@ -162,6 +162,8 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
                 await UpdateDesignator(d.designator, d.label.name, d.label.color);
             }
         }
+
+        await UpdateBMLSDesignators();
 
         alert("Designators updated successfully!");
 

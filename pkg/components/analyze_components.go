@@ -74,7 +74,8 @@ func AnalyzeComponents() error {
 				}
 				if err := APIRequest(i, &done); err != nil {
 					log.Println(err)
-					errChan <- err // Send error to channel if analysis fails
+					core.AnalysisState.MouserErr = err.Error()
+					//errChan <- err // Send error to channel if analysis fails
 					return
 				}
 				// Mises à jour partagées
@@ -118,7 +119,8 @@ func AnalyzeComponents() error {
 				}
 				if err := APIRequestToDigiKey(i, &done); err != nil {
 					log.Println(err)
-					errChan <- err // Send error to channel if analysis fails
+					core.AnalysisState.DigikeyErr = err.Error()
+					//errChan <- err // Send error to channel if analysis fails
 					return
 				}
 				// Mises à jour partagées
