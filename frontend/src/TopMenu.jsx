@@ -28,9 +28,9 @@ function TopMenu({
     componentsAll,
     functionsList,
 }) {
-    console.log("3. Updated Components:", componentsAll);
+    // État pour indiquer si l'initialisation est terminée
+    const [initialized, setInitialized] = useState(false);
 
-    // -- ÉTATS --  
     // Nombre de boards (initialisé depuis le backend)
     const [boards, setBoards] = useState(1);
 
@@ -41,74 +41,66 @@ function TopMenu({
     // Message d’erreur éventuel (ex: saisie invalide)
     const [error, setError] = useState('');
 
-    // --------------------------------------------------------------------------
-    // 1. Charger la quantité (boards) existante depuis le backend au montage
-    // --------------------------------------------------------------------------
     useEffect(() => {
-        loadProductionQuantity();
-    }, []);
+        // Initialisation des prix uniquement si `componentsAll` est chargé
+        if (!initialized && componentsAll && componentsAll.length > 0) {
+            const initializePrices = async () => {
+                try {
+                    const quantityFromBackend = await GetProductionQuantity();
+                    const initialQuantity = quantityFromBackend
+                        ? parseInt(quantityFromBackend, 10)
+                        : 1; // Utilise 1 par défaut
 
-    const loadProductionQuantity = async () => {
-        try {
-            const quantityFromBackend = await GetProductionQuantity(); // ex: "10"
-            if (quantityFromBackend) {
-                // on parse en nombre
-                const q = parseInt(quantityFromBackend, 10);
-                setBoards(q > 0 ? q : 1);
-                // Puis on fait un calcul initial
-                calculatePrices(q);
-            }
-        } catch (error) {
-            console.error("Error loading production quantity:", error);
+                    if (boards !== initialQuantity) {
+                        setBoards(initialQuantity);
+                    }
+
+                    if (initialQuantity > 0) {
+                        await calculatePrices(initialQuantity);
+                    }
+
+                    setInitialized(true); // Marque comme initialisé
+                } catch (error) {
+                    console.error("Error initializing prices:", error);
+                }
+            };
+
+            initializePrices();
         }
-    };
+    }, [componentsAll, initialized]); // Dépend uniquement de componentsAll et de l'état initialized
 
-    // --------------------------------------------------------------------------
-    // 2. Chaque fois que l’utilisateur modifie 'boards', on recalcule les prix
-    // --------------------------------------------------------------------------
     const handleBoardsChange = async (e) => {
         const value = e.target.value;
-        // On autorise seulement les chiffres ou le champ vide
+
         if (value === '' || /^[0-9]+$/.test(value)) {
-            setBoards(value);
+            const numBoards = parseInt(value, 10);
+
+            setBoards(value); // Met à jour l'état local du nombre de boards
             setError('');
 
-            // Si le champ est vide, on peut stopper ici (pas de calcul)
-            if (value === '') {
-                setPricePerBoard(0);
-                setOrderPrice(0);
-                return;
-            }
-            // Sinon, on parse et on fait le calcul
-            const numBoards = parseInt(value, 10);
-            if (numBoards > 0) {
-                calculatePrices(numBoards);
-            } else {
-                setError('Please enter a valid positive number');
-                setPricePerBoard(0);
-                setOrderPrice(0);
+            if (!isNaN(numBoards) && numBoards > 0) {
+                try {
+                    await calculatePrices(numBoards);
+                } catch (err) {
+                    console.error("Error calculating prices:", err);
+                    setError('An error occurred while calculating the price');
+                }
             }
         }
-        onComponentAnalyzed();
     };
 
-    // --------------------------------------------------------------------------
-    // 3. Calcul des prix (ordre total & prix unitaire) via backend Wails
-    // --------------------------------------------------------------------------
     const calculatePrices = async (numBoards) => {
         try {
-            // On enregistre côté backend
             await SetProductionQuantity(numBoards.toString());
 
-            // On appelle la fonction de calcul côté backend
             const result = await PriceCalculator(numBoards);
-            // Par exemple, on récupère 'result.orderPrice' et 'result.unitPrice'
+
             if (result) {
                 setOrderPrice(result.orderPrice);
                 setPricePerBoard(result.unitPrice);
             }
         } catch (err) {
-            console.error("Error calculating price:", err);
+            console.error("Error calculating prices:", err);
             setError('An error occurred while calculating the price');
             setPricePerBoard(0);
             setOrderPrice(0);
@@ -117,19 +109,10 @@ function TopMenu({
         onComponentAnalyzed();
     };
 
-    // --------------------------------------------------------------------------
-    // 4. Format d’affichage (toujours en dollars)
-    // --------------------------------------------------------------------------
-    const formatPrice = (price) => {
-        return `$${price.toFixed(2)}`;
-    };
+    const formatPrice = (price) => `$${price.toFixed(2)}`;
 
-    // --------------------------------------------------------------------------
-    // COMPOSANT RENDU
-    // --------------------------------------------------------------------------
     return (
         <div className="top-menu">
-            {/* ===================== Première ligne (inchangée) ===================== */}
             <div className="top-row">
                 <div className="left-side">
                     <h4 className="section-title">File manager</h4>
@@ -182,18 +165,10 @@ function TopMenu({
                         componentsAll={componentsAll}
                     />
                 </div>
-
             </div>
 
-            {/* ===================== Deuxième ligne (boards + prix + Stats) ===================== */}
             <div className="bottom-row">
-
-
-                {/* Les Stats préexistantes */}
-                <Stats
-                    statsData={statsData}
-                    componentsAll={componentsAll}
-                />
+                <Stats statsData={statsData} componentsAll={componentsAll} />
             </div>
         </div>
     );
