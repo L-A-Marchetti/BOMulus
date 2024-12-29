@@ -9,7 +9,17 @@ import (
 	"strings"
 )
 
-func UpdateDesignator(d core.Designator) error {
+func UpdateDesignator(d core.Designator) {
+	for i := range core.Components {
+		for j := range core.Components[i].Designators {
+			if d.Designator == core.Components[i].Designators[j].Designator {
+				core.Components[i].Designators[j] = d
+			}
+		}
+	}
+}
+
+func UpdateBMLSDesignators() error {
 	if ActiveWorkspacePath == "" {
 		return fmt.Errorf("no active workspace set")
 	}
@@ -25,19 +35,16 @@ func UpdateDesignator(d core.Designator) error {
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
 	}
-	for i := range workspace.Files {
-		for j := range workspace.Files[i].Components {
-			for k := range workspace.Files[i].Components[j].Designators {
-				if workspace.Files[i].Components[j].Designators[k].Designator == d.Designator {
-					workspace.Files[i].Components[j].Designators[k].Label = d.Label
+	for l := range core.Components {
+		for m := range core.Components[l].Designators {
+			for i := range workspace.Files {
+				for j := range workspace.Files[i].Components {
+					for k := range workspace.Files[i].Components[j].Designators {
+						if workspace.Files[i].Components[j].Designators[k].Designator == core.Components[l].Designators[m].Designator {
+							workspace.Files[i].Components[j].Designators[k] = core.Components[l].Designators[m]
+						}
+					}
 				}
-			}
-		}
-	}
-	for i := range core.Components {
-		for j := range core.Components[i].Designators {
-			if d.Designator == core.Components[i].Designators[j].Designator {
-				core.Components[i].Designators[j].Label = d.Label
 			}
 		}
 	}
