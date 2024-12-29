@@ -113,6 +113,8 @@ function TopMenu({
             setPricePerBoard(0);
             setOrderPrice(0);
         }
+
+        onComponentAnalyzed();
     };
 
     // --------------------------------------------------------------------------
