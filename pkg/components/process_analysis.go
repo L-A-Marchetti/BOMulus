@@ -69,7 +69,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 				currentComponent.Sources = append(currentComponent.Sources, "Mouser")
 				currentComponent.LastRefresh = time.Now()
 				productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
-				multisourcePriceCalculator(core.Components[i], productionQuantity, false, &currency, i)
+				multisourcePriceCalculator(core.Components[i], productionQuantity, &currency, i)
 			}
 		case "Digikey":
 			// Get the analyzed components from the API response
@@ -92,7 +92,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 				currentComponent.Sources = append(currentComponent.Sources, "Digikey")
 				currentComponent.LastRefresh = time.Now()
 				productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
-				multisourcePriceCalculator(core.Components[i], productionQuantity, false, &currency, i)
+				multisourcePriceCalculator(core.Components[i], productionQuantity, &currency, i)
 			}
 		}
 	}
