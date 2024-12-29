@@ -67,7 +67,7 @@
     align-items: center;
     /* Aligne verticalement les éléments */
     gap: 20px;
-    margin-left: 20%;
+    margin-left: 13%;
     /* Espacement horizontal entre boards et infos prix */
 }
 
@@ -86,7 +86,7 @@
 }
 
 #boards-input {
-    font-size: 20px;
+    font-size: 30px;
     color: white;
     background-color: transparent;
     border: none;
@@ -117,7 +117,7 @@
 }
 
 .price-value {
-    font-size: 20px;
+    font-size: 30px;
     color: white;
 }
 

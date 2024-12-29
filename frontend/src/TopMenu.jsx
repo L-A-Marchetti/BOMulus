@@ -31,6 +31,9 @@ function TopMenu({
     // État pour indiquer si l'initialisation est terminée
     const [initialized, setInitialized] = useState(false);
 
+    const [calculationResult, setCalculationResult] = useState(null);
+
+
     // Nombre de boards (initialisé depuis le backend)
     const [boards, setBoards] = useState(1);
 
@@ -98,12 +101,14 @@ function TopMenu({
             if (result) {
                 setOrderPrice(result.orderPrice);
                 setPricePerBoard(result.unitPrice);
+                setCalculationResult(result);
             }
         } catch (err) {
             console.error("Error calculating prices:", err);
             setError('An error occurred while calculating the price');
             setPricePerBoard(0);
             setOrderPrice(0);
+            setCalculationResult(null);
         }
 
         onComponentAnalyzed();
@@ -168,7 +173,7 @@ function TopMenu({
             </div>
 
             <div className="bottom-row">
-                <Stats statsData={statsData} componentsAll={componentsAll} />
+                <Stats statsData={statsData} componentsAll={componentsAll} calculationResult={calculationResult} />
             </div>
         </div>
     );
