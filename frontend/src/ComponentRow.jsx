@@ -64,8 +64,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
         component.info_messages?.some(msg => msg.trim() !== "");
 
     const hasMismatchMpn = component.analyzed &&
-        operator !== 'DELETE' &&
-        component.mismatch_mpn?.some(mismatch => mismatch !== null);
+        component.mismatch_mpn === true;
     const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
 
     const messages = [];
@@ -438,10 +437,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
 
             {component.analyzed && expanded && renderComponentDetails(component)}
 
-            {/* Display mismatch MPN details if they exist */}
+            {/* Display mismatch MPN details if they exist 
             {hasMismatchMpn && expanded && component.mismatch_mpn.map((mismatchComponent, index) => (
                 renderComponentDetails(mismatchComponent)
-            ))}
+            ))}*/}
         </>
     );
 }

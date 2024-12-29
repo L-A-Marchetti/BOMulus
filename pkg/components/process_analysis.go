@@ -56,11 +56,10 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 			if currentComponent.Mpn == analyzedComponents[0].ManufacturerPartNumber {
 				// Update the existing component with the analyzed data
 				processComponent(currentComponent, analyzedComponents[0], true, supplier)
+				currentComponent.MismatchMpn = false
 			} else {
-				// If no exact match, process all analyzed components as alternatives
-				for _, analyzedPart := range analyzedComponents {
-					alternativeMpn := processComponent(nil, analyzedPart, false, supplier)
-					currentComponent.MismatchMpn = append(currentComponent.MismatchMpn, alternativeMpn)
+				if len(currentComponent.Sources) == 0 || currentComponent.MismatchMpn {
+					currentComponent.MismatchMpn = true
 				}
 			}
 			// Validate the analysis
@@ -85,6 +84,11 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 			if len(response.ExactMatches) > 0 && currentComponent.Mpn == analyzedComponents[0].ManufacturerProductNumber {
 				// Update the existing component with the analyzed data
 				dkProcessComponent(currentComponent, analyzedComponents[0], true, supplier, response.SearchLocaleUsed.Currency)
+				currentComponent.MismatchMpn = false
+			} else {
+				if len(currentComponent.Sources) == 0 || currentComponent.MismatchMpn {
+					currentComponent.MismatchMpn = true
+				}
 			}
 			// Validate the analysis
 			if len(response.ExactMatches) > 0 {

@@ -47,7 +47,7 @@ type Component struct {
 	InfoMessages             []string        `json:"info_messages"`
 	Analyzed                 bool            `json:"analyzed"`
 	Sources                  []string        `json:"sources"`
-	MismatchMpn              []Component     `json:"mismatch_mpn"`
+	MismatchMpn              bool            `json:"mismatch_mpn"`
 	UserDescription          string          `json:"user_description"`
 	SupplierDescription      []MSValue       `json:"supplier_description"`
 	UserManufacturer         string          `json:"user_manufacturer"`
