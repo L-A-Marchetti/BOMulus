@@ -123,8 +123,7 @@ function App() {
                 comp.info_messages?.some(msg => msg.trim() !== "")
             ).length,
             mismatchingMpn: components.filter((comp) =>
-                comp.analyzed &&
-                comp.mismatch_mpn?.some(mismatch => mismatch !== null)
+                comp.analyzed && comp.mismatch_mpn === true
             ).length,
         };
 
@@ -196,7 +195,7 @@ function App() {
             if (activeFilters.warning === 'mismatchingMpn') {
                 const hasMismatch = comp.analyzed &&
                     comp.mismatch_mpn &&
-                    comp.mismatch_mpn.some(mismatch => mismatch !== null);
+                    comp.mismatch_mpn === true;
                 if (!hasMismatch) return false;
             }
 
@@ -245,7 +244,7 @@ function App() {
     const countBySupplier = (components, supplier) =>
         components.filter(comp =>
             comp.analyzed &&
-            comp.mismatch_mpn === null &&
+            comp.mismatch_mpn === false &&
             Array.isArray(comp.sources) && // Vérifie que sources est une array
             comp.sources.some(source => source === supplier)
         ).length;
@@ -253,8 +252,8 @@ function App() {
     const totalComponents = components.length;
     const mouserCount = countBySupplier(components, "Mouser");
     const digikeyCount = countBySupplier(components, "Digikey");
-    const unprocuredCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn != null).length;
-    const coverage = totalComponents > 0 ? (components.filter(comp => comp.analyzed && comp.mismatch_mpn === null).length / totalComponents) * 100 : 0;
+    const unprocuredCount = components.filter(comp => comp.analyzed && comp.mismatch_mpn === true).length;
+    const coverage = totalComponents > 0 ? (components.filter(comp => comp.analyzed && comp.mismatch_mpn === false).length / totalComponents) * 100 : 0;
     const inStockCount = components.filter(comp => comp.availability !== "" && comp.analyzed).length;
     const outOfStockCount = components.filter(comp => comp.availability === "" && comp.analyzed).length;
     const insufficientCount = 0;

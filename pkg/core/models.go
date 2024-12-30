@@ -47,7 +47,7 @@ type Component struct {
 	InfoMessages             []string        `json:"info_messages"`
 	Analyzed                 bool            `json:"analyzed"`
 	Sources                  []string        `json:"sources"`
-	MismatchMpn              []Component     `json:"mismatch_mpn"`
+	MismatchMpn              bool            `json:"mismatch_mpn"`
 	UserDescription          string          `json:"user_description"`
 	SupplierDescription      []MSValue       `json:"supplier_description"`
 	UserManufacturer         string          `json:"user_manufacturer"`
@@ -55,8 +55,14 @@ type Component struct {
 	Category                 []MSValue       `json:"category"`
 	ProductDetailUrl         []MSValue       `json:"product_detail_url"`
 	LastRefresh              time.Time       `json:"last_refresh"`
+	DetailedParameters       []Parameter     `json:"detailed_parameters"`
 	Operator                 string
 	OldQuantity, NewQuantity int
+}
+
+type Parameter struct {
+	Parameter string `json:"parameter"`
+	Value     string `json:"value"`
 }
 
 type MSPricing struct {

@@ -64,8 +64,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
         component.info_messages?.some(msg => msg.trim() !== "");
 
     const hasMismatchMpn = component.analyzed &&
-        operator !== 'DELETE' &&
-        component.mismatch_mpn?.some(mismatch => mismatch !== null);
+        component.mismatch_mpn === true;
     const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
 
     const messages = [];
@@ -234,7 +233,6 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         </tbody>
                     </table>
 
-
                     {/* Buttons for URLs */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
                         {apiPriority.map(api => {
@@ -265,6 +263,25 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         }).find(el => el)}
                     </div>
 
+                     {/* Detailed Parameters */}
+                     {comp.detailed_parameters && comp.detailed_parameters.length > 0 && (
+                        <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '30px', marginBottom: '30px' }}>
+                            <thead>
+                                <tr>
+                                    <th style={tableHeaderStyle}>Parameter</th>
+                                    <th style={tableHeaderStyle}>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {comp.detailed_parameters.map((param, index) => (
+                                    <tr key={index}>
+                                        <td style={tableCellStyle}>{param.parameter}</td>
+                                        <td style={tableCellStyle}>{param.value}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                     {/* Info Messages */}
                     <div>
                         <strong>Info Messages:</strong>
@@ -436,10 +453,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
 
             {component.analyzed && expanded && renderComponentDetails(component)}
 
-            {/* Display mismatch MPN details if they exist */}
+            {/* Display mismatch MPN details if they exist 
             {hasMismatchMpn && expanded && component.mismatch_mpn.map((mismatchComponent, index) => (
                 renderComponentDetails(mismatchComponent)
-            ))}
+            ))}*/}
         </>
     );
 }

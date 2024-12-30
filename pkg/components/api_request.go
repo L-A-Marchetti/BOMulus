@@ -50,7 +50,7 @@ func APIRequest(i int, done *chan struct{}) error {
 	default:
 		// Check if a MPN was found.
 		if core.Components[i].Mpn == "" {
-			//core.Components[i].Mpn = "MPN not found."
+			core.Components[i].MismatchMpn = true
 			return nil
 		}
 		// Create the request payload
