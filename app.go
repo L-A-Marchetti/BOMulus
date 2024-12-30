@@ -149,6 +149,27 @@ func (a *App) OpenFileDialog() (string, error) {
 	return selection, nil
 }
 
+// OpenMultipleFilesDialog opens a file selection dialog allowing multiple files and returns the selected file paths.
+func (a *App) OpenMultipleFilesDialog() ([]string, error) {
+	selection, err := runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select Files to Add",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "All Files",
+				Pattern:     "*.*",
+			},
+			{
+				DisplayName: "Excel Files",
+				Pattern:     "*.xls;*.xlsx;*.xlsm",
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error opening file dialog: %w", err)
+	}
+	return selection, nil
+}
+
 /*╚══════════════════════════════════════════════╝*/
 
 /*╔══════════════ WORKSPACE FUNCTIONS ══════════════╗*/

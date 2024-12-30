@@ -1,26 +1,87 @@
 import React, { useState, useEffect } from "react";
 import {
   OpenFileDialog,
+  OpenMultipleFilesDialog,
   AddFileToWorkspace,
   GetFilesInWorkspaceInfo,
   BtnCompare,
   GetComponents,
+  DeleteBOMFile,
 } from "../wailsjs/go/main/App";
+import Modal from "./Modal"; // Import du composant Modal
+import Button from "./Button"; // Import du composant Button
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import "./FileManager.css";
 import AddBom from "./assets/images/add_bom.svg";
+
+const ItemTypes = {
+  FILE: "file",
+};
+
+const DraggableFile = ({ file, index, moveFile, onDelete }) => {
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const [, drag] = useDrag({
+    type: ItemTypes.FILE,
+    item: { index },
+  });
+
+  const [, drop] = useDrop({
+    accept: ItemTypes.FILE,
+    hover: (draggedItem) => {
+      if (draggedItem.index !== index) {
+        moveFile(draggedItem.index, index);
+        draggedItem.index = index;
+      }
+    },
+  });
+
+  const handleDeleteClick = () => {
+    setIsConfirming(true);
+  };
+
+  const handleCancel = () => {
+    setIsConfirming(false);
+  };
+
+  const handleConfirm = () => {
+    onDelete(file.path);
+    setIsConfirming(false);
+  };
+
+  return (
+    <li ref={(node) => drag(drop(node))} className="draggable-file">
+      {isConfirming ? (
+        <div className="confirm-delete" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <span>Delete?</span>
+          <Button className="confirm-button" onClick={handleConfirm}>
+            Yes
+          </Button>
+          <Button className="cancel-button" onClick={handleCancel}>
+            No
+          </Button>
+        </div>
+      ) : (
+        <>
+          <button
+            className="delete-button"
+            onClick={handleDeleteClick}
+          >
+            ×
+          </button>
+          <span className="file-name">{file.name}</span>
+        </>
+      )}
+    </li>
+  );
+};
 
 function FileManager({ onCompare }) {
   const [existingFiles, setExistingFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([null, null]); // [v1, v2]
+  const [isModalOpen, setIsModalOpen] = useState(false); // Contrôle de l'ouverture du modal
 
-  // Vérifie que la prop onCompare est une fonction
-  if (typeof onCompare !== "function") {
-    console.error("FileManager.jsx - onCompare n'est pas une fonction valide.");
-    return null;
-  }
-  console.log("FileManager.jsx - onCompare:", onCompare);
-
-  // Charger les fichiers existants au montage du composant
   useEffect(() => {
     loadExistingFiles();
   }, []);
@@ -28,16 +89,15 @@ function FileManager({ onCompare }) {
   const loadExistingFiles = async () => {
     try {
       const files = await GetFilesInWorkspaceInfo();
-      setExistingFiles(files || []); // Vérifie que les fichiers sont bien un tableau
+      setExistingFiles(files || []);
     } catch (error) {
       console.error("Échec du chargement des fichiers existants :", error);
-      setExistingFiles([]); // Réinitialise en cas d'erreur
+      setExistingFiles([]);
     }
   };
 
-  const handleFileSelection = async () => {
+  const handleFileSelection = async (filePath) => {
     try {
-      const filePath = await OpenFileDialog();
       if (filePath) {
         await AddFileToWorkspace(filePath);
         alert("Fichier ajouté avec succès");
@@ -49,45 +109,21 @@ function FileManager({ onCompare }) {
     }
   };
 
-  const handleCompare = async () => {
-    console.log("FileManager.jsx - handleCompare called with selectedFiles:", selectedFiles);
-
-    const file1 = selectedFiles[0];
-    const file2 = selectedFiles[1];
-
-    if (!file1 && !file2) {
-      alert("Veuillez sélectionner au moins un fichier pour la comparaison.");
-      return;
-    }
-
+  const handleManualUpload = async () => {
     try {
-      if (file1 && file2) {
-        // Deux fichiers sélectionnés
-        console.log("FileManager.jsx - Comparing two files:", file1, file2);
-        await BtnCompare(file1.components, file2.components);
+      const filePaths = await OpenMultipleFilesDialog(); // Nouvelle fonction pour la sélection multiple
+      if (filePaths && filePaths.length > 0) {
+        for (const filePath of filePaths) {
+          await handleFileSelection(filePath); // Ajoute chaque fichier
+        }
       } else {
-        // Un seul fichier sélectionné
-        const fileToCompare = file1 || file2;
-        console.log("FileManager.jsx - Comparing single file to itself:", fileToCompare);
-        await BtnCompare(fileToCompare.components, null);
-      }
-
-      // Après la comparaison, récupérer les composants mis à jour depuis le backend
-      const comparisonResult = await GetComponents();
-      console.log("FileManager.jsx - comparisonResult:", comparisonResult);
-
-      if (comparisonResult && comparisonResult.length > 0) {
-        onCompare(comparisonResult); // Transmettre les résultats au parent
-      } else {
-        alert("Aucune donnée disponible après la comparaison.");
+        console.log("Aucun fichier sélectionné");
       }
     } catch (error) {
-      console.error("La comparaison a échoué :", error);
-      alert(`La comparaison a échoué : ${error.message || "Erreur inconnue"}`);
+      console.error("Erreur lors de l'upload manuel :", error);
+      alert("Erreur lors de l'upload manuel.");
     }
   };
-
-
 
   const handleSelectBom = (index, fileName) => {
     const file = existingFiles.find((f) => f.name === fileName);
@@ -100,11 +136,55 @@ function FileManager({ onCompare }) {
     }
   };
 
+  const handleCompare = async () => {
+    const file1 = selectedFiles[0];
+    const file2 = selectedFiles[1];
+
+    if (!file1 && !file2) {
+      alert("Veuillez sélectionner au moins un fichier pour la comparaison.");
+      return;
+    }
+
+    try {
+      if (file1 && file2) {
+        await BtnCompare(file1.components, file2.components);
+      } else {
+        const fileToCompare = file1 || file2;
+        await BtnCompare(fileToCompare.components, null);
+      }
+
+      const comparisonResult = await GetComponents();
+      if (comparisonResult && comparisonResult.length > 0) {
+        onCompare(comparisonResult);
+      } else {
+        alert("Aucune donnée disponible après la comparaison.");
+      }
+    } catch (error) {
+      console.error("La comparaison a échoué :", error);
+      alert(`La comparaison a échoué : ${error.message || "Erreur inconnue"}`);
+    }
+  };
+
+  const moveFile = (fromIndex, toIndex) => {
+    const updatedFiles = Array.from(existingFiles);
+    const [movedFile] = updatedFiles.splice(fromIndex, 1);
+    updatedFiles.splice(toIndex, 0, movedFile);
+    setExistingFiles(updatedFiles);
+  };
+
+  const handleDeleteFile = async (filePath) => {
+    try {
+      await DeleteBOMFile(filePath);
+      loadExistingFiles();
+    } catch (error) {
+      console.error("Erreur lors de la suppression du fichier :", error);
+    }
+  };
+
   return (
     <div className="file-manager">
       <div className="file-manager-grid">
-        {/* Bouton Ajouter BOM */}
-        <button onClick={handleFileSelection} className="button">
+        <button onClick={() => setIsModalOpen(true)} className="button">
           <img src={AddBom} alt="Ajouter BOM" style={{ width: "20px", height: "20px" }} />
         </button>
 
@@ -150,11 +230,33 @@ function FileManager({ onCompare }) {
           </div>
         </div>
 
-        {/* Bouton OK */}
         <button onClick={handleCompare} className="button">
           OK
         </button>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <h3>File Manager</h3>
+
+          <Button onClick={handleManualUpload}>Import files...</Button>
+          <h4>Existing Files</h4>
+          <DndProvider backend={HTML5Backend}>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              {existingFiles.map((file, index) => (
+                <DraggableFile
+                  key={file.name}
+                  file={file}
+                  index={index}
+                  moveFile={moveFile}
+                  onDelete={handleDeleteFile}
+                />
+              ))}
+            </ul>
+          </DndProvider>
+        </Modal>
+      )}
     </div>
   );
 }
