@@ -28,6 +28,7 @@ const (
 var (
 	//USER_API_KEY          string = ""
 	//DIGIKEY_API_KEY       string = ""
+	DK_OAUTH_TOKEN        string = ""
 	ANALYZE_SAVE_STATE    bool
 	ANALYSIS_REFRESH_DAYS int
 	PRODUCTION_QUANTITY   string   = "1"

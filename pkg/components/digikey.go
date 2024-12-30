@@ -39,8 +39,7 @@ func APIRequestToDigiKey(i int, done *chan struct{}) error {
 		core.ErrorsHandler(err)
 		// Add headers
 		req.Header.Add("Content-Type", "application/json")
-		OAuthToken, _ := getOAuthToken(workspaces.API_KEYS.DKSecret, workspaces.API_KEYS.DKClientId) // Get an access token from the authorization server's token endpoint
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", OAuthToken))
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.DK_OAUTH_TOKEN))
 		req.Header.Add("X-DIGIKEY-Client-Id", workspaces.API_KEYS.DKClientId)
 		req.Header.Add("X-DIGIKEY-Locale-Language", "en")
 		req.Header.Add("X-DIGIKEY-Locale-Currency", "USD")
@@ -55,7 +54,32 @@ func APIRequestToDigiKey(i int, done *chan struct{}) error {
 		core.ErrorsHandler(err)
 		// Check HTTP Status.
 		if response.StatusCode != http.StatusOK {
-			return fmt.Errorf("Digi-Key API error: %s", response.Status)
+			if response.StatusCode == http.StatusUnauthorized {
+				config.DK_OAUTH_TOKEN, _ = getOAuthToken(workspaces.API_KEYS.DKSecret, workspaces.API_KEYS.DKClientId) // Get an access token from the authorization server's token endpoint
+				req, err := http.NewRequest("POST", config.DIGIKEY_API_URL, bytes.NewBuffer(jsonData))
+				core.ErrorsHandler(err)
+				// Add headers
+				req.Header.Add("Content-Type", "application/json")
+				req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", config.DK_OAUTH_TOKEN))
+				req.Header.Add("X-DIGIKEY-Client-Id", workspaces.API_KEYS.DKClientId)
+				req.Header.Add("X-DIGIKEY-Locale-Language", "en")
+				req.Header.Add("X-DIGIKEY-Locale-Currency", "USD")
+				req.Header.Add("X-DIGIKEY-Locale-Site", "US")
+				// Create an HTTP client and make the request
+				client := &http.Client{}
+				response, err := client.Do(req)
+				core.ErrorsHandler(err)
+				defer response.Body.Close()
+				// Read the response body
+				body, err = ioutil.ReadAll(response.Body)
+				core.ErrorsHandler(err)
+				// Check HTTP Status.
+				if response.StatusCode != http.StatusOK {
+					return fmt.Errorf("Digi-Key API error: %s", response.Status)
+				}
+			} else {
+				return fmt.Errorf("Digi-Key API error: %s", response.Status)
+			}
 		}
 		// Unmarshal the JSON data into the ApiResponse struct
 		var apiResponse Response
