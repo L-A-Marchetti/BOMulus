@@ -55,8 +55,14 @@ type Component struct {
 	Category                 []MSValue       `json:"category"`
 	ProductDetailUrl         []MSValue       `json:"product_detail_url"`
 	LastRefresh              time.Time       `json:"last_refresh"`
+	DetailedParameters       []Parameter     `json:"detailed_parameters"`
 	Operator                 string
 	OldQuantity, NewQuantity int
+}
+
+type Parameter struct {
+	Parameter string `json:"parameter"`
+	Value     string `json:"value"`
 }
 
 type MSPricing struct {

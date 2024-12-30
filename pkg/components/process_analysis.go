@@ -126,7 +126,9 @@ func dkProcessComponent(existingComponent *core.Component, analyzed Product, isU
 	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer.Name})
 	component.Category = append(component.Category, core.MSValue{Supplier: supplier, Value: analyzed.Category.Name})
 	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSValue{Supplier: supplier, Value: analyzed.ProductUrl})
-	// If updating an existing component, update the original
+	for i := range analyzed.Parameters {
+		component.DetailedParameters = append(component.DetailedParameters, core.Parameter{Parameter: analyzed.Parameters[i].ParameterText, Value: analyzed.Parameters[i].ValueText})
+	}
 	if isUpdate {
 		*existingComponent = component
 	}
