@@ -173,7 +173,7 @@ function TopMenu({
             </div>
 
             <div className="bottom-row">
-                <Stats statsData={statsData} componentsAll={componentsAll} calculationResult={calculationResult} />
+                <Stats statsData={statsData} componentsAll={componentsAll} calculationResult={calculationResult} boards={boards} />
             </div>
         </div>
     );

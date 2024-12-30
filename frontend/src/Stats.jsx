@@ -1,7 +1,7 @@
 import React from 'react';
 import './Stats.css';
 
-function Stats({ statsData, componentsAll, calculationResult }) {
+function Stats({ statsData, componentsAll, calculationResult, boards }) {
     function chooseColorForFunction(funcName, componentsAll) {
         const matchingDesignators = componentsAll.flatMap(comp => comp.designators || [])
             .filter(d => d.label?.name === funcName);
@@ -19,6 +19,10 @@ function Stats({ statsData, componentsAll, calculationResult }) {
         // Affiche un placeholder ou un message si les données ne sont pas disponibles
         return <div className="stats-wrapper">Loading data...</div>;
     }
+
+    const oldPriceUnit = calculationResult.OldPrice && boards > 0
+        ? calculationResult.OldPrice / boards
+        : null; // Calcul du prix unitaire de la V1
 
     const { coverage, mouserCount, digikeyCount, unprocuredCount, inStockCount, outOfStockCount, insufficientCount, total } = statsData;
 
@@ -143,26 +147,45 @@ function Stats({ statsData, componentsAll, calculationResult }) {
                     <div className="evolution-container">
                         <p>Price Diff per Unit</p>
                         <div className="centered-progress-container">
-                            {calculationResult && (
-                                <div className="centered-progress-bar">
-                                    <div
-                                        className="progress-fill"
-                                        style={{
-                                            left: calculationResult.unitPriceDiff < 0
-                                                ? '50%'
-                                                : `${50 - (calculationResult.unitPriceDiff / calculationResult.unitPrice) * 50}%`,
-                                            width: `${Math.abs(calculationResult.unitPriceDiff / calculationResult.unitPrice) * 50}%`,
-                                            backgroundColor: calculationResult.unitPriceDiff < 0 ? '#86b384' : '#FF2100',
-                                        }}
-                                    ></div>
-                                </div>
+                            {calculationResult ? (
+                                <>
+                                    <div className="progress-info">
+                                        {/* Prix unitaire V1 à gauche */}
+                                        <p className="progress-price-left">
+                                            {oldPriceUnit !== null ? `$${oldPriceUnit.toFixed(2)}` : 'N/A'}
+                                        </p>
+                                        {/* Barre de progression */}
+                                        <div className="centered-progress-bar">
+                                            <div
+                                                className="progress-fill"
+                                                style={{
+                                                    left: calculationResult.unitPriceDiff < 0
+                                                        ? '50%'
+                                                        : `${50 - (calculationResult.unitPriceDiff / calculationResult.unitPrice) * 100}%`,
+                                                    width: `${Math.abs(calculationResult.unitPriceDiff / calculationResult.unitPrice) * 100}%`,
+                                                    backgroundColor: calculationResult.unitPriceDiff < 0 ? '#86b384' : '#CC7481',
+                                                }}
+                                            ></div>
+                                        </div>
+                                        {/* Prix unitaire V2 à droite */}
+                                        <p className="progress-price-right">
+                                            {calculationResult.unitPrice !== null ? `$${calculationResult.unitPrice.toFixed(2)}` : 'N/A'}
+                                        </p>
+                                    </div>
+                                    {/* Texte sous la barre */}
+                                    <p className="progress-diff-text" style={{ color: calculationResult.unitPriceDiff < 0 ? '#86b384' : '#CC7481' }}>
+                                        {calculationResult.unitPriceDiff < 0 ? 'Gain' : 'Loss'}: {calculationResult.unitPriceDiff.toFixed(2)} {calculationResult.currency || 'USD'}
+                                        ({((Math.abs(calculationResult.unitPriceDiff) / calculationResult.unitPrice) * 100).toFixed(2)}%)
+                                    </p>
+
+                                </>
+                            ) : (
+                                <p style={{ textAlign: 'center', color: '#aaa' }}>Loading data...</p>
                             )}
-                            <p style={{ textAlign: 'center', color: calculationResult.unitPriceDiff < 0 ? '#86b384' : '#FF2100' }}>
-                                {calculationResult.unitPriceDiff < 0 ? 'Gain' : 'Loss'}: {calculationResult.unitPriceDiff.toFixed(2)} {calculationResult.currency || 'USD'}
-                                ({((Math.abs(calculationResult.unitPriceDiff) / calculationResult.unitPrice) * 100).toFixed(2)}%)
-                            </p>
                         </div>
+
                     </div>
+
                 </div>
             </div>
         </div>
