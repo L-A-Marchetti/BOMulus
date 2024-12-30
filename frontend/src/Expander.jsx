@@ -23,7 +23,7 @@ import ComponentRow from './ComponentRow';
 import './Expander.css';
 
 // OperatorExpander component
-function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents, apiPriority }) {
+function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents, apiPriority, activeFilters }) {
     const [expanded, setExpanded] = useState(true);
 
     // Check if all components of this operator are pinned
@@ -47,6 +47,7 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
             {expanded && (
                 <ComponentTable
                     components={components}
+                    activeFilters={activeFilters}
                     operator={operator}
                     color={color}
                     onPinToggle={onPinToggle}
@@ -70,7 +71,7 @@ function ExpanderHeader({ operator, color, count, expanded, onClick }) {
 }
 
 // Table component for displaying components
-function ComponentTable({ components, operator, color, onPinToggle, pinnedComponents, allPinned, apiPriority }) {
+function ComponentTable({ components, operator, color, onPinToggle, pinnedComponents, allPinned, apiPriority, activeFilters }) {
     return (
         <table className="component-table">
             <thead>
@@ -91,6 +92,7 @@ function ComponentTable({ components, operator, color, onPinToggle, pinnedCompon
                 {components.map((component) => (
                     <ComponentRow
                         key={component.id}
+                        activeFilters={activeFilters}
                         component={component}
                         operator={operator}
                         onPinToggle={onPinToggle}

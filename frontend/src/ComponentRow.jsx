@@ -17,7 +17,7 @@
  * Backend Dependencies:
  * OpenExternalLink: Function from Wails backend to open external links.
  */
-
+import './ComponentRow.css';
 import React, { useState } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
@@ -32,8 +32,19 @@ const supplierIcons = {
     Digikey: Digikey,
 };
 
-function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority }) {
+function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority, activeFilters }) {
     const [expanded, setExpanded] = useState(false);
+
+    function highlightText(text, query) {
+        if (!query) return text; // Si pas de query, retourne le texte tel quel
+
+        const regex = new RegExp(`(${query})`, 'gi'); // Crée une regex insensible à la casse
+        const parts = text.split(regex); // Divise le texte autour de la query
+
+        return parts.map((part, index) =>
+            regex.test(part) ? <mark key={index}>{part}</mark> : part
+        );
+    }
 
     // Opens an external link
     const openExternalLink = (link) => {
@@ -263,8 +274,8 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         }).find(el => el)}
                     </div>
 
-                     {/* Detailed Parameters */}
-                     {comp.detailed_parameters && comp.detailed_parameters.length > 0 && (
+                    {/* Detailed Parameters */}
+                    {comp.detailed_parameters && comp.detailed_parameters.length > 0 && (
                         <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '30px', marginBottom: '30px' }}>
                             <thead>
                                 <tr>
@@ -408,10 +419,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                 </td>
 
 
-                <td>{component.mpn}</td>
+                <td>{highlightText(component.mpn, activeFilters.searchQuery)}</td>
+                <td>{highlightText(component.designator, activeFilters.searchQuery)}</td>
+                <td>{highlightText(component.user_description, activeFilters.searchQuery)}</td>
 
-                <td>{component.designator}</td>
-                <td>{component.user_description}</td>
 
                 <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
                     {!component.analyzed && (
