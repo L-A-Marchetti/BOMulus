@@ -31,6 +31,7 @@ function App() {
         filter3: '',
         filter4: '',
         pinned: false,
+        searchQuery: '',
     });
 
     // Ajout des states pour stocker les clés API et paramètres
@@ -210,6 +211,16 @@ function App() {
                 // On veut garder seulement les composants qui ont un designator "label" = activeFilters.filter3
                 const hasDesignator = comp.designators?.some(d => d.label.name === activeFilters.filter3);
                 if (!hasDesignator) {
+                    return false;
+                }
+            }
+
+            if (activeFilters.searchQuery) {
+                const query = activeFilters.searchQuery.toLowerCase();
+                const matchesMpn = comp.mpn?.toLowerCase().includes(query);
+                const matchesDesignators = comp.designators?.some(d => d.designator.toLowerCase().includes(query));
+                const matchesDescriptions = comp.user_description?.toLowerCase().includes(query);
+                if (!matchesMpn && !matchesDesignators && !matchesDescriptions) {
                     return false;
                 }
             }

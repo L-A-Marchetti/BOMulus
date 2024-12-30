@@ -43,6 +43,7 @@ function TopMenu({
 
     // Message d’erreur éventuel (ex: saisie invalide)
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         // Initialisation des prix uniquement si `componentsAll` est chargé
@@ -170,6 +171,22 @@ function TopMenu({
                         componentsAll={componentsAll}
                     />
                 </div>
+            </div>
+            <div className="right-side">
+                <h4 className="section-title">Search</h4>
+                <input
+                    size={30}
+                    type="text"
+                    className="search-bar"
+                    placeholder="mpn | designator | description..."
+                    value={activeFilters.searchQuery || ''}
+                    onChange={(e) =>
+                        setActiveFilters((prevFilters) => ({
+                            ...prevFilters,
+                            searchQuery: e.target.value,
+                        }))
+                    }
+                />
             </div>
 
             <div className="bottom-row">
