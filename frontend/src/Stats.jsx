@@ -17,7 +17,7 @@ function Stats({ statsData, componentsAll, calculationResult, boards }) {
 
     if (!statsData || !calculationResult) {
         // Affiche un placeholder ou un message si les données ne sont pas disponibles
-        return <div className="stats-wrapper">Loading data...</div>;
+        return <div className="stats-wrapper">Waiting for analysis...</div>;
     }
 
     const oldPriceUnit = calculationResult.OldPrice && boards > 0
