@@ -392,12 +392,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
 
 
                 <td>{component.mpn}</td>
-                {!isPinned && (
-                    <>
-                        <td>{component.designator}</td>
-                        <td>{component.user_description}</td>
-                    </>
-                )}
+
+                <td>{component.designator}</td>
+                <td>{component.user_description}</td>
+
                 <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
                     {!component.analyzed && (
                         <>
