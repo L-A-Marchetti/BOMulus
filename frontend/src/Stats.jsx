@@ -1,7 +1,7 @@
 import React from 'react';
 import './Stats.css';
 
-function Stats({ statsData, componentsAll }) {
+function Stats({ statsData, componentsAll, calculationResult }) {
     function chooseColorForFunction(funcName, componentsAll) {
         const matchingDesignators = componentsAll.flatMap(comp => comp.designators || [])
             .filter(d => d.label?.name === funcName);
@@ -15,6 +15,10 @@ function Stats({ statsData, componentsAll }) {
         return '#007BFF'; // Couleur par défaut
     }
 
+    if (!statsData || !calculationResult) {
+        // Affiche un placeholder ou un message si les données ne sont pas disponibles
+        return <div className="stats-wrapper">Loading data...</div>;
+    }
 
     const { coverage, mouserCount, digikeyCount, unprocuredCount, inStockCount, outOfStockCount, insufficientCount, total } = statsData;
 
@@ -92,42 +96,73 @@ function Stats({ statsData, componentsAll }) {
     }
 
     return (
-        <div className="stats-container">
-            <div className="donut-container">
-                <div className="donut" style={{ background: coverageBg }}>
-                    <p>{Math.round(coverage)}%</p>
+        <div className="stats-wrapper">
+            <div className="stats-main-content">
+                <div className="stats-section">
+                    <h4 className="section-title">v2 Stats</h4>
+                    <div className="donut-row">
+                        <div className="donut-container">
+                            <div className="donut" style={{ background: coverageBg }}>
+                                <p>{Math.round(coverage)}%</p>
+                            </div>
+                            <div className="stats-labels">
+                                <h5>BOM COVERAGE</h5>
+                                <p style={{ color: '#007BFF' }}>Mouser: {mouserCount}</p>
+                                <p style={{ color: '#FF2100' }}>Digikey: {digikeyCount}</p>
+                                <p style={{ color: '#acacac' }}>Unprocured: {unprocuredCount}</p>
+                            </div>
+                        </div>
+                        <div className="donut-container">
+                            <div className="donut" style={{ background: availabilityBg }}>
+                                <p>{Math.round(inStockPct)}%</p>
+                            </div>
+                            <div className="stats-labels">
+                                <h5>AVAILABILITY</h5>
+                                <p style={{ color: '#86b384' }}>In stock: {inStockCount}</p>
+                                <p style={{ color: '#cc7481' }}>Out of stock: {outOfStockCount}</p>
+                                <p style={{ color: '#ffac00' }}>Insufficient: {insufficientCount}</p>
+                            </div>
+                        </div>
+                        <div className="donut-container">
+                            <div className="donut" style={{ background: functionDonutBg }}>
+                                <p>100%</p>
+                            </div>
+                            <div className="stats-labels">
+                                <h5>PRICE BY FUNCTION</h5>
+                                {distribution.map(item => (
+                                    <p key={item.func} style={{ color: chooseColorForFunction(item.func, componentsAll) }}>
+                                        {item.func}: ${item.price.toFixed(2)} ({item.pct.toFixed(1)}%)
+                                    </p>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="stats-labels">
-                    <h5>BOM COVERAGE</h5>
-                    <p style={{ color: '#007BFF' }}>Mouser: {mouserCount}</p>
-                    <p style={{ color: '#FF2100' }}>Digikey: {digikeyCount}</p>
-                    <p style={{ color: '#acacac' }}>Unprocured: {unprocuredCount}</p>
-                </div>
-            </div>
-
-            <div className="donut-container">
-                <div className="donut" style={{ background: availabilityBg }}>
-                    <p>{Math.round(inStockPct)}%</p>
-                </div>
-                <div className="stats-labels">
-                    <h5>AVAILABILITY</h5>
-                    <p style={{ color: '#86b384' }}>In stock: {inStockCount}</p>
-                    <p style={{ color: '#cc7481' }}>Out of stock: {outOfStockCount}</p>
-                    <p style={{ color: '#ffac00' }}>Insufficient: {insufficientCount}</p>
-                </div>
-            </div>
-
-            <div className="donut-container">
-                <div className="donut" style={{ background: functionDonutBg }}>
-                    <p>100%</p>
-                </div>
-                <div className="stats-labels">
-                    <h5>PRICE BY FUNCTION</h5>
-                    {distribution.map(item => (
-                        <p key={item.func} style={{ color: chooseColorForFunction(item.func, componentsAll) }}>
-                            {item.func}: ${item.price.toFixed(2)} ({item.pct.toFixed(1)}%)
-                        </p>
-                    ))}
+                <div className="evolution-section">
+                    <h4 className="section-title">V1 → V2 Evolution</h4>
+                    <div className="evolution-container">
+                        <p>Price Diff per Unit</p>
+                        <div className="centered-progress-container">
+                            {calculationResult && (
+                                <div className="centered-progress-bar">
+                                    <div
+                                        className="progress-fill"
+                                        style={{
+                                            left: calculationResult.unitPriceDiff < 0
+                                                ? '50%'
+                                                : `${50 - (calculationResult.unitPriceDiff / calculationResult.unitPrice) * 50}%`,
+                                            width: `${Math.abs(calculationResult.unitPriceDiff / calculationResult.unitPrice) * 50}%`,
+                                            backgroundColor: calculationResult.unitPriceDiff < 0 ? '#86b384' : '#FF2100',
+                                        }}
+                                    ></div>
+                                </div>
+                            )}
+                            <p style={{ textAlign: 'center', color: calculationResult.unitPriceDiff < 0 ? '#86b384' : '#FF2100' }}>
+                                {calculationResult.unitPriceDiff < 0 ? 'Gain' : 'Loss'}: {calculationResult.unitPriceDiff.toFixed(2)} {calculationResult.currency || 'USD'}
+                                ({((Math.abs(calculationResult.unitPriceDiff) / calculationResult.unitPrice) * 100).toFixed(2)}%)
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
