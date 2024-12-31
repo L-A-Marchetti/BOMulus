@@ -150,12 +150,60 @@
 }
 
 /* Conteneur de la barre de recherche */
+/* TopMenu.css */
+
+/* Conteneur de la barre de recherche et du tri */
+/* Conteneur de la barre de recherche et du tri */
+.search-and-sort-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    /* Assure que le conteneur occupe toute la largeur */
+}
+
+
+/* Conteneur de la barre de recherche */
 .search-bar-container {
     position: relative;
     display: flex;
     align-items: center;
-    width: 22%;
-    /* Assurez-vous que le conteneur prend toute la largeur disponible */
+    flex: 1;
+    /* Permet à la barre de recherche de s'étendre */
+}
+
+/* Conteneur de tri */
+.sort-container {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    /* Empêche le conteneur de tri de se comprimer */
+}
+
+/* Icône de tri */
+.sort-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    opacity: 0.6;
+}
+
+/* Sélecteur de tri */
+.sort-select {
+    background-color: #323232;
+    border: none;
+    color: white;
+    font-size: 14px;
+    min-width: 150px;
+    height: 38px;
+    padding-left: 10px;
+    appearance: none;
+    width: auto;
+}
+
+.sort-select:focus {
+    border-color: #999;
+    outline: none;
 }
 
 /* Icône de recherche */
@@ -183,7 +231,7 @@
     font-size: 15px;
     color: white;
     background-color: transparent;
-    width: 100%;
+    width: 25%;
     /* S'étend pour remplir le conteneur */
     box-sizing: border-box;
     /* Inclut le padding dans la largeur totale */
@@ -196,10 +244,16 @@
     /* Change la couleur du bord en focus */
 }
 
+/* Colonne des filtres à droite */
 .right-side {
     padding: 20px;
-
+    display: flex;
+    flex-direction: column;
+    /* Ajoutez cette ligne */
+    align-items: flex-start;
+    /* Ajoutez cette ligne */
 }
+
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -224,5 +278,18 @@
         flex-direction: column;
         align-items: center;
         gap: 15px;
+    }
+
+    .search-and-sort-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sort-container {
+        width: 100%;
+    }
+
+    .sort-select {
+        width: 100%;
     }
 }

@@ -5,6 +5,7 @@ import AnalyzeButton from './AnalyzeButton';
 import Filters from './Filters';
 import Stats from './Stats';
 import GlassIcon from './assets/images/glass.svg';
+import SortIcon from './assets/images/sort.svg';
 
 // Import des fonctions Wails côté backend
 import {
@@ -27,7 +28,8 @@ function TopMenu({
     pinnedComponents,
     statsData,
     componentsAll,
-    functionsList,
+    sortOrder, // Nouvelle prop pour le tri
+    setSortOrder, // Nouvelle prop pour le tri
 }) {
     // État pour indiquer si l'initialisation est terminée
     const [initialized, setInitialized] = useState(false);
@@ -118,6 +120,10 @@ function TopMenu({
 
     const formatPrice = (price) => `$${price.toFixed(2)}`;
 
+    const handleSortChange = (e) => {
+        setSortOrder(e.target.value);
+    };
+
     return (
         <div className="top-menu">
             <div className="top-row">
@@ -180,21 +186,37 @@ function TopMenu({
             </div>
             <div className="right-side">
                 <h4 className="section-title">Search</h4>
-                <div className="search-bar-container">
-                    <img src={GlassIcon} alt="Search" className="search-icon" />
-                    <input
-                        size={30}
-                        type="text"
-                        className="search-bar"
-                        placeholder="MPN | DESIGNATOR | DESCRIPTION"
-                        value={activeFilters.searchQuery || ''}
-                        onChange={(e) =>
-                            setActiveFilters((prevFilters) => ({
-                                ...prevFilters,
-                                searchQuery: e.target.value,
-                            }))
-                        }
-                    />
+                <div className="search-and-sort-container">
+                    <div className="search-bar-container">
+                        <img src={GlassIcon} alt="Search" className="search-icon" />
+                        <input
+                            size={30}
+                            type="text"
+                            className="search-bar"
+                            placeholder="MPN | DESIGNATOR | DESCRIPTION"
+                            value={activeFilters.searchQuery || ''}
+                            onChange={(e) =>
+                                setActiveFilters((prevFilters) => ({
+                                    ...prevFilters,
+                                    searchQuery: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                    <div className="sort-container">
+                        <img src={SortIcon} alt="Sort" className="sort-icon" />
+                        <select
+                            className="sort-select"
+                            value={sortOrder}
+                            onChange={handleSortChange}
+                        >
+                            <option value="">> Sort By</option>
+                            <option value="price-unit-asc">Unit Price: Low to High</option>
+                            <option value="price-unit-desc">Unit Price: High to Low</option>
+                            <option value="price-asc">Total Price: Low to High</option>
+                            <option value="price-desc">Total Price: High to Low</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

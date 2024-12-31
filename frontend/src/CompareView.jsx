@@ -24,7 +24,9 @@ function CompareView({
     setActiveFilters,
     warningCounts,
     totalWarnings,
-    statsData = { statsData }
+    statsData = { statsData },
+    sortOrder, // Nouvelle prop pour le tri
+    setSortOrder, // Nouvelle prop pour le tri
 }) {
     console.log("CompareView.jsx - onCompare:", onCompare);
     const [apiPriority, setApiPriority] = useState([]);
@@ -80,6 +82,8 @@ function CompareView({
                     totalWarnings={totalWarnings}
                     pinnedComponents={pinnedComponents}
                     statsData={statsData}
+                    sortOrder={sortOrder} // Passez le sortOrder
+                    setSortOrder={setSortOrder} // Passez le setSortOrder
                 />
 
 
