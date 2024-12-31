@@ -172,13 +172,18 @@ function TopMenu({
                     />
                 </div>
             </div>
+
+
+            <div className="bottom-row">
+                <Stats statsData={statsData} componentsAll={componentsAll} calculationResult={calculationResult} boards={boards} />
+            </div>
             <div className="right-side">
                 <h4 className="section-title">Search</h4>
                 <input
                     size={30}
                     type="text"
                     className="search-bar"
-                    placeholder="mpn | designator | description..."
+                    placeholder="MPN | DESIGNATOR | DESCRIPTION"
                     value={activeFilters.searchQuery || ''}
                     onChange={(e) =>
                         setActiveFilters((prevFilters) => ({
@@ -187,10 +192,6 @@ function TopMenu({
                         }))
                     }
                 />
-            </div>
-
-            <div className="bottom-row">
-                <Stats statsData={statsData} componentsAll={componentsAll} calculationResult={calculationResult} boards={boards} />
             </div>
         </div>
     );

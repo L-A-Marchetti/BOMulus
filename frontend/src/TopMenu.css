@@ -149,6 +149,24 @@
     gap: 20px;
 }
 
+.search-bar {
+    font-size: 15px;
+    color: white;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #555;
+    width: 20%;
+    text-align: left;
+    /* Centre le texte dans l'input */
+    outline: none;
+    padding: 5px;
+}
+
+.right-side {
+    padding: 20px;
+
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .top-row {
