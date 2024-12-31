@@ -121,7 +121,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
             </button>
 
             {/* Deuxième ligne : Functions et Suggestions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
                 <select
                     name="filter3"
                     value={activeFilters.filter3 || ""}

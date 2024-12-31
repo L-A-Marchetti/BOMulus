@@ -1,0 +1,265 @@
+/***************************************************************
+ * FunctionManager.css
+ ***************************************************************/
+.function-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    max-width: 600px;
+    box-sizing: border-box;
+    /* Pas de background-color pour éviter la superposition */
+}
+
+.function-manager-title {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* 1) Zone de config: choisir ou créer */
+.function-config {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Bloc "Select an existing function" */
+.function-choose {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.function-choose label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Styles pour le <select> */
+.function-choose select {
+    background-color: #323232;
+    border: none;
+    color: white;
+    font-size: 14px;
+    height: 38px;
+    padding: 0 10px;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Supprime l'effet de focus par défaut */
+.function-choose select:focus {
+    outline: none;
+}
+
+/* Styles pour les <option> de la liste */
+.function-choose select option {
+    background-color: #323232;
+    /* Fond de la liste déroulante */
+    color: white;
+    /* Couleur par défaut */
+    font-size: 14px;
+}
+
+/* Empêche les styles de survol ou de focus d'altérer les couleurs */
+.function-choose select option:hover,
+.function-choose select option:focus {
+    background-color: #383838;
+    /* Garde un fond sombre */
+    color: inherit;
+    /* Préserve la couleur définie dans chaque <option> */
+}
+
+
+/* Bloc "Create new function" */
+.function-create {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.create-function-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.create-function-row input[type="text"] {
+    background-color: #323232;
+    border: none;
+    color: white;
+    font-size: 14px;
+    height: 38px;
+    padding: 0 10px;
+    flex-shrink: 1;
+}
+
+/* (A) Arc-en-ciel fixe + input invisible */
+.color-picker-wrapper {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    /* Pour ne pas rapetisser en flex */
+    position: relative;
+    /* Pour positionner l'input par-dessus */
+    background: conic-gradient(red,
+            yellow,
+            lime,
+            cyan,
+            blue,
+            magenta,
+            red);
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    /* On signale que c'est cliquable */
+}
+
+/* L'input color prend toute la place, 
+   mais il est invisible (opacity: 0). */
+.color-picker-wrapper input[type="color"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Bouton Create */
+.create-function-row button {
+    background-color: #353535;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    height: 38px;
+    padding: 0 15px;
+}
+
+.create-function-row button:hover {
+    background-color: #383838;
+}
+
+/* 2) Colonnes available / assigned */
+.columns {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+}
+
+.column h3 {
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
+}
+
+.designator-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #323232;
+    border: 1px solid #353535;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+}
+
+.designator-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c2c2c;
+    padding: 5px 10px;
+}
+
+.designator-item:hover {
+    background-color: #383838;
+}
+
+.designator-item span {
+    font-size: 14px;
+}
+
+.designator-item button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.designator-item button:hover {
+    color: #007BFF;
+}
+
+/* 3) Boutons bas de page */
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.save-button {
+    background-color: #353535;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    height: 38px;
+    padding: 0 15px;
+}
+
+.save-button:hover:not(:disabled) {
+    background-color: #383838;
+}
+
+.save-button:disabled {
+    background-color: #3a3a3a;
+    cursor: not-allowed;
+}
+
+.create-function-row button {
+    background-color: #353535;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    height: 38px;
+    padding: 0 15px;
+}
+
+.create-function-row button:hover {
+    background-color: #383838;
+}
+
+.cancel-button {
+    background-color: #353535;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 15px;
+}
+
+.cancel-button:hover {
+    background-color: #383838;
+}
