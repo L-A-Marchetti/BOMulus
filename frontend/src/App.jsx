@@ -42,6 +42,7 @@ function App() {
 
     const [showSettingsModal, setShowSettingsModal] = useState(false);
 
+
     useEffect(() => {
         if (showCompareView) {
             (async () => {

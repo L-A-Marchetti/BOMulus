@@ -78,12 +78,8 @@ function ComponentTable({ components, operator, color, onPinToggle, pinnedCompon
                 <tr>
                     <th>∑</th>
                     <th>MPN</th>
-                    {!allPinned && (
-                        <>
-                            <th>☸</th>
-                            <th>☰</th>
-                        </>
-                    )}
+                    <th>☸</th>
+                    <th>☰</th>
                     <th></th>
                 </tr>
             </thead>

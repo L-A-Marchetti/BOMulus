@@ -4,6 +4,7 @@ import FileManager from './FileManager';
 import AnalyzeButton from './AnalyzeButton';
 import Filters from './Filters';
 import Stats from './Stats';
+import GlassIcon from './assets/images/glass.svg';
 
 // Import des fonctions Wails côté backend
 import {
@@ -179,20 +180,24 @@ function TopMenu({
             </div>
             <div className="right-side">
                 <h4 className="section-title">Search</h4>
-                <input
-                    size={30}
-                    type="text"
-                    className="search-bar"
-                    placeholder="MPN | DESIGNATOR | DESCRIPTION"
-                    value={activeFilters.searchQuery || ''}
-                    onChange={(e) =>
-                        setActiveFilters((prevFilters) => ({
-                            ...prevFilters,
-                            searchQuery: e.target.value,
-                        }))
-                    }
-                />
+                <div className="search-bar-container">
+                    <img src={GlassIcon} alt="Search" className="search-icon" />
+                    <input
+                        size={30}
+                        type="text"
+                        className="search-bar"
+                        placeholder="MPN | DESIGNATOR | DESCRIPTION"
+                        value={activeFilters.searchQuery || ''}
+                        onChange={(e) =>
+                            setActiveFilters((prevFilters) => ({
+                                ...prevFilters,
+                                searchQuery: e.target.value,
+                            }))
+                        }
+                    />
+                </div>
             </div>
+
         </div>
     );
 }

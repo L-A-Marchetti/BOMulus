@@ -149,17 +149,51 @@
     gap: 20px;
 }
 
+/* Conteneur de la barre de recherche */
+.search-bar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 22%;
+    /* Assurez-vous que le conteneur prend toute la largeur disponible */
+}
+
+/* Icône de recherche */
+.search-icon {
+    position: absolute;
+    left: 10px;
+    /* Position horizontale de l'icône */
+    width: 20px;
+    /* Taille de l'icône */
+    height: 20px;
+    pointer-events: none;
+    /* Permet de cliquer directement sur l'input sans interférence */
+    opacity: 0.6;
+    /* Optionnel : ajustez l'opacité selon vos préférences */
+}
+
+/* Champ de recherche */
 .search-bar {
+    padding-left: 35px;
+    /* Laissez de l'espace pour l'icône */
+    height: 35px;
+    /* Ajustez la hauteur selon vos besoins */
+    border: 1px solid #555;
+    /* Style du bord */
     font-size: 15px;
     color: white;
     background-color: transparent;
-    border: none;
-    border-bottom: 1px solid #555;
-    width: 20%;
-    text-align: left;
-    /* Centre le texte dans l'input */
+    width: 100%;
+    /* S'étend pour remplir le conteneur */
+    box-sizing: border-box;
+    /* Inclut le padding dans la largeur totale */
     outline: none;
-    padding: 5px;
+    /* Supprime le contour par défaut */
+}
+
+.search-bar:focus {
+    border-bottom: 1px solid #999;
+    /* Change la couleur du bord en focus */
 }
 
 .right-side {
