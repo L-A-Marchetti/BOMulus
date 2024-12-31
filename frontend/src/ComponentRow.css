@@ -1,0 +1,6 @@
+mark {
+    background-color: #000000; /* Couleur de fond (jaune clair ici) */
+    color: #ffffff; /* Couleur du texte */
+    padding: 0 2px; /* Facultatif : un peu d'espacement */
+    border-radius: 4px; /* Facultatif : arrondir les coins */
+}

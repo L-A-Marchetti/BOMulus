@@ -97,6 +97,7 @@ function CompareView({
                                 key={operator}
                                 operator={operator}
                                 components={operatorComponents}
+                                activeFilters={activeFilters}
                                 color={opColors[operator]}
                                 count={operatorComponents.length}
                                 onPinToggle={onPinToggle}

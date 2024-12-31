@@ -17,7 +17,7 @@
  * Backend Dependencies:
  * OpenExternalLink: Function from Wails backend to open external links.
  */
-
+import './ComponentRow.css';
 import React, { useState } from 'react';
 import Button from './Button';
 import { OpenExternalLink } from '../wailsjs/go/main/App';
@@ -32,8 +32,82 @@ const supplierIcons = {
     Digikey: Digikey,
 };
 
-function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority }) {
+function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority, activeFilters }) {
     const [expanded, setExpanded] = useState(false);
+    const [hoveredFunction, setHoveredFunction] = useState(null);
+
+    const renderFunctionColors = () => {
+        const uniqueFunctions = new Set(
+            component.designators.map(designator => designator.label.name)
+        );
+
+        return [...uniqueFunctions].map((functionName, index) => {
+            if (functionName === "not assigned") {
+                return null;
+            }
+
+            const color = component.designators.find(
+                designator => designator.label.name === functionName
+            )?.label.color || "#000";
+
+            return (
+                <div
+                    key={index}
+                    onMouseEnter={() => setHoveredFunction(functionName)}
+                    onMouseLeave={() => setHoveredFunction(null)}
+                    style={{ position: 'relative' }}
+                >
+                    <div
+                        style={{
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: color,
+                        }}
+                    />
+
+                    {hoveredFunction === functionName && (
+                        <div
+                            style={{
+                                zIndex: '1',
+                                position: 'absolute',
+                                top: '25px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                color: '#fff',
+                                padding: '5px',
+                                borderRadius: '3px',
+                                fontSize: '12px',
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            {functionName}
+                        </div>
+                    )}
+                </div>
+            );
+        });
+    };
+
+
+
+    const highlightDesignator = (designator) => {
+        if (hoveredFunction && designator.label.name === hoveredFunction) {
+            return { backgroundColor: designator.label.color, color: '#fff' };
+        }
+        return {};
+    };
+
+    function highlightText(text, query) {
+        if (!query) return text;
+
+        const regex = new RegExp(`(${query})`, 'gi');
+        const parts = text.split(regex);
+
+        return parts.map((part, index) =>
+            regex.test(part) ? <mark key={index}>{part}</mark> : part
+        );
+    }
 
     // Opens an external link
     const openExternalLink = (link) => {
@@ -263,8 +337,8 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         }).find(el => el)}
                     </div>
 
-                     {/* Detailed Parameters */}
-                     {comp.detailed_parameters && comp.detailed_parameters.length > 0 && (
+                    {/* Detailed Parameters */}
+                    {comp.detailed_parameters && comp.detailed_parameters.length > 0 && (
                         <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '30px', marginBottom: '30px' }}>
                             <thead>
                                 <tr>
@@ -408,10 +482,19 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                 </td>
 
 
-                <td>{component.mpn}</td>
-
-                <td>{component.designator}</td>
-                <td>{component.user_description}</td>
+                <td>{highlightText(component.mpn, activeFilters.searchQuery)}</td>
+                <td>
+                    {component.designators.map((designator, index) => (
+                        <span
+                            key={index}
+                            style={highlightDesignator(designator)} // Appliquer la surbrillance si la fonction correspond
+                        >
+                            {highlightText(designator.designator, activeFilters.searchQuery)}{' '}
+                        </span>
+                    ))}
+                </td>
+                <td>{highlightText(component.user_description, activeFilters.searchQuery)}</td>
+                <td style={{ backgroundColor: 'rgb(39,39,39)' }}>{renderFunctionColors()}</td>
 
                 <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
                     {!component.analyzed && (
