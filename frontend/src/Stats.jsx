@@ -26,8 +26,18 @@ function Stats({ statsData, componentsAll, calculationResult, boards }) {
 
     const { coverage, mouserCount, digikeyCount, unprocuredCount, inStockCount, outOfStockCount, insufficientCount, total } = statsData;
 
+    const totalCoverageCount = mouserCount + digikeyCount + unprocuredCount;
+    const mouserPct = totalCoverageCount > 0 ? (mouserCount / totalCoverageCount) * 100 : 0;
+    const digikeyPct = totalCoverageCount > 0 ? (digikeyCount / totalCoverageCount) * 100 : 0;
+    const unprocuredPct = totalCoverageCount > 0 ? (unprocuredCount / totalCoverageCount) * 100 : 0;
+
     // Donut coverage
-    const coverageBg = `conic-gradient(#8e84b3 0% ${coverage}%, #565656 ${coverage}% 100%)`;
+    const coverageBg = `conic-gradient(
+        #007BFF 0% ${mouserPct}%,
+        #FF2100 ${mouserPct}% ${mouserPct + digikeyPct}%,
+        #ACACAC ${mouserPct + digikeyPct}% ${mouserPct + digikeyPct + unprocuredPct}%,
+        #565656 ${mouserPct + digikeyPct + unprocuredPct}% 100%
+    )`;
 
     // Donut availability
     const inStockPct = total > 0 ? (inStockCount / total) * 100 : 0;
@@ -113,8 +123,9 @@ function Stats({ statsData, componentsAll, calculationResult, boards }) {
                                 <h5>BOM COVERAGE</h5>
                                 <p style={{ color: '#007BFF' }}>Mouser: {mouserCount}</p>
                                 <p style={{ color: '#FF2100' }}>Digikey: {digikeyCount}</p>
-                                <p style={{ color: '#acacac' }}>Unprocured: {unprocuredCount}</p>
+                                <p style={{ color: '#ACACAC' }}>Unprocured: {unprocuredCount}</p>
                             </div>
+
                         </div>
                         <div className="donut-container">
                             <div className="donut" style={{ background: availabilityBg }}>
