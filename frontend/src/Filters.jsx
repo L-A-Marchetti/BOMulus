@@ -102,6 +102,7 @@ function Filters({ operators, operatorCounts, activeFilters, setActiveFilters, o
                             <option value="riskyLifecycle">Risky Lifecycle: {warningCounts.riskyLifecycle}</option>
                             <option value="manufacturerMessages">Manufacturer Messages: {warningCounts.manufacturerMessages}</option>
                             <option value="mismatchingMpn">Mismatching MPN: {warningCounts.mismatchingMpn}</option>
+                            <option value="moq">MOQ: {warningCounts.moq}</option>
                         </>
                     )}
                 </select>

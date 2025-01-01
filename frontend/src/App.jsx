@@ -106,6 +106,7 @@ function App() {
                 riskyLifecycle: 0,
                 manufacturerMessages: 0,
                 mismatchingMpn: 0,
+                moq: 0,
                 totalWarnings: 0,
             };
         }
@@ -128,6 +129,9 @@ function App() {
             ).length,
             mismatchingMpn: components.filter((comp) =>
                 comp.analyzed && comp.mismatch_mpn === true
+            ).length,
+            moq: components.filter((comp) =>
+                comp.analyzed && comp.calculated_price.is_moq_not_reached === true
             ).length,
         };
 
@@ -202,6 +206,13 @@ function App() {
                     comp.mismatch_mpn &&
                     comp.mismatch_mpn === true;
                 if (!hasMismatch) return false;
+            }
+
+            if (activeFilters.warning === 'moq') {
+                const moq = comp.analyzed &&
+                    comp.calculated_price.is_moq_not_reached &&
+                    comp.calculated_price.is_moq_not_reached === true;
+                if (!moq) return false;
             }
 
             // 3) Filtre sur pinned
