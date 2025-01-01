@@ -89,6 +89,52 @@ func UpdateVersionTags(files []FileInfo) error {
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
 
+// UpdateLastComparison update the last comparison the workspace's .bmls file.
+func UpdateLastComparison(v1, v2 string) error {
+	if ActiveWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	workspace.WorkspaceInfos.LastComparison.V1 = v1
+	workspace.WorkspaceInfos.LastComparison.V2 = v2
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+
+// GetLastComparison get the last comparison from workspace's .bmls file.
+func GetLastComparison() (Comparison, error) {
+	if ActiveWorkspacePath == "" {
+		return Comparison{}, fmt.Errorf("no active workspace set")
+	}
+	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return Comparison{}, fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return Comparison{}, fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	return workspace.WorkspaceInfos.LastComparison, nil
+}
+
 // GetRecentWorkspaces returns the 3 most recently created workspaces.
 func GetRecentWorkspaces() ([]Workspace, error) {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")

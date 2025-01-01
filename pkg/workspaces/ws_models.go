@@ -7,11 +7,17 @@ import (
 )
 
 type WorkspaceInfos struct {
-	Name               string    `json:"name"`
-	Path               string    `json:"path"`
-	CreatedAt          time.Time `json:"createdAt"`
-	LastOpened         time.Time `json:"last_opened"`
-	ProductionQuantity string    `json:"production_quantity"`
+	Name               string     `json:"name"`
+	Path               string     `json:"path"`
+	CreatedAt          time.Time  `json:"createdAt"`
+	LastOpened         time.Time  `json:"last_opened"`
+	ProductionQuantity string     `json:"production_quantity"`
+	LastComparison     Comparison `json:"last_comparison"`
+}
+
+type Comparison struct {
+	V1 string `json:"v1"`
+	V2 string `json:"v2"`
 }
 
 type Workspace struct {

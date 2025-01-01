@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   OpenFileDialog,
   UpdateVersionTags,
+  UpdateLastComparison,
+  GetLastComparison,
   OpenMultipleFilesDialog,
   AddFileToWorkspace,
   GetFilesInWorkspaceInfo,
@@ -83,6 +85,48 @@ function FileManager({ onCompare }) {
       if (files && files.length > 0) {
         const sortedFiles = files.sort((a, b) => a.version_tag - b.version_tag); // Trier par version_tag
         setExistingFiles(sortedFiles);
+  
+        try {
+          const lastComparison = await GetLastComparison();
+          console.log("Last Comparison:", lastComparison);
+          let file1 = null;
+          let file2 = null;
+  
+          for (const file of sortedFiles) {
+            console.log("Last Comparison loop:", file);
+            if (file.path === lastComparison.v1) {
+              file1 = file;
+            } else if (file.path === lastComparison.v2) {
+              file2 = file;
+            }
+          }
+  
+          if (file1 || file2) {
+            setSelectedFiles([file1, file2]);
+            try {
+              if (file1 && file2) {
+                await BtnCompare(file1.components, file2.components);
+              } else {
+                const fileToCompare = file1 || file2;
+                await BtnCompare(fileToCompare.components, null);
+              }
+              const comparisonResult = await GetComponents();
+              if (comparisonResult && comparisonResult.length > 0) {
+                onCompare(comparisonResult);
+              } else {
+                alert("Aucune donnée disponible après la comparaison.");
+              }
+            } catch (error) {
+              console.error("La comparaison a échoué :", error);
+              alert(`La comparaison a échoué : ${error.message || "Erreur inconnue"}`);
+            }
+          } else {
+            setSelectedFiles([]);
+          }
+        } catch (error) {
+          console.error("Échec du chargement des last comparisons :", error);
+          setSelectedFiles([]);
+        }
       } else {
         setExistingFiles([]);
       }
@@ -144,9 +188,11 @@ function FileManager({ onCompare }) {
     try {
       if (file1 && file2) {
         await BtnCompare(file1.components, file2.components);
+        await UpdateLastComparison(file1.path, file2.path);
       } else {
         const fileToCompare = file1 || file2;
         await BtnCompare(fileToCompare.components, null);
+        await UpdateLastComparison(file1.path, "");
       }
 
       const comparisonResult = await GetComponents();

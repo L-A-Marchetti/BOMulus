@@ -221,6 +221,14 @@ func (a *App) UpdateVersionTags(files []workspaces.FileInfo) error {
 	return workspaces.UpdateVersionTags(files)
 }
 
+func (a *App) UpdateLastComparison(v1, v2 string) error {
+	return workspaces.UpdateLastComparison(v1, v2)
+}
+
+func (a *App) GetLastComparison() (workspaces.Comparison, error) {
+	return workspaces.GetLastComparison()
+}
+
 func (a *App) UpdateDesignator(designator, function, color string) {
 	d := core.Designator{
 		Designator: designator,
