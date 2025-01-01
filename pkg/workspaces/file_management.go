@@ -92,8 +92,13 @@ func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
 		}
 	}
 	components, filters := FileProcessing(filePath) // Assuming this function is defined elsewhere
+	versionTag := 1
+	for range workspace.Files {
+		versionTag++
+	}
 	// Add information about the new file
 	workspace.Files = append(workspace.Files, FileInfo{
+		VersionTag: versionTag,
 		Name:       fileName,
 		Path:       filePath,
 		Components: components,

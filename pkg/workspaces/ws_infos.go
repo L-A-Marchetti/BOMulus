@@ -58,6 +58,37 @@ func GetFilesInWorkspaceInfo(workspacePath string) ([]FileInfo, error) {
 	return workspace.Files, nil
 }
 
+// UpdateVersionTags update the version tag of each file in the workspace's .bmls file.
+func UpdateVersionTags(files []FileInfo) error {
+	if ActiveWorkspacePath == "" {
+		return fmt.Errorf("no active workspace set")
+	}
+	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(bmlsFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	for i := range files {
+		for j := range workspace.Files {
+			if files[i].Path == workspace.Files[j].Path {
+				workspace.Files[j].VersionTag = files[i].VersionTag
+			}
+		}
+	}
+	jsonData, err := json.MarshalIndent(workspace, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+	}
+	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+
 // GetRecentWorkspaces returns the 3 most recently created workspaces.
 func GetRecentWorkspaces() ([]Workspace, error) {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")

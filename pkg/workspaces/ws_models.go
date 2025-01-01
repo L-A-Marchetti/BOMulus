@@ -28,6 +28,7 @@ type BOMulusFile struct {
 }
 
 type FileInfo struct {
+	VersionTag int              `json:"version_tag"`
 	Name       string           `json:"name"`
 	Path       string           `json:"path"`
 	Components []core.Component `json:"components"`

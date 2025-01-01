@@ -217,6 +217,10 @@ func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
+func (a *App) UpdateVersionTags(files []workspaces.FileInfo) error {
+	return workspaces.UpdateVersionTags(files)
+}
+
 func (a *App) UpdateDesignator(designator, function, color string) {
 	d := core.Designator{
 		Designator: designator,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   OpenFileDialog,
+  UpdateVersionTags,
   OpenMultipleFilesDialog,
   AddFileToWorkspace,
   GetFilesInWorkspaceInfo,
@@ -19,32 +20,26 @@ const ItemTypes = {
   FILE: "file",
 };
 
-const DraggableFile = ({ file, index, moveFile, onDelete }) => {
+const DraggableFile = ({ file, moveFile, onDelete }) => {
   const [isConfirming, setIsConfirming] = useState(false);
 
   const [, drag] = useDrag({
     type: ItemTypes.FILE,
-    item: { index },
+    item: { id: file.version_tag },
   });
 
   const [, drop] = useDrop({
     accept: ItemTypes.FILE,
     hover: (draggedItem) => {
-      if (draggedItem.index !== index) {
-        moveFile(draggedItem.index, index);
-        draggedItem.index = index;
+      if (draggedItem.id !== file.version_tag) {
+        moveFile(draggedItem.id, file.version_tag);
+        draggedItem.id = file.version_tag;
       }
     },
   });
 
-  const handleDeleteClick = () => {
-    setIsConfirming(true);
-  };
-
-  const handleCancel = () => {
-    setIsConfirming(false);
-  };
-
+  const handleDeleteClick = () => setIsConfirming(true);
+  const handleCancel = () => setIsConfirming(false);
   const handleConfirm = () => {
     onDelete(file.path);
     setIsConfirming(false);
@@ -64,18 +59,14 @@ const DraggableFile = ({ file, index, moveFile, onDelete }) => {
         </div>
       ) : (
         <>
-          <button
-            className="delete-button"
-            onClick={handleDeleteClick}
-          >
-            ×
-          </button>
-          <span className="file-name">{file.name}</span>
+          <button className="delete-button" onClick={handleDeleteClick}>×</button>
+          <span className="file-name">V{file.version_tag} | {file.name}</span>
         </>
       )}
     </li>
   );
 };
+
 
 function FileManager({ onCompare }) {
   const [existingFiles, setExistingFiles] = useState([]);
@@ -89,7 +80,12 @@ function FileManager({ onCompare }) {
   const loadExistingFiles = async () => {
     try {
       const files = await GetFilesInWorkspaceInfo();
-      setExistingFiles(files || []);
+      if (files && files.length > 0) {
+        const sortedFiles = files.sort((a, b) => a.version_tag - b.version_tag); // Trier par version_tag
+        setExistingFiles(sortedFiles);
+      } else {
+        setExistingFiles([]);
+      }
     } catch (error) {
       console.error("Échec du chargement des fichiers existants :", error);
       setExistingFiles([]);
@@ -165,12 +161,38 @@ function FileManager({ onCompare }) {
     }
   };
 
-  const moveFile = (fromIndex, toIndex) => {
-    const updatedFiles = Array.from(existingFiles);
-    const [movedFile] = updatedFiles.splice(fromIndex, 1);
-    updatedFiles.splice(toIndex, 0, movedFile);
-    setExistingFiles(updatedFiles);
+  const moveFile = (fromTag, toTag) => {
+    const fromIndex = existingFiles.findIndex(file => file.version_tag === fromTag);
+    const toIndex = existingFiles.findIndex(file => file.version_tag === toTag);
+  
+    if (fromIndex !== -1 && toIndex !== -1) {
+      const updatedFiles = Array.from(existingFiles);
+      const [movedFile] = updatedFiles.splice(fromIndex, 1);
+      updatedFiles.splice(toIndex, 0, movedFile);  
+      updatedFiles.forEach((file, index) => {
+        file.version_tag = index + 1; // Assigner des tags consécutifs
+      });
+  
+      setExistingFiles(updatedFiles);
+  
+      // Appeler le backend pour mettre à jour les version_tag
+      syncVersionTagsWithBackend(updatedFiles);
+    }
   };
+  
+  const syncVersionTagsWithBackend = async (files) => {
+    try {
+      const updatedTags = files.map(file => ({
+        path: file.path,
+        version_tag: file.version_tag,
+      }));
+      await UpdateVersionTags(updatedTags); // Fonction backend à implémenter
+      console.log("Version tags synchronisés avec succès !");
+    } catch (error) {
+      console.error("Erreur lors de la synchronisation des version tags :", error);
+    }
+  };
+  
 
   const handleDeleteFile = async (filePath) => {
     try {
@@ -200,11 +222,12 @@ function FileManager({ onCompare }) {
               <option value="" disabled>
                 > Select first BOM...
               </option>
-              {existingFiles.map((file, index) => (
-                <option key={index} value={file.name}>
-                  {file.name}
+              {existingFiles.map((file) => (
+                <option key={file.version_tag} value={file.name}>
+                  V{file.version_tag} | {file.name}
                 </option>
               ))}
+
             </select>
           </div>
         </div>
@@ -221,11 +244,12 @@ function FileManager({ onCompare }) {
               <option value="" disabled>
                 > Select second BOM...
               </option>
-              {existingFiles.map((file, index) => (
-                <option key={index} value={file.name}>
-                  {file.name}
+              {existingFiles.map((file) => (
+                <option key={file.version_tag} value={file.name}>
+                  V{file.version_tag} | {file.name}
                 </option>
               ))}
+
             </select>
           </div>
         </div>
