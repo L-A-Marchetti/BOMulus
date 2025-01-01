@@ -24,7 +24,6 @@
 }
 
 .component-table td {
-    border: 1px solid rgb(39, 39, 39);
     padding: 8px;
     text-align: left;
     color: rgb(255, 255, 255);
@@ -44,6 +43,10 @@
     /* Space between summary and expanders */
     gap: 2rem;
     width: 100%;
+}
+
+.operator-sections {
+    padding: 10px;
 }
 
 h4 {

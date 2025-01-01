@@ -8,6 +8,7 @@
     padding: 10px;
     align-items: center;
     /* Centre verticalement dans la grille */
+    border-radius: 5px;
 }
 
 /* L'operator-buttons en (1,1) */
