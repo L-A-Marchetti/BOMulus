@@ -1,8 +1,11 @@
-/* Expander.css */
 .expander {
     margin-bottom: 20px;
     font-family: 'Poppins', sans-serif;
     color: white;
+    /* La couleur de fond est dynamique via style inline */
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .expander-header {
@@ -17,12 +20,28 @@
 }
 
 .component-table {
-    width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    /* Assurez-vous que ce n'est pas 'collapse' */
+    border-spacing: 3px 3px;
+    /* Ajoute 15px de marge verticale entre les lignes */
+    padding: 10px;
+
 }
+
 
 .component-table th,
 .component-table td {
-    padding: 8px;
-    text-align: left;
+    padding: 5px;
+    line-height: 1.5;
+    text-align: center;
+    white-space: normal;
+    max-height: 30px;
+}
+
+.component-table tr {
+    margin-bottom: 20px;
+}
+
+.component-table th {
+    background-color: rgba(39, 39, 39, 0);
 }

@@ -7,6 +7,7 @@
   color: white;
   font-family: 'Poppins', sans-serif;
   padding: 10px;
+  border-radius: 5px;
 }
 
 .file-manager-header {

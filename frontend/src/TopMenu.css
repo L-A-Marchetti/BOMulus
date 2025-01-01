@@ -199,6 +199,7 @@
     padding-left: 10px;
     appearance: none;
     width: auto;
+    border-radius: 5px;
 }
 
 .sort-select:focus {
@@ -237,6 +238,7 @@
     /* Inclut le padding dans la largeur totale */
     outline: none;
     /* Supprime le contour par défaut */
+    border-radius: 5px;
 }
 
 .search-bar:focus {
@@ -246,12 +248,13 @@
 
 /* Colonne des filtres à droite */
 .right-side {
-    padding: 20px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     /* Ajoutez cette ligne */
     align-items: flex-start;
     /* Ajoutez cette ligne */
+    box-sizing: border-box;
 }
 
 

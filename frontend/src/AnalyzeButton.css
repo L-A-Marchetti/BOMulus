@@ -28,6 +28,7 @@
     height: 100%;
     padding: 0;
     position: relative;
+    border-radius: 5px;
 }
 
 .progress-bar-container {
@@ -51,12 +52,16 @@
 }
 
 .dyn-error-message {
-    margin-top: 80px; /* Ajoute de l'espace entre la barre et le message */
+    margin-top: 80px;
+    /* Ajoute de l'espace entre la barre et le message */
     margin-left: 70px;
     width: 300px;
-    color: red; /* Couleur du texte pour mettre en évidence l'erreur */
-    font-size: 12px; /* Taille du texte ajustée */
-    font-weight: bold; /* Met le texte en gras */
+    color: red;
+    /* Couleur du texte pour mettre en évidence l'erreur */
+    font-size: 12px;
+    /* Taille du texte ajustée */
+    font-weight: bold;
+    /* Met le texte en gras */
 }
 
 

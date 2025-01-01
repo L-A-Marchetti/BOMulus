@@ -1,44 +1,48 @@
-/*
- * Expander.jsx
- * 
- * Expandable section for displaying components grouped by operator.
- *
- * Props:
- * operator: String representing the operator type (e.g., "INSERT", "UPDATE").
- * components: Array of components associated with this operator.
- * color: Color associated with this operator.
- * count: Number of components for this operator.
- * onPinToggle: Function to handle pinning/unpinning of components.
- * pinnedComponents: Array of currently pinned components.
- *
- * States:
- * expanded: Boolean to control the expanded/collapsed state of the section.
- *
- * Sub-components:
- * ComponentRow: Renders individual component rows.
- */
-
 import React, { useState } from 'react';
 import ComponentRow from './ComponentRow';
 import './Expander.css';
 
+// Couleurs associées à chaque opérateur
+const OP_COLORS = {
+    INSERT: '#86b384',
+    UPDATE: '#8e84b3',
+    DELETE: '#cc7481',
+    EQUAL: '#323232',
+};
+
+// Fonction pour définir les couleurs transparentes du fond
+const getOperatorBackgroundColor = (operator) => {
+    switch (operator) {
+        case 'INSERT':
+            return '#86b38418'; // Vert clair
+        case 'UPDATE':
+            return '#a58ed318'; // Violet clair
+        case 'DELETE':
+            return '#d18e8e18'; // Rouge clair
+        case 'EQUAL':
+            return '#cccccc18'; // Gris clair
+        default:
+            return '#ffffff'; // Blanc par défaut
+    }
+};
+
 // OperatorExpander component
-function OperatorExpander({ operator, components, color, count, onPinToggle, pinnedComponents, apiPriority, activeFilters }) {
+function OperatorExpander({ operator, components, count, onPinToggle, pinnedComponents, apiPriority, activeFilters }) {
     const [expanded, setExpanded] = useState(true);
 
-    // Check if all components of this operator are pinned
     const allPinned = components.every(component =>
         pinnedComponents.some(pinned => pinned.id === component.id)
     );
 
-    // Toggle expanded state
     const toggleExpanded = () => setExpanded(!expanded);
 
+    // Couleur de fond dynamique pour l'expander
+    const operatorBackgroundColor = getOperatorBackgroundColor(operator);
+
     return (
-        <div className="expander">
+        <div className="expander" style={{ backgroundColor: operatorBackgroundColor }}>
             <ExpanderHeader
                 operator={operator}
-                color={color}
                 count={count}
                 expanded={expanded}
                 onClick={toggleExpanded}
@@ -47,13 +51,13 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
             {expanded && (
                 <ComponentTable
                     components={components}
-                    activeFilters={activeFilters}
                     operator={operator}
-                    color={color}
+                    color={OP_COLORS[operator]} // Couleur de bordure/cellules
                     onPinToggle={onPinToggle}
                     pinnedComponents={pinnedComponents}
                     allPinned={allPinned}
                     apiPriority={apiPriority}
+                    activeFilters={activeFilters}
                 />
             )}
         </div>
@@ -61,7 +65,7 @@ function OperatorExpander({ operator, components, color, count, onPinToggle, pin
 }
 
 // Header component for the expander
-function ExpanderHeader({ operator, color, count, expanded, onClick }) {
+function ExpanderHeader({ operator, count, expanded, onClick }) {
     return (
         <h4 className="expander-header" onClick={onClick}>
             <span className="expander-icon">{expanded ? '▾' : '▸'}</span>
@@ -72,19 +76,21 @@ function ExpanderHeader({ operator, color, count, expanded, onClick }) {
 
 // Table component for displaying components
 function ComponentTable({ components, operator, color, onPinToggle, pinnedComponents, allPinned, apiPriority, activeFilters }) {
+    const operatorBackgroundColor = getOperatorBackgroundColor(operator);
     return (
         <table className="component-table">
             <thead>
                 <tr>
-                    <th>∑</th>
-                    <th>MPN</th>
-                    <th>☸</th>
-                    <th>☰</th>
                     <th></th>
+                    <th >∑</th>
+                    <th >MPN</th>
+                    <th >☸</th>
+                    <th >☰</th>
+                    <th ></th>
                 </tr>
             </thead>
 
-            <tbody style={{ backgroundColor: color }}>
+            <tbody>
                 {components.map((component) => (
                     <ComponentRow
                         key={component.id}
@@ -95,6 +101,7 @@ function ComponentTable({ components, operator, color, onPinToggle, pinnedCompon
                         pinnedComponents={pinnedComponents}
                         showExtraColumns={!allPinned}
                         apiPriority={apiPriority}
+                        color={color} // Passe la couleur au ComponentRow
                     />
                 ))}
             </tbody>

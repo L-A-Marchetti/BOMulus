@@ -1,6 +1,365 @@
-mark {
-    background-color: #000000; /* Couleur de fond (jaune clair ici) */
-    color: #ffffff; /* Couleur du texte */
-    padding: 0 2px; /* Facultatif : un peu d'espacement */
-    border-radius: 4px; /* Facultatif : arrondir les coins */
+/* ------------------------------------ *
+ * Grille principale
+ * ------------------------------------ */
+.grid-row {
+    border-bottom: 8px solid #1e1e1e;
+    border-spacing: 0px 0px;
+    /* Espacement visuel entre les lignes */
+}
+
+.warning-border {
+    border: 4px solid #fff98f;
+}
+
+.warning-row td {
+    background-color: #fff98f !important;
+    color: black !important;
+    /* Ajoutez un trait de bordure ou un effet si vous voulez */
+    /* border-left: 5px solid orange; */
+}
+
+
+.warning-td {
+    background-color: #fff98f !important;
+    color: black !important;
+    text-align: center !important;
+
+}
+
+.mpn-td {
+    min-width: 150px;
+    width: 50px;
+    max-width: 200px;
+}
+
+.designators-td {
+    min-width: 150px;
+    max-width: 300px;
+    text-align: left !important;
+}
+
+.warning-td-left {
+    width: 30px;
+    /* Ajustez selon vos besoins */
+    text-align: center;
+    vertical-align: middle;
+    background-color: transparent;
+    padding: 5px;
+    box-sizing: border-box;
+    color: black;
+    font-size: 12px;
+}
+
+.warning-message {
+    display: inline-block;
+    background-color: #fff98f;
+    padding: 5px 10px;
+    white-space: nowrap;
+    color: black;
+}
+
+
+
+
+/* ------------------------------------ *
+ * Détails du composant (section dépliée)
+ * ------------------------------------ */
+.component-details-td {
+    background-color: rgb(68, 68, 68);
+    padding: 0;
+}
+
+.component-details-content {
+    background-color: rgb(39, 39, 39);
+    color: #fff;
+    padding: 10px;
+}
+
+.component-details-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.component-details-table-col-30 {
+    width: 30%;
+    vertical-align: top;
+    padding: 10px;
+}
+
+.component-details-table-col-35 {
+    width: 35%;
+    vertical-align: top;
+    padding: 10px;
+}
+
+.component-image {
+    max-width: 120px;
+}
+
+.supplier-icon {
+    margin-left: 7px;
+    margin-right: 7px;
+    width: 7px;
+    height: auto;
+}
+
+/* Liens externes (boutons) */
+.external-links-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Paramètres détaillés */
+.detailed-parameters-table {
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border-collapse: collapse;
+}
+
+.detailed-parameters-table th {
+    background-color: #444;
+    padding: 5px;
+    text-align: left;
+    border: 1px solid #555;
+}
+
+.detailed-parameters-table td {
+    padding: 5px;
+    border: 1px solid #555;
+}
+
+/* Info messages */
+.info-messages-container {
+    margin-bottom: 20px;
+}
+
+/* Price breaks */
+.price-breaks-container {
+    margin-bottom: 20px;
+}
+
+.supplier-price-break-container {
+    margin-bottom: 20px;
+}
+
+.price-breaks-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.price-breaks-table th {
+    background-color: #444;
+    padding: 5px;
+    text-align: left;
+    border: 1px solid #555;
+}
+
+.price-breaks-table td {
+    padding: 5px;
+    border: 1px solid #555;
+}
+
+.no-price-breaks {
+    font-style: italic;
+    color: gray;
+}
+
+/* ------------------------------------ *
+ * Colonne Quantité + Best price
+ * ------------------------------------ */
+.first-col {
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.quantity-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.description-td {
+    /* Supprime les espaces inutiles */
+    height: 100%;
+    /* Facultatif pour garantir la cohérence */
+    max-width: 150px;
+    text-align: left !important;
+}
+
+.mpn-td,
+.description-td,
+.function-colors-td,
+.pin-td,
+.info-td {
+    max-width: 150px;
+    /* Ajustez selon vos besoins */
+    text-align: center;
+    vertical-align: middle;
+}
+
+.best-price-td {
+    width: 100px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+
+}
+
+.quantity-td {
+    width: 100px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+}
+
+/* Partie "best price" */
+.best-price-td {
+    width: 100px;
+    text-align: center;
+    /* ou middle */
+    padding: 0 !important;
+    /* Supprime les espaces inutiles */
+    height: 100%;
+    /* Facultatif pour garantir la cohérence */
+    vertical-align: center;
+}
+
+.quantity-td {
+    min-width: 150px;
+    text-align: center;
+    vertical-align: center;
+    height: 100%;
+    border-spacing: 0px 0px;
+
+}
+
+.best-price-container {
+    /* Fond "normal" */
+    color: #fff;
+    padding: 5px;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    /* Prend tout l'espace du parent */
+    box-sizing: border-box;
+    /* Inclut les bordures et le padding dans la largeur/hauteur */
+    display: flex;
+    /* Pour gérer le contenu facilement */
+    align-items: center;
+    /* Centrage vertical */
+    justify-content: center;
+    /* Centrage horizontal */
+}
+
+.best-price-container.moq-not-reached {
+    /* Si MOQ n'est pas atteint */
+    background-color: rgb(255, 249, 143);
+    color: black;
+}
+
+
+
+
+.quantity-value {
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    color: #fff;
+}
+
+/* ------------------------------------ *
+ * Colonne Designators
+ * ------------------------------------ */
+.designator-span {
+    /* Surbrillance dynamique gérée en inline style selon la fonction. */
+}
+
+/* ------------------------------------ *
+ * Colonne couleurs de fonction
+ * ------------------------------------ */
+.function-colors-td {
+    padding: 0 !important;
+}
+
+.function-color-container {
+    position: relative;
+    display: inline-block;
+    padding: 0px !important;
+}
+
+.function-color-box {
+    width: 15px;
+    height: 15px;
+    /* La couleur de fond est injectée en inline style. */
+    padding: 0 !important;
+}
+
+/* Tooltip au survol */
+.function-color-tooltip {
+    z-index: 1;
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* ------------------------------------ *
+ * Colonne actions (Pin / Infos)
+ * ------------------------------------ */
+.actions-td {
+    background-color: rgb(39, 39, 39);
+    vertical-align: middle;
+}
+
+.actions-container {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.bookmark-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.info-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Pour le strong dans “Suggested Replacement” */
+.replacement-strong {
+    margin-right: 10px;
+}
+
+.pin-td,
+.info-td {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    cursor: pointer;
+    background-color: #2c2c2c;
+    padding: 0 !important;
+    width: 30px;
+
+}
+
+
+.pin-td img .info-td img {
+    width: 16px;
+    height: 16px;
 }

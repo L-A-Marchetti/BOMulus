@@ -1,22 +1,27 @@
 /*
  * ComponentRow.jsx
- * 
- * Component for displaying a row of component information, including availability,
- * lifecycle status, and manufacturer details. It also provides buttons to open external links
- * for product details and datasheets, as well as displaying price breaks and info messages.
+ *
+ * Component pour afficher une ligne d'informations sur un composant, 
+ * y compris sa disponibilité, son statut de cycle de vie, et les détails du fabricant. 
+ * Il propose aussi des boutons pour ouvrir des liens externes (détails produits, datasheet),
+ * afficher les prix par quantité, ainsi que d'éventuels messages d'information.
  *
  * Props:
- * component: Object containing details about the component.
- * operator: String indicating the operation type (e.g., 'DELETE').
- * onPinToggle: Function to handle pinning/unpinning the component.
- * pinnedComponents: Array of currently pinned components.
+ *  - component: Objet contenant les détails du composant.
+ *  - operator: String indiquant le type d'opération (par ex., 'DELETE').
+ *  - onPinToggle: Fonction pour gérer l'épinglage/désépinglage du composant.
+ *  - pinnedComponents: Tableau des composants actuellement épinglés.
+ *  - apiPriority: Ordre de priorité des fournisseurs (Mouser, Digikey, etc.).
+ *  - activeFilters: Filtres actifs (contient par ex. un searchQuery).
  *
- * States:
- * expanded: Boolean indicating whether the component details are expanded.
+ * États internes:
+ *  - expanded: Boolean indiquant si les détails du composant sont dépliés.
+ *  - hoveredFunction: Nom de la fonction survolée (pour le tooltip).
  *
- * Backend Dependencies:
- * OpenExternalLink: Function from Wails backend to open external links.
+ * Dépendances Backend:
+ *  - OpenExternalLink: Fonction Wails pour ouvrir un lien externe.
  */
+
 import './ComponentRow.css';
 import React, { useState } from 'react';
 import Button from './Button';
@@ -32,19 +37,18 @@ const supplierIcons = {
     Digikey: Digikey,
 };
 
-function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority, activeFilters }) {
+function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority, activeFilters, color }) {
     const [expanded, setExpanded] = useState(false);
     const [hoveredFunction, setHoveredFunction] = useState(null);
 
+    // Fonction pour rendre les petits carrés de couleurs (labels)
     const renderFunctionColors = () => {
         const uniqueFunctions = new Set(
             component.designators.map(designator => designator.label.name)
         );
 
         return [...uniqueFunctions].map((functionName, index) => {
-            if (functionName === "not assigned") {
-                return null;
-            }
+            if (functionName === "not assigned") return null;
 
             const color = component.designators.find(
                 designator => designator.label.name === functionName
@@ -53,34 +57,18 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
             return (
                 <div
                     key={index}
+                    className="function-color-container"
                     onMouseEnter={() => setHoveredFunction(functionName)}
                     onMouseLeave={() => setHoveredFunction(null)}
-                    style={{ position: 'relative' }}
                 >
+                    {/* Boîte colorée (taille gérée en CSS, couleur en inline) */}
                     <div
-                        style={{
-                            width: '20px',
-                            height: '20px',
-                            backgroundColor: color,
-                        }}
+                        className="function-color-box"
+                        style={{ backgroundColor: color }}
                     />
-
+                    {/* Tooltip */}
                     {hoveredFunction === functionName && (
-                        <div
-                            style={{
-                                zIndex: '1',
-                                position: 'absolute',
-                                top: '25px',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                color: '#fff',
-                                padding: '5px',
-                                borderRadius: '3px',
-                                fontSize: '12px',
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
+                        <div className="function-color-tooltip">
                             {functionName}
                         </div>
                     )}
@@ -89,18 +77,20 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
         });
     };
 
-
-
+    // Surbrillance dynamique d'un designator selon sa fonction
     const highlightDesignator = (designator) => {
         if (hoveredFunction && designator.label.name === hoveredFunction) {
-            return { backgroundColor: designator.label.color, color: '#fff' };
+            return {
+                backgroundColor: designator.label.color,
+                color: '#fff'
+            };
         }
         return {};
     };
 
+    // Surligner un texte en fonction du searchQuery
     function highlightText(text, query) {
         if (!query) return text;
-
         const regex = new RegExp(`(${query})`, 'gi');
         const parts = text.split(regex);
 
@@ -109,17 +99,17 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
         );
     }
 
-    // Opens an external link
+    // Ouvrir un lien externe via la fonction Wails
     const openExternalLink = (link) => {
         OpenExternalLink(link);
     };
 
-    // Checks if the component is pinned
+    // Vérifier si le composant est épinglé
     const isPinned = pinnedComponents && pinnedComponents.length > 0
         ? pinnedComponents.some(pinned => pinned.id === component.id)
         : false;
 
-    // Checks various conditions to determine if there are warnings
+    // Vérifications pour avertissements
     const isOutOfStock = component.analyzed &&
         operator !== 'DELETE' &&
         component.availability?.every(avail => avail.value.trim() === "");
@@ -139,63 +129,71 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
 
     const hasMismatchMpn = component.analyzed &&
         component.mismatch_mpn === true;
-    const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
 
+    const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
     const messages = [];
 
     if (isOutOfStock) {
         messages.push('Out Of Stock');
     }
-
     if (isLCSRisky) {
         messages.push('Risky Lifecycle Status');
     }
-
     if (hasMessages) {
         messages.push('Manufacturer Message(s)');
     }
-
     if (hasMismatchMpn) {
         messages.push('Mismatching Manufacturer Part Number');
     }
 
-    // Renders detailed information about the component
+    // Rendu des détails du composant (quand on clique sur le bouton Infos)
     const renderComponentDetails = (comp) => (
         <tr>
-            <td style={{ backgroundColor: 'rgb(68, 68, 68)' }} colSpan="4">
-                <div style={{ backgroundColor: 'rgb(39, 39, 39)', color: '#fff', padding: '10px' }}>
-                    {/* Component Details */}
-                    <table style={{ width: '100%' }}>
+            <td></td>
+            <td colSpan="4" className="component-details-td">
+                <div className="component-details-content">
+                    {/* Détails du composant */}
+                    <table className="component-details-table">
                         <tbody>
                             <tr>
-                                <td style={{ width: '30%', verticalAlign: 'top', padding: '10px' }}>
-                                    {apiPriority.map(api => {
-                                        const imageDetails = comp.image_path?.find(detail => detail.supplier === api);
-                                        return imageDetails ? (
-                                            <img
-                                                key={api}
-                                                src={imageDetails.value}
-                                                alt={`${api} Component`}
-                                                style={{ maxWidth: '120px' }}
-                                            />
-                                        ) : null;
-                                    }).find(el => el) || <p>No Image Available</p>}
+                                {/* Colonne 1 : Image(s) */}
+                                <td className="component-details-table-col-30">
+                                    {apiPriority
+                                        .map(api => {
+                                            const imageDetails = comp.image_path?.find(detail => detail.supplier === api);
+                                            return imageDetails ? (
+                                                <img
+                                                    key={api}
+                                                    src={imageDetails.value}
+                                                    alt={`${api} Component`}
+                                                    className="component-image"
+                                                />
+                                            ) : null;
+                                        })
+                                        .find(el => el) || <p>Aucune image disponible</p>
+                                    }
                                 </td>
-                                <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
+
+                                {/* Colonne 2 : Avail / Lifecycle / ROHS / Replacement */}
+                                <td className="component-details-table-col-35">
                                     <p>
                                         <strong>Availability:</strong>
                                         {apiPriority.map(api => {
                                             const availability = comp.availability?.find(detail => detail.supplier === api);
-                                            return availability ? (
+                                            if (!availability) return null;
+                                            return (
                                                 <React.Fragment key={api}>
                                                     <img
+                                                        className="supplier-icon"
                                                         src={supplierIcons[api]}
                                                         alt={`${api} icon`}
-                                                        style={{ marginLeft: '7px', marginRight: '7px', width: '7px', height: 'auto' }}
                                                     />
-                                                    {availability.value === "" || availability.value === "0" ? "Out of Stock" : availability.value}
+                                                    {availability.value === "" || availability.value === "0"
+                                                        ? "Out of Stock"
+                                                        : availability.value
+                                                    }
                                                 </React.Fragment>
-                                            ) : null;
+                                            );
                                         }).reduce((prev, curr) => [prev, ' ', curr]) || ' N/A'}
                                     </p>
 
@@ -203,72 +201,85 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                         {apiPriority.map(api => {
                                             const lifecycle = comp.lifecycle_status?.find(detail => detail.supplier === api);
                                             return lifecycle ? (
-                                                <>
-                                                    <strong><img
-                                                        src={supplierIcons[api]}
-                                                        alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />Lifecycle Status: </strong>
-                                                    {lifecycle.value}
-                                                </>
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Lifecycle Status:
+                                                    </strong>
+                                                    &nbsp;{lifecycle.value}
+                                                </React.Fragment>
                                             ) : null;
                                         }).find(value => value) || 'N/A'}
                                     </p>
+
                                     <p>
                                         {apiPriority.map(api => {
                                             const rohs = comp.rohs_status?.find(detail => detail.supplier === api);
                                             return rohs ? (
-                                                <>
-                                                    <strong><img
-                                                        src={supplierIcons[api]}
-                                                        alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />ROHS Status: </strong>
-                                                    {rohs.value}
-                                                </>
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        ROHS Status:
+                                                    </strong>
+                                                    &nbsp;{rohs.value}
+                                                </React.Fragment>
                                             ) : null;
                                         }).find(value => value) || 'N/A'}
                                     </p>
+
                                     <p>
-                                        {apiPriority
-                                            .map(api => {
-                                                const replacement = comp.suggested_replacement?.find(detail => detail.supplier === api);
-                                                return replacement && replacement.value?.trim() ? (
-                                                    <>
-                                                        <strong style={{ marginRight: '10px' }}>
+                                        {apiPriority.map(api => {
+                                            const replacement = comp.suggested_replacement?.find(detail => detail.supplier === api);
+                                            if (replacement && replacement.value?.trim()) {
+                                                return (
+                                                    <React.Fragment key={api}>
+                                                        <strong className="replacement-strong">
                                                             <img
+                                                                className="supplier-icon"
                                                                 src={supplierIcons[api]}
                                                                 alt={`${api} icon`}
-                                                                style={{ marginRight: '7px', width: '7px', height: 'auto' }}
                                                             />
                                                             Suggested Replacement:
                                                         </strong>
                                                         {replacement.value}
-                                                    </>
-                                                ) : null;
-                                            })
-                                            .find(value => value) || (
+                                                    </React.Fragment>
+                                                );
+                                            }
+                                            return null;
+                                        }).find(value => value) || (
                                                 <>
                                                     <strong>Suggested Replacement:</strong> N/A
                                                 </>
                                             )}
                                     </p>
-
                                 </td>
-                                <td style={{ width: '35%', verticalAlign: 'top', padding: '10px' }}>
+
+                                {/* Colonne 3 : MPN, SupplierDesc, Manufacturer, Category */}
+                                <td className="component-details-table-col-35">
                                     <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
                                     <p>
                                         {apiPriority.map(api => {
                                             const description = comp.supplier_description?.find(detail => detail.supplier === api);
                                             return description ? (
-                                                <>
-                                                    <strong><img
-                                                        src={supplierIcons[api]}
-                                                        alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />Supplier Description: </strong>
-                                                    {description.value}
-                                                </>
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Supplier Description:
+                                                    </strong>
+                                                    &nbsp;{description.value}
+                                                </React.Fragment>
                                             ) : null;
                                         }).find(value => value) || 'N/A'}
                                     </p>
@@ -276,14 +287,17 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                         {apiPriority.map(api => {
                                             const manufacturer = comp.supplier_manufacturer?.find(detail => detail.supplier === api);
                                             return manufacturer ? (
-                                                <>
-                                                    <strong><img
-                                                        src={supplierIcons[api]}
-                                                        alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />Supplier Manufacturer: </strong>
-                                                    {manufacturer.value}
-                                                </>
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Supplier Manufacturer:
+                                                    </strong>
+                                                    &nbsp;{manufacturer.value}
+                                                </React.Fragment>
                                             ) : null;
                                         }).find(value => value) || 'N/A'}
                                     </p>
@@ -291,14 +305,17 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                         {apiPriority.map(api => {
                                             const category = comp.category?.find(detail => detail.supplier === api);
                                             return category ? (
-                                                <>
-                                                    <strong><img
-                                                        src={supplierIcons[api]}
-                                                        alt={`${api} icon`}
-                                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                                    />Category: </strong>
-                                                    {category.value}
-                                                </>
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Category:
+                                                    </strong>
+                                                    &nbsp;{category.value}
+                                                </React.Fragment>
                                             ) : null;
                                         }).find(value => value) || 'N/A'}
                                     </p>
@@ -307,14 +324,18 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         </tbody>
                     </table>
 
-                    {/* Buttons for URLs */}
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
+                    {/* Boutons vers URLs externes (product details, datasheet) */}
+                    <div className="external-links-buttons">
                         {apiPriority.map(api => {
                             const productDetails = comp.product_detail_url?.find(url => url.supplier === api);
                             if (productDetails) {
                                 return (
                                     <Button key={api} onClick={() => openExternalLink(productDetails.value)}>
-                                        <img src={supplierIcons[api]} alt={`${api} icon`} style={{ marginRight: '7px', width: '7px', height: 'auto' }} />
+                                        <img
+                                            className="supplier-icon"
+                                            src={supplierIcons[api]}
+                                            alt={`${api} icon`}
+                                        />
                                         Product Details ↝
                                     </Button>
                                 );
@@ -322,13 +343,16 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                             return null;
                         }).find(el => el)}
 
-
                         {apiPriority.map(api => {
                             const dataSheet = comp.datasheet_url?.find(url => url.supplier === api);
                             if (dataSheet) {
                                 return (
                                     <Button key={api} onClick={() => openExternalLink(dataSheet.value)}>
-                                        <img src={supplierIcons[api]} alt={`${api} icon`} style={{ marginRight: '7px', width: '7px', height: 'auto' }} />
+                                        <img
+                                            className="supplier-icon"
+                                            src={supplierIcons[api]}
+                                            alt={`${api} icon`}
+                                        />
                                         Data Sheet ↝
                                     </Button>
                                 );
@@ -337,27 +361,28 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         }).find(el => el)}
                     </div>
 
-                    {/* Detailed Parameters */}
+                    {/* Paramètres détaillés */}
                     {comp.detailed_parameters && comp.detailed_parameters.length > 0 && (
-                        <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '30px', marginBottom: '30px' }}>
+                        <table className="detailed-parameters-table">
                             <thead>
                                 <tr>
-                                    <th style={tableHeaderStyle}>Parameter</th>
-                                    <th style={tableHeaderStyle}>Value</th>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {comp.detailed_parameters.map((param, index) => (
                                     <tr key={index}>
-                                        <td style={tableCellStyle}>{param.parameter}</td>
-                                        <td style={tableCellStyle}>{param.value}</td>
+                                        <td>{param.parameter}</td>
+                                        <td>{param.value}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     )}
+
                     {/* Info Messages */}
-                    <div>
+                    <div className="info-messages-container">
                         <strong>Info Messages:</strong>
                         {comp.info_messages && comp.info_messages.length > 0 ? (
                             <ul>
@@ -366,194 +391,187 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                 ))}
                             </ul>
                         ) : (
-                            <p>No information available.</p>
+                            <p>Aucune information disponible.</p>
                         )}
                     </div>
 
                     {/* Price Breaks */}
-                    <div>
+                    <div className="price-breaks-container">
                         <strong>Price Breaks:</strong>
                         {comp.price_breaks && comp.price_breaks.length > 0 ? (
                             <div>
                                 {comp.price_breaks.map((supplierPriceBreak, supplierIndex) => (
-                                    <div key={supplierIndex} style={{ marginBottom: '20px' }}>
+                                    <div className="supplier-price-break-container" key={supplierIndex}>
                                         <h4>Supplier: {supplierPriceBreak.supplier}</h4>
                                         {supplierPriceBreak.value && supplierPriceBreak.value.length > 0 ? (
-                                            <table style={{ borderCollapse: 'collapse', width: '100%', marginTop: '10px' }}>
+                                            <table className="price-breaks-table">
                                                 <thead>
                                                     <tr>
-                                                        <th style={tableHeaderStyle}>Quantity</th>
-                                                        <th style={tableHeaderStyle}>Price</th>
-                                                        <th style={tableHeaderStyle}>Currency</th>
+                                                        <th>Quantity</th>
+                                                        <th>Price</th>
+                                                        <th>Currency</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {supplierPriceBreak.value.map((priceBreak, priceIndex) => (
                                                         <tr key={priceIndex}>
-                                                            <td style={tableCellStyle}>{priceBreak.Quantity}</td>
-                                                            <td style={tableCellStyle}>{priceBreak.Price}</td>
-                                                            <td style={tableCellStyle}>{priceBreak.Currency}</td>
+                                                            <td>{priceBreak.Quantity}</td>
+                                                            <td>{priceBreak.Price}</td>
+                                                            <td>{priceBreak.Currency}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                             </table>
                                         ) : (
-                                            <p style={{ fontStyle: 'italic', color: 'gray' }}>No price breaks available for this supplier.</p>
+                                            <p className="no-price-breaks">
+                                                No price breaks available for this supplier.
+                                            </p>
                                         )}
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p>No price available.</p>
+                            <p className="no-price-breaks">No price available.</p>
                         )}
                     </div>
-
-
                 </div>
             </td>
         </tr>
     );
 
+    function darkenColor(hex, amount = 20) {
+        const color = hex.replace("#", "");
+        const num = parseInt(color, 16);
+
+        const r = Math.max(0, ((num >> 16) & 0xff) - amount);
+        const g = Math.max(0, ((num >> 8) & 0xff) - amount);
+        const b = Math.max(0, (num & 0xff) - amount);
+
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+
     return (
         <>
-            {isWarning && (
-                <td colSpan="4" style={{ backgroundColor: '#fff98f', color: 'black', textAlign: 'center' }}>
-                    {messages.join(', ')}
+            {/* Ligne principale */}
+            <tr className={`grid-row ${operator.toLowerCase()} ${isWarning ? 'warning-border' : ''}`}>
+                {/* Colonne Warning */}
+                <td
+                    rowSpan="2"
+                    className="warning-td-left"
+                    style={{ backgroundColor: isWarning ? '#fff98f' : 'transparent' }}
+                >
+                    {isWarning && (
+                        <span className="warning-icon" title={messages.join(', ')}>⚠️</span>
+                    )}
                 </td>
-            )}
-            <tr className={`grid-row ${operator.toLowerCase()}`} style={isWarning ? { border: '4px solid #fff98f' } : {}}>
-                <td style={{ padding: 0, whiteSpace: 'nowrap' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        {/* Best Price */}
-                        <div
-                            style={{
-                                backgroundColor:
-                                    component.calculated_price?.is_moq_not_reached
-                                        ? 'rgb(255, 249, 143)' // Fond jaune si MOQ n'est pas atteint
-                                        : 'rgba(0, 0, 0, 0.2)', // Fond noir transparent sinon
-                                color:
-                                    component.calculated_price?.is_moq_not_reached
-                                        ? 'black' // Texte noir pour plus de lisibilité sur fond jaune
-                                        : '',
-                                padding: '10px',
-                                textAlign: 'center',
-                                borderBottom: '1px solid rgb(39, 39, 39)',
-                                width: '100%',
-                                boxSizing: 'border-box',
-                            }}
-                        >
-                            {component.calculated_price?.best_price ? (
-                                <>
-                                    <img
-                                        src={supplierIcons[component.calculated_price.best_supplier]}
-                                        alt={`${component.calculated_price.best_supplier} icon`}
-                                        style={{ marginRight: '7px', width: '7px', height: 'auto' }}
-                                    />
-                                    {component.calculated_price?.is_moq_not_reached ? (
-                                        // Si MOQ n'est pas atteint
-                                        `< ${component.calculated_price.moq} | ${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
-                                    ) : (
-                                        // Sinon afficher les prix normalement
-                                        `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
-                                    )}
-                                </>
-                            ) : (
-                                // Sinon afficher "-"
-                                "-"
-                            )}
-                        </div>
 
-
-
-                        {/* Quantity */}
-                        <div
-                            style={{
-                                padding: '10px',
-                                textAlign: 'center',
-                                width: '100%',
-                                boxSizing: 'border-box',
-                            }}
-                        >
-                            {operator === 'UPDATE'
-                                ? `${component.OldQuantity} → ${component.NewQuantity}`
-                                : component.quantity}
-                        </div>
+                {/* Colonne Best Price */}
+                <td className="best-price-td" style={{ backgroundColor: darkenColor(color, 30) }}>
+                    <div
+                        className={
+                            "best-price-container " +
+                            (component.calculated_price?.is_moq_not_reached ? "moq-not-reached" : "")
+                        }
+                    >
+                        {component.calculated_price?.best_price ? (
+                            <>
+                                <img
+                                    src={supplierIcons[component.calculated_price.best_supplier]}
+                                    alt={`${component.calculated_price.best_supplier} icon`}
+                                    className="supplier-icon"
+                                />
+                                {component.calculated_price?.is_moq_not_reached ? (
+                                    `< ${component.calculated_price.moq} | ${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                ) : (
+                                    `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                )}
+                            </>
+                        ) : (
+                            "-"
+                        )}
                     </div>
                 </td>
 
-
-                <td>{highlightText(component.mpn, activeFilters.searchQuery)}</td>
-                <td>
-                    {component.designators.map((designator, index) => (
-                        <span
-                            key={index}
-                            style={highlightDesignator(designator)} // Appliquer la surbrillance si la fonction correspond
-                        >
-                            {highlightText(designator.designator, activeFilters.searchQuery)}{' '}
-                        </span>
-                    ))}
+                {/* Colonne MPN */}
+                <td rowSpan="2" className="mpn-td" style={{ backgroundColor: color }}>
+                    {highlightText(component.mpn, activeFilters.searchQuery)}
                 </td>
-                <td>{highlightText(component.user_description, activeFilters.searchQuery)}</td>
-                <td style={{ backgroundColor: 'rgb(39,39,39)' }}>{renderFunctionColors()}</td>
 
-                <td style={{ backgroundColor: 'rgb(39,39,39)' }}>
-                    {!component.analyzed && (
-                        <>
-                            <div style={{ display: 'flex' }}>
-                                <Button onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
-                                    <img
-                                        src={isPinned ? BookmarkFilledIcon : BookmarkIcon}
-                                        alt={isPinned ? "Pinned" : "Unpinned"}
-                                        style={{ width: '16px', height: '16px' }}
-                                    />
-                                </Button>
-                                <Button onClick={() => setExpanded(!expanded)}>&ensp;</Button>
-                            </div>
-                        </>
-                    )}
-                    {component.analyzed && (
-                        <>
-                            <div style={{ display: 'flex' }}>
-                                <Button onClick={() => onPinToggle(component.id)} style={{ marginLeft: '10px' }}>
-                                    <img
-                                        src={isPinned ? BookmarkFilledIcon : BookmarkIcon}
-                                        alt={isPinned ? "Pinned" : "Unpinned"}
-                                        style={{ width: '16px', height: '16px' }}
-                                    />
-                                </Button>
-                                <Button onClick={() => setExpanded(!expanded)}>{ }
-                                    <img
-                                        src={InfosIcon}
-                                        alt={"Infos"}
-                                        style={{ width: '16px', height: '16px' }}
-                                    />
-                                </Button>
-                            </div>
-                        </>
+                {/* Colonne Designators */}
+                <td rowSpan="2" className="designators-td" style={{ backgroundColor: color }}>
+                    {component.designators
+                        .map((designator, index) => (
+                            <span
+                                key={index}
+                                className="designator-span"
+                                style={highlightDesignator(designator)}
+                            >
+                                {highlightText(designator.designator, activeFilters.searchQuery)}
+                            </span>
+                        ))
+                        .reduce((prev, curr) => [prev, ', ', curr])}
+                </td>
+
+                {/* Colonne user_description */}
+                <td rowSpan="2" className="description-td" style={{ backgroundColor: color }}>
+                    {highlightText(component.user_description, activeFilters.searchQuery)}
+                </td>
+
+                {/* Colonne function colors */}
+                <td rowSpan="2" className="function-colors-td">
+                    {renderFunctionColors()}
+                </td>
+
+                {/* Colonne Pin */}
+                <td rowSpan="2" className="pin-td" onClick={() => onPinToggle(component.id)}>
+                    <img
+                        className="bookmark-icon"
+                        src={isPinned ? BookmarkFilledIcon : BookmarkIcon}
+                        alt={isPinned ? "Pinned" : "Unpinned"}
+                        width="30px"
+                        height="30px"
+                    />
+                </td>
+
+                {/* Colonne Info */}
+                <td
+                    rowSpan="2"
+                    className="info-td"
+                    onClick={() => {
+                        setExpanded(!expanded);
+                    }}
+                    style={{ cursor: "pointer" }} // Ajoute un curseur pour signaler le clic
+                >
+                    {component.analyzed ? (
+                        <img
+                            className="info-icon"
+                            src={InfosIcon}
+                            alt="Infos"
+                        />
+                    ) : (
+                        <span className="info-icon">?</span>
                     )}
                 </td>
             </tr>
 
-            {component.analyzed && expanded && renderComponentDetails(component)}
+            {/* Ligne Quantité */}
+            <tr>
+                <td className="quantity-td" style={{ backgroundColor: color }}>
+                    <div className="quantity-value">
+                        {operator === 'UPDATE'
+                            ? `${component.OldQuantity} → ${component.NewQuantity}`
+                            : component.quantity
+                        }
+                    </div>
+                </td>
+            </tr>
 
-            {/* Display mismatch MPN details if they exist 
-            {hasMismatchMpn && expanded && component.mismatch_mpn.map((mismatchComponent, index) => (
-                renderComponentDetails(mismatchComponent)
-            ))}*/}
+            {/* Détails du Composant */}
+            {expanded && renderComponentDetails(component)}
         </>
     );
+
 }
-
-const tableHeaderStyle = {
-    backgroundColor: '#444',
-    padding: '5px',
-    textAlign: 'left',
-    border: '1px solid #555'
-};
-
-const tableCellStyle = {
-    padding: '5px',
-    border: '1px solid #555'
-};
 
 export default ComponentRow;
