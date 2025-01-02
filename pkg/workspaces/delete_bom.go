@@ -66,6 +66,9 @@ func DeleteBOMFile(filePath string) error {
 			break
 		}
 	}
+	for i := range workspace.Files {
+		workspace.Files[i].VersionTag = i + 1
+	}
 	jsonData, err := json.MarshalIndent(workspace, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
