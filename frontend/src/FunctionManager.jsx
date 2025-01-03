@@ -153,7 +153,7 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
                             value={selectedFunction}
                             onChange={(e) => handleFunctionSelection(e.target.value)}
                         >
-                            <option value="">No function selected</option>
+                            <option value="">> Functions</option>
                             {functions.map(f => {
                                 const color = colorMap[f] || '#ffffff';
                                 return (

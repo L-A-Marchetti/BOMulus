@@ -5,14 +5,39 @@
     border-bottom: 8px solid #1e1e1e;
     border-spacing: 0px 0px;
     /* Espacement visuel entre les lignes */
+
 }
+
+.grid-row td {
+    height: 100%;
+    /* Uniformise la hauteur pour toutes les cellules */
+    vertical-align: middle;
+    /* Centre le contenu verticalement */
+}
+
+
+.warning-icons-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permet de passer à une nouvelle ligne si nécessaire */
+    gap: 4px;
+    /* Espace entre les icônes */
+    justify-content: flex-start;
+    /* Aligne à gauche */
+}
+
+
+.warning-icon {
+    width: 20px;
+    height: 20px;
+}
+
 
 .warning-border {
     border: 4px solid #fff98f;
 }
 
 .warning-row td {
-    background-color: #fff98f !important;
     color: black !important;
     /* Ajoutez un trait de bordure ou un effet si vous voulez */
     /* border-left: 5px solid orange; */
@@ -20,7 +45,6 @@
 
 
 .warning-td {
-    background-color: #fff98f !important;
     color: black !important;
     text-align: center !important;
 
@@ -52,7 +76,6 @@
 
 .warning-message {
     display: inline-block;
-    background-color: #fff98f;
     padding: 5px 10px;
     white-space: nowrap;
     color: black;
@@ -181,6 +204,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 25px;
     justify-content: space-between;
 }
 
@@ -200,7 +224,6 @@
     max-width: 150px;
     /* Ajustez selon vos besoins */
     text-align: center;
-    vertical-align: middle;
 }
 
 .best-price-td {
@@ -208,8 +231,12 @@
     text-align: center;
     vertical-align: middle;
     padding: 0;
-
+    margin: 0;
+    border-spacing: 0;
+    height: 100%;
+    /* Force la hauteur du td */
 }
+
 
 .quantity-td {
     width: 100px;
@@ -240,27 +267,24 @@
 }
 
 .best-price-container {
-    /* Fond "normal" */
-    color: #fff;
-    padding: 5px;
-    text-align: center;
+    display: flex;
     width: 100%;
     height: 100%;
-    /* Prend tout l'espace du parent */
+    min-height: 25px;
+    /* Remplit le parent */
     box-sizing: border-box;
-    /* Inclut les bordures et le padding dans la largeur/hauteur */
-    display: flex;
-    /* Pour gérer le contenu facilement */
     align-items: center;
-    /* Centrage vertical */
+    /* Centre verticalement */
     justify-content: center;
-    /* Centrage horizontal */
+    /* Centre horizontalement */
+    padding: 0;
+    /* Supprime le padding */
 }
 
+
 .best-price-container.moq-not-reached {
-    /* Si MOQ n'est pas atteint */
-    background-color: rgb(255, 249, 143);
-    color: black;
+
+    color: rgb(255, 255, 255);
 }
 
 
@@ -287,18 +311,33 @@
     padding: 0 !important;
 }
 
+.function-colors-td {
+    width: 10px;
+}
+
 .function-color-container {
     position: relative;
-    display: inline-block;
-    padding: 0px !important;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Supprime tout espacement extérieur */
 }
 
 .function-color-box {
-    width: 15px;
-    height: 15px;
-    /* La couleur de fond est injectée en inline style. */
-    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+    background-color: inherit;
+    border: 0;
+    /* Supprime toute bordure éventuelle */
+    box-sizing: border-box;
+    margin: 0;
+    /* Supprime tout espacement extérieur */
 }
+
+
 
 /* Tooltip au survol */
 .function-color-tooltip {
@@ -334,11 +373,13 @@
 .bookmark-icon {
     width: 16px;
     height: 16px;
+    margin-left: 20%;
 }
 
 .info-icon {
     width: 16px;
     height: 16px;
+    margin-left: 20%;
 }
 
 /* Pour le strong dans “Suggested Replacement” */

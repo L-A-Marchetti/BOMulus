@@ -85,13 +85,13 @@ function FileManager({ onCompare }) {
       if (files && files.length > 0) {
         const sortedFiles = files.sort((a, b) => a.version_tag - b.version_tag); // Trier par version_tag
         setExistingFiles(sortedFiles);
-  
+
         try {
           const lastComparison = await GetLastComparison();
           console.log("Last Comparison:", lastComparison);
           let file1 = null;
           let file2 = null;
-  
+
           for (const file of sortedFiles) {
             console.log("Last Comparison loop:", file);
             if (file.path === lastComparison.v1) {
@@ -100,7 +100,7 @@ function FileManager({ onCompare }) {
               file2 = file;
             }
           }
-  
+
           if (file1 || file2) {
             setSelectedFiles([file1, file2]);
             try {
@@ -140,7 +140,6 @@ function FileManager({ onCompare }) {
     try {
       if (filePath) {
         await AddFileToWorkspace(filePath);
-        alert("Fichier ajouté avec succès");
         loadExistingFiles();
       }
     } catch (error) {
@@ -210,22 +209,22 @@ function FileManager({ onCompare }) {
   const moveFile = (fromTag, toTag) => {
     const fromIndex = existingFiles.findIndex(file => file.version_tag === fromTag);
     const toIndex = existingFiles.findIndex(file => file.version_tag === toTag);
-  
+
     if (fromIndex !== -1 && toIndex !== -1) {
       const updatedFiles = Array.from(existingFiles);
       const [movedFile] = updatedFiles.splice(fromIndex, 1);
-      updatedFiles.splice(toIndex, 0, movedFile);  
+      updatedFiles.splice(toIndex, 0, movedFile);
       updatedFiles.forEach((file, index) => {
         file.version_tag = index + 1; // Assigner des tags consécutifs
       });
-  
+
       setExistingFiles(updatedFiles);
-  
+
       // Appeler le backend pour mettre à jour les version_tag
       syncVersionTagsWithBackend(updatedFiles);
     }
   };
-  
+
   const syncVersionTagsWithBackend = async (files) => {
     try {
       const updatedTags = files.map(file => ({
@@ -238,7 +237,7 @@ function FileManager({ onCompare }) {
       console.error("Erreur lors de la synchronisation des version tags :", error);
     }
   };
-  
+
 
   const handleDeleteFile = async (filePath) => {
     try {

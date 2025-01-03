@@ -63,7 +63,6 @@ function WorkspaceCreator({ handleToggleCompareView }) {
 
         try {
             await CreateWorkspace(workspacePath, workspaceName);
-            alert("Workspace created successfully!");
             closeWizard();
         } catch (error) {
             alert(`Error creating workspace: ${error}`);
