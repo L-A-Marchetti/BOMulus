@@ -127,7 +127,6 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
         }
 
         await UpdateBMLSDesignators();
-        alert("Designators updated successfully!");
 
         const updatedComponents = await GetComponents();
         onRefreshComponents(updatedComponents);
