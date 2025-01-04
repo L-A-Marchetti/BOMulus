@@ -56,7 +56,7 @@
     grid-column: 1;
     background-color: #323232;
     border: none;
-    color: white;
+    /* color: white;  // Ne pas définir de couleur ici pour laisser la couleur dynamique */
     font-size: 14px;
     min-width: 150px;
     height: 38px;
@@ -81,10 +81,10 @@
 }
 
 .dropdown-container select.filter-select-dropdown {
-    /* Style commun aux dropdowns si besoin */
     background-color: #323232;
     border: none;
     color: white;
+    /* Garder la couleur blanche pour les autres selects */
     font-size: 14px;
     min-width: 150px;
     height: 38px;
@@ -131,7 +131,7 @@
 
 .filter-select-dropdown option {
     background-color: #2c2c2c;
-    color: white;
+    /* color: white; // Laisser les couleurs dynamiques gérer les options */
 }
 
 .filter-select-dropdown:focus {

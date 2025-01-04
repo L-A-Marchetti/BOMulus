@@ -522,7 +522,6 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                     )}
                 </td>
 
-
                 {/* Colonne Best Price */}
                 <td className="best-price-td" style={{ backgroundColor: darkenColor(color, 30) }}>
                     <div
@@ -539,9 +538,9 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                     className="supplier-icon"
                                 />
                                 {component.calculated_price?.is_moq_not_reached ? (
-                                    `< ${component.calculated_price.moq} | ${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    `< ${component.calculated_price.moq} | $${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
                                 ) : (
-                                    `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    `$${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
                                 )}
                             </>
                         ) : (
@@ -549,6 +548,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         )}
                     </div>
                 </td>
+
 
                 {/* Colonne MPN */}
                 <td rowSpan="2" className="mpn-td" style={{ backgroundColor: color }}>
