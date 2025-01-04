@@ -215,7 +215,7 @@
     /* Réduction du padding pour rendre les options plus petites */
     display: flex;
     align-items: center;
-    margin-left: -20%;
+    margin-left: -25%;
     cursor: pointer;
     color: white;
     font-size: 13px;
