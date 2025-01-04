@@ -159,22 +159,27 @@
 .custom-select-button {
     width: 100%;
     padding: 6px 10px;
-    /* Réduction du padding pour rendre le bouton plus petit */
     background-color: #323232;
-    /* Match avec les autres selects */
     border: none;
     color: white;
     font-size: 13px;
-    /* Réduction de la taille de la police */
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    /* Alignement à gauche */
     border-radius: 3px;
     height: 38px;
-    /* Réduction de la hauteur pour correspondre aux autres éléments */
     max-width: 150px;
 }
+
+.arrow {
+    margin-right: 8px;
+    /* Espace entre la flèche et le texte */
+    font-size: 10px;
+    color: white;
+}
+
 
 /* Changement de couleur au survol du bouton */
 .custom-select-button:hover {
@@ -182,12 +187,7 @@
 }
 
 /* Flèche indiquant l'état ouvert/fermé */
-.arrow {
-    margin-left: auto;
-    font-size: 10px;
-    /* Réduction de la taille de la flèche */
-    color: white;
-}
+
 
 /* Liste des options déroulantes */
 .custom-select-options {

@@ -204,6 +204,7 @@ function Filters({
                         className="custom-select-button"
                         onClick={handleDropdownButtonClick}
                     >
+                        <span className="arrow">{isWarningDropdownOpen ? '▲' : '▼'}</span>
                         {activeFilters.warning ? (
                             warningOptions.find(option => option.value === activeFilters.warning)?.icon ? (
                                 <>
@@ -218,10 +219,10 @@ function Filters({
                                 "Aucun filtre"
                             )
                         ) : (
-                            "> Warnings"
+                            "Warnings"
                         )}
-                        <span className="arrow">{isWarningDropdownOpen ? '▲' : '▼'}</span>
                     </button>
+
                     {isWarningDropdownOpen && (
                         <ul className="custom-select-options">
                             {warningOptions.map(option => (
