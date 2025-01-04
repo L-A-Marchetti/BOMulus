@@ -1,3 +1,4 @@
+// FunctionManager.js
 import React, { useState, useEffect } from 'react';
 import { UpdateDesignator, GetComponents, UpdateBMLSDesignators } from '../wailsjs/go/main/App';
 import './FunctionManager.css';
@@ -151,6 +152,10 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
                             id="selectFunction"
                             value={selectedFunction}
                             onChange={(e) => handleFunctionSelection(e.target.value)}
+                            // [ASTUCE: Appliquer la couleur dynamique uniquement ici]
+                            style={{
+                                color: selectedFunction ? (colorMap[selectedFunction] || '#ffffff') : '#ffffff'
+                            }}
                         >
                             <option value="">> Functions</option>
                             {functions.map(f => {
@@ -159,8 +164,9 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
                                     <option
                                         key={f}
                                         value={f}
-                                        style={{ color: color }} // voir remarque ci-dessus
+                                        style={{ color }} // Couleur inline dans la liste déroulante
                                     >
+                                        {/* Carré coloré suivi du nom */}
                                         ■ {f}
                                     </option>
                                 );
@@ -210,9 +216,6 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
 
                         <button onClick={handleCreateFunction}>Create</button>
                     </div>
-
-
-
                 </div>
             </div>
 
@@ -277,7 +280,6 @@ function FunctionManager({ onClose, componentsAll, onRefreshComponents }) {
                     Update Designators
                 </button>
                 {/* Eventuel bouton Cancel/Close */}
-
             </div>
         </div>
     );
