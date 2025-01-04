@@ -25,6 +25,7 @@
     overflow-x: hidden;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    border-radius: 5px;
 }
 
 .modal-close-btn {

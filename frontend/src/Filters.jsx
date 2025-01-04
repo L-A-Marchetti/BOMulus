@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Filters.css';
 import BookmarkIcon from "./assets/images/bookmark.svg";
 import WarningToolTip from './WarningToolTip';
@@ -7,6 +7,12 @@ import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
 import SettingsIcon from "./assets/images/settings.svg";
+
+import MismatchmpnIcon from "./assets/images/mismatchingmpn.svg";
+import ManmessageIcon from "./assets/images/manmessage.svg";
+import OutofstockIcon from "./assets/images/outofstock.svg";
+import LifecycleIcon from "./assets/images/lifecycle.svg";
+import MoqIcon from "./assets/images/moq.svg";
 
 function Filters({
     operators,
@@ -20,7 +26,6 @@ function Filters({
     componentsAll,
     onRefreshComponents
 }) {
-
     const [showFunctionManagerModal, setShowFunctionManagerModal] = useState(false);
 
     // États internes
@@ -30,6 +35,79 @@ function Filters({
 
     // [ASTUCE: Couleur de la fonction sélectionnée]
     const [selectedFunctionColor, setSelectedFunctionColor] = useState('#ffffff');
+
+    // Nouvel état pour gérer l'ouverture du dropdown des warnings
+    const [isWarningDropdownOpen, setIsWarningDropdownOpen] = useState(false);
+
+    // Référence pour détecter les clics en dehors du dropdown
+    const warningDropdownRef = useRef(null);
+
+    // Options avec les logos, ajout de l'option "Aucun filtre"
+    const warningOptions = [
+        {
+            value: "",
+            label: "No filters",
+            icon: null, // Pas d'icône pour cette option
+            count: totalWarnings
+        },
+        {
+            value: "outOfStock",
+            label: "Out of Stock",
+            icon: OutofstockIcon,
+            count: warningCounts.outOfStock
+        },
+        {
+            value: "riskyLifecycle",
+            label: "Risky Lifecycle",
+            icon: LifecycleIcon,
+            count: warningCounts.riskyLifecycle
+        },
+        {
+            value: "manufacturerMessages",
+            label: "Manufacturer Messages",
+            icon: ManmessageIcon,
+            count: warningCounts.manufacturerMessages
+        },
+        {
+            value: "mismatchingMpn",
+            label: "Mismatching MPN",
+            icon: MismatchmpnIcon,
+            count: warningCounts.mismatchingMpn
+        },
+        {
+            value: "moq",
+            label: "MOQ",
+            icon: MoqIcon,
+            count: warningCounts.moq
+        }
+    ];
+
+    // Fonction pour gérer les clics en dehors du dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (warningDropdownRef.current && !warningDropdownRef.current.contains(event.target)) {
+                setIsWarningDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    // Fonction pour gérer la sélection d'une option
+    const handleWarningSelect = (option) => {
+        setActiveFilters(prevFilters => ({
+            ...prevFilters,
+            warning: option.value
+        }));
+        setIsWarningDropdownOpen(false);
+    };
+
+    // Fonction pour gérer le clic sur le bouton de la liste déroulante
+    const handleDropdownButtonClick = () => {
+        setIsWarningDropdownOpen(prevState => !prevState);
+    };
 
     // ----------------------------------------------------------
     // Gestion des opérateurs
@@ -119,28 +197,49 @@ function Filters({
                 ))}
             </div>
 
-            <div className="dropdown-container warnings-select">
+            <div className="dropdown-container warnings-select" ref={warningDropdownRef}>
                 <WarningToolTip totalWarnings={totalWarnings} />
-                <select
-                    name="warning"
-                    value={activeFilters.warning || ""}
-                    onChange={handleFilterChange}
-                    className="filter-select-dropdown"
-                >
-                    <option value="">> Warnings</option>
-                    {warningCounts && (
-                        <>
-                            <option value="outOfStock">Out of Stock: {warningCounts.outOfStock}</option>
-                            <option value="riskyLifecycle">Risky Lifecycle: {warningCounts.riskyLifecycle}</option>
-                            <option value="manufacturerMessages">Manufacturer Messages: {warningCounts.manufacturerMessages}</option>
-                            <option value="mismatchingMpn">Mismatching MPN: {warningCounts.mismatchingMpn}</option>
-                            <option value="moq">MOQ: {warningCounts.moq}</option>
-                        </>
+                <div className="custom-select">
+                    <button
+                        className="custom-select-button"
+                        onClick={handleDropdownButtonClick}
+                    >
+                        {activeFilters.warning ? (
+                            warningOptions.find(option => option.value === activeFilters.warning)?.icon ? (
+                                <>
+                                    <img
+                                        src={warningOptions.find(option => option.value === activeFilters.warning)?.icon}
+                                        alt={warningOptions.find(option => option.value === activeFilters.warning)?.label}
+                                        className="option-icon"
+                                    />
+                                    {warningOptions.find(option => option.value === activeFilters.warning)?.label}
+                                </>
+                            ) : (
+                                "Aucun filtre"
+                            )
+                        ) : (
+                            "> Warnings"
+                        )}
+                        <span className="arrow">{isWarningDropdownOpen ? '▲' : '▼'}</span>
+                    </button>
+                    {isWarningDropdownOpen && (
+                        <ul className="custom-select-options">
+                            {warningOptions.map(option => (
+                                <li
+                                    key={option.value}
+                                    className={`custom-select-option ${activeFilters.warning === option.value ? 'selected' : ''}`}
+                                    onClick={() => handleWarningSelect(option)}
+                                >
+                                    {option.icon && <img src={option.icon} alt={option.label} className="option-icon" />}
+                                    {option.label} {option.value && `(${option.count})`}
+                                </li>
+                            ))}
+                        </ul>
                     )}
-                </select>
+                </div>
             </div>
 
-            {/* Bouton bookmark qui s'étend sur 2 rangées */}
+            {/* Bouton bookmark qui s'étend sur deux rangées */}
             <button
                 onClick={handlePinnedToggle}
                 className={`filters-button ${activeFilters.pinned ? 'active' : ''}`}
@@ -210,6 +309,7 @@ function Filters({
             )}
         </div>
     );
+
 }
 
 export default Filters;

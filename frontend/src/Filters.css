@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------
+   Styles existants (votre code actuel)
+-------------------------------------------------------------------- */
+
 .filters {
     display: grid;
     grid-template-columns: auto auto auto;
@@ -136,4 +140,132 @@
 
 .filter-select-dropdown:focus {
     outline: none;
+}
+
+/* -------------------------------------------------------------------
+   Styles ajoutés pour la liste déroulante personnalisée des warnings
+-------------------------------------------------------------------- */
+
+/* Container de la liste déroulante personnalisée */
+.custom-select {
+    position: relative;
+    width: 100%;
+    /* S'adapte à la largeur du conteneur parent */
+    max-width: 100%;
+    /* Empêche le débordement */
+}
+
+/* Bouton qui affiche l'option sélectionnée */
+.custom-select-button {
+    width: 100%;
+    padding: 6px 10px;
+    /* Réduction du padding pour rendre le bouton plus petit */
+    background-color: #323232;
+    /* Match avec les autres selects */
+    border: none;
+    color: white;
+    font-size: 13px;
+    /* Réduction de la taille de la police */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 3px;
+    height: 38px;
+    /* Réduction de la hauteur pour correspondre aux autres éléments */
+    max-width: 150px;
+}
+
+/* Changement de couleur au survol du bouton */
+.custom-select-button:hover {
+    background-color: #383838;
+}
+
+/* Flèche indiquant l'état ouvert/fermé */
+.arrow {
+    margin-left: auto;
+    font-size: 10px;
+    /* Réduction de la taille de la flèche */
+    color: white;
+}
+
+/* Liste des options déroulantes */
+.custom-select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 150px;
+    /* Réduction de la hauteur maximale */
+    overflow-y: auto;
+    background-color: #323232;
+    /* Match avec les autres selects */
+    border: 1px solid #444444;
+    /* Bordure subtile */
+    border-top: none;
+    z-index: 1001;
+    /* Augmentation du z-index pour s'assurer qu'il soit au-dessus des autres éléments */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 3px 3px;
+}
+
+/* Styles pour chaque option */
+.custom-select-option {
+    padding: 6px 8px;
+    /* Réduction du padding pour rendre les options plus petites */
+    display: flex;
+    align-items: center;
+    margin-left: -20%;
+    cursor: pointer;
+    color: white;
+    font-size: 13px;
+    /* Réduction de la taille de la police */
+    transition: background-color 0.2s;
+}
+
+/* Changement de fond au survol de l'option */
+.custom-select-option:hover {
+    background-color: #383838;
+}
+
+/* Fond différent pour l'option sélectionnée */
+.custom-select-option.selected {
+    background-color: #444444;
+}
+
+/* Icône de l'option */
+.option-icon {
+    width: 16px;
+    /* Réduction de la taille des icônes */
+    height: 16px;
+    margin-right: 6px;
+    /* Réduction de l'espace entre l'icône et le texte */
+}
+
+/* Scrollbar personnalisée (optionnel) */
+.custom-select-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb {
+    background-color: #555555;
+    border-radius: 3px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb:hover {
+    background-color: #777777;
+}
+
+/* -------------------------------------------------------------------
+   Styles pour WarningToolTip
+-------------------------------------------------------------------- */
+
+/* Assurez-vous que le WarningToolTip a un z-index supérieur */
+.warning-tooltip {
+    position: absolute;
+    /* Ajustez selon vos besoins */
+    right: 100%;
+    /* Ajustez selon vos besoins */
+    z-index: 1002;
+    /* Supérieur au dropdown */
 }
