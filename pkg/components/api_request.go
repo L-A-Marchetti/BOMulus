@@ -43,21 +43,23 @@ import (
 
 // APIRequest retrieves information based on the MPN
 // and updates the corresponding component
-func APIRequest(i int, done *chan struct{}) error {
+func APIRequest(batch []core.Component, done *chan struct{}) error {
 	select {
 	case <-*done:
 		return errors.New("stop signal received") // Exit if done signal is received
 	default:
-		// Check if a MPN was found.
-		if core.Components[i].Mpn == "" {
-			core.Components[i].MismatchMpn = true
-			return nil
+		mpnList := ""
+		for i, comp := range batch {
+			mpnList += comp.Mpn
+			if i < len(batch) {
+				mpnList += "|"
+			}
 		}
 		// Create the request payload
 		payload := RequestPayload{
 			SearchByPartRequest: SearchByPartRequest{
-				MouserPartNumber:  core.Components[i].Mpn,
-				PartSearchOptions: "1", // 1: several matching results 2: Exact result.
+				MouserPartNumber:  mpnList,
+				PartSearchOptions: "2", // 1: several matching results 2: Exact result.
 			},
 		}
 		// Encode the payload to JSON
@@ -84,11 +86,10 @@ func APIRequest(i int, done *chan struct{}) error {
 		err = json.Unmarshal(body, &apiResponse)
 		core.ErrorsHandler(err)
 		if apiResponse.SearchResults.NumberOfResult == 0 {
-			errorTxt := fmt.Sprintf("Mouser API lost on component : %s", core.Components[i].Mpn)
-			return errors.New(errorTxt)
+			return errors.New("Mouser API connexion lost")
 		}
 		// Add some infos to the component.
-		processAnalysis(apiResponse, Response{}, i, "Mouser", done)
+		processAnalysis(apiResponse, Response{}, -1, batch, "Mouser", done)
 		return nil
 	}
 }

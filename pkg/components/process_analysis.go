@@ -31,11 +31,12 @@ import (
 	"sort"
 	"strconv"
 	"time"
+	"workspaces"
 )
 
 // processAnalysis processes the API response and updates the component information
 // It handles both exact matches and alternative components
-func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier string, done *chan struct{}) {
+func processAnalysis(apiResponse ApiResponse, response Response, i int, batch []core.Component, supplier string, done *chan struct{}) {
 	select {
 	case <-*done:
 		return // Exit if done signal is received
@@ -49,26 +50,41 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, supplier
 			if analyzedComponents == nil {
 				return
 			}
+
 			// End of test
-			// Get a reference to the current component being processed
-			currentComponent := &core.Components[i]
-			// Check if the current component's MPN matches 100% the API response
-			if currentComponent.Mpn == analyzedComponents[0].ManufacturerPartNumber {
-				// Update the existing component with the analyzed data
-				processComponent(currentComponent, analyzedComponents[0], true, supplier)
-				currentComponent.MismatchMpn = false
-			} else {
-				if len(currentComponent.Sources) == 0 || currentComponent.MismatchMpn {
-					currentComponent.MismatchMpn = true
+			for _, comp := range batch {
+				// Get a reference to the current component being processed
+				currentComponent := &core.Components[comp.Id]
+				var matchedComponent *Part
+				for _, analyzed := range analyzedComponents {
+					if currentComponent.Mpn == analyzed.ManufacturerPartNumber {
+						matchedComponent = &analyzed
+						break
+					}
 				}
-			}
-			// Validate the analysis
-			if len(apiResponse.Errors) == 0 {
-				currentComponent.Analyzed = true
-				currentComponent.Sources = append(currentComponent.Sources, "Mouser")
-				currentComponent.LastRefresh = time.Now()
-				productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
-				multisourcePriceCalculator(core.Components[i], productionQuantity, &currency, i)
+				// Check if the current component's MPN matches 100% the API response
+				if matchedComponent != nil {
+					// Update the existing component with the analyzed data
+					processComponent(currentComponent, *matchedComponent, true, supplier)
+					currentComponent.MismatchMpn = false
+				} else {
+					if len(currentComponent.Sources) == 0 || currentComponent.MismatchMpn {
+						currentComponent.MismatchMpn = true
+					}
+				}
+				// Validate the analysis
+				if len(apiResponse.Errors) == 0 {
+					currentComponent.Analyzed = true
+					currentComponent.Sources = append(currentComponent.Sources, "Mouser")
+					currentComponent.LastRefresh = time.Now()
+					productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
+					multisourcePriceCalculator(core.Components[comp.Id], productionQuantity, &currency, comp.Id)
+					core.AnalysisState.Current++
+					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(len(core.Components)) * 100
+					if config.ANALYZE_SAVE_STATE {
+						workspaces.UpdateBMLSComponents(*currentComponent)
+					}
+				}
 			}
 		case "Digikey":
 			// Get the analyzed components from the API response
