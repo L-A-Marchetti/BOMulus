@@ -74,3 +74,16 @@ func CreateWorkspace(path string, name string) error {
 	}
 	return nil
 }
+
+// ImportWorkspace creates a new workspace at the specified path with the given name.
+func ImportWorkspace(workspace WorkspaceInfos, path string) error {
+	// Create the workspace info
+	workspaceInfos := Workspace{WorkspaceInfos: workspace}
+	workspaceInfos.WorkspaceInfos.Path = path
+	// Update BOMulus.bmls
+	err := UpdateBOMulusFile(workspaceInfos, APIKeys{}, true, true, 3, []string{"Digikey", "Mouser", "BOMulus"})
+	if err != nil {
+		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
+	}
+	return nil
+}

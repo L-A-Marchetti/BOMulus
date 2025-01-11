@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { CreateWorkspace, OpenDirectoryDialog } from "../wailsjs/go/main/App";
+import { CreateWorkspace, OpenDirectoryDialog, OpenImportFileDialog } from "../wailsjs/go/main/App";
 import "./WorkspaceCreator.css"; // Importing the external CSS file
 import RecentWorkspaces from "./RecentWorkspaces";
 import AddCircleIcon from "./assets/images/add_circle.svg";
@@ -35,6 +35,7 @@ function WorkspaceCreator({ handleToggleCompareView }) {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [workspacePath, setWorkspacePath] = useState("");
     const [workspaceName, setWorkspaceName] = useState("");
+    const [refreshRecentWorkspaces, setRefreshRecentWorkspaces] = useState(false);
 
     // Opens the workspace creation wizard
     const openWizard = () => {
@@ -53,6 +54,17 @@ function WorkspaceCreator({ handleToggleCompareView }) {
         const selectedPath = await OpenDirectoryDialog();
         setWorkspacePath(selectedPath);
     };
+
+    // Opens a directory dialog to import a workspace
+    const importWorkSpace = async () => {
+        try {
+            await OpenImportFileDialog();
+            setRefreshRecentWorkspaces((prev) => !prev);
+        } catch (error) {
+            alert(`Error importing workspace: ${error}`);
+        }
+    };
+    
 
     // Creates a new workspace with the specified path and name
     const createWorkspace = async () => {
@@ -83,7 +95,7 @@ function WorkspaceCreator({ handleToggleCompareView }) {
                                         <img src={AddCircleIcon} alt="Add workspace" className="icon" />
                                     </span>
                                 </div>
-                                <div className="workspace-item" onClick={chooseDirectory}>
+                                <div className="workspace-item" onClick={importWorkSpace}>
                                     <span className="icon">
                                         <img src={ImportIcon} alt="Open directory" className="icon" />
                                     </span>
@@ -92,7 +104,7 @@ function WorkspaceCreator({ handleToggleCompareView }) {
 
                             {/* Grille des projets récents */}
                             <div className="workspace-grid">
-                                <RecentWorkspaces handleToggleCompareView={handleToggleCompareView} />
+                                <RecentWorkspaces handleToggleCompareView={handleToggleCompareView} refreshTrigger={refreshRecentWorkspaces} />
                             </div>
                         </div>
                     </div>

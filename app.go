@@ -16,6 +16,7 @@ import (
 	"context"
 	"core"
 	"fmt"
+	"path/filepath"
 	"workspaces"
 
 	"github.com/skratchdot/open-golang/open"
@@ -125,6 +126,31 @@ func (a *App) OpenDirectoryDialog() string {
 		return ""
 	}
 	return selection
+}
+
+// OpenImportFileDialog opens a bmls selection dialog and returns the workspace path to import.
+func (a *App) OpenImportFileDialog() error {
+	selection, err := runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
+		Title: "Select a BOMulus file to import",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "BMLS files",
+				Pattern:     "*.bmls",
+			},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("Error opening file dialog: %w", err)
+	}
+	ws, err := workspaces.GetWorkspaceInfo(selection)
+	if err != nil {
+		return fmt.Errorf("Error reading the BMLS file: %w", err)
+	}
+	err = workspaces.ImportWorkspace(ws, filepath.Dir(selection))
+	if err != nil {
+		return fmt.Errorf("Error importing the BMLS file: %w", err)
+	}
+	return nil
 }
 
 // OpenFileDialog opens a file selection dialog and returns the selected file path.

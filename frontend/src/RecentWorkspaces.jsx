@@ -3,14 +3,14 @@ import { GetRecentWorkspaces, SetActiveWorkspace, DeleteWorkspace } from "../wai
 import ListIcon from "./assets/images/list.svg";
 import Modal from "./Modal";
 import Button from "./Button";
-function RecentWorkspaces({ handleToggleCompareView }) {
+function RecentWorkspaces({ handleToggleCompareView, refreshTrigger }) {
     const [recentWorkspaces, setRecentWorkspaces] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [workspaceToDelete, setWorkspaceToDelete] = useState(null);
 
     useEffect(() => {
         loadRecentWorkspaces();
-    }, []);
+    }, [refreshTrigger]);
 
     const loadRecentWorkspaces = async () => {
         try {

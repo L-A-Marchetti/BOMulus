@@ -58,6 +58,25 @@ func GetFilesInWorkspaceInfo(workspacePath string) ([]FileInfo, error) {
 	return workspace.Files, nil
 }
 
+// GetWorkspaceInfo returns infos from a specified workspace's .bmls file.
+func GetWorkspaceInfo(workspacePath string) (WorkspaceInfos, error) {
+	if workspacePath == "" {
+		return WorkspaceInfos{}, fmt.Errorf("no active workspace set")
+	}
+	var workspace Workspace
+	// Read the .bmls file
+	data, err := os.ReadFile(workspacePath)
+	if err != nil {
+		return WorkspaceInfos{}, fmt.Errorf("failed to read .bmls file: %w", err)
+	}
+	// Unmarshal JSON content
+	err = json.Unmarshal(data, &workspace)
+	if err != nil {
+		return WorkspaceInfos{}, fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	}
+	return workspace.WorkspaceInfos, nil
+}
+
 // UpdateVersionTags update the version tag of each file in the workspace's .bmls file.
 func UpdateVersionTags(files []FileInfo) error {
 	if ActiveWorkspacePath == "" {
