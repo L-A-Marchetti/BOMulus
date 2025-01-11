@@ -22,24 +22,18 @@
 .component-table {
     border-collapse: separate;
     /* Assurez-vous que ce n'est pas 'collapse' */
-    border-spacing: 3px 3px;
+    border-spacing: 1px 1px;
     /* Ajoute 15px de marge verticale entre les lignes */
     padding: 10px;
-
+    font-size: 0.7em;
 }
 
 
 .component-table th,
 .component-table td {
-    padding: 5px;
     line-height: 1.5;
-    text-align: center;
+    text-align: left;
     white-space: normal;
-    max-height: 30px;
-}
-
-.component-table tr {
-    margin-bottom: 20px;
 }
 
 .component-table th {

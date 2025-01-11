@@ -1,6 +1,4 @@
-/***************************************************************
- * FunctionManager.css
- ***************************************************************/
+/* FunctionManager.css */
 .function-manager {
     display: flex;
     flex-direction: column;
@@ -42,7 +40,7 @@
 .function-choose select {
     background-color: #323232;
     border: none;
-    color: white;
+    /* color: white;  // Enlevé pour permettre la couleur dynamique */
     font-size: 14px;
     height: 38px;
     padding: 0 10px;
@@ -59,8 +57,7 @@
 .function-choose select option {
     background-color: #323232;
     /* Fond de la liste déroulante */
-    color: white;
-    /* Couleur par défaut */
+    /* color: white; // Enlevé pour permettre la couleur dynamique */
     font-size: 14px;
 }
 

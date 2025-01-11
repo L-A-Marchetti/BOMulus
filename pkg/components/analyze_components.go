@@ -51,46 +51,55 @@ func AnalyzeComponents() error {
 	// Mutex pour protéger les mises à jour partagées
 	var mu sync.Mutex
 
+	filterAndBatchComponents := func(components []core.Component, batchSize int, sourceName string) [][]core.Component {
+		filtered := []core.Component{}
+		for i := 0; i < len(components); i++ {
+			requiresAnalysis := false
+			for _, source := range components[i].Sources {
+				if source == sourceName {
+					requiresAnalysis = true
+					break
+				}
+			}
+			if core.Components[i].Mpn == "" {
+				core.Components[i].MismatchMpn = true
+				continue
+			}
+			if components[i].Analyzed && requiresAnalysis && components[i].LastRefresh.After(refreshThreshold) {
+				continue // Skip already analyzed components within refresh threshold
+			}
+			filtered = append(filtered, components[i])
+		}
+		var batches [][]core.Component
+		for i := 0; i < len(filtered); i += batchSize {
+			end := i + batchSize
+			if end > len(filtered) {
+				end = len(filtered)
+			}
+			batches = append(batches, filtered[i:end])
+		}
+		return batches
+	}
+
+	mouserBatches := filterAndBatchComponents(core.Components, 10, "Mouser")
+
 	// Goroutine pour gérer les requêtes Mouser
 	go func() {
 		defer wg.Done()
-		for i := 0; i < totalComponents; i++ {
+		for _, batch := range mouserBatches {
 			select {
 			case <-done:
 				return // Exit if done signal is received
 			default:
-				mouserAnalyzed := false
-				for _, source := range core.Components[i].Sources {
-					if source == "Mouser" {
-						mouserAnalyzed = true
-					}
-				}
-				if core.Components[i].Analyzed && mouserAnalyzed && core.Components[i].LastRefresh.After(refreshThreshold) {
-					continue // Skip already analyzed components within refresh threshold
-				}
 				if err := mouserLimiter.Wait(context.Background()); err != nil {
 					log.Print(err) // Log Mouser rate limit errors
 					continue
 				}
-				if err := APIRequest(i, &done); err != nil {
+				if err := APIRequest(batch, &done); err != nil {
 					log.Println(err)
 					core.AnalysisState.MouserErr = err.Error()
 					//errChan <- err // Send error to channel if analysis fails
 					return
-				}
-				// Mises à jour partagées
-				select {
-				case <-done:
-					return // Exit if done signal is received
-				default:
-					mu.Lock()
-					core.Components[i].Analyzed = true
-					core.AnalysisState.Current++
-					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
-					if config.ANALYZE_SAVE_STATE {
-						workspaces.UpdateBMLSComponents(core.Components[i])
-					}
-					mu.Unlock()
 				}
 			}
 		}

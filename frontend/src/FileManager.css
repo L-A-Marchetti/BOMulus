@@ -27,13 +27,15 @@
   background-color: #323232;
   border: none;
   color: white;
-  font-size: 14px;
+  font-size: 12px;
   min-width: 150px;
   max-width: 200px;
   height: 38px;
   padding-left: 10px;
   appearance: none;
   width: auto;
+  font-style: italic;
+
 }
 
 .file-select-dropdown option {

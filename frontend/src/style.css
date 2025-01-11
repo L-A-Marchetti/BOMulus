@@ -20,11 +20,3 @@ html {
     background-color: rgb(39, 39, 39);
     color: white;
 }
-
-table td {
-    word-break: break-all;
-    overflow-wrap: break-word;
-    hyphens: auto;
-    min-width: 18px;
-    white-space: normal;
-  }

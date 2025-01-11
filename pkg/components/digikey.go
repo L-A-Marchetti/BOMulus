@@ -90,7 +90,7 @@ func APIRequestToDigiKey(i int, done *chan struct{}) error {
 				return errors.New("DK API connexion lost")
 			}
 		*/
-		processAnalysis(ApiResponse{}, apiResponse, i, "Digikey", done)
+		processAnalysis(ApiResponse{}, apiResponse, i, nil, "Digikey", done)
 		return nil
 	}
 }

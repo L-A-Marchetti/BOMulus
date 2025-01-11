@@ -31,6 +31,11 @@ import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Mouser from "./assets/images/mouser.svg";
 import Digikey from "./assets/images/digikey.svg";
 import InfosIcon from "./assets/images/info.svg";
+import MismatchmpnIcon from "./assets/images/mismatchingmpn.svg";
+import ManmessageIcon from "./assets/images/manmessage.svg";
+import OutofstockIcon from "./assets/images/outofstock.svg";
+import LifecycleIcon from "./assets/images/lifecycle.svg";
+import MoqIcon from "./assets/images/moq.svg";
 
 const supplierIcons = {
     Mouser: Mouser,
@@ -130,7 +135,9 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
     const hasMismatchMpn = component.analyzed &&
         component.mismatch_mpn === true;
 
-    const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn;
+    const hasMoq = component.calculated_price?.is_moq_not_reached;
+
+    const isWarning = isOutOfStock || isLCSRisky || hasMessages || hasMismatchMpn || hasMoq;
     const messages = [];
 
     if (isOutOfStock) {
@@ -144,6 +151,10 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
     }
     if (hasMismatchMpn) {
         messages.push('Mismatching Manufacturer Part Number');
+    }
+
+    if (hasMoq) {
+        messages.push('MOQ not reached');
     }
 
     // Rendu des détails du composant (quand on clique sur le bouton Infos)
@@ -443,12 +454,20 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
         const color = hex.replace("#", "");
         const num = parseInt(color, 16);
 
-        const r = Math.max(0, ((num >> 16) & 0xff) - amount);
-        const g = Math.max(0, ((num >> 8) & 0xff) - amount);
-        const b = Math.max(0, (num & 0xff) - amount);
+        // Extraire les composantes R, G, B
+        const r = (num >> 16) & 0xff;
+        const g = (num >> 8) & 0xff;
+        const b = num & 0xff;
 
-        return `rgb(${r}, ${g}, ${b})`;
+        // Calculer une réduction proportionnelle pour éviter un assombrissement excessif
+        const factor = 1 - amount / 255;
+        const newR = Math.max(0, Math.round(r * factor));
+        const newG = Math.max(0, Math.round(g * factor));
+        const newB = Math.max(0, Math.round(b * factor));
+
+        return `rgb(${newR}, ${newG}, ${newB})`;
     }
+
 
 
     return (
@@ -456,13 +475,50 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
             {/* Ligne principale */}
             <tr className={`grid-row ${operator.toLowerCase()} ${isWarning ? 'warning-border' : ''}`}>
                 {/* Colonne Warning */}
+                {/* Colonne Warning */}
                 <td
                     rowSpan="2"
                     className="warning-td-left"
-                    style={{ backgroundColor: isWarning ? '#fff98f' : 'transparent' }}
+
                 >
                     {isWarning && (
-                        <span className="warning-icon" title={messages.join(', ')}>⚠️</span>
+                        <div className="warning-icons-container" title={messages.join(', ')}>
+                            {isOutOfStock && (
+                                <img
+                                    className="warning-icon"
+                                    src={OutofstockIcon}
+                                    alt="Out of Stock"
+                                />
+                            )}
+                            {isLCSRisky && (
+                                <img
+                                    className="warning-icon"
+                                    src={LifecycleIcon}
+                                    alt="Risky Lifecycle Status"
+                                />
+                            )}
+                            {hasMessages && (
+                                <img
+                                    className="warning-icon"
+                                    src={ManmessageIcon}
+                                    alt="Manufacturer Message(s)"
+                                />
+                            )}
+                            {hasMismatchMpn && (
+                                <img
+                                    className="warning-icon"
+                                    src={MismatchmpnIcon}
+                                    alt="Mismatching Manufacturer Part Number"
+                                />
+                            )}
+                            {hasMoq && (
+                                <img
+                                    className="warning-icon"
+                                    src={MoqIcon}
+                                    alt="Mismatching Manufacturer Part Number"
+                                />
+                            )}
+                        </div>
                     )}
                 </td>
 
@@ -482,9 +538,9 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                     className="supplier-icon"
                                 />
                                 {component.calculated_price?.is_moq_not_reached ? (
-                                    `< ${component.calculated_price.moq} | ${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    `< ${component.calculated_price.moq} | $${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
                                 ) : (
-                                    `${parseFloat(component.calculated_price.best_price).toFixed(2)} | ${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                                    `$${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
                                 )}
                             </>
                         ) : (
@@ -492,6 +548,7 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         )}
                     </div>
                 </td>
+
 
                 {/* Colonne MPN */}
                 <td rowSpan="2" className="mpn-td" style={{ backgroundColor: color }}>
