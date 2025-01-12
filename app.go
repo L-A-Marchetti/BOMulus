@@ -231,10 +231,16 @@ func (a *App) GetRecentWorkspaces() ([]workspaces.Workspace, error) {
 	return workspaces.GetRecentWorkspaces() // Delegate to workspaces package
 }
 
+func (a *App) HeaderFiltersFileValidation(filePath string) (core.XlsmFile, error) {
+	_, _, file := workspaces.FileProcessing(filePath)
+	return file, nil
+}
+
 // AddFileToWorkspace initiates adding a file to the active workspace by delegating to workspaces package.
-func (a *App) AddFileToWorkspace(filePath string) error {
-	activeWorkspace := a.GetActiveWorkspace()                       // Get active workspace path
-	return workspaces.AddFileToWorkspace(activeWorkspace, filePath) // Delegate to workspaces package
+func (a *App) AddFileToWorkspace(filePath string, file core.XlsmFile) error {
+	activeWorkspace := a.GetActiveWorkspace() // Get active workspace path
+	fmt.Println(file.Filters)
+	return workspaces.AddFileToWorkspace(activeWorkspace, filePath, file) // Delegate to workspaces package
 }
 
 // GetFilesInWorkspaceInfo retrieves files in the active workspace's .bmls by delegating to workspaces package.

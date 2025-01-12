@@ -52,7 +52,7 @@ import (
 )
 
 // AddFileToWorkspace copies a file to the specified workspace directory and updates the .bmls file.
-func AddFileToWorkspace(workspacePath string, filePath string) error {
+func AddFileToWorkspace(workspacePath string, filePath string, file core.XlsmFile) error {
 	if workspacePath == "" {
 		return fmt.Errorf("no active workspace set")
 	}
@@ -76,11 +76,11 @@ func AddFileToWorkspace(workspacePath string, filePath string) error {
 		return fmt.Errorf("error copying file: %w", err)
 	}
 	// Update the .bmls file with the new file information
-	return UpdateBMLSWithNewFile(workspacePath, fileName, destPath)
+	return UpdateBMLSWithNewFile(workspacePath, fileName, destPath, file)
 }
 
 // updateBMLSWithNewFile updates the .bmls file with information about the newly added file.
-func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
+func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string, file core.XlsmFile) error {
 	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
 	var workspace Workspace
 	// Read the existing .bmls file
@@ -91,7 +91,7 @@ func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
 			return fmt.Errorf("failed to unmarshal .bmls: %w", err)
 		}
 	}
-	components, filters := FileProcessing(filePath) // Assuming this function is defined elsewhere
+	core.ComponentsDetection(&file)
 	versionTag := 1
 	for range workspace.Files {
 		versionTag++
@@ -101,8 +101,8 @@ func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
 		VersionTag: versionTag,
 		Name:       fileName,
 		Path:       filePath,
-		Components: components,
-		Filters:    filters,
+		Components: file.Components,
+		Filters:    file.Filters,
 	})
 	// Write updated data to the .bmls file
 	jsonData, err := json.MarshalIndent(workspace, "", "  ")
@@ -112,12 +112,12 @@ func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string) error {
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
 
-func FileProcessing(filePath string) ([]core.Component, core.Filter) {
+func FileProcessing(filePath string) ([]core.Component, core.Filter, core.XlsmFile) {
 	file := core.XlsmFile{
 		Path: filePath,
 	}
 	core.XlsmReader(&file)
 	core.HeaderDetection(&file)
 	core.ComponentsDetection(&file)
-	return file.Components, file.Filters
+	return file.Components, file.Filters, file
 }

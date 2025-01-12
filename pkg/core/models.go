@@ -7,10 +7,10 @@ import (
 /*╔══════════════ FILES MODELS ══════════════╗*/
 
 type XlsmFile struct {
-	Path       string
-	Content    [][]string
-	Filters    Filter
-	Components []Component
+	Path       string      `json:"path"`
+	Content    [][]string  `json:"content"`
+	Filters    Filter      `json:"filters"`
+	Components []Component `json:"components"`
 }
 
 /*╚══════════════════════════════════════════╝*/

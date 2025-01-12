@@ -39,6 +39,7 @@ func ComponentsDetection(file *XlsmFile) {
 	if config.DEBUGGING {
 		defer StartBenchmark("ComponentsDetection()", false).Stop()
 	}
+	file.Components = nil
 	// Iterate through each row in the file
 	for i, row := range file.Content {
 		// Process only rows after the header row

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   OpenFileDialog,
   UpdateVersionTags,
@@ -6,6 +6,7 @@ import {
   GetLastComparison,
   OpenMultipleFilesDialog,
   AddFileToWorkspace,
+  HeaderFiltersFileValidation,
   GetFilesInWorkspaceInfo,
   BtnCompare,
   GetComponents,
@@ -74,6 +75,9 @@ function FileManager({ onCompare }) {
   const [existingFiles, setExistingFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([null, null]); // [v1, v2]
   const [isModalOpen, setIsModalOpen] = useState(false); // Contrôle de l'ouverture du modal
+  const [isValidationModalOpen, setIsValidationModalOpen] = useState(false);
+  const [validationFile, setValidationFile] = useState();
+  const [validationCallback, setValidationCallback] = useState(null);
 
   useEffect(() => {
     loadExistingFiles();
@@ -136,17 +140,41 @@ function FileManager({ onCompare }) {
     }
   };
 
+  const validationFileRef = useRef(null);
+
+  useEffect(() => {
+    validationFileRef.current = validationFile;
+  }, [validationFile]);
+
   const handleFileSelection = async (filePath) => {
     try {
       if (filePath) {
-        await AddFileToWorkspace(filePath);
-        loadExistingFiles();
+        const initialFile = await HeaderFiltersFileValidation(filePath);
+        setValidationFile(initialFile);
+        validationFileRef.current = initialFile;
+        setIsValidationModalOpen(true);
+
+        await new Promise((resolve) => {
+          const onValidationComplete = () => {
+            setIsValidationModalOpen(false);
+            resolve();
+          };
+          setValidationCallback(() => onValidationComplete);
+        });
+
+        if (validationFileRef.current) {
+          await AddFileToWorkspace(filePath, validationFileRef.current);
+          await loadExistingFiles();
+        }
       }
     } catch (error) {
       console.error("Erreur lors de la sélection du fichier :", error);
       alert("Échec de la sélection du fichier");
     }
   };
+
+
+
 
   const handleManualUpload = async () => {
     try {
@@ -326,6 +354,130 @@ function FileManager({ onCompare }) {
           </DndProvider>
         </Modal>
       )}
+
+      {/* Validation Modal */}
+      {isValidationModalOpen && validationFile && (
+        <Modal onClose={() => setIsValidationModalOpen(false)}>
+          <h3>Header & Filters Validation</h3>
+          <Button onClick={validationCallback}>Validate</Button>
+          {/* Spin Button pour modifier le header */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+            <span style={{ marginRight: "10px", fontSize: "12px" }}>Header Row:</span>
+            <button
+              style={{
+                fontSize: "12px",
+                padding: "2px 6px",
+                cursor: "pointer",
+                marginRight: "5px",
+              }}
+              onClick={() =>
+                setValidationFile((prev) => ({
+                  ...prev,
+                  filters: {
+                    ...prev.filters,
+                    header: Math.max(prev.filters.header - 1, 0), // Empêche de descendre sous 0
+                  },
+                }))
+              }
+            >
+              −
+            </button>
+            <span style={{ fontSize: "12px", marginRight: "5px" }}>
+              {validationFile.filters.header}
+            </span>
+            <button
+              style={{
+                fontSize: "12px",
+                padding: "2px 6px",
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                setValidationFile((prev) => ({
+                  ...prev,
+                  filters: {
+                    ...prev.filters,
+                    header: prev.filters.header + 1,
+                  },
+                }))
+              }
+            >
+              +
+            </button>
+          </div>
+
+          {/* Tableau */}
+          <table>
+            <thead style={{ fontSize: "10px" }}>
+              <tr>
+                {["Quantity", "MPN", "Description", "Designator", "Manufacturer"].map((column, index) => (
+                  <th key={index} style={{ position: "relative" }}>
+                    {column}
+                    <div
+                      style={{ display: "flex", justifyContent: "center", gap: "4px", marginTop: "4px" }}
+                    >
+                      <button
+                        style={{
+                          fontSize: "10px",
+                          padding: "2px 4px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() =>
+                          setValidationFile((prev) => ({
+                            ...prev,
+                            filters: {
+                              ...prev.filters,
+                              [column.toLowerCase()]: Math.max(
+                                prev.filters[column.toLowerCase()] - 1,
+                                0
+                              ),
+                            },
+                          }))
+                        }
+                      >
+                        −
+                      </button>
+                      <button
+                        style={{
+                          fontSize: "10px",
+                          padding: "2px 4px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() =>
+                          setValidationFile((prev) => ({
+                            ...prev,
+                            filters: {
+                              ...prev.filters,
+                              [column.toLowerCase()]: prev.filters[column.toLowerCase()] + 1,
+                            },
+                          }))
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody style={{ fontSize: "10px" }}>
+              {validationFile.content
+                .slice(validationFile.filters.header)
+                .map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    <td>{row[validationFile.filters.quantity] || "N/A"}</td>
+                    <td>{row[validationFile.filters.mpn] || "N/A"}</td>
+                    <td>{row[validationFile.filters.description] || "N/A"}</td>
+                    <td>{row[validationFile.filters.designator] || "N/A"}</td>
+                    <td>{row[validationFile.filters.manufacturer] || "N/A"}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </Modal>
+      )}
+
+
+
     </div>
   );
 }
