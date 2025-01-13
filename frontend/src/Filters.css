@@ -54,49 +54,30 @@
     background-color: #383838;
 }
 
-/* Functions en (2,1) */
+/* Functions en (2,1)
+   Remplacé maintenant par un dropdown custom, mais on garde la classe
+   pour le positionnement dans la grille si besoin. */
 .functions-select {
     grid-row: 2;
     grid-column: 1;
-    background-color: #323232;
+    /* On peut laisser ou ajuster background, etc. */
+    background-color: transparent;
+    /* ou #323232 si tu veux */
     border: none;
-    /* color: white;  // Ne pas définir de couleur ici pour laisser la couleur dynamique */
-    font-size: 14px;
-    min-width: 150px;
-    height: 38px;
-    padding-left: 10px;
-    appearance: none;
-    width: auto;
+    min-width: 180px;
 }
 
-/* Suggestions en (2,2) */
+/* Suggestions en (2,2)
+   Pareil, c'est un container pour le dropdown custom. */
 .suggestions-select {
     grid-row: 2;
     grid-column: 2;
-    background-color: #323232;
+    background-color: transparent;
     border: none;
-    color: white;
-    font-size: 14px;
     min-width: 150px;
-    height: 38px;
-    padding-left: 10px;
-    appearance: none;
-    width: auto;
 }
 
-.dropdown-container select.filter-select-dropdown {
-    background-color: #323232;
-    border: none;
-    color: white;
-    /* Garder la couleur blanche pour les autres selects */
-    font-size: 14px;
-    min-width: 150px;
-    height: 38px;
-    padding-left: 10px;
-    appearance: none;
-    width: auto;
-}
-
+/* Operator button */
 .operator-button {
     padding: 0px;
     border: none;
@@ -107,14 +88,21 @@
     height: 38px;
 }
 
+.operator-button.active {
+    border: 2px solid white;
+}
+
+.operator-button:hover {
+    opacity: 0.8;
+}
+
+/* Bouton Settings (à côté du Functions dropdown) */
 .settings-button {
     background-color: #353535;
-    /* Couleur de fond habituelle */
     color: white;
     border: none;
     font-size: 14px;
     cursor: pointer;
-    width: 100%;
     height: 38px;
     display: flex;
     align-items: center;
@@ -123,34 +111,26 @@
     transition: background-color 0.3s;
 }
 
-.operator-button.active,
 .settings-button.active {
     border: 2px solid white;
 }
 
-.operator-button:hover,
 .settings-button:hover {
     opacity: 0.8;
 }
 
-.filter-select-dropdown option {
-    background-color: #2c2c2c;
-    /* color: white; // Laisser les couleurs dynamiques gérer les options */
-}
-
-.filter-select-dropdown:focus {
-    outline: none;
-}
-
 /* -------------------------------------------------------------------
-   Styles ajoutés pour la liste déroulante personnalisée des warnings
+   Styles pour la liste déroulante personnalisée (Warnings & réutilisée)
 -------------------------------------------------------------------- */
 
 /* Container de la liste déroulante personnalisée */
+.dropdown-container {
+    position: relative;
+}
+
 .custom-select {
     position: relative;
     width: 100%;
-    /* S'adapte à la largeur du conteneur parent */
     max-width: 100%;
     /* Empêche le débordement */
 }
@@ -167,27 +147,21 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    /* Alignement à gauche */
     border-radius: 3px;
     height: 38px;
     max-width: 150px;
+    /* Ajuste la largeur max */
 }
 
-.arrow {
-    margin-right: 8px;
-    /* Espace entre la flèche et le texte */
-    font-size: 10px;
-    color: white;
-}
-
-
-/* Changement de couleur au survol du bouton */
 .custom-select-button:hover {
     background-color: #383838;
 }
 
-/* Flèche indiquant l'état ouvert/fermé */
-
+.arrow {
+    margin-right: 8px;
+    font-size: 10px;
+    color: white;
+}
 
 /* Liste des options déroulantes */
 .custom-select-options {
@@ -196,15 +170,13 @@
     left: 0;
     width: 100%;
     max-height: 150px;
-    /* Réduction de la hauteur maximale */
+    /* Réduction de la hauteur max */
     overflow-y: auto;
     background-color: #323232;
-    /* Match avec les autres selects */
     border: 1px solid #444444;
-    /* Bordure subtile */
     border-top: none;
     z-index: 1001;
-    /* Augmentation du z-index pour s'assurer qu'il soit au-dessus des autres éléments */
+    /* S'assure d'être au-dessus */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 0 0 3px 3px;
 }
@@ -212,18 +184,16 @@
 /* Styles pour chaque option */
 .custom-select-option {
     padding: 6px 8px;
-    /* Réduction du padding pour rendre les options plus petites */
     display: flex;
     align-items: center;
-    margin-left: -25%;
     cursor: pointer;
     color: white;
     font-size: 13px;
-    /* Réduction de la taille de la police */
     transition: background-color 0.2s;
+    /* Optionnel : margin-left si tu veux décaler le texte */
+    margin-left: -25%;
 }
 
-/* Changement de fond au survol de l'option */
 .custom-select-option:hover {
     background-color: #383838;
 }
@@ -236,10 +206,8 @@
 /* Icône de l'option */
 .option-icon {
     width: 16px;
-    /* Réduction de la taille des icônes */
     height: 16px;
     margin-right: 6px;
-    /* Réduction de l'espace entre l'icône et le texte */
 }
 
 /* Scrollbar personnalisée (optionnel) */
@@ -257,15 +225,11 @@
 }
 
 /* -------------------------------------------------------------------
-   Styles pour WarningToolTip
+   Styles pour WarningToolTip (si nécessaire)
 -------------------------------------------------------------------- */
-
-/* Assurez-vous que le WarningToolTip a un z-index supérieur */
 .warning-tooltip {
     position: absolute;
-    /* Ajustez selon vos besoins */
     right: 100%;
-    /* Ajustez selon vos besoins */
     z-index: 1002;
-    /* Supérieur au dropdown */
+    /* Au-dessus du dropdown */
 }

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Filters.css';
+
 import BookmarkIcon from "./assets/images/bookmark.svg";
+import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import WarningToolTip from './WarningToolTip';
 import BookmarkToolTip from './BookmarkToolTip';
-import BookmarkFilledIcon from "./assets/images/bookmark_filled.svg";
 import Modal from './Modal';
 import FunctionManager from './FunctionManager';
 import SettingsIcon from "./assets/images/settings.svg";
@@ -31,15 +32,15 @@ function Filters({
     // États internes
     const [designators, setDesignators] = useState([]);
     const [functions, setFunctions] = useState([]);
-    const [colorMap, setColorMap] = useState({});   // Map des couleurs
+    const [colorMap, setColorMap] = useState({}); // Map des couleurs (functionName -> hexColor)
 
-    // [ASTUCE: Couleur de la fonction sélectionnée]
+    // Couleur de la fonction sélectionnée (optionnel, si besoin d’afficher dans un style)
     const [selectedFunctionColor, setSelectedFunctionColor] = useState('#ffffff');
 
-    // Nouvel état pour gérer l'ouverture du dropdown des warnings
+    // ----------------------------------------------------------------
+    //  Dropdown custom pour Warnings (EXISTANT)
+    // ----------------------------------------------------------------
     const [isWarningDropdownOpen, setIsWarningDropdownOpen] = useState(false);
-
-    // Référence pour détecter les clics en dehors du dropdown
     const warningDropdownRef = useRef(null);
 
     // Options avec les logos, ajout de l'option "Aucun filtre"
@@ -47,7 +48,7 @@ function Filters({
         {
             value: "",
             label: "No filters",
-            icon: null, // Pas d'icône pour cette option
+            icon: null,
             count: totalWarnings
         },
         {
@@ -82,11 +83,34 @@ function Filters({
         }
     ];
 
-    // Fonction pour gérer les clics en dehors du dropdown
+    // ----------------------------------------------------------------
+    //  Dropdown custom pour Functions
+    // ----------------------------------------------------------------
+    const [isFunctionsDropdownOpen, setIsFunctionsDropdownOpen] = useState(false);
+    const functionsDropdownRef = useRef(null);
+
+    // ----------------------------------------------------------------
+    //  Dropdown custom pour Suggestions
+    // ----------------------------------------------------------------
+    const [isSuggestionsDropdownOpen, setIsSuggestionsDropdownOpen] = useState(false);
+    const suggestionsDropdownRef = useRef(null);
+
+    // ----------------------------------------------------------------
+    //  useEffect qui ferme tous les dropdowns au clic à l'extérieur
+    // ----------------------------------------------------------------
     useEffect(() => {
         const handleClickOutside = (event) => {
+            // Warnings
             if (warningDropdownRef.current && !warningDropdownRef.current.contains(event.target)) {
                 setIsWarningDropdownOpen(false);
+            }
+            // Functions
+            if (functionsDropdownRef.current && !functionsDropdownRef.current.contains(event.target)) {
+                setIsFunctionsDropdownOpen(false);
+            }
+            // Suggestions
+            if (suggestionsDropdownRef.current && !suggestionsDropdownRef.current.contains(event.target)) {
+                setIsSuggestionsDropdownOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -95,7 +119,9 @@ function Filters({
         };
     }, []);
 
-    // Fonction pour gérer la sélection d'une option
+    // ----------------------------------------------------------------
+    //  Sélection d'une option dans "Warnings"
+    // ----------------------------------------------------------------
     const handleWarningSelect = (option) => {
         setActiveFilters(prevFilters => ({
             ...prevFilters,
@@ -104,14 +130,14 @@ function Filters({
         setIsWarningDropdownOpen(false);
     };
 
-    // Fonction pour gérer le clic sur le bouton de la liste déroulante
-    const handleDropdownButtonClick = () => {
+    // Bouton toggle du dropdown "Warnings"
+    const handleWarningDropdownButtonClick = () => {
         setIsWarningDropdownOpen(prevState => !prevState);
     };
 
-    // ----------------------------------------------------------
-    // Gestion des opérateurs
-    // ----------------------------------------------------------
+    // ----------------------------------------------------------------
+    //  Sélection d'un opérateur
+    // ----------------------------------------------------------------
     const handleOperatorClick = (operator) => {
         setActiveFilters(prevFilters => {
             const isSelected = prevFilters.operators.includes(operator);
@@ -122,27 +148,42 @@ function Filters({
         });
     };
 
-    // ----------------------------------------------------------
-    // Gestion des changements de filtres
-    // ----------------------------------------------------------
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-
-        // [ASTUCE: Si le filtre modifié est "functions", mettre à jour la couleur]
-        if (name === 'filter3') {
-            const newColor = colorMap[value] || '#ffffff';
-            setSelectedFunctionColor(newColor);
-        }
-
-        setActiveFilters(prevFilters => ({
-            ...prevFilters,
-            [name]: value,
-        }));
+    // ----------------------------------------------------------------
+    //  Sélection "Functions" (ancien filter3)
+    // ----------------------------------------------------------------
+    const handleFunctionsDropdownButtonClick = () => {
+        setIsFunctionsDropdownOpen(prevState => !prevState);
     };
 
-    // ----------------------------------------------------------
-    // Chargement des fonctions et de leurs couleurs
-    // ----------------------------------------------------------
+    const handleFunctionSelect = (f) => {
+        // Met à jour le filter3
+        setActiveFilters(prevFilters => ({
+            ...prevFilters,
+            filter3: f
+        }));
+        // Met à jour la couleur
+        setSelectedFunctionColor(colorMap[f] || '#ffffff');
+        setIsFunctionsDropdownOpen(false);
+    };
+
+    // ----------------------------------------------------------------
+    //  Sélection "Suggestions" (ancien filter4)
+    // ----------------------------------------------------------------
+    const handleSuggestionsDropdownButtonClick = () => {
+        setIsSuggestionsDropdownOpen(prevState => !prevState);
+    };
+
+    const handleSuggestionSelect = (value) => {
+        setActiveFilters(prevFilters => ({
+            ...prevFilters,
+            filter4: value
+        }));
+        setIsSuggestionsDropdownOpen(false);
+    };
+
+    // ----------------------------------------------------------------
+    //  Chargement des fonctions et de leurs couleurs
+    // ----------------------------------------------------------------
     const loadData = (components = componentsAll) => {
         let allDesignators = [];
         for (const c of components) {
@@ -171,9 +212,9 @@ function Filters({
         loadData();
     }, [componentsAll]);
 
-    // ----------------------------------------------------------
-    // Gestion du filtre "pinned"
-    // ----------------------------------------------------------
+    // ----------------------------------------------------------------
+    //  Gestion du filtre "pinned"
+    // ----------------------------------------------------------------
     const handlePinnedToggle = () => {
         setActiveFilters(prevFilters => ({
             ...prevFilters,
@@ -181,9 +222,14 @@ function Filters({
         }));
     };
 
+    // ----------------------------------------------------------------
+    //  Rendu du composant
+    // ----------------------------------------------------------------
     return (
         <div className="filters">
-            {/* Première ligne : opérateurs et warnings */}
+            {/* =================================================== */}
+            {/*   1ère ligne : opérateurs et dropdown Warnings     */}
+            {/* =================================================== */}
             <div className="operator-buttons">
                 {operatorCounts && operatorCounts.map(({ operator, count }) => (
                     <button
@@ -197,23 +243,28 @@ function Filters({
                 ))}
             </div>
 
+            {/* Dropdown "Warnings" */}
             <div className="dropdown-container warnings-select" ref={warningDropdownRef}>
                 <WarningToolTip totalWarnings={totalWarnings} />
                 <div className="custom-select">
                     <button
                         className="custom-select-button"
-                        onClick={handleDropdownButtonClick}
+                        onClick={handleWarningDropdownButtonClick}
                     >
                         <span className="arrow">{isWarningDropdownOpen ? '▲' : '▼'}</span>
                         {activeFilters.warning ? (
                             warningOptions.find(option => option.value === activeFilters.warning)?.icon ? (
                                 <>
                                     <img
-                                        src={warningOptions.find(option => option.value === activeFilters.warning)?.icon}
-                                        alt={warningOptions.find(option => option.value === activeFilters.warning)?.label}
+                                        src={
+                                            warningOptions.find(opt => opt.value === activeFilters.warning)?.icon
+                                        }
+                                        alt={
+                                            warningOptions.find(opt => opt.value === activeFilters.warning)?.label
+                                        }
                                         className="option-icon"
                                     />
-                                    {warningOptions.find(option => option.value === activeFilters.warning)?.label}
+                                    {warningOptions.find(opt => opt.value === activeFilters.warning)?.label}
                                 </>
                             ) : (
                                 "Aucun filtre"
@@ -228,10 +279,17 @@ function Filters({
                             {warningOptions.map(option => (
                                 <li
                                     key={option.value}
-                                    className={`custom-select-option ${activeFilters.warning === option.value ? 'selected' : ''}`}
+                                    className={`custom-select-option ${activeFilters.warning === option.value ? 'selected' : ''
+                                        }`}
                                     onClick={() => handleWarningSelect(option)}
                                 >
-                                    {option.icon && <img src={option.icon} alt={option.label} className="option-icon" />}
+                                    {option.icon && (
+                                        <img
+                                            src={option.icon}
+                                            alt={option.label}
+                                            className="option-icon"
+                                        />
+                                    )}
                                     {option.label} {option.value && `(${option.count})`}
                                 </li>
                             ))}
@@ -240,7 +298,7 @@ function Filters({
                 </div>
             </div>
 
-            {/* Bouton bookmark qui s'étend sur deux rangées */}
+            {/* Bouton bookmark qui s'étend sur deux rangées (grid-row: 1/3) */}
             <button
                 onClick={handlePinnedToggle}
                 className={`filters-button ${activeFilters.pinned ? 'active' : ''}`}
@@ -253,50 +311,128 @@ function Filters({
                 />
             </button>
 
-            {/* Deuxième ligne : Functions et Suggestions */}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <select
-                    name="filter3"
-                    value={activeFilters.filter3 || ""}
-                    onChange={handleFilterChange}
-                    className="filter-select-dropdown functions-select"
-                    // [ASTUCE: Appliquer la couleur dynamiquement uniquement ici]
-                    style={{ color: activeFilters.filter3 ? colorMap[activeFilters.filter3] || '#ffffff' : '#ffffff' }}
-                >
-                    <option value="">> Functions</option>
-                    {functions.map(f => {
-                        const color = colorMap[f] || '#ffffff';
-                        return (
-                            <option
-                                key={f}
-                                value={f}
-                                style={{ color }} // Couleur inline dans la liste déroulante
-                            >
-                                {/* Carré coloré suivi du nom */}
-                                ■ {f}
-                            </option>
-                        );
-                    })}
-                </select>
+            {/* =================================================== */}
+            {/*   2ème ligne : Dropdown "Functions" + Settings     */}
+            {/* =================================================== */}
+            <div
+                className="dropdown-container functions-select"
+                ref={functionsDropdownRef}
+                style={{ display: 'flex', alignItems: 'center' }}
+            >
+                {/* Dropdown custom "Functions" */}
+                <div className="custom-select">
+                    <button
+                        className="custom-select-button"
+                        onClick={handleFunctionsDropdownButtonClick}
+                        style={{
+                            color: activeFilters.filter3
+                                ? colorMap[activeFilters.filter3] || '#ffffff'
+                                : '#ffffff'
+                        }}
+                    >
+                        <span className="arrow">{isFunctionsDropdownOpen ? '▲' : '▼'}</span>
+                        {activeFilters.filter3 || 'Functions'}
+                    </button>
 
-                {/* Bouton pour gérer les fonctions */}
+                    {isFunctionsDropdownOpen && (
+                        <ul className="custom-select-options">
+                            {/* Option pour "Aucune fonction" */}
+                            <li
+                                key=""
+                                className={`custom-select-option ${!activeFilters.filter3 ? 'selected' : ''}`}
+                                onClick={() => handleFunctionSelect("")}
+                                style={{ color: '#ffffff' }}
+                            >
+                                No filters
+                            </li>
+
+                            {/* Les fonctions dynamiques */}
+                            {functions.map(f => {
+                                const color = colorMap[f] || '#ffffff';
+                                return (
+                                    <li
+                                        key={f}
+                                        className={`custom-select-option ${activeFilters.filter3 === f ? 'selected' : ''
+                                            }`}
+                                        onClick={() => handleFunctionSelect(f)}
+                                        style={{ color }}
+                                    >
+                                        {/* Petit carré + nom */}
+                                        ■ {f}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                </div>
+
+                {/* Bouton Settings à côté */}
                 <button
                     onClick={() => setShowFunctionManagerModal(true)}
-                    className={`settings-button`}
+                    className="settings-button"
+                    style={{ marginLeft: '4px' }}
                 >
-                    <img style={{ width: '15px', height: '18px' }} src={SettingsIcon} alt="Settings Icon" />
+                    <img
+                        style={{ width: '15px', height: '18px' }}
+                        src={SettingsIcon}
+                        alt="Settings Icon"
+                    />
                 </button>
             </div>
 
-            <select
-                name="filter4"
-                value={activeFilters.filter4 || ""}
-                onChange={handleFilterChange}
-                className="filter-select-dropdown suggestions-select"
+            {/* =================================================== */}
+            {/*   2ème ligne : Dropdown "Suggestions"              */}
+            {/* =================================================== */}
+            <div
+                className="dropdown-container suggestions-select"
+                ref={suggestionsDropdownRef}
             >
-                <option value="">> Suggestions</option>
-            </select>
+                <div className="custom-select">
+                    <button
+                        className="custom-select-button"
+                        onClick={handleSuggestionsDropdownButtonClick}
+                    >
+                        <span className="arrow">{isSuggestionsDropdownOpen ? '▲' : '▼'}</span>
+                        {activeFilters.filter4 || 'Suggestions'}
+                    </button>
 
+                    {isSuggestionsDropdownOpen && (
+                        <ul className="custom-select-options">
+                            {/* Exemple d'option "Aucune suggestion" */}
+                            <li
+                                key=""
+                                className={`custom-select-option ${!activeFilters.filter4 ? 'selected' : ''}`}
+                                onClick={() => handleSuggestionSelect("")}
+                            >
+                                Aucune suggestion
+                            </li>
+
+                            {/* Exemple d'options possibles (à adapter) */}
+                            <li
+                                key="improveSomething"
+                                className={`custom-select-option ${activeFilters.filter4 === "improveSomething" ? 'selected' : ''
+                                    }`}
+                                onClick={() => handleSuggestionSelect("improveSomething")}
+                            >
+                                Improve Something
+                            </li>
+
+                            <li
+                                key="checkAnotherThing"
+                                className={`custom-select-option ${activeFilters.filter4 === "checkAnotherThing" ? 'selected' : ''
+                                    }`}
+                                onClick={() => handleSuggestionSelect("checkAnotherThing")}
+                            >
+                                Check Another Thing
+                            </li>
+                        </ul>
+                    )}
+                </div>
+            </div>
+
+            {/* --------------------------------------------------- */}
+            {/*   Modal pour FunctionManager                       */}
+            {/* --------------------------------------------------- */}
             {showFunctionManagerModal && (
                 <Modal onClose={() => setShowFunctionManagerModal(false)}>
                     <FunctionManager
@@ -310,7 +446,6 @@ function Filters({
             )}
         </div>
     );
-
 }
 
 export default Filters;
