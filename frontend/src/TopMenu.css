@@ -1,5 +1,5 @@
 /* ------------------------------------ *
- * TopMenu : conteneur vertical pour 2 lignes
+ * Conteneur principal
  * ------------------------------------ */
 .top-menu {
     display: flex;
@@ -7,75 +7,64 @@
     width: 100%;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    color: #fff;
 }
 
-/* Chaque "ligne" de même épaisseur */
-.top-row {
+/* 1ère row : File Manager + Analysis + Filters */
+.first-row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Ligne inférieure */
-.bottom-row {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 20px;
+    align-items: center;
+    gap: 30px;
+    /* Espace horizontal entre left-side / middle-side / filters */
     padding: 10px;
     width: 100%;
     box-sizing: border-box;
+    flex-wrap: wrap;
 }
 
-/* Styles pour la colonne gauche */
 .left-side {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    height: 100%;
-    flex: 0;
+    align-items: center;
+    justify-content: flex-start;
+
 }
 
-/* Section Analysis */
+/* Milieu (Analysis) : fixe la base pour éviter trop d'espace vide */
 .middle-side {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Centrage horizontal */
-    justify-content: center;
-    /* Centrage vertical */
-    flex: 1;
+    justify-content: flex-start;
+    /* Ajuste la largeur selon tes besoins */
+    box-sizing: border-box;
 }
 
-/* Conteneur pour le bouton Analyze et le price editor */
+/* FILTERS à droite */
+.filters-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    /* pousse ce bloc tout à droite */
+}
+
 .analyze-and-price {
     display: flex;
     align-items: center;
-    justify-content: center;
-    /* Centrage horizontal des éléments */
+    justify-content: flex-start;
     gap: 20px;
-    /* Supprimé : width: 100%; */
-    /* Supprimé : flex: 1; */
 }
 
-/* Conteneur des prix */
 .price-editor-container {
     display: flex;
-    flex-direction: row;
     align-items: center;
+    flex-direction: row;
     gap: 20px;
-    /* Supprimé : margin-left: 13%; */
-    flex: none;
-    /* Empêche l'extension inutile */
-    max-width: 600px;
-    /* Optionnel : Limite la largeur pour un meilleur centrage */
 }
 
-/* Alignement des boards */
 .boards-control {
     display: flex;
     flex-direction: column;
@@ -83,10 +72,9 @@
     gap: 5px;
 }
 
-/* label et input des boards */
 .price-label {
-    color: white;
     font-size: 13px;
+    color: white;
 }
 
 #boards-input {
@@ -97,7 +85,6 @@
     border-bottom: 1px solid #555;
     width: 60px;
     text-align: center;
-    /* Centre le texte dans l'input */
     outline: none;
 }
 
@@ -105,11 +92,9 @@
     border-bottom: 1px solid #999;
 }
 
-/* Informations sur les prix */
 .price-info-container {
     display: flex;
     gap: 20px;
-    /* Espacement horizontal entre Price per Board et Order Price */
 }
 
 .price-per-board,
@@ -125,60 +110,82 @@
     color: white;
 }
 
-/* Colonne des filtres à droite */
-.filters-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    /* Alignement à gauche */
-    gap: 10px;
-}
 
-.filters-container.right-align {
-    margin-left: auto;
-    /* Pousse le conteneur à droite */
-}
 
 .section-title {
     font-size: 13px;
-    color: white;
     margin: 0 0 5px 0;
+    text-align: left;
+    color: #fff;
 }
 
-/* Espacement et alignement des filtres */
-.stats-filters-container {
+/* 2ème row : juste Stats */
+.second-row {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    /* pas forcément besoin de flex-wrap si on n'a qu'un composant Stats 
+       Mais tu peux le laisser si Stats prend toute la largeur. */
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Conteneur de la barre de recherche et du tri */
+/* 3ème row : Search + Sort */
+.third-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .search-and-sort-container {
     display: flex;
     align-items: center;
     gap: 15px;
     width: 100%;
-    /* Assure que le conteneur occupe toute la largeur */
 }
 
-/* Conteneur de la barre de recherche */
 .search-bar-container {
     position: relative;
     display: flex;
     align-items: center;
     flex: 1;
-    /* Permet à la barre de recherche de s'étendre */
 }
 
-/* Conteneur de tri */
+.search-icon {
+    position: absolute;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.search-bar {
+    padding-left: 35px;
+    height: 35px;
+    border: 1px solid #555;
+    font-size: 15px;
+    color: white;
+    background-color: transparent;
+    box-sizing: border-box;
+    border-radius: 5px;
+    outline: none;
+    width: 100%;
+}
+
+.search-bar:focus {
+    border-bottom: 1px solid #999;
+}
+
 .sort-container {
     display: flex;
     align-items: center;
     flex: 0 0 auto;
-    /* Empêche le conteneur de tri de se comprimer */
 }
 
-/* Icône de tri */
 .sort-icon {
     width: 20px;
     height: 20px;
@@ -186,7 +193,6 @@
     opacity: 0.6;
 }
 
-/* Sélecteur de tri */
 .sort-select {
     background-color: #323232;
     border: none;
@@ -196,7 +202,6 @@
     height: 38px;
     padding-left: 10px;
     appearance: none;
-    width: auto;
     border-radius: 5px;
 }
 
@@ -205,270 +210,33 @@
     outline: none;
 }
 
-/* Icône de recherche */
-.search-icon {
-    position: absolute;
-    left: 10px;
-    /* Position horizontale de l'icône */
-    width: 20px;
-    /* Taille de l'icône */
-    height: 20px;
-    pointer-events: none;
-    /* Permet de cliquer directement sur l'input sans interférence */
-    opacity: 0.6;
-    /* Optionnel : ajustez l'opacité selon vos préférences */
-}
-
-/* Champ de recherche */
-.search-bar {
-    padding-left: 35px;
-    /* Laissez de l'espace pour l'icône */
-    height: 35px;
-    /* Ajustez la hauteur selon vos besoins */
-    border: 1px solid #555;
-    /* Style du bord */
-    font-size: 15px;
-    color: white;
-    background-color: transparent;
-    width: 26%;
-    /* S'étend pour remplir le conteneur */
-    box-sizing: border-box;
-    /* Inclut le padding dans la largeur totale */
-    outline: none;
-    /* Supprime le contour par défaut */
-    border-radius: 5px;
-}
-
-.search-bar:focus {
-    border-bottom: 1px solid #999;
-    /* Change la couleur du bord en focus */
-}
-
-/* Colonne des filtres à droite */
-.right-side {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    /* Ajoutez cette ligne */
-    align-items: flex-start;
-    /* Ajoutez cette ligne */
-    box-sizing: border-box;
-}
-
 /* ------------------------------------ *
- * Bouton Toggle Price Breaks (Apparence en texte)
- * ------------------------------------ */
-.toggle-price-breaks {
-    margin-top: 10px;
-    text-align: center;
-}
-
-.toggle-price-breaks-button {
-    font-family: 'Poppins', sans-serif;
-    color: #007bff;
-    /* Couleur bleue standard pour les liens */
-    background-color: transparent;
-    /* Supprime le fond */
-    border: none;
-    /* Supprime les bordures */
-    cursor: pointer;
-    /* Indique que c'est cliquable */
-    padding: 0;
-    /* Supprime le padding */
-    font-size: 14px;
-    text-decoration: none;
-    /* Supprime la décoration par défaut */
-}
-
-.toggle-price-breaks-button:hover {
-    text-decoration: underline;
-    /* Ajoute un soulignement au survol */
-    color: #0056b3;
-    /* Change la couleur au survol pour indiquer l'interaction */
-}
-
-/* Optionnel : Pour enlever le focus outline du bouton */
-.toggle-price-breaks-button:focus {
-    outline: none;
-}
-
-/* ------------------------------------ *
- * Price Breaks Container
- * ------------------------------------ */
-.price-breaks-container {
-    margin-top: 15px;
-    margin-bottom: 20px;
-    /* Optionnel : ajouter une animation pour l'affichage */
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-.supplier-price-break-container {
-    margin-bottom: 20px;
-}
-
-.price-breaks-table {
-    width: 100%;
-    margin-top: 10px;
-    border-collapse: collapse;
-}
-
-.price-breaks-table th {
-    background-color: #444;
-    padding: 5px;
-    text-align: left;
-    border: 1px solid #555;
-}
-
-.price-breaks-table td {
-    padding: 5px;
-    border: 1px solid #555;
-}
-
-.no-price-breaks {
-    font-style: italic;
-    color: gray;
-}
-
-/* ------------------------------------ *
- * Détails du composant (section dépliée)
- * ------------------------------------ */
-.component-details-td {
-    background-color: rgb(68, 68, 68);
-    padding: 0;
-}
-
-.component-details-content {
-    background-color: rgb(39, 39, 39);
-    color: #fff;
-    padding: 10px;
-}
-
-.component-details-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.component-images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.component-image {
-    max-width: 120px;
-    max-height: 120px;
-    border-radius: 5px;
-    object-fit: cover;
-    border: 2px solid #444;
-}
-
-.no-image {
-    color: gray;
-    font-style: italic;
-}
-
-.external-links-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.external-button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
-    background-color: #555;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 14px;
-}
-
-.external-button:hover {
-    background-color: #666;
-}
-
-/* Paramètres détaillés */
-.detailed-parameters-container {
-    margin-top: 10px;
-}
-
-.detailed-parameters-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 5px;
-}
-
-.detailed-parameters-table th,
-.detailed-parameters-table td {
-    padding: 8px;
-    border: 1px solid #555;
-    text-align: left;
-}
-
-.detailed-parameters-table th {
-    background-color: #444;
-}
-
-.info-messages-container,
-.price-breaks-container {
-    margin-top: 10px;
-}
-
-.info-messages-container ul {
-    list-style-type: disc;
-    padding-left: 20px;
-}
-
-/* ------------------------------------ *
- * Responsive design
+ * Responsive (max-width: 768px)
  * ------------------------------------ */
 @media (max-width: 768px) {
-    .top-row {
+    .first-row {
         flex-direction: column;
         gap: 15px;
-    }
-
-    .middle-side,
-    .filters-container,
-    .left-side {
-        align-items: center;
-        text-align: center;
-    }
-
-    .filters-container {
         align-items: flex-start;
-        text-align: left;
     }
 
-    .analyze-and-price {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        width: 100%;
-        /* Supprimé : flex:1; */
+    .middle-side {
+        flex: 0 0 auto;
+        width: 100% !important;
+    }
+
+    .search-and-sort-container {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .price-editor-container {
         max-width: 100%;
-        /* Permet de s'étendre sur la largeur disponible */
+    }
+
+    .second-row {
+        flex-direction: row;
+        /* wrap gère l’empilement */
     }
 
     .search-and-sort-container {
@@ -478,6 +246,7 @@
 
     .sort-container {
         width: 100%;
+        margin-top: 10px;
     }
 
     .sort-select {

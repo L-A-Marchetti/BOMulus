@@ -1,38 +1,51 @@
+/* ========== Stats.css ========== */
+
 .stats-wrapper {
+    width: 100%;
     display: flex;
     flex-direction: column;
     color: #fff;
-    width: 100%;
     gap: 20px;
-    /* Espace entre les sections */
     border-radius: 5px;
 }
 
+/* On autorise le wrap, pour que si ça déborde, 
+     la partie Evolution passe sous la partie Stats si besoin */
 .stats-main-content {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    /* Assure la séparation des deux sections */
+    flex-wrap: wrap;
     gap: 20px;
-    /* Espacement horizontal entre les deux sections */
-    width: 70%;
+    /* Espace entre stats-section et evolution-section */
+    width: 100%;
+    justify-content: flex-start;
+    box-sizing: border-box;
 }
 
+/* La partie "donuts" */
 .stats-section {
     display: flex;
     flex-direction: column;
-    width: 70%;
-    /* Prend 70% de l'espace */
+    flex: 1 1 50%;
+    /* 60% de la place si y a la place, min 300px sinon */
+    min-width: 300px;
     gap: 15px;
-
 }
 
+/* La partie "Evolution" */
 .evolution-section {
     display: flex;
     flex-direction: column;
-    width: 30%;
-    /* Prend 30% de l'espace */
+    flex: 1 1 40%;
+    min-width: 250px;
+    gap: 15px;
+}
 
+.donut-row {
+    display: flex;
+    flex-wrap: wrap;
+    /* autorise le retour à la ligne si pas assez de place */
+    gap: 20px;
+    width: 100%;
 }
 
 .section-title {

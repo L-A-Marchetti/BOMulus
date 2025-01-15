@@ -3,11 +3,11 @@ import './TopMenu.css';
 import FileManager from './FileManager';
 import AnalyzeButton from './AnalyzeButton';
 import Filters from './Filters';
-import Stats from './Stats';
+import Stats from './Stats';    // <--- on va juste l'utiliser tel quel
 import GlassIcon from './assets/images/glass.svg';
 import SortIcon from './assets/images/sort.svg';
 
-// Import des fonctions Wails côté backend
+// Import Wails côté backend
 import {
     PriceCalculator,
     GetProductionQuantity,
@@ -28,35 +28,27 @@ function TopMenu({
     pinnedComponents,
     statsData,
     componentsAll,
-    sortOrder, // Nouvelle prop pour le tri
-    setSortOrder, // Nouvelle prop pour le tri
+    sortOrder,
+    setSortOrder,
 }) {
-    // État pour indiquer si l'initialisation est terminée
     const [initialized, setInitialized] = useState(false);
-
     const [calculationResult, setCalculationResult] = useState(null);
 
-
-    // Nombre de boards (initialisé depuis le backend)
     const [boards, setBoards] = useState(1);
-
-    // Prix unitaire et total (en dollars), récupérés après calcul
     const [pricePerBoard, setPricePerBoard] = useState(0);
     const [orderPrice, setOrderPrice] = useState(0);
 
-    // Message d’erreur éventuel (ex: saisie invalide)
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        // Initialisation des prix uniquement si `componentsAll` est chargé
         if (!initialized && componentsAll && componentsAll.length > 0) {
             const initializePrices = async () => {
                 try {
                     const quantityFromBackend = await GetProductionQuantity();
                     const initialQuantity = quantityFromBackend
                         ? parseInt(quantityFromBackend, 10)
-                        : 1; // Utilise 1 par défaut
+                        : 1; // 1 par défaut
 
                     if (boards !== initialQuantity) {
                         setBoards(initialQuantity);
@@ -66,7 +58,7 @@ function TopMenu({
                         await calculatePrices(initialQuantity);
                     }
 
-                    setInitialized(true); // Marque comme initialisé
+                    setInitialized(true);
                 } catch (error) {
                     console.error("Error initializing prices:", error);
                 }
@@ -74,15 +66,13 @@ function TopMenu({
 
             initializePrices();
         }
-    }, [componentsAll, initialized]); // Dépend uniquement de componentsAll et de l'état initialized
+    }, [componentsAll, initialized]);
 
     const handleBoardsChange = async (e) => {
         const value = e.target.value;
-
         if (value === '' || /^[0-9]+$/.test(value)) {
             const numBoards = parseInt(value, 10);
-
-            setBoards(value); // Met à jour l'état local du nombre de boards
+            setBoards(value);
             setError('');
 
             if (!isNaN(numBoards) && numBoards > 0) {
@@ -99,7 +89,6 @@ function TopMenu({
     const calculatePrices = async (numBoards) => {
         try {
             await SetProductionQuantity(numBoards.toString());
-
             const result = await PriceCalculator(numBoards);
 
             if (result) {
@@ -114,7 +103,6 @@ function TopMenu({
             setOrderPrice(0);
             setCalculationResult(null);
         }
-
         onComponentAnalyzed();
     };
 
@@ -126,7 +114,9 @@ function TopMenu({
 
     return (
         <div className="top-menu">
-            <div className="top-row">
+
+            {/* ROW 1 : FileManager + Analysis/Price + Filters */}
+            <div className="first-row">
                 <div className="left-side">
                     <h4 className="section-title">File manager</h4>
                     {onCompare && <FileManager onCompare={onCompare} />}
@@ -147,16 +137,23 @@ function TopMenu({
                                     value={boards}
                                     onChange={handleBoardsChange}
                                 />
-                                {error && <p style={{ color: 'red', margin: 0 }}>{error}</p>}
+                                {error && (
+                                    <p style={{ color: 'red', margin: 0 }}>{error}</p>
+                                )}
                             </div>
+
                             <div className="price-info-container">
                                 <div className="price-per-board">
                                     <label className="price-label">Price per Board</label>
-                                    <span className="price-value">{formatPrice(pricePerBoard)}</span>
+                                    <span className="price-value">
+                                        {formatPrice(pricePerBoard)}
+                                    </span>
                                 </div>
                                 <div className="order-price">
                                     <label className="price-label">Order Price</label>
-                                    <span className="price-value">{formatPrice(orderPrice)}</span>
+                                    <span className="price-value">
+                                        {formatPrice(orderPrice)}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -164,7 +161,9 @@ function TopMenu({
                 </div>
 
                 <div className="filters-container">
-                    <h4 className="section-title" style={{ textAlign: 'left' }}>Filters</h4>
+                    <h4 className="section-title" style={{ textAlign: 'left' }}>
+                        Filters
+                    </h4>
                     <Filters
                         onRefreshComponents={onRefreshComponents}
                         operators={operators}
@@ -180,11 +179,18 @@ function TopMenu({
                 </div>
             </div>
 
-
-            <div className="bottom-row">
-                <Stats statsData={statsData} componentsAll={componentsAll} calculationResult={calculationResult} boards={boards} />
+            {/* ROW 2 : On place le composant Stats (qui gère donuts + évol. interne) */}
+            <div className="second-row">
+                <Stats
+                    statsData={statsData}
+                    componentsAll={componentsAll}
+                    calculationResult={calculationResult}
+                    boards={boards}
+                />
             </div>
-            <div className="right-side">
+
+            {/* ROW 3 : Search + Sort */}
+            <div className="third-row">
                 <h4 className="section-title">Search</h4>
                 <div className="search-and-sort-container">
                     <div className="search-bar-container">
