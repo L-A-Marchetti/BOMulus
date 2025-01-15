@@ -1,4 +1,6 @@
-/* .top-menu : conteneur vertical pour 2 lignes */
+/* ------------------------------------ *
+ * TopMenu : conteneur vertical pour 2 lignes
+ * ------------------------------------ */
 .top-menu {
     display: flex;
     flex-direction: column;
@@ -11,20 +13,18 @@
 .top-row {
     display: flex;
     justify-content: space-between;
-    /* Sépare les colonnes */
     align-items: center;
-    /* Aligne les éléments verticalement */
     gap: 20px;
     padding: 10px;
     width: 100%;
     box-sizing: border-box;
 }
 
+/* Ligne inférieure */
 .bottom-row {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Centre le contenu horizontalement */
     gap: 20px;
     padding: 10px;
     width: 100%;
@@ -44,8 +44,10 @@
 .middle-side {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    /* Centrage horizontal */
     justify-content: center;
+    /* Centrage vertical */
     flex: 1;
 }
 
@@ -53,22 +55,24 @@
 .analyze-and-price {
     display: flex;
     align-items: center;
-    /* Aligne verticalement */
+    justify-content: center;
+    /* Centrage horizontal des éléments */
     gap: 20px;
-    /* Espacement horizontal */
-    width: 100%;
+    /* Supprimé : width: 100%; */
+    /* Supprimé : flex: 1; */
 }
 
 /* Conteneur des prix */
 .price-editor-container {
     display: flex;
     flex-direction: row;
-    /* Les éléments dans une ligne */
     align-items: center;
-    /* Aligne verticalement les éléments */
     gap: 20px;
-    margin-left: 13%;
-    /* Espacement horizontal entre boards et infos prix */
+    /* Supprimé : margin-left: 13%; */
+    flex: none;
+    /* Empêche l'extension inutile */
+    max-width: 600px;
+    /* Optionnel : Limite la largeur pour un meilleur centrage */
 }
 
 /* Alignement des boards */
@@ -133,7 +137,6 @@
 .filters-container.right-align {
     margin-left: auto;
     /* Pousse le conteneur à droite */
-
 }
 
 .section-title {
@@ -149,10 +152,6 @@
     gap: 20px;
 }
 
-/* Conteneur de la barre de recherche */
-/* TopMenu.css */
-
-/* Conteneur de la barre de recherche et du tri */
 /* Conteneur de la barre de recherche et du tri */
 .search-and-sort-container {
     display: flex;
@@ -161,7 +160,6 @@
     width: 100%;
     /* Assure que le conteneur occupe toute la largeur */
 }
-
 
 /* Conteneur de la barre de recherche */
 .search-bar-container {
@@ -257,8 +255,190 @@
     box-sizing: border-box;
 }
 
+/* ------------------------------------ *
+ * Bouton Toggle Price Breaks (Apparence en texte)
+ * ------------------------------------ */
+.toggle-price-breaks {
+    margin-top: 10px;
+    text-align: center;
+}
 
-/* Responsive design */
+.toggle-price-breaks-button {
+    font-family: 'Poppins', sans-serif;
+    color: #007bff;
+    /* Couleur bleue standard pour les liens */
+    background-color: transparent;
+    /* Supprime le fond */
+    border: none;
+    /* Supprime les bordures */
+    cursor: pointer;
+    /* Indique que c'est cliquable */
+    padding: 0;
+    /* Supprime le padding */
+    font-size: 14px;
+    text-decoration: none;
+    /* Supprime la décoration par défaut */
+}
+
+.toggle-price-breaks-button:hover {
+    text-decoration: underline;
+    /* Ajoute un soulignement au survol */
+    color: #0056b3;
+    /* Change la couleur au survol pour indiquer l'interaction */
+}
+
+/* Optionnel : Pour enlever le focus outline du bouton */
+.toggle-price-breaks-button:focus {
+    outline: none;
+}
+
+/* ------------------------------------ *
+ * Price Breaks Container
+ * ------------------------------------ */
+.price-breaks-container {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    /* Optionnel : ajouter une animation pour l'affichage */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.supplier-price-break-container {
+    margin-bottom: 20px;
+}
+
+.price-breaks-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+.price-breaks-table th {
+    background-color: #444;
+    padding: 5px;
+    text-align: left;
+    border: 1px solid #555;
+}
+
+.price-breaks-table td {
+    padding: 5px;
+    border: 1px solid #555;
+}
+
+.no-price-breaks {
+    font-style: italic;
+    color: gray;
+}
+
+/* ------------------------------------ *
+ * Détails du composant (section dépliée)
+ * ------------------------------------ */
+.component-details-td {
+    background-color: rgb(68, 68, 68);
+    padding: 0;
+}
+
+.component-details-content {
+    background-color: rgb(39, 39, 39);
+    color: #fff;
+    padding: 10px;
+}
+
+.component-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.component-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.component-image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 5px;
+    object-fit: cover;
+    border: 2px solid #444;
+}
+
+.no-image {
+    color: gray;
+    font-style: italic;
+}
+
+.external-links-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.external-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background-color: #555;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+.external-button:hover {
+    background-color: #666;
+}
+
+/* Paramètres détaillés */
+.detailed-parameters-container {
+    margin-top: 10px;
+}
+
+.detailed-parameters-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+}
+
+.detailed-parameters-table th,
+.detailed-parameters-table td {
+    padding: 8px;
+    border: 1px solid #555;
+    text-align: left;
+}
+
+.detailed-parameters-table th {
+    background-color: #444;
+}
+
+.info-messages-container,
+.price-breaks-container {
+    margin-top: 10px;
+}
+
+.info-messages-container ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+/* ------------------------------------ *
+ * Responsive design
+ * ------------------------------------ */
 @media (max-width: 768px) {
     .top-row {
         flex-direction: column;
@@ -278,9 +458,17 @@
     }
 
     .analyze-and-price {
-        flex-direction: column;
+        display: flex;
         align-items: center;
-        gap: 15px;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        /* Supprimé : flex:1; */
+    }
+
+    .price-editor-container {
+        max-width: 100%;
+        /* Permet de s'étendre sur la largeur disponible */
     }
 
     .search-and-sort-container {

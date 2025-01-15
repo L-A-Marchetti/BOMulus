@@ -263,6 +263,12 @@
     text-align: center;
 }
 
+
+.pin-td:hover,
+.info-td:hover {
+    background-color: #383838;
+}
+
 .best-price-td {
     width: 100px;
     text-align: center;
@@ -457,7 +463,7 @@
 
 .toggle-price-breaks-button {
     font-family: 'Popins', sans-serif;
-    color: #ffffff;
+    color: #ffffff !important;
     /* Couleur bleue standard pour les liens */
     background-color: transparent;
     /* Supprime le fond */
@@ -475,7 +481,7 @@
 .toggle-price-breaks-button:hover {
     text-decoration: underline;
     /* Ajoute un soulignement au survol */
-    color: #ffffff;
+    color: #ffffff !important;
     /* Change la couleur au survol pour indiquer l'interaction */
 }
 
