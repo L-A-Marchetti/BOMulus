@@ -101,16 +101,18 @@
 .component-details-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 12px;
 }
 
 .component-details-table-col-30 {
-    width: 30%;
+    width: 15%;
     vertical-align: top;
     padding: 10px;
 }
 
+.component-details-table-col-30 img {}
+
 .component-details-table-col-35 {
-    width: 35%;
     vertical-align: top;
     padding: 10px;
 }
@@ -119,8 +121,11 @@
     max-width: 120px;
 }
 
+.availability-label {
+    margin-right: 7px;
+}
+
 .supplier-icon {
-    margin-left: 7px;
     margin-right: 7px;
     width: 7px;
     height: auto;
@@ -133,6 +138,26 @@
     gap: 10px;
     margin-bottom: 10px;
 }
+
+.external-link-button {
+    font-family: 'Popins', sans-serif;
+    background-color: #2e2e2e;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    font-size: 17px;
+    width: 200px;
+
+}
+
+.external-link-button:hover {
+    background-color: #383838;
+}
+
 
 /* Paramètres détaillés */
 .detailed-parameters-table {
@@ -162,7 +187,19 @@
 /* Price breaks */
 .price-breaks-container {
     margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in-out;
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 
 .supplier-price-break-container {
     margin-bottom: 20px;
@@ -403,4 +440,46 @@
 .pin-td img .info-td img {
     width: 16px;
     height: 16px;
+}
+
+.toggle-price-breaks {
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* ------------------------------------ *
+ * Bouton Toggle Price Breaks (Apparence en texte)
+ * ------------------------------------ */
+.toggle-price-breaks {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.toggle-price-breaks-button {
+    font-family: 'Popins', sans-serif;
+    color: #ffffff;
+    /* Couleur bleue standard pour les liens */
+    background-color: transparent;
+    /* Supprime le fond */
+    border: none;
+    /* Supprime les bordures */
+    cursor: pointer;
+    /* Indique que c'est cliquable */
+    padding: 0;
+    /* Supprime le padding */
+    font-size: 14px;
+    text-decoration: none;
+    /* Supprime la décoration par défaut */
+}
+
+.toggle-price-breaks-button:hover {
+    text-decoration: underline;
+    /* Ajoute un soulignement au survol */
+    color: #ffffff;
+    /* Change la couleur au survol pour indiquer l'interaction */
+}
+
+/* Optionnel : Pour enlever le focus outline du bouton */
+.toggle-price-breaks-button:focus {
+    outline: none;
 }

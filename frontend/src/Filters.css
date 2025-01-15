@@ -166,19 +166,18 @@
 /* Liste des options déroulantes */
 .custom-select-options {
     position: absolute;
-    top: 100%;
+    top: 60%;
     left: 0;
     width: 100%;
     max-height: 150px;
     /* Réduction de la hauteur max */
     overflow-y: auto;
     background-color: #323232;
-    border: 1px solid #444444;
     border-top: none;
     z-index: 1001;
     /* S'assure d'être au-dessus */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 0 0 3px 3px;
+    padding-left: 35px;
 }
 
 /* Styles pour chaque option */

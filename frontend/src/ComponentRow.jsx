@@ -45,6 +45,7 @@ const supplierIcons = {
 function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiPriority, activeFilters, color }) {
     const [expanded, setExpanded] = useState(false);
     const [hoveredFunction, setHoveredFunction] = useState(null);
+    const [showPriceBreaks, setShowPriceBreaks] = useState(false); // État local ajouté
 
     // Fonction pour rendre les petits carrés de couleurs (labels)
     const renderFunctionColors = () => {
@@ -185,10 +186,71 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                     }
                                 </td>
 
-                                {/* Colonne 2 : Avail / Lifecycle / ROHS / Replacement */}
+
+
+                                {/* Colonne 2 : MPN, SupplierDesc, Manufacturer, Category */}
+                                <td className="component-details-table-col-35">
+                                    <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const description = comp.supplier_description?.find(detail => detail.supplier === api);
+                                            return description ? (
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Supplier Description:
+                                                    </strong>
+                                                    &nbsp;{description.value}
+                                                </React.Fragment>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const manufacturer = comp.supplier_manufacturer?.find(detail => detail.supplier === api);
+                                            return manufacturer ? (
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Supplier Manufacturer:
+                                                    </strong>
+                                                    &nbsp;{manufacturer.value}
+                                                </React.Fragment>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                    <p>
+                                        {apiPriority.map(api => {
+                                            const category = comp.category?.find(detail => detail.supplier === api);
+                                            return category ? (
+                                                <React.Fragment key={api}>
+                                                    <strong>
+                                                        <img
+                                                            className="supplier-icon"
+                                                            src={supplierIcons[api]}
+                                                            alt={`${api} icon`}
+                                                        />
+                                                        Category:
+                                                    </strong>
+                                                    &nbsp;{category.value}
+                                                </React.Fragment>
+                                            ) : null;
+                                        }).find(value => value) || 'N/A'}
+                                    </p>
+                                </td>
+
+                                {/* Colonne 3 : Avail / Lifecycle / ROHS / Replacement */}
                                 <td className="component-details-table-col-35">
                                     <p>
-                                        <strong>Availability:</strong>
+                                        <strong className="availability-label">Availability: </strong>
                                         {apiPriority.map(api => {
                                             const availability = comp.availability?.find(detail => detail.supplier === api);
                                             if (!availability) return null;
@@ -272,65 +334,6 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                                             )}
                                     </p>
                                 </td>
-
-                                {/* Colonne 3 : MPN, SupplierDesc, Manufacturer, Category */}
-                                <td className="component-details-table-col-35">
-                                    <p><strong>Manufacturer Part Number:</strong> {comp.mpn || 'N/A'}</p>
-                                    <p>
-                                        {apiPriority.map(api => {
-                                            const description = comp.supplier_description?.find(detail => detail.supplier === api);
-                                            return description ? (
-                                                <React.Fragment key={api}>
-                                                    <strong>
-                                                        <img
-                                                            className="supplier-icon"
-                                                            src={supplierIcons[api]}
-                                                            alt={`${api} icon`}
-                                                        />
-                                                        Supplier Description:
-                                                    </strong>
-                                                    &nbsp;{description.value}
-                                                </React.Fragment>
-                                            ) : null;
-                                        }).find(value => value) || 'N/A'}
-                                    </p>
-                                    <p>
-                                        {apiPriority.map(api => {
-                                            const manufacturer = comp.supplier_manufacturer?.find(detail => detail.supplier === api);
-                                            return manufacturer ? (
-                                                <React.Fragment key={api}>
-                                                    <strong>
-                                                        <img
-                                                            className="supplier-icon"
-                                                            src={supplierIcons[api]}
-                                                            alt={`${api} icon`}
-                                                        />
-                                                        Supplier Manufacturer:
-                                                    </strong>
-                                                    &nbsp;{manufacturer.value}
-                                                </React.Fragment>
-                                            ) : null;
-                                        }).find(value => value) || 'N/A'}
-                                    </p>
-                                    <p>
-                                        {apiPriority.map(api => {
-                                            const category = comp.category?.find(detail => detail.supplier === api);
-                                            return category ? (
-                                                <React.Fragment key={api}>
-                                                    <strong>
-                                                        <img
-                                                            className="supplier-icon"
-                                                            src={supplierIcons[api]}
-                                                            alt={`${api} icon`}
-                                                        />
-                                                        Category:
-                                                    </strong>
-                                                    &nbsp;{category.value}
-                                                </React.Fragment>
-                                            ) : null;
-                                        }).find(value => value) || 'N/A'}
-                                    </p>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -341,14 +344,14 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                             const productDetails = comp.product_detail_url?.find(url => url.supplier === api);
                             if (productDetails) {
                                 return (
-                                    <Button key={api} onClick={() => openExternalLink(productDetails.value)}>
+                                    <button className="external-link-button" key={api} onClick={() => openExternalLink(productDetails.value)}>
                                         <img
                                             className="supplier-icon"
                                             src={supplierIcons[api]}
                                             alt={`${api} icon`}
                                         />
-                                        Product Details ↝
-                                    </Button>
+                                        Details ↝
+                                    </button>
                                 );
                             }
                             return null;
@@ -358,14 +361,14 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                             const dataSheet = comp.datasheet_url?.find(url => url.supplier === api);
                             if (dataSheet) {
                                 return (
-                                    <Button key={api} onClick={() => openExternalLink(dataSheet.value)}>
+                                    <button className="external-link-button" key={api} onClick={() => openExternalLink(dataSheet.value)}>
                                         <img
                                             className="supplier-icon"
                                             src={supplierIcons[api]}
                                             alt={`${api} icon`}
                                         />
-                                        Data Sheet ↝
-                                    </Button>
+                                        Datasheet ↝
+                                    </button>
                                 );
                             }
                             return null;
@@ -406,45 +409,56 @@ function ComponentRow({ component, operator, onPinToggle, pinnedComponents, apiP
                         )}
                     </div>
 
-                    {/* Price Breaks */}
-                    <div className="price-breaks-container">
-                        <strong>Price Breaks:</strong>
-                        {comp.price_breaks && comp.price_breaks.length > 0 ? (
-                            <div>
-                                {comp.price_breaks.map((supplierPriceBreak, supplierIndex) => (
-                                    <div className="supplier-price-break-container" key={supplierIndex}>
-                                        <h4>Supplier: {supplierPriceBreak.supplier}</h4>
-                                        {supplierPriceBreak.value && supplierPriceBreak.value.length > 0 ? (
-                                            <table className="price-breaks-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Quantity</th>
-                                                        <th>Price</th>
-                                                        <th>Currency</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {supplierPriceBreak.value.map((priceBreak, priceIndex) => (
-                                                        <tr key={priceIndex}>
-                                                            <td>{priceBreak.Quantity}</td>
-                                                            <td>{priceBreak.Price}</td>
-                                                            <td>{priceBreak.Currency}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        ) : (
-                                            <p className="no-price-breaks">
-                                                No price breaks available for this supplier.
-                                            </p>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="no-price-breaks">No price available.</p>
-                        )}
+                    {/* Bouton pour afficher/masquer les Price Breaks */}
+                    <div className="toggle-price-breaks">
+                        <button
+                            className="toggle-price-breaks-button"
+                            onClick={() => setShowPriceBreaks(!showPriceBreaks)}
+                        >
+                            {showPriceBreaks ? 'Hide Price Breaks' : 'Show Price Breaks...'}
+                        </button>
                     </div>
+
+                    {/* Price Breaks (affiché uniquement si showPriceBreaks est true) */}
+                    {showPriceBreaks && (
+                        <div className="price-breaks-container">
+                            {comp.price_breaks && comp.price_breaks.length > 0 ? (
+                                <div>
+                                    {comp.price_breaks.map((supplierPriceBreak, supplierIndex) => (
+                                        <div className="supplier-price-break-container" key={supplierIndex}>
+                                            <h4>Supplier: {supplierPriceBreak.supplier}</h4>
+                                            {supplierPriceBreak.value && supplierPriceBreak.value.length > 0 ? (
+                                                <table className="price-breaks-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Quantity</th>
+                                                            <th>Price</th>
+                                                            <th>Currency</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {supplierPriceBreak.value.map((priceBreak, priceIndex) => (
+                                                            <tr key={priceIndex}>
+                                                                <td>{priceBreak.Quantity}</td>
+                                                                <td>{priceBreak.Price}</td>
+                                                                <td>{priceBreak.Currency}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            ) : (
+                                                <p className="no-price-breaks">
+                                                    No price breaks available for this supplier.
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="no-price-breaks">No price available.</p>
+                            )}
+                        </div>
+                    )}
                 </div>
             </td>
         </tr>
