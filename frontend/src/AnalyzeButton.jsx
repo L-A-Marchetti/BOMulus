@@ -1,44 +1,35 @@
-/*
- * AnalyzeButton.jsx
- * 
- * Contrôle le processus d'analyse, affiche la progression et gère les erreurs.
- * Permet aux utilisateurs de démarrer l'analyse et de voir son statut.
- *
- * Props:
- * onComponentAnalyzed: Fonction appelée lorsqu'un composant est analysé.
- *
- * Sous-composants:
- * ProgressBar: Affiche la progression actuelle de l'analyse.
- *
- * États:
- * status: État actuel de l'analyse ('idle', 'running', 'completed', 'error').
- * progress: Pourcentage d'achèvement de l'analyse.
- * lastAnalyzedComponent: Dernier composant analysé.
- * error: Message d'erreur si l'analyse échoue.
- *
- * Dépendances Backend:
- * GetAnalysisState: Récupère l'état actuel de l'analyse.
- * RunAnalysis: Démarre le processus d'analyse.
- */
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { GetAnalysisState, RunAnalysis, GetApiCount } from "../wailsjs/go/main/App";
-import ProgressBar from './ProgressBar'; // Assurez-vous que ce chemin est correct
+import ProgressBar from './ProgressBar';
 import './AnalyzeButton.css';
 import AnalysisIcon from "./assets/images/analysis.svg";
-import { use } from 'react';
 
-// Composant principal pour le contrôle de l'analyse et l'affichage du statut
-export default function AnalyzeButton({ onComponentAnalyzed }) {
+export default function AnalyzeButton({
+    onComponentAnalyzed,
+    onAnalysisCompleted,   // <-- ajout de cette prop
+    onStatusChange
+}) {
     const [status, setStatus] = useState('idle');
     const [progress, setProgress] = useState(0);
     const [lastAnalyzedComponent, setLastAnalyzedComponent] = useState(null);
     const [error, setError] = useState(null);
     const [apiCount, setApiCount] = useState(0);
 
+    // Récupère le nombre total d’items à analyser
     useEffect(() => {
         handleApiCount();
     }, []);
+
+    // Signale tout changement de `status` à l’extérieur
+    useEffect(() => {
+        if (onStatusChange) {
+            onStatusChange(status);
+        }
+        // Si l’analyse vient de se terminer, on appelle onAnalysisCompleted
+        if (status === 'completed' && onAnalysisCompleted) {
+            onAnalysisCompleted();
+        }
+    }, [status, onStatusChange, onAnalysisCompleted]);
 
     const handleApiCount = async () => {
         try {
@@ -49,44 +40,54 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
         }
     };
 
-    // Récupère et met à jour l'état actuel de l'analyse
+    // Met à jour la progression (appelé par un setInterval ci-dessous)
     const updateProgress = useCallback(async () => {
         try {
             const state = await GetAnalysisState();
 
+            // Proportion de composants déjà analysés
             setProgress(state.Progress / apiCount);
-            console.log("Progress: ", apiCount);
+
+            // On détecte le composant qui vient d’être analysé
             setLastAnalyzedComponent(state.Current);
-            if (state.MouserErr != "") {
+
+            // Gestion d’erreurs éventuelles
+            if (state.MouserErr !== "") {
                 setError(state.MouserErr);
             }
-            if (state.DigikeyErr != "") {
+            if (state.DigikeyErr !== "") {
                 setError(state.DigikeyErr);
             }
+
+            // Si terminé, on set 100% puis on passe en "completed"
             if (state.Completed) {
-                setProgress(100); // Assurez-vous que la progression est à 100%
-                // Retarder le changement d'état pour permettre l'affichage du dernier remplissage
+                setProgress(100);
+                // On attend un peu pour que la barre se voie remplir
                 setTimeout(() => {
                     setStatus('completed');
-                }, 500); // Délai de 500 ms
+                }, 500);
             }
         } catch (error) {
             console.error("Error fetching analysis state:", error);
             setError(error.toString());
             setStatus('error');
         }
-    }, [setProgress, setLastAnalyzedComponent, setStatus, setError]);
+    }, [apiCount]);
 
-    // Configure les intervalles pour les mises à jour de progression et l'analyse des composants
+    // Lance la surveillance (progressInterval) si on est en "running"
     useEffect(() => {
         let progressInterval;
         let componentInterval;
 
         if (status === 'running') {
+            // Met à jour la progression toutes les 100 ms
             progressInterval = setInterval(updateProgress, 100);
+
+            // Vérifie toutes les 100 ms si un nouveau composant a été analysé
             componentInterval = setInterval(() => {
                 if (lastAnalyzedComponent !== null) {
-                    onComponentAnalyzed(lastAnalyzedComponent);
+                    // On appelle le callback onComponentAnalyzed si défini
+                    onComponentAnalyzed && onComponentAnalyzed(lastAnalyzedComponent);
                     setLastAnalyzedComponent(null);
                 }
             }, 100);
@@ -98,8 +99,9 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
         };
     }, [status, updateProgress, onComponentAnalyzed, lastAnalyzedComponent]);
 
-    // Gère le clic sur le bouton en fonction de l'état actuel
+    // Clic sur le bouton
     const handleClick = async () => {
+        // On ne relance pas si on est déjà en "running"
         if (status === 'idle' || status === 'error' || status === 'completed') {
             setStatus('running');
             setError(null);
@@ -114,7 +116,7 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
         }
     };
 
-    // Rend le bouton approprié ou la barre de progression en fonction de l'état
+    // Rend le contenu du bouton/analyse
     const renderContent = () => {
         switch (status) {
             case 'idle':
@@ -142,7 +144,6 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                 );
             case 'running':
                 return (
-                    <>
                     <div className="analyze-button-grid">
                         <div className="progress-bar-container">
                             <ProgressBar progress={progress} />
@@ -152,12 +153,10 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                                 className="analyze-icon-overlay pulsating-icon"
                             />
                         </div>
-                        <div className='dyn-error-message'>{error && <p className="dyn-error-message">{error}</p>}</div>
+                        {error && <p className="dyn-error-message">{error}</p>}
                     </div>
-                    </>
                 );
             case 'error':
-                // ... gestion des erreurs ...
                 return (
                     <div className="analyze-button-grid">
                         <div className="error-container">
@@ -172,7 +171,6 @@ export default function AnalyzeButton({ onComponentAnalyzed }) {
                 return null;
         }
     };
-
 
     return (
         <div className="analyze-button-container">

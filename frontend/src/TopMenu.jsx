@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+// TopMenu.jsx
+
+import React, { useState, useEffect, useRef } from 'react';
 import './TopMenu.css';
 import FileManager from './FileManager';
 import AnalyzeButton from './AnalyzeButton';
 import Filters from './Filters';
-import Stats from './Stats';    // <--- on va juste l'utiliser tel quel
+import Stats from './Stats';
 import GlassIcon from './assets/images/glass.svg';
 import SortIcon from './assets/images/sort.svg';
 
-// Import Wails côté backend
 import {
     PriceCalculator,
     GetProductionQuantity,
@@ -34,25 +35,39 @@ function TopMenu({
     const [initialized, setInitialized] = useState(false);
     const [calculationResult, setCalculationResult] = useState(null);
 
+    // IMPORTANT: on stocke toujours un **nombre** dans boards
     const [boards, setBoards] = useState(1);
+
     const [pricePerBoard, setPricePerBoard] = useState(0);
     const [orderPrice, setOrderPrice] = useState(0);
 
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Savoir si l'analyse est en cours (pour désactiver Boards)
+    const [analysisRunning, setAnalysisRunning] = useState(false);
+
+    // Compteur de composants analysés pour le throttling
+    const analyzedCountRef = useRef(0);
+
+    // ----------------------------------------------------------------
+    // 1) Initialisation du nombre de boards + calcul initial
+    // ----------------------------------------------------------------
     useEffect(() => {
         if (!initialized && componentsAll && componentsAll.length > 0) {
             const initializePrices = async () => {
                 try {
                     const quantityFromBackend = await GetProductionQuantity();
-                    const initialQuantity = quantityFromBackend
+                    let initialQuantity = quantityFromBackend
                         ? parseInt(quantityFromBackend, 10)
-                        : 1; // 1 par défaut
+                        : 1;
 
-                    if (boards !== initialQuantity) {
-                        setBoards(initialQuantity);
+                    // Si parseInt a échoué ou si c'est 0/négatif, on met 1
+                    if (isNaN(initialQuantity) || initialQuantity <= 0) {
+                        initialQuantity = 1;
                     }
+
+                    setBoards(initialQuantity);
 
                     if (initialQuantity > 0) {
                         await calculatePrices(initialQuantity);
@@ -68,24 +83,9 @@ function TopMenu({
         }
     }, [componentsAll, initialized]);
 
-    const handleBoardsChange = async (e) => {
-        const value = e.target.value;
-        if (value === '' || /^[0-9]+$/.test(value)) {
-            const numBoards = parseInt(value, 10);
-            setBoards(value);
-            setError('');
-
-            if (!isNaN(numBoards) && numBoards > 0) {
-                try {
-                    await calculatePrices(numBoards);
-                } catch (err) {
-                    console.error("Error calculating prices:", err);
-                    setError('An error occurred while calculating the price');
-                }
-            }
-        }
-    };
-
+    // ----------------------------------------------------------------
+    // 2) Fonction principale de calcul des prix
+    // ----------------------------------------------------------------
     const calculatePrices = async (numBoards) => {
         try {
             await SetProductionQuantity(numBoards.toString());
@@ -96,6 +96,14 @@ function TopMenu({
                 setPricePerBoard(result.unitPrice);
                 setCalculationResult(result);
             }
+
+            // Maintenant qu'on a recalculé, on relit la liste des composants
+            // via le callback reçu en props :
+            if (onRefreshComponents) {
+                // onRefreshComponents fera lui-même un "GetComponents()" côté parent.
+                onRefreshComponents();
+            }
+
         } catch (err) {
             console.error("Error calculating prices:", err);
             setError('An error occurred while calculating the price');
@@ -103,19 +111,94 @@ function TopMenu({
             setOrderPrice(0);
             setCalculationResult(null);
         }
-        onComponentAnalyzed();
     };
 
+    // ----------------------------------------------------------------
+    // 3) Callback appelé à CHAQUE composant analysé (throttling)
+    // ----------------------------------------------------------------
+    const handleAnalyzedDuringAnalysis = (lastAnalyzedComponent) => {
+        // Incrémente le compteur
+        analyzedCountRef.current += 1;
+
+        // Recalcule tous les 10 composants
+        if (analyzedCountRef.current % 10 === 0) {
+            calculatePrices(boards);
+        }
+
+        // Callback parent éventuel
+        if (onComponentAnalyzed) {
+            onComponentAnalyzed(lastAnalyzedComponent);
+        }
+    };
+
+    // ----------------------------------------------------------------
+    // 4) À la fin de l’analyse, on fait un dernier calcul
+    // ----------------------------------------------------------------
+    const handleAnalysisCompleted = () => {
+        // Attendre 500 ms pour laisser le backend finir d'écrire
+        setTimeout(() => {
+            calculatePrices(boards);
+            analyzedCountRef.current = 0;
+        }, 500);
+    };
+
+    // ----------------------------------------------------------------
+    // 5) Quand on modifie "Boards" (stockage en number)
+    // ----------------------------------------------------------------
+    const handleBoardsChange = async (e) => {
+        const rawValue = e.target.value;
+
+        // On autorise la saisie vide pour "0"
+        if (rawValue === '') {
+            setBoards(0);
+            return;
+        }
+
+        // Vérifie que c'est bien des chiffres
+        if (/^[0-9]+$/.test(rawValue)) {
+            const numBoards = parseInt(rawValue, 10);
+            // Si c'est 0 ou plus
+            if (numBoards >= 0) {
+                setBoards(numBoards); // <-- on stocke un nombre (pas une string)
+
+                // Et si c'est > 0, on recalcule direct
+                if (numBoards > 0) {
+                    try {
+                        await calculatePrices(numBoards);
+                    } catch (err) {
+                        console.error("Error calculating prices:", err);
+                        setError('An error occurred while calculating the price');
+                    }
+                } else {
+                    // numBoards === 0 => pas de recalcul ?
+                    // Vous pourriez décider d'accepter ou afficher un warning
+                    setError('');
+                }
+            }
+        }
+    };
+
+
+    // ----------------------------------------------------------------
+    // 6) Formatage + tri
+    // ----------------------------------------------------------------
     const formatPrice = (price) => `$${price.toFixed(2)}`;
 
     const handleSortChange = (e) => {
         setSortOrder(e.target.value);
     };
 
+    const handleAnalysisStatusChange = (newStatus) => {
+        setAnalysisRunning(newStatus === 'running');
+    };
+
+    // ----------------------------------------------------------------
+    // 7) RENDER
+    // ----------------------------------------------------------------
     return (
         <div className="top-menu">
 
-            {/* ROW 1 : FileManager + Analysis/Price + Filters */}
+            {/* --- ROW 1 --- */}
             <div className="first-row">
                 <div className="left-side">
                     <h4 className="section-title">File manager</h4>
@@ -125,18 +208,28 @@ function TopMenu({
                 <div className="middle-side">
                     <h4 className="section-title">Analysis</h4>
                     <div className="analyze-and-price">
-                        <AnalyzeButton onComponentAnalyzed={onComponentAnalyzed} />
+
+                        <AnalyzeButton
+                            onComponentAnalyzed={handleAnalyzedDuringAnalysis}
+                            onAnalysisCompleted={handleAnalysisCompleted}
+                            onStatusChange={handleAnalysisStatusChange}
+                        />
+
                         <div className="price-editor-container">
                             <div className="boards-control">
                                 <label className="price-label" htmlFor="boards-input">
                                     Boards
                                 </label>
+
                                 <input
                                     id="boards-input"
                                     type="text"
-                                    value={boards}
+                                    // Conversion du nombre en string pour l'affichage
+                                    value={boards === 0 ? '' : String(boards)}
                                     onChange={handleBoardsChange}
+                                    disabled={analysisRunning}
                                 />
+
                                 {error && (
                                     <p style={{ color: 'red', margin: 0 }}>{error}</p>
                                 )}
@@ -179,7 +272,7 @@ function TopMenu({
                 </div>
             </div>
 
-            {/* ROW 2 : On place le composant Stats (qui gère donuts + évol. interne) */}
+            {/* --- ROW 2 : Stats --- */}
             <div className="second-row">
                 <Stats
                     statsData={statsData}
@@ -189,7 +282,7 @@ function TopMenu({
                 />
             </div>
 
-            {/* ROW 3 : Search + Sort */}
+            {/* --- ROW 3 : Search + Sort --- */}
             <div className="third-row">
                 <h4 className="section-title">Search</h4>
                 <div className="search-and-sort-container">
