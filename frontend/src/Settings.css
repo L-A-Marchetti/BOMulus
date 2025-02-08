@@ -1,68 +1,172 @@
-/* Settings.css */
 .settings-container {
-    padding: 10px;
-    font-family: "Poppins", sans-serif;
- }
- 
- .api-key-input {
-    margin-bottom: 20px;
-    font-size: 0.9rem;
- }
- 
- .input-field {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
- }
- 
- .test-button {
-    width: 100%;
- }
- 
- .status-message.success {
-    color: green;
- }
- 
- .status-message.error {
-    color: red;
- }
- 
- .checkbox-container,
- .refresh-days-container {
-    margin-bottom: 20px;
- }
- 
- .input-number {
-    width: 60px;
-    padding: 8px;
-    margin-left: 10px;
-    box-sizing: border-box;
- }
- 
- .loading-bar,
- .loading-bar-fill {
-    display: inline-block;
-    width: 100px; /* Adjust as needed */
-    height: 4px; /* Adjust as needed */
-    border-radius: 2px; /* Adjust as needed */
-    overflow: hidden; /* Adjust as needed */
-    position: relative; /* Adjust as needed */
-    margin-left: 10px; /* Adjust as needed */
- }
- 
- .loading-bar-fill {
-    width: 100%;
-    height: 100%;
-    position: absolute; /* Adjust as needed */
-    left: -100%; /* Adjust as needed */
-    background-color: white; /* Adjust as needed */
-    animation: loadingBarFill 1.5s ease-in-out infinite; /* Adjust as needed */
- }
- 
- /* Keyframes for loading animation */
- @keyframes loadingBarFill {
-    0% { left: -100%; }
-    100% { left: 100%; }
- }
- 
+   padding: 10px;
+   font-family: "Poppins", sans-serif;
+   max-width: 800px;
+   margin: auto;
+}
+
+.settings-container h2 {
+   border-bottom: 1px solid #ccc;
+   padding-bottom: 5px;
+   margin-bottom: 15px;
+}
+
+.api-keys-section,
+.api-priority-section,
+.analysis-settings-section {
+   margin-bottom: 30px;
+}
+
+/* Ancien style générique pour .input-field (on peut commenter si on ne le veut plus)
+.input-field {
+   width: 100%;
+   padding: 8px;
+   box-sizing: border-box;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+}
+*/
+
+/* ----------- NOUVEAU STYLE inspiré de FunctionManager ----------- */
+.api-key-input .input-field {
+   background-color: #323232;
+   border: none;
+   color: white;
+   font-size: 14px;
+   height: 38px;
+   padding: 0 10px;
+   box-sizing: border-box;
+   /* Garder un box-sizing cohérent */
+   width: 100%;
+   /* Si vous souhaitez qu'il prenne toute la largeur */
+   /* border-radius: 0;    // si vous voulez aucun arrondi */
+}
+
+/* Vertical input group for single-line APIs */
+.input-group-vertical {
+   display: flex;
+   flex-direction: column;
+}
+
+/* Input group for credentials (stacked layout) */
+.input-group-credentials {
+   display: flex;
+   flex-direction: column;
+   gap: 3px;
+}
+
+/* Verify button styles */
+.verify-button {
+   padding: 6px 12px;
+   font-size: 14px;
+   border: none;
+   cursor: pointer;
+   margin-top: 10px;
+   transition: all 0.3s ease;
+   min-width: 80px;
+   color: #fff;
+}
+
+/* Dark variant (default) */
+.verify-button.dark {
+   background-color: #333;
+}
+
+.verify-button.dark:hover {
+   background-color: #555;
+}
+
+/* Success variant */
+.verify-button.success {
+   background-color: rgb(134, 179, 132);
+}
+
+.verify-button.success:hover {
+   background-color: rgb(114, 159, 112);
+}
+
+/* Error variant */
+.verify-button.error {
+   background-color: rgb(204, 116, 129);
+}
+
+.verify-button.error:hover {
+   background-color: rgb(184, 96, 109);
+}
+
+.api-key-input {
+   margin-top: 20px;
+}
+
+/* For credentials mode: make the Verify Key button full width */
+.api-key-input .input-group-credentials+.verify-button,
+.input-group-vertical button.verify-button {
+   width: 100%;
+}
+
+/* Ancien spinner, commenté
+.spinner {
+   ...
+}
+@keyframes spin {
+   ...
+}
+*/
+
+/* Status messages */
+.status-message {
+   font-size: 0.9rem;
+   margin-top: 5px;
+   color: #fff;
+}
+
+.status-message.error {
+   color: #fff;
+}
+
+/* Draggable items */
+.priority-item {
+   background-color: inherit;
+   border: 1px solid #ddd;
+   border-radius: 5px;
+   padding: 10px;
+   margin: 5px 0;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   cursor: grab;
+}
+
+/* Animation "in-progress" */
+.verify-button.in-progress {
+   position: relative;
+   overflow: hidden;
+   background-color: #333;
+}
+
+.api-key-label {
+   margin-bottom: 5px;
+}
+
+.verify-button.in-progress::after {
+   content: "";
+   position: absolute;
+   top: 0;
+   left: 0;
+   height: 100%;
+   width: 0;
+   background-color: #fff;
+   animation: fillAnim 1.5s linear infinite;
+}
+
+@keyframes fillAnim {
+   0% {
+      width: 0;
+   }
+
+   50% {
+      width: 100%;
+   }
+
+   100% {
+      width: 0;
+   }
+}

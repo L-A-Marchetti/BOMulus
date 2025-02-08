@@ -13,6 +13,7 @@ import {
     PriceCalculator,
     GetProductionQuantity,
     SetProductionQuantity,
+    GetComponents
 } from '../wailsjs/go/main/App';
 
 function TopMenu({
@@ -35,14 +36,15 @@ function TopMenu({
     const [initialized, setInitialized] = useState(false);
     const [calculationResult, setCalculationResult] = useState(null);
 
-    // IMPORTANT: on stocke toujours un **nombre** dans boards
+    // 1) boards = la valeur numérique finale (ex: 12)
+    // 2) boardsInput = la chaîne de caractères affichée dans l’input (ex: "12")
     const [boards, setBoards] = useState(1);
+    const [boardsInput, setBoardsInput] = useState("1");
 
     const [pricePerBoard, setPricePerBoard] = useState(0);
     const [orderPrice, setOrderPrice] = useState(0);
 
     const [error, setError] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
 
     // Savoir si l'analyse est en cours (pour désactiver Boards)
     const [analysisRunning, setAnalysisRunning] = useState(false);
@@ -68,6 +70,7 @@ function TopMenu({
                     }
 
                     setBoards(initialQuantity);
+                    setBoardsInput(String(initialQuantity)); // On synchronise l'affichage
 
                     if (initialQuantity > 0) {
                         await calculatePrices(initialQuantity);
@@ -97,10 +100,8 @@ function TopMenu({
                 setCalculationResult(result);
             }
 
-            // Maintenant qu'on a recalculé, on relit la liste des composants
-            // via le callback reçu en props :
+            // On rafraîchit la liste des composants :
             if (onRefreshComponents) {
-                // onRefreshComponents fera lui-même un "GetComponents()" côté parent.
                 onRefreshComponents();
             }
 
@@ -117,13 +118,13 @@ function TopMenu({
     // 3) Callback appelé à CHAQUE composant analysé (throttling)
     // ----------------------------------------------------------------
     const handleAnalyzedDuringAnalysis = (lastAnalyzedComponent) => {
-        // Incrémente le compteur
         analyzedCountRef.current += 1;
 
-        // Recalcule tous les 10 composants
+        /* Recalcule tous les 10 composants
         if (analyzedCountRef.current % 10 === 0) {
             calculatePrices(boards);
         }
+            */
 
         // Callback parent éventuel
         if (onComponentAnalyzed) {
@@ -135,49 +136,54 @@ function TopMenu({
     // 4) À la fin de l’analyse, on fait un dernier calcul
     // ----------------------------------------------------------------
     const handleAnalysisCompleted = () => {
-        // Attendre 500 ms pour laisser le backend finir d'écrire
+        // Attendre un peu pour laisser le backend finir d'écrire
         setTimeout(() => {
             calculatePrices(boards);
             analyzedCountRef.current = 0;
-        }, 500);
+        }, 3000);
     };
 
     // ----------------------------------------------------------------
-    // 5) Quand on modifie "Boards" (stockage en number)
+    // 5) Gestion de l'input "Boards"
     // ----------------------------------------------------------------
-    const handleBoardsChange = async (e) => {
-        const rawValue = e.target.value;
 
-        // On autorise la saisie vide pour "0"
-        if (rawValue === '') {
-            setBoards(0);
-            return;
-        }
+    // A) On met à jour l'affichage dès que l'utilisateur tape
+    const handleBoardsInputChange = (e) => {
+        setBoardsInput(e.target.value);
+    };
 
-        // Vérifie que c'est bien des chiffres
-        if (/^[0-9]+$/.test(rawValue)) {
-            const numBoards = parseInt(rawValue, 10);
-            // Si c'est 0 ou plus
-            if (numBoards >= 0) {
-                setBoards(numBoards); // <-- on stocke un nombre (pas une string)
+    // B) On déclenche le parse + le calcul après un délai (debounce-like)
+    useEffect(() => {
+        const delay = setTimeout(async () => {
+            // On parse la chaîne
+            const parsed = parseInt(boardsInput, 10);
+            // Nombre valide (>0) ou 0
+            const newBoards = isNaN(parsed) || parsed < 0 ? 0 : parsed;
 
-                // Et si c'est > 0, on recalcule direct
-                if (numBoards > 0) {
-                    try {
-                        await calculatePrices(numBoards);
-                    } catch (err) {
-                        console.error("Error calculating prices:", err);
-                        setError('An error occurred while calculating the price');
-                    }
-                } else {
-                    // numBoards === 0 => pas de recalcul ?
-                    // Vous pourriez décider d'accepter ou afficher un warning
-                    setError('');
+            // Mise à jour du state "boards" effectif
+            setBoards(newBoards);
+
+            // Si > 0, on calcule
+            if (newBoards > 0) {
+                try {
+                    await calculatePrices(newBoards);
+                    const updatedComponents = await GetComponents();
+                    onComponentAnalyzed(updatedComponents);
+                } catch (err) {
+                    console.error("Error calculating prices:", err);
+                    setError('An error occurred while calculating the price');
                 }
+            } else {
+                // Si c'est 0 ou vide, on considère qu'il n'y a rien à calculer
+                setError('');
+                setPricePerBoard(0);
+                setOrderPrice(0);
             }
-        }
-    };
+        }, 300);
 
+        return () => clearTimeout(delay);
+
+    }, [boardsInput]);
 
     // ----------------------------------------------------------------
     // 6) Formatage + tri
@@ -224,9 +230,8 @@ function TopMenu({
                                 <input
                                     id="boards-input"
                                     type="text"
-                                    // Conversion du nombre en string pour l'affichage
-                                    value={boards === 0 ? '' : String(boards)}
-                                    onChange={handleBoardsChange}
+                                    value={boardsInput}
+                                    onChange={handleBoardsInputChange}
                                     disabled={analysisRunning}
                                 />
 

@@ -1,70 +1,35 @@
-/*
- * Settings.jsx
- * 
- * Component for managing API keys and settings related to analysis.
- * Provides functionality to input and test API keys for Mouser and BOMulus,
- * configure the save state for analysis results, and set the number of days for refreshing analysis.
- *
- * Props: None
- *
- * States:
- * mouserApiKey: String representing the Mouser API key.
- * bomulusApiKey: String representing the BOMulus API key.
- * mouserApiStatus: String for displaying the status of the Mouser API key test.
- * bomulusApiStatus: String for displaying the status of the BOMulus API key test.
- * mouserError: String for storing any errors related to the Mouser API key.
- * bomulusError: String for storing any errors related to the BOMulus API key.
- * isTestingMouser: Boolean indicating if the Mouser API key is currently being tested.
- * isTestingBOMulus: Boolean indicating if the BOMulus API key is currently being tested.
- * analyzeSaveState: Boolean indicating if analysis results should be saved.
- * analysisRefreshDays: Number of days for refreshing analysis results.
- *
- * Backend Dependencies:
- * TestMouserAPIKey: Tests the provided Mouser API key.
- * TestBOMulusAPIKey: Tests the provided BOMulus API key.
- * GetSavedAPIKeys: Fetches saved API keys from storage.
- * SetAnalyzeSaveState: Saves the user's preference for saving analysis results.
- * GetAnalyzeSaveState: Retrieves the current state of saving analysis results.
- * GetAnalysisRefreshDays: Retrieves the number of days for refreshing analysis results.
- * SetAnalysisRefreshDays: Sets the number of days for refreshing analysis results.
- */
-
-import React, { useState, useEffect } from 'react';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import ApiKeyInput from './ApiKeyInput'; // Importing the new component
-import Mouser from "./assets/images/mouser.svg";
-import Digikey from "./assets/images/digikey.svg";
-import { 
-    GetApiPriority, 
-    SetApiPriority, 
+import React, { useState, useEffect } from "react";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import ApiKeyInput from "./ApiKeyInput";
+import MouserIcon from "./assets/images/mouser.svg";
+import DigikeyIcon from "./assets/images/digikey.svg";
+import {
+    GetApiPriority,
+    SetApiPriority,
     TestMouserAPIKey,
-    TestDKCredentials, 
-    TestBOMulusAPIKey, 
-    GetSavedAPIKeys, 
-    SetAnalyzeSaveState, 
-    GetAnalyzeSaveState, 
-    GetAnalysisRefreshDays, 
-    SetAnalysisRefreshDays 
-} from '../wailsjs/go/main/App';
-import './Settings.css'; // External CSS file
+    TestDKCredentials,
+    TestBOMulusAPIKey,
+    GetSavedAPIKeys,
+    SetAnalyzeSaveState,
+    GetAnalyzeSaveState,
+    GetAnalysisRefreshDays,
+    SetAnalysisRefreshDays,
+} from "../wailsjs/go/main/App";
+import "./Settings.css";
 
-const ItemTypes = {
-    API: 'api'
-};
+const ItemTypes = { API: "api" };
 
 const supplierIcons = {
-    Mouser: Mouser,
-    Digikey: Digikey,
+    Mouser: MouserIcon,
+    Digikey: DigikeyIcon,
 };
 
 const DraggableItem = ({ api, index, moveItem }) => {
     const [{ isDragging }, drag] = useDrag({
         type: ItemTypes.API,
         item: { index },
-        collect: (monitor) => ({
-            isDragging: !!monitor.isDragging()
-        })
+        collect: (monitor) => ({ isDragging: monitor.isDragging() }),
     });
 
     const [, drop] = useDrop({
@@ -74,55 +39,71 @@ const DraggableItem = ({ api, index, moveItem }) => {
                 moveItem(item.index, index);
                 item.index = index;
             }
-        }
+        },
     });
 
     return (
-        <div 
-            ref={(node) => drag(drop(node))} 
-            className="priority-item" 
+        <div
+            ref={(node) => drag(drop(node))}
+            className="priority-item"
             style={{
-                padding: '10px',
-                margin: '5px 0',
-                backgroundColor: 'inherit',
-                border: '1px solid #ddd',
-                borderRadius: '5px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                padding: "10px",
+                margin: "5px 0",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 opacity: isDragging ? 0.5 : 1,
-                cursor: isDragging ? 'grabbing' : 'grab'  // Curseur grab ajouté ici
+                cursor: isDragging ? "grabbing" : "grab",
             }}
         >
-          <img src={supplierIcons[api]} alt={`${api} icon`} style={{width: '7px', height: 'auto'}}/>  {api}
+            <img
+                src={supplierIcons[api]}
+                alt={`${api} icon`}
+                style={{ width: "20px", marginRight: "10px" }}
+            />
+            {api}
         </div>
     );
-    
 };
 
 function Settings() {
     const [apiPriority, setApiPriority] = useState([]);
-    const [mouserApiKey, setMouserApiKey] = useState('');
-    const [dkClientID, setDkClientID] = useState('');
-    const [dkSecret, setDkSecret] = useState('');
-    const [bomulusApiKey, setBomulusApiKey] = useState('');
-    const [mouserApiStatus, setMouserApiStatus] = useState('');
-    const [dkApiStatus, setDkApiStatus] = useState('');
-    const [bomulusApiStatus, setBomulusApiStatus] = useState('');
-    const [mouserError, setMouserError] = useState('');
-    const [dkError, setDkError] = useState('');
-    const [bomulusError, setBomulusError] = useState('');
-    const [isTestingMouser, setIsTestingMouser] = useState(false);
-    const [isTestingDk, setIsTestingDk] = useState(false);
-    const [isTestingBOMulus, setIsTestingBOMulus] = useState(false);
+    const [apiKeys, setApiKeys] = useState({
+        mouser: "",
+        dkClientID: "",
+        dkSecret: "",
+        bomulus: "",
+    });
+    const [statuses, setStatuses] = useState({
+        mouser: "",
+        dk: "",
+        bomulus: "",
+    });
+    const [errors, setErrors] = useState({
+        mouser: "",
+        dk: "",
+        bomulus: "",
+    });
+    const [isTesting, setIsTesting] = useState({
+        mouser: false,
+        dk: false,
+        bomulus: false,
+    });
     const [analyzeSaveState, setAnalyzeSaveState] = useState(false);
     const [analysisRefreshDays, setAnalysisRefreshDays] = useState(0);
 
-    // Load saved keys and settings on component mount
     useEffect(() => {
-        loadSavedAPIKeys();
-        loadAnalyzeSaveState();
-        loadAnalysisRefreshDays();
-        loadApiPriority();
+        loadSettings();
     }, []);
+
+    const loadSettings = async () => {
+        await Promise.all([
+            loadSavedAPIKeys(),
+            loadAnalyzeSaveState(),
+            loadAnalysisRefreshDays(),
+            loadApiPriority(),
+        ]);
+    };
 
     const loadApiPriority = async () => {
         try {
@@ -143,52 +124,27 @@ function Settings() {
     };
 
     const moveItem = (fromIndex, toIndex) => {
-        const updatedPriority = Array.from(apiPriority);
-        const [movedItem] = updatedPriority.splice(fromIndex, 1);
-        updatedPriority.splice(toIndex, 0, movedItem);
-        setApiPriority(updatedPriority);
-        handleApiPriorityChange(updatedPriority);
+        const updated = Array.from(apiPriority);
+        const [movedItem] = updated.splice(fromIndex, 1);
+        updated.splice(toIndex, 0, movedItem);
+        setApiPriority(updated);
+        handleApiPriorityChange(updated);
     };
 
-    // Load number of days for refreshing analysis results
-    const loadAnalysisRefreshDays = async () => {
-        try {
-            const days = await GetAnalysisRefreshDays();
-            setAnalysisRefreshDays(days);
-        } catch (error) {
-            console.error("Error loading reanalysis days:", error);
-        }
-    };
-
-    // Handle changes to analysis refresh days input
-    const handleAnalysisRefreshDaysChange = async (e) => {
-        const newDays = parseInt(e.target.value, 10);
-        if (isNaN(newDays) || newDays < 0) return;
-        
-        setAnalysisRefreshDays(newDays);
-        try {
-            await SetAnalysisRefreshDays(newDays);
-        } catch (error) {
-            console.error("Error setting reanalysis days:", error);
-            // Revert state if there's an error
-            setAnalysisRefreshDays(prevDays => prevDays);
-        }
-    };
-
-    // Load saved API keys from storage
     const loadSavedAPIKeys = async () => {
         try {
-            const savedKeys = await GetSavedAPIKeys();
-            setMouserApiKey(savedKeys.mouser_api_key || '');
-            setBomulusApiKey(savedKeys.bomulus_api_key || '');
-            setDkClientID(savedKeys.dk_client_id || '');
-            setDkSecret(savedKeys.dk_secret || '');
+            const saved = await GetSavedAPIKeys();
+            setApiKeys({
+                mouser: saved.mouser_api_key || "",
+                dkClientID: saved.dk_client_id || "",
+                dkSecret: saved.dk_secret || "",
+                bomulus: saved.bomulus_api_key || "",
+            });
         } catch (error) {
             console.error("Error loading saved API keys:", error);
         }
     };
 
-    // Load analyze save state from storage
     const loadAnalyzeSaveState = async () => {
         try {
             const state = await GetAnalyzeSaveState();
@@ -198,185 +154,169 @@ function Settings() {
         }
     };
 
-    // Handle changes to analyze save state checkbox
+    const loadAnalysisRefreshDays = async () => {
+        try {
+            const days = await GetAnalysisRefreshDays();
+            setAnalysisRefreshDays(days);
+        } catch (error) {
+            console.error("Error loading analysis refresh days:", error);
+        }
+    };
+
     const handleAnalyzeSaveStateChange = async (e) => {
         const newState = e.target.checked;
         setAnalyzeSaveState(newState);
         try {
             await SetAnalyzeSaveState(newState);
         } catch (error) {
-            console.error("Error setting analyze save state:", error);
-            // Revert state if there's an error
-            setAnalyzeSaveState(!newState);
+            console.error("Error updating analyze save state:", error);
+            setAnalyzeSaveState((prev) => !prev);
         }
     };
 
-    // Handle changes to Mouser API key input
-    const handleMouserApiKeyChange = (e) => {
-        setMouserApiKey(e.target.value);
-        setMouserApiStatus('');
-        setMouserError('');
-    };
-
-    // Handle changes to Digikey API client ID
-    const handleDkClientIDChange = (e) => {
-        setDkClientID(e.target.value);
-        setDkApiStatus('');
-        setDkError('');
-    };
-
-    // Handle changes to Digikey API secret
-    const handleDkSecretChange = (e) => {
-        setDkSecret(e.target.value);
-        setDkApiStatus('');
-        setDkError('');
-    };
-
-    // Handle changes to BOMulus API key input
-    const handleBomulusApiKeyChange = (e) => {
-        setBomulusApiKey(e.target.value);
-        setBomulusApiStatus('');
-        setBomulusError('');
-    };
-
-    // Test Mouser API key validity
-    const testMouserApiKey = async () => {
-        setIsTestingMouser(true);
+    const handleAnalysisRefreshDaysChange = async (e) => {
+        const days = parseInt(e.target.value, 10);
+        if (isNaN(days) || days < 0) return;
+        setAnalysisRefreshDays(days);
         try {
-            const result = await TestMouserAPIKey(mouserApiKey);
-            if (result) {
-                setMouserApiStatus('API key is valid');
-                setMouserError('');
-            } else {
-                setMouserApiStatus('API key is invalid');
-                setMouserError('');
-            }
+            await SetAnalysisRefreshDays(days);
         } catch (error) {
-            console.error("Error testing Mouser API key:", error);
-            setMouserApiStatus('');
-            setMouserError(error.toString());
-        } finally {
-            setIsTestingMouser(false);
+            console.error("Error updating analysis refresh days:", error);
         }
     };
 
-    // Test Digikey API credentials validity
-    const testDKCredentials = async () => {
-        setIsTestingDk(true);
+    const handleInputChange = (key, value) => {
+        setApiKeys((prev) => ({ ...prev, [key]: value }));
+        // Clear previous messages for this key
+        setStatuses((prev) => ({ ...prev, [key]: "" }));
+        setErrors((prev) => ({ ...prev, [key]: "" }));
+    };
+
+    const testMouser = async () => {
+        setIsTesting((prev) => ({ ...prev, mouser: true }));
+        setStatuses((prev) => ({ ...prev, mouser: "" }));
+        setErrors((prev) => ({ ...prev, mouser: "" }));
         try {
-            const result = await TestDKCredentials(dkClientID, dkSecret);
-            if (result) {
-                setDkApiStatus('API credentials are valid');
-                setDkError('');
-            } else {
-                setDkApiStatus('API credentials are invalid');
-                setDkError('');
-            }
+            const valid = await TestMouserAPIKey(apiKeys.mouser);
+            setStatuses((prev) => ({
+                ...prev,
+                mouser: valid ? "Valid Key" : "Invalid Key",
+            }));
         } catch (error) {
-            console.error("Error testing Digikey API credentials:", error);
-            setDkApiStatus('');
-            setDkError(error.toString());
+            setErrors((prev) => ({ ...prev, mouser: error.toString() }));
         } finally {
-            setIsTestingDk(false);
+            setIsTesting((prev) => ({ ...prev, mouser: false }));
         }
     };
 
-    // Test BOMulus API key validity
-    const testBomulusApiKey = async () => {
-        setIsTestingBOMulus(true);
+    const testDk = async () => {
+        setIsTesting((prev) => ({ ...prev, dk: true }));
+        setStatuses((prev) => ({ ...prev, dk: "" }));
+        setErrors((prev) => ({ ...prev, dk: "" }));
         try {
-            const result = await TestBOMulusAPIKey(bomulusApiKey);
-            if (result) {
-                setBomulusApiStatus('API key is valid');
-                setBomulusError('');
-            } else {
-                setBomulusApiStatus('API key is invalid');
-                setBomulusError('');
-            }
+            const valid = await TestDKCredentials(apiKeys.dkClientID, apiKeys.dkSecret);
+            setStatuses((prev) => ({
+                ...prev,
+                dk: valid ? "Valid Credentials" : "Invalid Credentials",
+            }));
         } catch (error) {
-            console.error("Error testing BOMulus API key:", error);
-            setBomulusApiStatus('');
-            setBomulusError(error.toString());
+            setErrors((prev) => ({ ...prev, dk: error.toString() }));
         } finally {
-            setIsTestingBOMulus(false);
+            setIsTesting((prev) => ({ ...prev, dk: false }));
         }
     };
 
-   return (
-         <div className="settings-container">
-             
-             <ApiKeyInput 
-                 id="mouserApiKey"
-                 label="Mouser API Key"
-                 value={mouserApiKey}
-                 onChange={handleMouserApiKeyChange}
-                 onTest={testMouserApiKey}
-                 isTesting={isTestingMouser}
-                 status={mouserApiStatus}
-                 error={mouserError}
-             />
+    const testBomulus = async () => {
+        setIsTesting((prev) => ({ ...prev, bomulus: true }));
+        setStatuses((prev) => ({ ...prev, bomulus: "" }));
+        setErrors((prev) => ({ ...prev, bomulus: "" }));
+        try {
+            const valid = await TestBOMulusAPIKey(apiKeys.bomulus);
+            setStatuses((prev) => ({
+                ...prev,
+                bomulus: valid ? "Valid Key" : "Invalid Key",
+            }));
+        } catch (error) {
+            setErrors((prev) => ({ ...prev, bomulus: error.toString() }));
+        } finally {
+            setIsTesting((prev) => ({ ...prev, bomulus: false }));
+        }
+    };
 
-             <ApiKeyInput
-                 id="dkCredentials"
-                 label="DigiKey API Credentials"
-                 value={dkClientID}
-                 onChange={handleDkClientIDChange}
-                 clientSecret={dkSecret}
-                 onClientSecretChange={handleDkSecretChange}
-                 onTest={testDKCredentials}
-                 isTesting={isTestingDk}
-                 status={dkApiStatus}
-                 error={dkError}
-                 isCredentials={true} // Activate credentials configuration
-             />
+    return (
+        <div className="settings-container">
+            <section className="api-keys-section">
+                <h2>API Keys</h2>
+                <ApiKeyInput
+                    id="mouserApiKey"
+                    label="Mouser API Key"
+                    value={apiKeys.mouser}
+                    onChange={(e) => handleInputChange("mouser", e.target.value)}
+                    onTest={testMouser}
+                    isTesting={isTesting.mouser}
+                    status={statuses.mouser}
+                    error={errors.mouser}
+                />
+                <ApiKeyInput
+                    id="dkCredentials"
+                    label="DigiKey API Credentials"
+                    value={apiKeys.dkClientID}
+                    onChange={(e) => handleInputChange("dkClientID", e.target.value)}
+                    clientSecret={apiKeys.dkSecret}
+                    onClientSecretChange={(e) => handleInputChange("dkSecret", e.target.value)}
+                    onTest={testDk}
+                    isTesting={isTesting.dk}
+                    status={statuses.dk}
+                    error={errors.dk}
+                    isCredentials={true}
+                />
+                <ApiKeyInput
+                    id="bomulusApiKey"
+                    label="BOMulus API Key"
+                    value={apiKeys.bomulus}
+                    onChange={(e) => handleInputChange("bomulus", e.target.value)}
+                    onTest={testBomulus}
+                    isTesting={isTesting.bomulus}
+                    status={statuses.bomulus}
+                    error={errors.bomulus}
+                />
+            </section>
 
-             <ApiKeyInput 
-                 id="bomulusApiKey"
-                 label="BOMulus API Key"
-                 value={bomulusApiKey}
-                 onChange={handleBomulusApiKeyChange}
-                 onTest={testBomulusApiKey}
-                 isTesting={isTestingBOMulus}
-                 status={bomulusApiStatus}
-                 error={bomulusError}
-             />
+            <section className="api-priority-section">
+                <h2>API Priority</h2>
+                <DndProvider backend={HTML5Backend}>
+                    {apiPriority.map((api, index) => (
+                        <DraggableItem key={api} api={api} index={index} moveItem={moveItem} />
+                    ))}
+                </DndProvider>
+            </section>
 
-            <h3>API Priority</h3>
-            <DndProvider backend={HTML5Backend}>
-                {apiPriority.map((api, index) => (
-                    <DraggableItem
-                        key={api}
-                        api={api}
-                        index={index}
-                        moveItem={moveItem}
+            <section className="analysis-settings-section">
+                <h2>Analysis Settings</h2>
+                <div className="checkbox-container">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={analyzeSaveState}
+                            onChange={handleAnalyzeSaveStateChange}
+                        />
+                        Save Analysis State
+                    </label>
+                </div>
+                <div className="refresh-days-container">
+                    <input
+                        id="analysisRefreshDays"
+                        type="number"
+                        value={analysisRefreshDays}
+                        onChange={handleAnalysisRefreshDaysChange}
+                        min="0"
+                        className="input-number"
                     />
-                ))}
-            </DndProvider>
-
-             <div className="checkbox-container">
-                 <label>
-                     <input
-                         type="checkbox"
-                         checked={analyzeSaveState}
-                         onChange={handleAnalyzeSaveStateChange}
-                     />
-                     Save Analysis State
-                 </label>
-             </div>
-
-             <div className="refresh-days-container">
-                 <input
-                     id="analysisRefreshDays"
-                     type="number"
-                     value={analysisRefreshDays}
-                     onChange={handleAnalysisRefreshDaysChange}
-                     min="0"
-                     className="input-number"
-                 />
-                 <label htmlFor="analysisRefreshDays"> Days Analysis Refresh</label>
-             </div>
-         </div>
-     );
+                    <label htmlFor="analysisRefreshDays"> Days before refresh</label>
+                </div>
+            </section>
+        </div>
+    );
 }
 
 export default Settings;
