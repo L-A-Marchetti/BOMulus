@@ -1,7 +1,6 @@
 package main
 
 import (
-	"config"
 	"embed"
 
 	"github.com/wailsapp/wails/v2"
@@ -18,14 +17,13 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  config.TITLE,
-		Width:  config.WIN_WIDTH,
-		Height: config.WIN_HEIGHT,
+		Title:  "BOMulus",
+		Width:  1024,
+		Height: 768,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		Frameless: true,
-		OnStartup: app.startup,
+		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
 		},
