@@ -1,29 +1,52 @@
 import { create } from 'zustand';
-import { GetRecentWorkspaces } from '../../wailsjs/go/main/App';
+import {
+  GetRecentWorkspaces,
+  SetActiveWorkspace,
+} from '../../wailsjs/go/main/App';
 import { Workspace } from '../types/ws_interfaces';
+
+interface Monitor {
+  isLoading: boolean;
+  error: string;
+}
 
 interface WSChooserProps {
   workspaces: Workspace[];
+  workspacesMonitor: Monitor;
+  activeWorkspace: string;
+  activeWorkspaceMonitor: Monitor;
   isVisible: boolean;
-  isLoading: boolean;
-  error: string;
   toggleVisibility: () => void;
   loadWorkspaces: () => void;
+  setActiveWorkspace: (path: string) => void;
 }
 
 export const WSChooserStore = create<WSChooserProps>((set) => ({
   workspaces: [],
+  workspacesMonitor: { isLoading: false, error: '' },
+  activeWorkspace: '',
+  activeWorkspaceMonitor: { isLoading: false, error: '' },
   isVisible: true,
-  isLoading: true,
-  error: '',
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   loadWorkspaces: async () => {
-    set({ isLoading: true, error: '' });
+    set({ workspacesMonitor: { isLoading: true, error: '' } });
     try {
-      const workspaces: Workspace[] = await GetRecentWorkspaces(); // Directement typé
-      set({ workspaces, isLoading: false });
+      const workspaces: Workspace[] = await GetRecentWorkspaces();
+      set({ workspaces, workspacesMonitor: { isLoading: false, error: '' } });
     } catch (err) {
-      set({ error: String(err), isLoading: false });
+      set({ workspacesMonitor: { isLoading: false, error: String(err) } });
+    }
+  },
+  setActiveWorkspace: async (path: string) => {
+    set({ activeWorkspaceMonitor: { isLoading: true, error: '' } });
+    try {
+      await SetActiveWorkspace(path);
+      set({
+        activeWorkspace: path,
+        activeWorkspaceMonitor: { isLoading: false, error: '' },
+      });
+    } catch (err) {
+      set({ activeWorkspaceMonitor: { isLoading: false, error: String(err) } });
     }
   },
 }));
