@@ -1,0 +1,31 @@
+{
+  "workspaces": [
+    {
+      "workspace_infos": {
+        "name": "zozo",
+        "path": "/home/lam/Desktop/zozo",
+        "createdAt": "2025-02-08T11:27:58.827257483+01:00",
+        "last_opened": "2025-02-08T11:28:00.157588449+01:00",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    }
+  ],
+  "api_keys": {
+    "mouser_api_key": "",
+    "bomulus_api_key": "",
+    "dk_client_id": "",
+    "dk_secret": ""
+  },
+  "analyze_save_state": true,
+  "analysis_refresh_days": 3,
+  "api_priority": [
+    "Digikey",
+    "Mouser",
+    "BOMulus"
+  ]
+}
