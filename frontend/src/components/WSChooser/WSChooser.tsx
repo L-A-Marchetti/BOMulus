@@ -9,23 +9,14 @@ export function DisplayWSChooser(): React.JSX.Element {
 
 export function WSChooser(): React.JSX.Element {
   const loadWorkspaces = WSChooserStore((state) => state.loadWorkspaces);
-  const workspaces = WSChooserStore((state) => state.workspaces);
-  const isWorkspacesLoading = WSChooserStore(
-    (state) => state.workspacesMonitor.isLoading,
-  );
-  const workspacesLoadingError = WSChooserStore(
-    (state) => state.workspacesMonitor.error,
-  );
-
   const setActiveWorkspace = WSChooserStore(
     (state) => state.setActiveWorkspace,
   );
 
-  const isActiveWorkspaceLoading = WSChooserStore(
-    (state) => state.activeWorkspaceMonitor.isLoading,
-  );
-  const activeWorkspaceLoadingError = WSChooserStore(
-    (state) => state.activeWorkspaceMonitor.error,
+  const workspaces = WSChooserStore((state) => state.workspaces);
+  const workspacesMonitor = WSChooserStore((state) => state.workspacesMonitor);
+  const activeWorkspaceMonitor = WSChooserStore(
+    (state) => state.activeWorkspaceMonitor,
   );
 
   useEffect(() => {
@@ -35,14 +26,14 @@ export function WSChooser(): React.JSX.Element {
   return (
     <div>
       <h1>Choose a workspace</h1>
-      {isWorkspacesLoading || isActiveWorkspaceLoading ? (
-        <p>Loading workspace{isActiveWorkspaceLoading ? '' : 's'}...</p>
-      ) : workspacesLoadingError || activeWorkspaceLoadingError ? (
+      {workspacesMonitor.isLoading || activeWorkspaceMonitor.isLoading ? (
+        <p>Loading workspace{activeWorkspaceMonitor.isLoading ? '' : 's'}...</p>
+      ) : workspacesMonitor.error || activeWorkspaceMonitor.error ? (
         <p>
           Error:{' '}
-          {activeWorkspaceLoadingError
-            ? activeWorkspaceLoadingError
-            : workspacesLoadingError}
+          {activeWorkspaceMonitor.error
+            ? activeWorkspaceMonitor.error
+            : workspacesMonitor.error}
         </p>
       ) : workspaces.length === 0 ? (
         <p>No workspaces available.</p>

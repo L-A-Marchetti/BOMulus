@@ -4,11 +4,7 @@ import {
   SetActiveWorkspace,
 } from '../../wailsjs/go/main/App';
 import { Workspace } from '../types/ws_interfaces';
-
-interface Monitor {
-  isLoading: boolean;
-  error: string;
-}
+import { Monitor } from '../types/global';
 
 interface WSChooserProps {
   workspaces: Workspace[];
