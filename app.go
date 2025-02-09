@@ -206,8 +206,8 @@ func (a *App) SetActiveWorkspace(path string) {
 	workspaces.UpdateLastOpened()
 }
 
-func (a *App) DeleteWorkspace(path string) {
-	workspaces.DeleteWorkspace(path)
+func (a *App) DeleteWorkspace(path string) error {
+	return workspaces.DeleteWorkspace(path)
 }
 
 func (a *App) DeleteBOMFile(filePath string) {
@@ -223,7 +223,7 @@ func (a *App) GetActiveWorkspace() string {
 
 // CreateWorkspace initiates the creation of a new workspace by delegating to the workspaces package.
 func (a *App) CreateWorkspace(path string, name string) error {
-	return workspaces.CreateWorkspace(path, name) // Delegate to workspaces package
+	return workspaces.CreateWorkspace(path, name)
 }
 
 // GetRecentWorkspaces retrieves the most recently created workspaces by delegating to the workspaces package.

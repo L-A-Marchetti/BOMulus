@@ -33,6 +33,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // UpdateBOMulusFile updates the BOMulus.bmls file with new workspace info.
@@ -90,4 +93,51 @@ func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState
 		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
 	}
 	return nil
+}
+
+// UpdateBOMulusFile met à jour ou crée une entrée BOMulusFile dans la base de données
+func DBUpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState, saveStateMustChange bool, analysisRefreshDays int, apiPriority []string) error {
+	bomulusPath := filepath.Join("./", "config.bmls")
+	db, err := gorm.Open(sqlite.Open(bomulusPath), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+	var bomulusFile *BOMulusFile
+	db.FirstOrCreate(&bomulusFile)
+
+	return db.Transaction(func(tx *gorm.DB) error {
+		if newWorkspace.WorkspaceInfos != (WorkspaceInfos{}) {
+			newWorkspace.BOMulusFileID = bomulusFile.ID
+			if err := tx.Create(&newWorkspace).Error; err != nil {
+				return fmt.Errorf("error creating workspace: %w", err)
+			}
+			bomulusFile.Workspaces = append(bomulusFile.Workspaces, newWorkspace)
+		}
+
+		if apiKeys != (APIKeys{}) {
+			if apiKeys.BOMulusApiKey != "" {
+				bomulusFile.ApiKeys.BOMulusApiKey = apiKeys.BOMulusApiKey
+			}
+			if apiKeys.MouserApiKey != "" {
+				bomulusFile.ApiKeys.MouserApiKey = apiKeys.MouserApiKey
+			}
+			if apiKeys.DKClientId != "" && apiKeys.DKSecret != "" {
+				bomulusFile.ApiKeys.DKClientId = apiKeys.DKClientId
+				bomulusFile.ApiKeys.DKSecret = apiKeys.DKSecret
+			}
+		}
+		if saveStateMustChange {
+			bomulusFile.AnalyzeSaveState = analyzeSaveState
+		}
+		if analysisRefreshDays != -1 {
+			bomulusFile.AnalysisRefreshDays = analysisRefreshDays
+		}
+		if apiPriority != nil {
+			bomulusFile.ApiPriority = apiPriority
+		}
+		if err := tx.Save(bomulusFile).Error; err != nil {
+			return fmt.Errorf("error updating config file: %w", err)
+		}
+		return nil
+	})
 }

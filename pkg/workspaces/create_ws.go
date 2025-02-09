@@ -28,7 +28,6 @@
 package workspaces
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -57,18 +56,12 @@ func CreateWorkspace(path string, name string) error {
 			ProductionQuantity: "1",
 		},
 	}
-	// Convert workspace info to JSON
-	jsonData, err := json.MarshalIndent(workspaceInfos, "", "  ")
+	err = BMLSInit(bmlsFilePath, workspaceInfos)
 	if err != nil {
-		return fmt.Errorf("failed to marshal workspace info: %w", err)
-	}
-	// Write JSON data to the .bmls file
-	err = os.WriteFile(bmlsFilePath, jsonData, 0644)
-	if err != nil {
-		return fmt.Errorf("failed to write .bmls file: %w", err)
+		return err
 	}
 	// Update BOMulus.bmls
-	err = UpdateBOMulusFile(workspaceInfos, APIKeys{}, true, true, 3, []string{"Digikey", "Mouser", "BOMulus"})
+	err = DBUpdateBOMulusFile(workspaceInfos, APIKeys{}, true, true, 3, []string{"Digikey", "Mouser", "BOMulus"})
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
 	}

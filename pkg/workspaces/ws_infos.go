@@ -34,8 +34,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // GetFilesInWorkspaceInfo returns the list of files in the specified workspace's .bmls file.
@@ -154,26 +156,14 @@ func GetLastComparison() (Comparison, error) {
 	return workspace.WorkspaceInfos.LastComparison, nil
 }
 
-// GetRecentWorkspaces returns the 3 most recently created workspaces.
 func GetRecentWorkspaces() ([]Workspace, error) {
-	bomulusPath := filepath.Join("./", "BOMulus.bmls")
-	var bomulusFile BOMulusFile
-	// Read BOMulus.bmls file
-	data, err := os.ReadFile(bomulusPath)
+	db, err := gorm.Open(sqlite.Open("./config.bmls"), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to read BOMulus.bmls: %w", err)
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
-	err = json.Unmarshal(data, &bomulusFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal BOMulus.bmls: %w", err)
+	var workspaces []Workspace
+	if err := db.Order("last_opened desc").Limit(6).Find(&workspaces).Error; err != nil {
+		return nil, fmt.Errorf("failed to retrieve recent workspaces: %w", err)
 	}
-	// Sort workspaces by creation date (most recent first)
-	sort.Slice(bomulusFile.Workspaces, func(i, j int) bool {
-		return bomulusFile.Workspaces[i].WorkspaceInfos.LastOpened.After(bomulusFile.Workspaces[j].WorkspaceInfos.LastOpened)
-	})
-	// Return up to 3 most recent workspaces
-	if len(bomulusFile.Workspaces) > 6 {
-		return bomulusFile.Workspaces[:6], nil
-	}
-	return bomulusFile.Workspaces, nil
+	return workspaces, nil
 }

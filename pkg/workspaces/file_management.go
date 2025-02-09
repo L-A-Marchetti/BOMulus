@@ -43,12 +43,14 @@ package workspaces
 
 import (
 	"core"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 // AddFileToWorkspace copies a file to the specified workspace directory and updates the .bmls file.
@@ -79,24 +81,28 @@ func AddFileToWorkspace(workspacePath string, filePath string, file core.XlsmFil
 	return UpdateBMLSWithNewFile(workspacePath, fileName, destPath, file)
 }
 
-// updateBMLSWithNewFile updates the .bmls file with information about the newly added file.
 func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string, file core.XlsmFile) error {
 	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
+	db, err := gorm.Open(sqlite.Open(bmlsFilePath), &gorm.Config{})
+	if err != nil {
+		return fmt.Errorf("failed to open database: %w", err)
+	}
 	var workspace Workspace
-	// Read the existing .bmls file
-	data, err := os.ReadFile(bmlsFilePath)
-	if err == nil {
-		err = json.Unmarshal(data, &workspace)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal .bmls: %w", err)
+	if err := db.First(&workspace).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return fmt.Errorf("workspace not found in the database")
 		}
+		return fmt.Errorf("failed to fetch workspace: %w", err)
 	}
 	core.ComponentsDetection(&file)
+
 	versionTag := 1
-	for range workspace.Files {
-		versionTag++
+	for _, fileInfo := range workspace.Files {
+		if fileInfo.VersionTag >= versionTag {
+			versionTag = fileInfo.VersionTag + 1
+		}
 	}
-	// Add information about the new file
+
 	workspace.Files = append(workspace.Files, FileInfo{
 		VersionTag: versionTag,
 		Name:       fileName,
@@ -104,12 +110,12 @@ func UpdateBMLSWithNewFile(workspacePath, fileName, filePath string, file core.X
 		Components: file.Components,
 		Filters:    file.Filters,
 	})
-	// Write updated data to the .bmls file
-	jsonData, err := json.MarshalIndent(workspace, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to marshal updated workspace: %w", err)
+
+	if err := db.Save(&workspace).Error; err != nil {
+		return fmt.Errorf("failed to update workspace with new file: %w", err)
 	}
-	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+
+	return nil
 }
 
 func FileProcessing(filePath string) ([]core.Component, core.Filter, core.XlsmFile) {
