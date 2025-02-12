@@ -1,0 +1,53 @@
+// src/components/WSChooser/WSChooser.tsx
+import React, { useEffect } from 'react';
+import { WSChooserStore } from '../../store/WSChooserStore';
+import Modal from '../shared/Modal';
+
+export function WSChooser(): React.JSX.Element {
+  const WSChooser = WSChooserStore();
+
+  useEffect(() => {
+    WSChooser.loadWorkspaces();
+  }, []);
+
+  return WSChooser.isVisible ? (
+    <div>
+      <h1>Choose a workspace</h1>
+      <ul>
+        {WSChooser.workspaces?.map((ws) => (
+          <li
+            key={ws.workspace_infos.name}
+            onClick={() =>
+              WSChooser.setActiveWorkspace(ws.workspace_infos.path)
+            }
+          >
+            {ws.workspace_infos.name}
+            <span onClick={() => WSChooser.setWorkspaceToDelete(ws)}> x</span>
+          </li>
+        ))}
+      </ul>
+      {WSChooser.workspaceToDelete ? (
+        <Modal
+          title={`Delete ${WSChooser.workspaceToDelete.workspace_infos.name}?`}
+          text={`Are you sure you want to delete the workspace ${WSChooser.workspaceToDelete.workspace_infos.name}? This action is irreversible and will permanently remove all associated data. Proceed with caution.`}
+          onCancel={() => {
+            WSChooser.setWorkspaceToDelete(null);
+          }}
+          onConfirm={() => {
+            WSChooser.deleteWorkspace();
+          }}
+        />
+      ) : (
+        <></>
+      )}
+      {WSChooser.monitor.isLoading ? (
+        <p>Workspace module is loading...</p>
+      ) : (
+        <></>
+      )}
+      {WSChooser.monitor.error ? <p>{WSChooser.monitor.error}</p> : <></>}
+    </div>
+  ) : (
+    <></>
+  );
+}

@@ -1,4 +1,4 @@
 export interface Monitor {
   isLoading: boolean;
-  error: string;
+  error: string | null;
 }

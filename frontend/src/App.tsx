@@ -1,20 +1,12 @@
 // src/App.tsx
 import React from 'react';
 import { WSChooserStore } from './store/WSChooserStore';
-import { WSChooser } from './components/WSChooser/WSChooser';
-import { WSCreator } from './components/WSChooser/WSCreator';
-
-function ToggleButton(): React.JSX.Element {
-  const toggleVisibility = WSChooserStore((state) => state.toggleVisibility);
-  return (
-    <button onClick={toggleVisibility}>Toggle WSChooser Visibility</button>
-  );
-}
+import { WSChooser } from './components/features/WSChooser';
+import { WSCreator } from './components/features/WSCreator';
 
 function App(): React.JSX.Element {
   return (
     <div>
-      <ToggleButton />
       <WSChooser />
       <WSCreator />
     </div>

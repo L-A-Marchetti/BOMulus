@@ -5,35 +5,7 @@
         "name": "plop",
         "path": "/home/lam/Desktop/plop",
         "createdAt": "2025-02-09T21:12:47.522100027+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "zoop",
-        "path": "/home/lam/Desktop/zoop",
-        "createdAt": "2025-02-09T21:13:21.488016364+01:00",
-        "last_opened": "2025-02-09T21:13:24.007131389+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "dfdfd",
-        "path": "/home/lam/Desktop/dfdfd",
-        "createdAt": "2025-02-09T21:21:12.821139566+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
+        "last_opened": "2025-02-12T11:30:02.189947223+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",
@@ -47,7 +19,21 @@
         "name": "dfsdf",
         "path": "/home/lam/Desktop/dfsdf",
         "createdAt": "2025-02-09T21:26:13.394011457+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
+        "last_opened": "2025-02-12T11:30:07.83145381+01:00",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "zig",
+        "path": "/home/lam/Desktop/zig",
+        "createdAt": "2025-02-12T10:58:29.926303303+01:00",
+        "last_opened": "2025-02-12T11:50:29.955032886+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",

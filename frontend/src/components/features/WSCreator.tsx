@@ -9,30 +9,22 @@ export function WSCreator(): React.JSX.Element {
     <div>
       <input
         placeholder="Workspace name"
-        value={WSCreator.workspaceName}
+        value={WSCreator.workspaceName || ''}
         onChange={(e) => WSCreator.setWorkspaceName(e.target.value)}
       />
       <p onClick={WSCreator.chooseDirectory}>
-        {WSCreator.workspacePath !== ''
+        {WSCreator.workspacePath
           ? WSCreator.workspacePath.length > 30
             ? WSCreator.workspacePath.slice(-30)
             : WSCreator.workspacePath
           : 'Select a workspace path'}
       </p>
-      {WSCreator.chooseDirectoryMonitor.isLoading ? (
-        <p>Directory chooser is loading...</p>
-      ) : WSCreator.createWorkspaceMonitor.isLoading ? (
-        <p>The workspace is being created...</p>
+      {WSCreator.monitor.isLoading ? (
+        <p>Workspace creator module is loading...</p>
       ) : (
         <></>
       )}
-      {WSCreator.chooseDirectoryMonitor.error != '' ? (
-        <p>{WSCreator.chooseDirectoryMonitor.error}</p>
-      ) : WSCreator.createWorkspaceMonitor.error != '' ? (
-        <p>{WSCreator.createWorkspaceMonitor.error}</p>
-      ) : (
-        <></>
-      )}
+      {WSCreator.monitor.error ? <p>{WSCreator.monitor.error}</p> : <></>}
       <p onClick={WSCreator.toggleVisibility}>Cancel</p>
       <p onClick={WSCreator.createWorkspace}>Create</p>
     </div>

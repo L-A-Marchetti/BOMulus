@@ -7,10 +7,9 @@ import { Monitor } from '../types/global';
 import { WSChooserStore } from './WSChooserStore';
 
 interface WSCreatorProps {
-  workspaceName: string;
-  workspacePath: string;
-  createWorkspaceMonitor: Monitor;
-  chooseDirectoryMonitor: Monitor;
+  workspaceName: string | null;
+  workspacePath: string | null;
+  monitor: Monitor;
   isVisible: boolean;
   toggleVisibility: () => void;
   setWorkspaceName: (name: string) => void;
@@ -19,36 +18,37 @@ interface WSCreatorProps {
 }
 
 export const WSCreatorStore = create<WSCreatorProps>((set) => ({
-  workspaceName: '',
-  workspacePath: '',
-  createWorkspaceMonitor: { isLoading: false, error: '' },
-  chooseDirectoryMonitor: { isLoading: false, error: '' },
+  workspaceName: null,
+  workspacePath: null,
+  monitor: { isLoading: false, error: null },
   isVisible: false,
-  toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
+  toggleVisibility: () => {
+    set((state) => ({ isVisible: !state.isVisible }));
+    WSChooserStore.getState().toggleVisibility();
+  },
   setWorkspaceName: (name: string) =>
     set({
       workspaceName: name,
-      createWorkspaceMonitor: { isLoading: false, error: '' },
+      monitor: { isLoading: false, error: null },
     }),
   chooseDirectory: async () => {
-    set({ chooseDirectoryMonitor: { isLoading: true, error: '' } });
-    set({ createWorkspaceMonitor: { isLoading: false, error: '' } });
+    set({ monitor: { isLoading: true, error: null } });
     try {
       const workspacePath: string = await OpenDirectoryDialog();
       set({
         workspacePath,
-        chooseDirectoryMonitor: { isLoading: false, error: '' },
+        monitor: { isLoading: false, error: null },
       });
     } catch (err) {
-      set({ chooseDirectoryMonitor: { isLoading: false, error: String(err) } });
+      set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
   createWorkspace: async () => {
-    set({ createWorkspaceMonitor: { isLoading: true, error: '' } });
+    set({ monitor: { isLoading: true, error: null } });
     const state = WSCreatorStore.getState();
-    if (state.workspaceName === '' || state.workspacePath === '')
+    if (!state.workspaceName || !state.workspacePath)
       return set({
-        createWorkspaceMonitor: {
+        monitor: {
           isLoading: false,
           error: 'Please select a directory and enter a workspace name.',
         },
@@ -57,11 +57,12 @@ export const WSCreatorStore = create<WSCreatorProps>((set) => ({
       await CreateWorkspace(state.workspacePath, state.workspaceName);
       set({
         isVisible: false,
-        createWorkspaceMonitor: { isLoading: false, error: '' },
+        monitor: { isLoading: false, error: null },
       });
       WSChooserStore.getState().loadWorkspaces();
+      WSChooserStore.getState().toggleVisibility();
     } catch (err) {
-      set({ createWorkspaceMonitor: { isLoading: false, error: String(err) } });
+      set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
 }));
