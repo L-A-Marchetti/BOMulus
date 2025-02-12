@@ -36,11 +36,11 @@ import (
 // UpdateBMLSPricing updates the .bmls file with information about analyzed components.
 // This function searches for a component in the current workspace's .bmls file and updates
 // it with the provided analyzed component if a match is found.
-func UpdateBMLSPricing(analyzedComponent core.Component) error {
-	if ActiveWorkspacePath == "" {
+func UpdateBMLSPricing(activeWorkspace string, analyzedComponent core.Component) error {
+	if activeWorkspace == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -70,11 +70,11 @@ func UpdateBMLSPricing(analyzedComponent core.Component) error {
 // UpdateAllBMLSPricing updates the .bmls file with information about analyzed components.
 // This function searches for a component in the current workspace's .bmls file and updates
 // it with the provided analyzed component if a match is found.
-func UpdateAllBMLSPricing() error {
-	if ActiveWorkspacePath == "" {
+func UpdateAllBMLSPricing(activeWorkspacePath string) error {
+	if activeWorkspacePath == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspacePath), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)

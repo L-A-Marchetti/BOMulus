@@ -52,12 +52,12 @@ import (
 )
 
 // AddFileToWorkspace copies a file to the specified workspace directory and updates the .bmls file.
-func AddFileToWorkspace(workspacePath string, filePath string, file core.XlsmFile) error {
-	if workspacePath == "" {
+func AddFileToWorkspace(activeWorkspace Workspace, filePath string, file core.XlsmFile) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
 	fileName := filepath.Base(filePath)
-	destPath := filepath.Join(workspacePath, fileName)
+	destPath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fileName)
 	// Open the source file
 	srcFile, err := os.Open(filePath)
 	if err != nil {
@@ -76,7 +76,7 @@ func AddFileToWorkspace(workspacePath string, filePath string, file core.XlsmFil
 		return fmt.Errorf("error copying file: %w", err)
 	}
 	// Update the .bmls file with the new file information
-	return UpdateBMLSWithNewFile(workspacePath, fileName, destPath, file)
+	return UpdateBMLSWithNewFile(activeWorkspace.WorkspaceInfos.Path, fileName, destPath, file)
 }
 
 // updateBMLSWithNewFile updates the .bmls file with information about the newly added file.

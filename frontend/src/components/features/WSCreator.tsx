@@ -1,9 +1,11 @@
 // src/components/WSChooser/WSChooser.tsx
 import React from 'react';
 import { WSCreatorStore } from '../../store/WSCreatorStore';
+import { WSChooserStore } from '../../store/WSChooserStore';
 
 export function WSCreator(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
+  const WSChooser = WSChooserStore();
 
   return WSCreator.isVisible ? (
     <div>
@@ -28,9 +30,11 @@ export function WSCreator(): React.JSX.Element {
       <p onClick={WSCreator.toggleVisibility}>Cancel</p>
       <p onClick={WSCreator.createWorkspace}>Create</p>
     </div>
-  ) : (
+  ) : WSChooser.isVisible ? (
     <div>
       <h1 onClick={WSCreator.toggleVisibility}>Add a workspace</h1>
     </div>
+  ) : (
+    <></>
   );
 }

@@ -49,7 +49,7 @@ type PriceCalculationResult struct {
 }
 
 // QuantityPrice calculates the price for a given quantity of components
-func QuantityPrice(quantity int) (PriceCalculationResult, error) {
+func QuantityPrice(activeWorkspacePath string, quantity int) (PriceCalculationResult, error) {
 	result := PriceCalculationResult{}
 	// Initialize MinimumQuantities as an empty slice to avoid null in JSON
 	result.MinimumQuantities = []string{}
@@ -114,7 +114,7 @@ func QuantityPrice(quantity int) (PriceCalculationResult, error) {
 	}
 	result.Currency = currency
 	result.Quantity = quantity
-	workspaces.UpdateAllBMLSPricing()
+	_ = workspaces.UpdateAllBMLSPricing(activeWorkspacePath)
 	return result, nil
 }
 

@@ -17,9 +17,7 @@ export function WSChooser(): React.JSX.Element {
         {WSChooser.workspaces?.map((ws) => (
           <li
             key={ws.workspace_infos.name}
-            onClick={() =>
-              WSChooser.setActiveWorkspace(ws.workspace_infos.path)
-            }
+            onClick={() => WSChooser.setActiveWorkspace(ws)}
           >
             {ws.workspace_infos.name}
             <span onClick={() => WSChooser.setWorkspaceToDelete(ws)}> x</span>
@@ -28,8 +26,8 @@ export function WSChooser(): React.JSX.Element {
       </ul>
       {WSChooser.workspaceToDelete ? (
         <Modal
-          title={`Delete ${WSChooser.workspaceToDelete.workspace_infos.name}?`}
-          text={`Are you sure you want to delete the workspace ${WSChooser.workspaceToDelete.workspace_infos.name}? This action is irreversible and will permanently remove all associated data. Proceed with caution.`}
+          title={`Delete ${WSChooser.workspaceToDelete?.workspace_infos.name}?`}
+          text={`Are you sure you want to delete the workspace ${WSChooser.workspaceToDelete?.workspace_infos.name}? This action is irreversible and will permanently remove all associated data. Proceed with caution.`}
           onCancel={() => {
             WSChooser.setWorkspaceToDelete(null);
           }}

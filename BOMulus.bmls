@@ -2,10 +2,10 @@
   "workspaces": [
     {
       "workspace_infos": {
-        "name": "plop",
-        "path": "/home/lam/Desktop/plop",
-        "createdAt": "2025-02-09T21:12:47.522100027+01:00",
-        "last_opened": "2025-02-12T11:30:02.189947223+01:00",
+        "name": "bbbb",
+        "path": "/home/lam/Desktop/bbbb",
+        "createdAt": "2025-02-12T15:39:47.858723963+01:00",
+        "last_opened": "2025-02-12T18:09:12.565985534+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",
@@ -16,10 +16,10 @@
     },
     {
       "workspace_infos": {
-        "name": "dfsdf",
-        "path": "/home/lam/Desktop/dfsdf",
-        "createdAt": "2025-02-09T21:26:13.394011457+01:00",
-        "last_opened": "2025-02-12T11:30:07.83145381+01:00",
+        "name": "zobi",
+        "path": "/home/lam/Desktop/zobi",
+        "createdAt": "2025-02-12T16:20:24.846028315+01:00",
+        "last_opened": "2025-02-12T18:10:03.825857653+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",
@@ -30,10 +30,38 @@
     },
     {
       "workspace_infos": {
-        "name": "zig",
-        "path": "/home/lam/Desktop/zig",
-        "createdAt": "2025-02-12T10:58:29.926303303+01:00",
-        "last_opened": "2025-02-12T11:50:29.955032886+01:00",
+        "name": "last",
+        "path": "/home/lam/Desktop/last",
+        "createdAt": "2025-02-12T16:23:16.379647407+01:00",
+        "last_opened": "2025-02-12T18:09:28.031466411+01:00",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "oki",
+        "path": "/home/lam/Desktop/oki",
+        "createdAt": "2025-02-12T16:26:04.86365565+01:00",
+        "last_opened": "2025-02-12T18:09:48.711338294+01:00",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "zob",
+        "path": "/home/lam/Desktop/zob",
+        "createdAt": "2025-02-12T16:26:31.635737841+01:00",
+        "last_opened": "2025-02-12T17:13:53.59943495+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",

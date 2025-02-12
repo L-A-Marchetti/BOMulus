@@ -15,7 +15,7 @@ import (
 
 // APIRequestToDigiKey retrieves information based on the ManufacturerPartNumber (MPN)
 // and updates the corresponding component
-func APIRequestToDigiKey(i int, done *chan struct{}) error {
+func APIRequestToDigiKey(workspacePath string, i int, done *chan struct{}) error {
 	select {
 	case <-*done:
 		return errors.New("stop signal received") // Exit if done signal is received
@@ -90,7 +90,7 @@ func APIRequestToDigiKey(i int, done *chan struct{}) error {
 				return errors.New("DK API connexion lost")
 			}
 		*/
-		processAnalysis(ApiResponse{}, apiResponse, i, nil, "Digikey", done)
+		processAnalysis(workspacePath, ApiResponse{}, apiResponse, i, nil, "Digikey", done)
 		return nil
 	}
 }

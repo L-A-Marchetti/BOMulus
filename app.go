@@ -51,8 +51,8 @@ func (a *App) GetComponent(i int) core.Component {
 	return core.Components[i]
 }
 
-func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResult, error) {
-	return components.QuantityPrice(int(quantity))
+func (a *App) PriceCalculator(activeWorkspacePath string, quantity float64) (components.PriceCalculationResult, error) {
+	return components.QuantityPrice(activeWorkspacePath, int(quantity))
 }
 
 /*╚══════════════════════════════════════════════╝*/
@@ -60,8 +60,8 @@ func (a *App) PriceCalculator(quantity float64) (components.PriceCalculationResu
 /*╔══════════════ ANALYSIS FUNCTIONS ══════════════╗*/
 
 // RunAnalysis initiates the analysis of components by calling the AnalyzeComponents function.
-func (a *App) RunAnalysis() error {
-	return components.AnalyzeComponents() // Delegate analysis to the components package
+func (a *App) RunAnalysis(activeWorkspacePath string) error {
+	return components.AnalyzeComponents(activeWorkspacePath) // Delegate analysis to the components package
 }
 
 // StopAnalysis send the done message to the analysis goroutine to stop it.
@@ -196,31 +196,27 @@ func (a *App) OpenMultipleFilesDialog() ([]string, error) {
 /*╔══════════════ WORKSPACE FUNCTIONS ══════════════╗*/
 
 // SetActiveWorkspace sets the active workspace path.
-func (a *App) SetActiveWorkspace(path string) {
-	workspaces.ActiveWorkspaceMutex.Lock()
-	defer workspaces.ActiveWorkspaceMutex.Unlock()
-	// Reset components when an active workspace is set.
+func (a *App) SetActiveWorkspace(activeWorkspace workspaces.Workspace) error {
 	core.ResetComponents()
-	workspaces.ActiveWorkspacePath = path
-	// Update the lastOpened time of the workspace
-	workspaces.UpdateLastOpened()
+	return workspaces.UpdateLastOpened(activeWorkspace)
 }
 
-func (a *App) DeleteWorkspace(path string) {
-	workspaces.DeleteWorkspace(path)
+func (a *App) DeleteWorkspace(workspace workspaces.Workspace) error {
+	return workspaces.DeleteWorkspace(workspace)
 }
 
-func (a *App) DeleteBOMFile(filePath string) {
-	workspaces.DeleteBOMFile(filePath)
+func (a *App) DeleteBOMFile(activeWorkspacePath, filePath string) {
+	workspaces.DeleteBOMFile(activeWorkspacePath, filePath)
 }
 
 // GetActiveWorkspace returns the active workspace path.
+/*
 func (a *App) GetActiveWorkspace() string {
 	workspaces.ActiveWorkspaceMutex.RLock()
 	defer workspaces.ActiveWorkspaceMutex.RUnlock()
 	return workspaces.ActiveWorkspacePath
 }
-
+*/
 // CreateWorkspace initiates the creation of a new workspace by delegating to the workspaces package.
 func (a *App) CreateWorkspace(path string, name string) error {
 	return workspaces.CreateWorkspace(path, name) // Delegate to workspaces package
@@ -237,28 +233,27 @@ func (a *App) HeaderFiltersFileValidation(filePath string) (core.XlsmFile, error
 }
 
 // AddFileToWorkspace initiates adding a file to the active workspace by delegating to workspaces package.
-func (a *App) AddFileToWorkspace(filePath string, file core.XlsmFile) error {
-	activeWorkspace := a.GetActiveWorkspace() // Get active workspace path
-	fmt.Println(file.Filters)
+func (a *App) AddFileToWorkspace(activeWorkspace workspaces.Workspace, filePath string, file core.XlsmFile) error {
+	//activeWorkspace := a.GetActiveWorkspace() // Get active workspace path
 	return workspaces.AddFileToWorkspace(activeWorkspace, filePath, file) // Delegate to workspaces package
 }
 
 // GetFilesInWorkspaceInfo retrieves files in the active workspace's .bmls by delegating to workspaces package.
-func (a *App) GetFilesInWorkspaceInfo() ([]workspaces.FileInfo, error) {
-	activeWorkspace := a.GetActiveWorkspace()                  // Get active workspace path
+func (a *App) GetFilesInWorkspaceInfo(activeWorkspace workspaces.Workspace) ([]workspaces.FileInfo, error) {
+	//activeWorkspace := a.GetActiveWorkspace()                  // Get active workspace path
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
-func (a *App) UpdateVersionTags(files []workspaces.FileInfo) error {
-	return workspaces.UpdateVersionTags(files)
+func (a *App) UpdateVersionTags(activeWorkspacePath string, files []workspaces.FileInfo) error {
+	return workspaces.UpdateVersionTags(activeWorkspacePath, files)
 }
 
-func (a *App) UpdateLastComparison(v1, v2 string) error {
-	return workspaces.UpdateLastComparison(v1, v2)
+func (a *App) UpdateLastComparison(activeWorkspacePath, v1, v2 string) error {
+	return workspaces.UpdateLastComparison(activeWorkspacePath, v1, v2)
 }
 
-func (a *App) GetLastComparison() (workspaces.Comparison, error) {
-	return workspaces.GetLastComparison()
+func (a *App) GetLastComparison(activeWorkspacePath string) (workspaces.Comparison, error) {
+	return workspaces.GetLastComparison(activeWorkspacePath)
 }
 
 func (a *App) UpdateDesignator(designator, function, color string) {
@@ -272,8 +267,8 @@ func (a *App) UpdateDesignator(designator, function, color string) {
 	workspaces.UpdateDesignator(d)
 }
 
-func (a *App) UpdateBMLSDesignators() error {
-	return workspaces.UpdateBMLSDesignators()
+func (a *App) UpdateBMLSDesignators(activeWorkspacePath string) error {
+	return workspaces.UpdateBMLSDesignators(activeWorkspacePath)
 }
 
 /*╚══════════════════════════════════════════════╝*/
@@ -333,15 +328,15 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 }
 
 // GetProductionQuantity retrieves the selected production quantity by delegating to workspaces package.
-func (a *App) GetProductionQuantity() (string, error) {
-	activeWorkspace := a.GetActiveWorkspace()
-	return workspaces.GetProductionQuantity(activeWorkspace) // Delegate to workspaces package
+func (a *App) GetProductionQuantity(activeWorkspacePath string) (string, error) {
+	//activeWorkspace := a.GetActiveWorkspace()
+	return workspaces.GetProductionQuantity(activeWorkspacePath) // Delegate to workspaces package
 }
 
 // SetProductionQuantity sets the selected production quantity by updating BOMulus.bmls.
-func (a *App) SetProductionQuantity(productionQuantity string) error {
+func (a *App) SetProductionQuantity(activeWorkspacePath, productionQuantity string) error {
 	config.PRODUCTION_QUANTITY = productionQuantity
-	return workspaces.SetProductionQuantity(productionQuantity)
+	return workspaces.SetProductionQuantity(activeWorkspacePath, productionQuantity)
 }
 
 // GetApiPriority retrieves the user API priority by delegating to workspaces package.

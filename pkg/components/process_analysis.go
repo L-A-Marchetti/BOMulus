@@ -36,7 +36,7 @@ import (
 
 // processAnalysis processes the API response and updates the component information
 // It handles both exact matches and alternative components
-func processAnalysis(apiResponse ApiResponse, response Response, i int, batch []core.Component, supplier string, done *chan struct{}) {
+func processAnalysis(activeWorkspacePath string, apiResponse ApiResponse, response Response, i int, batch []core.Component, supplier string, done *chan struct{}) {
 	select {
 	case <-*done:
 		return // Exit if done signal is received
@@ -82,7 +82,7 @@ func processAnalysis(apiResponse ApiResponse, response Response, i int, batch []
 					core.AnalysisState.Current++
 					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(len(core.Components)) * 100
 					if config.ANALYZE_SAVE_STATE {
-						workspaces.UpdateBMLSComponents(*currentComponent)
+						workspaces.UpdateBMLSComponents(activeWorkspacePath, *currentComponent)
 					}
 				}
 			}

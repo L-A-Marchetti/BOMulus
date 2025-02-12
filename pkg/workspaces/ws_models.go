@@ -2,7 +2,6 @@ package workspaces
 
 import (
 	"core"
-	"sync"
 	"time"
 )
 
@@ -54,8 +53,9 @@ var API_KEYS = APIKeys{
 	DKClientId:    "",
 	DKSecret:      "",
 }
-
+/*
 var (
 	ActiveWorkspacePath  string
 	ActiveWorkspaceMutex sync.RWMutex
 )
+*/

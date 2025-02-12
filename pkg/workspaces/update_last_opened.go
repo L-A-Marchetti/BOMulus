@@ -35,8 +35,8 @@ import (
 	"time"
 )
 
-func UpdateLastOpened() error {
-	if ActiveWorkspacePath == "" {
+func UpdateLastOpened(activeWorkspace Workspace) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
 	// Update the root BOMulus file
@@ -54,7 +54,7 @@ func UpdateLastOpened() error {
 		}
 	}
 	for i, workspace := range bomulusFile.Workspaces {
-		if workspace.WorkspaceInfos.Path == ActiveWorkspacePath {
+		if workspace.WorkspaceInfos.Path == activeWorkspace.WorkspaceInfos.Path {
 			bomulusFile.Workspaces[i].WorkspaceInfos.LastOpened = time.Now()
 			break
 		}
@@ -69,7 +69,7 @@ func UpdateLastOpened() error {
 		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
 	}
 	// Update the workspace bmls
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)

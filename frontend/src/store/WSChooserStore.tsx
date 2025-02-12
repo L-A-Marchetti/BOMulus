@@ -4,18 +4,19 @@ import {
   SetActiveWorkspace,
   DeleteWorkspace,
 } from '../../wailsjs/go/main/App';
-import { Workspace } from '../types/ws_interfaces';
+import { workspaces } from '../../wailsjs/go/models';
+type Workspace = workspaces.Workspace;
 import { Monitor } from '../types/global';
 
 interface WSChooserProps {
   workspaces: Workspace[] | null;
   monitor: Monitor;
-  activeWorkspace: string | null;
+  activeWorkspace: Workspace | null;
   workspaceToDelete: Workspace | null;
   isVisible: boolean;
   toggleVisibility: () => void;
   loadWorkspaces: () => void;
-  setActiveWorkspace: (path: string) => void;
+  setActiveWorkspace: (workspace: Workspace) => void;
   setWorkspaceToDelete: (workspace: Workspace | null) => void;
   deleteWorkspace: () => void;
 }
@@ -36,13 +37,14 @@ export const WSChooserStore = create<WSChooserProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
-  setActiveWorkspace: async (path: string) => {
+  setActiveWorkspace: async (workspace) => {
     set({ monitor: { isLoading: true, error: null } });
     try {
-      await SetActiveWorkspace(path);
+      await SetActiveWorkspace(workspace);
       set({
-        activeWorkspace: path,
+        activeWorkspace: workspace,
         monitor: { isLoading: false, error: null },
+        isVisible: false,
       });
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
@@ -54,7 +56,7 @@ export const WSChooserStore = create<WSChooserProps>((set) => ({
     const state = WSChooserStore.getState();
     if (!state.workspaceToDelete) return;
     try {
-      await DeleteWorkspace(state.workspaceToDelete.workspace_infos.path);
+      await DeleteWorkspace(state.workspaceToDelete);
       set({
         workspaceToDelete: null,
         monitor: { isLoading: false, error: null },

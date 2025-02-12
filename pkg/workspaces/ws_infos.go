@@ -39,11 +39,11 @@ import (
 )
 
 // GetFilesInWorkspaceInfo returns the list of files in the specified workspace's .bmls file.
-func GetFilesInWorkspaceInfo(workspacePath string) ([]FileInfo, error) {
-	if workspacePath == "" {
+func GetFilesInWorkspaceInfo(activeWorkspace Workspace) ([]FileInfo, error) {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return nil, fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -78,11 +78,11 @@ func GetWorkspaceInfo(workspacePath string) (WorkspaceInfos, error) {
 }
 
 // UpdateVersionTags update the version tag of each file in the workspace's .bmls file.
-func UpdateVersionTags(files []FileInfo) error {
-	if ActiveWorkspacePath == "" {
+func UpdateVersionTags(activeWorkspace string, files []FileInfo) error {
+	if activeWorkspace == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -109,11 +109,11 @@ func UpdateVersionTags(files []FileInfo) error {
 }
 
 // UpdateLastComparison update the last comparison the workspace's .bmls file.
-func UpdateLastComparison(v1, v2 string) error {
-	if ActiveWorkspacePath == "" {
+func UpdateLastComparison(activeWorkspace, v1, v2 string) error {
+	if activeWorkspace == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -135,11 +135,11 @@ func UpdateLastComparison(v1, v2 string) error {
 }
 
 // GetLastComparison get the last comparison from workspace's .bmls file.
-func GetLastComparison() (Comparison, error) {
-	if ActiveWorkspacePath == "" {
+func GetLastComparison(activeWorkspace string) (Comparison, error) {
+	if activeWorkspace == "" {
 		return Comparison{}, fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)

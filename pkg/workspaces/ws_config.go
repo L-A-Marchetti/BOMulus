@@ -109,11 +109,11 @@ func GetProductionQuantity(workspacePath string) (string, error) {
 // SetProductionQuantity update the production quantity in the specified .bmls file.
 // It reads the .bmls file, unmarshals its content, and updates the
 // global configuration with the production quantity value.
-func SetProductionQuantity(productionQuantity string) error {
-	if ActiveWorkspacePath == "" {
+func SetProductionQuantity(activeWorkspace string, productionQuantity string) error {
+	if activeWorkspace == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -130,9 +130,6 @@ func SetProductionQuantity(productionQuantity string) error {
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
 	}
-	if ActiveWorkspacePath == "" {
-		return fmt.Errorf("no active workspace set")
-	}
 	// Update the root BOMulus file
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 	var bomulusFile BOMulusFile
@@ -148,7 +145,7 @@ func SetProductionQuantity(productionQuantity string) error {
 		}
 	}
 	for i, workspace := range bomulusFile.Workspaces {
-		if workspace.WorkspaceInfos.Path == ActiveWorkspacePath {
+		if workspace.WorkspaceInfos.Path == activeWorkspace {
 			bomulusFile.Workspaces[i].WorkspaceInfos.ProductionQuantity = productionQuantity
 			break
 		}

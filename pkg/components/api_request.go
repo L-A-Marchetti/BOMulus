@@ -43,7 +43,7 @@ import (
 
 // APIRequest retrieves information based on the MPN
 // and updates the corresponding component
-func APIRequest(batch []core.Component, done *chan struct{}) error {
+func APIRequest(activeWorkspacePath string, batch []core.Component, done *chan struct{}) error {
 	select {
 	case <-*done:
 		return errors.New("stop signal received") // Exit if done signal is received
@@ -89,7 +89,7 @@ func APIRequest(batch []core.Component, done *chan struct{}) error {
 			return errors.New("Mouser API connexion lost")
 		}
 		// Add some infos to the component.
-		processAnalysis(apiResponse, Response{}, -1, batch, "Mouser", done)
+		processAnalysis(activeWorkspacePath, apiResponse, Response{}, -1, batch, "Mouser", done)
 		return nil
 	}
 }

@@ -19,11 +19,11 @@ func UpdateDesignator(d core.Designator) {
 	}
 }
 
-func UpdateBMLSDesignators() error {
-	if ActiveWorkspacePath == "" {
+func UpdateBMLSDesignators(activeWorkspace string) error {
+	if activeWorkspace == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)

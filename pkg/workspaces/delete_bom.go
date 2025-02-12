@@ -39,11 +39,11 @@ import (
 	"strings"
 )
 
-func DeleteBOMFile(filePath string) error {
-	if ActiveWorkspacePath == "" {
+func DeleteBOMFile(activeWorkspacePath, filePath string) error {
+	if activeWorkspacePath == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(ActiveWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(ActiveWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspacePath), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
