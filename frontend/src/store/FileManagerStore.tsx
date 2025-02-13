@@ -17,7 +17,7 @@ type XlsmFile = core.XlsmFile;
 interface FileManagerProps {
   files: FileInfo[] | null;
   filesToValidate: XlsmFile[] | null;
-  selectedFiles: [FileInfo, FileInfo] | null;
+  selectedFiles: [FileInfo, FileInfo] | [FileInfo, null] | [null, null];
   monitor: Monitor;
   isVisible: boolean;
   toggleVisibility: () => void;
@@ -28,12 +28,13 @@ interface FileManagerProps {
   cancelValidation: () => void;
   deleteFile: (file: FileInfo) => void;
   moveFile: (direction: string, file: FileInfo) => void;
+  selectFile: (file: FileInfo) => void;
 }
 
 export const FileManagerStore = create<FileManagerProps>((set) => ({
   files: null,
   filesToValidate: null,
-  selectedFiles: null,
+  selectedFiles: [null, null],
   monitor: { isLoading: false, error: null },
   isVisible: false,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
@@ -123,7 +124,9 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
     set({ monitor: { isLoading: true, error: null } });
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     const filesToValidate = FileManagerStore.getState().filesToValidate;
-    const file: XlsmFile | undefined = filesToValidate ? filesToValidate[0] : undefined;
+    const file: XlsmFile | undefined = filesToValidate
+      ? filesToValidate[0]
+      : undefined;
     if (!file) {
       return set({
         monitor: { isLoading: false, error: 'No file to validate.' },
@@ -169,9 +172,8 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
-  moveFile: async (direction: string, file: FileInfo) =>
-    {
-      set({ monitor: { isLoading: true, error: null } });
+  moveFile: async (direction: string, file: FileInfo) => {
+    set({ monitor: { isLoading: true, error: null } });
     set((state) => {
       if (!state.files) return {};
       const currentIndex = state.files.indexOf(file);
@@ -192,7 +194,10 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace || !files)
       return set({
-        monitor: { isLoading: false, error: 'No active workspace or no files found.' },
+        monitor: {
+          isLoading: false,
+          error: 'No active workspace or no files found.',
+        },
       });
     try {
       await UpdateVersionTags(activeWorkspace, files);
@@ -201,4 +206,21 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
+  selectFile: (file: FileInfo) =>
+    set((state) => {
+      const [file1, file2] = state.selectedFiles;
+      if (file1 === file || file2 === file) {
+        if (file === file1) {
+          return { selectedFiles: [file2, null] };
+        }
+        return { selectedFiles: [file1, null] };
+      }
+      if (!file1) {
+        return { selectedFiles: [file, null] };
+      }
+      if (!file2) {
+        return { selectedFiles: [file1, file] };
+      }
+      return { selectedFiles: [file1, file] };
+    }),
 }));

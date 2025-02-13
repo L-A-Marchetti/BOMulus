@@ -30,7 +30,14 @@ export function FileManager(): React.JSX.Element {
               <ul>
                 {FileManager.files?.map((file) => (
                   <li key={file.version_tag}>
-                    v{file.version_tag} {file.name}{' '}
+                    v{file.version_tag}{' '}
+                    <span
+                      onClick={() => {
+                        FileManager.selectFile(file);
+                      }}
+                    >
+                      {file.name}
+                    </span>{' '}
                     <span
                       onClick={() => {
                         FileManager.moveFile('-', file);
@@ -46,6 +53,13 @@ export function FileManager(): React.JSX.Element {
                       ▾
                     </span>{' '}
                     <span onClick={() => FileManager.deleteFile(file)}>x</span>
+                    {FileManager.selectedFiles[0] === file ? (
+                      <p>1</p>
+                    ) : FileManager.selectedFiles[1] === file ? (
+                      <p>2</p>
+                    ) : (
+                      <></>
+                    )}
                   </li>
                 ))}
               </ul>
