@@ -4,6 +4,7 @@ import { WSCreatorStore } from '../../store/WSCreatorStore';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import { useEffect } from 'react';
 import { FileManagerStore } from '../../store/FileManagerStore';
+import UploadValidation from '../shared/UploadValidation';
 
 export function FileManager(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
@@ -25,11 +26,16 @@ export function FileManager(): React.JSX.Element {
           ) : FileManager.monitor.error ? (
             FileManager.monitor.error
           ) : (
-            <ul>
-              {FileManager.files?.map((file) => (
-                <li key={file.version_tag}>v{file.version_tag}{' '}{file.name}{' '}▴{' '}▾{' '}x</li>
-              ))}
-            </ul>
+            <>
+              <ul>
+                {FileManager.files?.map((file) => (
+                  <li key={file.version_tag}>
+                    v{file.version_tag} {file.name} ▴ ▾ x
+                  </li>
+                ))}
+              </ul>
+              {FileManager.filesToValidate ? <UploadValidation /> : <></>}
+            </>
           )}
         </>
       ) : (

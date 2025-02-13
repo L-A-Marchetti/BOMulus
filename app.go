@@ -233,9 +233,9 @@ func (a *App) HeaderFiltersFileValidation(filePath string) (core.XlsmFile, error
 }
 
 // AddFileToWorkspace initiates adding a file to the active workspace by delegating to workspaces package.
-func (a *App) AddFileToWorkspace(activeWorkspace workspaces.Workspace, filePath string, file core.XlsmFile) error {
+func (a *App) AddFileToWorkspace(activeWorkspace workspaces.Workspace, file core.XlsmFile) error {
 	//activeWorkspace := a.GetActiveWorkspace() // Get active workspace path
-	return workspaces.AddFileToWorkspace(activeWorkspace, filePath, file) // Delegate to workspaces package
+	return workspaces.AddFileToWorkspace(activeWorkspace, file) // Delegate to workspaces package
 }
 
 // GetFilesInWorkspaceInfo retrieves files in the active workspace's .bmls by delegating to workspaces package.
