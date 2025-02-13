@@ -248,12 +248,12 @@ func (a *App) UpdateVersionTags(activeWorkspace workspaces.Workspace, files []wo
 	return workspaces.UpdateVersionTags(activeWorkspace, files)
 }
 
-func (a *App) UpdateLastComparison(activeWorkspacePath, v1, v2 string) error {
-	return workspaces.UpdateLastComparison(activeWorkspacePath, v1, v2)
+func (a *App) UpdateLastComparison(activeWorkspace workspaces.Workspace, v1, v2 workspaces.FileInfo) error {
+	return workspaces.UpdateLastComparison(activeWorkspace, v1, v2)
 }
 
-func (a *App) GetLastComparison(activeWorkspacePath string) (workspaces.Comparison, error) {
-	return workspaces.GetLastComparison(activeWorkspacePath)
+func (a *App) GetLastComparison(activeWorkspace workspaces.Workspace) (workspaces.Comparison, error) {
+	return workspaces.GetLastComparison(activeWorkspace)
 }
 
 func (a *App) UpdateDesignator(designator, function, color string) {

@@ -112,11 +112,11 @@ func UpdateVersionTags(activeWorkspace Workspace, files []FileInfo) error {
 }
 
 // UpdateLastComparison update the last comparison the workspace's .bmls file.
-func UpdateLastComparison(activeWorkspace, v1, v2 string) error {
-	if activeWorkspace == "" {
+func UpdateLastComparison(activeWorkspace Workspace, v1, v2 FileInfo) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -128,8 +128,8 @@ func UpdateLastComparison(activeWorkspace, v1, v2 string) error {
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
 	}
-	workspace.WorkspaceInfos.LastComparison.V1 = v1
-	workspace.WorkspaceInfos.LastComparison.V2 = v2
+	workspace.WorkspaceInfos.LastComparison.V1 = v1.Path
+	workspace.WorkspaceInfos.LastComparison.V2 = v2.Path
 	jsonData, err := json.MarshalIndent(workspace, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
@@ -138,11 +138,11 @@ func UpdateLastComparison(activeWorkspace, v1, v2 string) error {
 }
 
 // GetLastComparison get the last comparison from workspace's .bmls file.
-func GetLastComparison(activeWorkspace string) (Comparison, error) {
-	if activeWorkspace == "" {
+func GetLastComparison(activeWorkspace Workspace) (Comparison, error) {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return Comparison{}, fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)

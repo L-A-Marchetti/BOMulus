@@ -54,9 +54,9 @@ export function FileManager(): React.JSX.Element {
                     </span>{' '}
                     <span onClick={() => FileManager.deleteFile(file)}>x</span>
                     {FileManager.selectedFiles[0] === file ? (
-                      <p>1</p>
+                      <span> 1</span>
                     ) : FileManager.selectedFiles[1] === file ? (
-                      <p>2</p>
+                      <span> 2</span>
                     ) : (
                       <></>
                     )}
@@ -65,6 +65,22 @@ export function FileManager(): React.JSX.Element {
               </ul>
               {FileManager.filesToValidate ? <UploadValidation /> : <></>}
             </>
+          )}
+          {FileManager.compareMonitor.isLoading ? (
+            <p>Comparison module is loading...</p>
+          ) : (
+            <p
+              onClick={() => {
+                FileManager.compare();
+              }}
+            >
+              Compare
+            </p>
+          )}
+          {FileManager.compareMonitor.error ? (
+            <p>{FileManager.compareMonitor.error}</p>
+          ) : (
+            <></>
           )}
         </>
       ) : (

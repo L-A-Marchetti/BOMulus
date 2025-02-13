@@ -6,6 +6,8 @@ import {
   GetFilesInWorkspaceInfo,
   DeleteBOMFile,
   UpdateVersionTags,
+  BtnCompare,
+  UpdateLastComparison,
 } from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { WSChooserStore } from './WSChooserStore';
@@ -19,6 +21,7 @@ interface FileManagerProps {
   filesToValidate: XlsmFile[] | null;
   selectedFiles: [FileInfo, FileInfo] | [FileInfo, null] | [null, null];
   monitor: Monitor;
+  compareMonitor: Monitor;
   isVisible: boolean;
   toggleVisibility: () => void;
   loadFiles: () => void;
@@ -29,6 +32,7 @@ interface FileManagerProps {
   deleteFile: (file: FileInfo) => void;
   moveFile: (direction: string, file: FileInfo) => void;
   selectFile: (file: FileInfo) => void;
+  compare: () => void;
 }
 
 export const FileManagerStore = create<FileManagerProps>((set) => ({
@@ -36,6 +40,7 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
   filesToValidate: null,
   selectedFiles: [null, null],
   monitor: { isLoading: false, error: null },
+  compareMonitor: { isLoading: false, error: null },
   isVisible: false,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   loadFiles: async () => {
@@ -223,4 +228,35 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       }
       return { selectedFiles: [file1, file] };
     }),
+  compare: async () => {
+    set({ compareMonitor: { isLoading: true, error: null } });
+    const activeWorkspace = WSChooserStore.getState().activeWorkspace;
+    if (!activeWorkspace)
+      return set({
+        compareMonitor: {
+          isLoading: false,
+          error: 'No active workspace found.',
+        },
+      });
+    const filesToCompare = FileManagerStore.getState().selectedFiles;
+    if (!filesToCompare[0] || !filesToCompare[1])
+      return set({
+        compareMonitor: { isLoading: false, error: 'No files selected.' },
+      });
+    try {
+      await BtnCompare(
+        filesToCompare[0].components,
+        filesToCompare[1].components,
+      );
+      await UpdateLastComparison(
+        activeWorkspace,
+        filesToCompare[0],
+        filesToCompare[1],
+      );
+      set({ compareMonitor: { isLoading: false, error: null } });
+      FileManagerStore.getState().toggleVisibility();
+    } catch (err) {
+      set({ compareMonitor: { isLoading: false, error: String(err) } });
+    }
+  },
 }));

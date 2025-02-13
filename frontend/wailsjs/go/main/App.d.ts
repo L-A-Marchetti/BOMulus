@@ -43,7 +43,9 @@ export function GetFilesInWorkspaceInfo(
   arg1: workspaces.Workspace,
 ): Promise<Array<workspaces.FileInfo>>;
 
-export function GetLastComparison(arg1: string): Promise<workspaces.Comparison>;
+export function GetLastComparison(
+  arg1: workspaces.Workspace,
+): Promise<workspaces.Comparison>;
 
 export function GetProductionQuantity(arg1: string): Promise<string>;
 
@@ -106,9 +108,9 @@ export function UpdateDesignator(
 ): Promise<void>;
 
 export function UpdateLastComparison(
-  arg1: string,
-  arg2: string,
-  arg3: string,
+  arg1: workspaces.Workspace,
+  arg2: workspaces.FileInfo,
+  arg3: workspaces.FileInfo,
 ): Promise<void>;
 
 export function UpdateVersionTags(
