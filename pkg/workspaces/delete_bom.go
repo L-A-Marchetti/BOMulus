@@ -39,11 +39,11 @@ import (
 	"strings"
 )
 
-func DeleteBOMFile(activeWorkspacePath, filePath string) error {
-	if activeWorkspacePath == "" {
+func DeleteBOMFile(activeWorkspace Workspace, fileToDelete FileInfo) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(activeWorkspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -56,7 +56,7 @@ func DeleteBOMFile(activeWorkspacePath, filePath string) error {
 		return fmt.Errorf("failed to unmarshal .bmls: %w", err)
 	}
 	for i, file := range workspace.Files {
-		if file.Path == filePath {
+		if file.Path == fileToDelete.Path {
 			// Delete the workspace
 			if i == len(workspace.Files)-1 {
 				workspace.Files = workspace.Files[:i]
@@ -78,9 +78,9 @@ func DeleteBOMFile(activeWorkspacePath, filePath string) error {
 		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
 	}
 	// Remove the xl file.
-	err = os.RemoveAll(filePath)
+	err = os.RemoveAll(fileToDelete.Path)
 	if err != nil {
-		return fmt.Errorf("failed to delete the BOM file %s: %w", filePath, err)
+		return fmt.Errorf("failed to delete the BOM file %s: %w", fileToDelete.Path, err)
 	}
 	return nil
 }

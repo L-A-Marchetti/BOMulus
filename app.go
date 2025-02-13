@@ -205,8 +205,8 @@ func (a *App) DeleteWorkspace(workspace workspaces.Workspace) error {
 	return workspaces.DeleteWorkspace(workspace)
 }
 
-func (a *App) DeleteBOMFile(activeWorkspacePath, filePath string) {
-	workspaces.DeleteBOMFile(activeWorkspacePath, filePath)
+func (a *App) DeleteBOMFile(activeWorkspace workspaces.Workspace, fileToDelete workspaces.FileInfo) {
+	workspaces.DeleteBOMFile(activeWorkspace, fileToDelete)
 }
 
 // GetActiveWorkspace returns the active workspace path.
@@ -244,8 +244,8 @@ func (a *App) GetFilesInWorkspaceInfo(activeWorkspace workspaces.Workspace) ([]w
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
-func (a *App) UpdateVersionTags(activeWorkspacePath string, files []workspaces.FileInfo) error {
-	return workspaces.UpdateVersionTags(activeWorkspacePath, files)
+func (a *App) UpdateVersionTags(activeWorkspace workspaces.Workspace, files []workspaces.FileInfo) error {
+	return workspaces.UpdateVersionTags(activeWorkspace, files)
 }
 
 func (a *App) UpdateLastComparison(activeWorkspacePath, v1, v2 string) error {

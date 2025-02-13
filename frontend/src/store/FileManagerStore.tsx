@@ -4,6 +4,8 @@ import {
   AddFileToWorkspace,
   HeaderFiltersFileValidation,
   GetFilesInWorkspaceInfo,
+  DeleteBOMFile,
+  UpdateVersionTags,
 } from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { WSChooserStore } from './WSChooserStore';
@@ -24,6 +26,8 @@ interface FileManagerProps {
   validationControl: (key: string, sign: string) => void;
   confirmValidation: () => void;
   cancelValidation: () => void;
+  deleteFile: (file: FileInfo) => void;
+  moveFile: (direction: string, file: FileInfo) => void;
 }
 
 export const FileManagerStore = create<FileManagerProps>((set) => ({
@@ -119,7 +123,7 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
     set({ monitor: { isLoading: true, error: null } });
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     const filesToValidate = FileManagerStore.getState().filesToValidate;
-    const file: XlsmFile | undefined = filesToValidate?.shift();
+    const file: XlsmFile | undefined = filesToValidate ? filesToValidate[0] : undefined;
     if (!file) {
       return set({
         monitor: { isLoading: false, error: 'No file to validate.' },
@@ -150,4 +154,51 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
         filesToValidate: updatedFiles?.length === 0 ? null : updatedFiles,
       };
     }),
+  deleteFile: async (file: FileInfo) => {
+    set({ monitor: { isLoading: true, error: null } });
+    const activeWorkspace = WSChooserStore.getState().activeWorkspace;
+    if (!activeWorkspace)
+      return set({
+        monitor: { isLoading: false, error: 'No active workspace found.' },
+      });
+    try {
+      await DeleteBOMFile(activeWorkspace, file);
+      FileManagerStore.getState().loadFiles();
+      set({ monitor: { isLoading: false, error: null } });
+    } catch (err) {
+      set({ monitor: { isLoading: false, error: String(err) } });
+    }
+  },
+  moveFile: async (direction: string, file: FileInfo) =>
+    {
+      set({ monitor: { isLoading: true, error: null } });
+    set((state) => {
+      if (!state.files) return {};
+      const currentIndex = state.files.indexOf(file);
+      if (currentIndex === -1) return {};
+      let newIndex = direction === '+' ? currentIndex + 1 : currentIndex - 1;
+      if (newIndex < 0 || newIndex >= state.files.length) return {};
+      const newFiles = [...state.files];
+      [newFiles[currentIndex], newFiles[newIndex]] = [
+        newFiles[newIndex],
+        newFiles[currentIndex],
+      ];
+      newFiles.forEach((file, index) => {
+        file.version_tag = index + 1;
+      });
+      return { files: newFiles };
+    });
+    const files = FileManagerStore.getState().files;
+    const activeWorkspace = WSChooserStore.getState().activeWorkspace;
+    if (!activeWorkspace || !files)
+      return set({
+        monitor: { isLoading: false, error: 'No active workspace or no files found.' },
+      });
+    try {
+      await UpdateVersionTags(activeWorkspace, files);
+      set({ monitor: { isLoading: false, error: null } });
+    } catch (err) {
+      set({ monitor: { isLoading: false, error: String(err) } });
+    }
+  },
 }));

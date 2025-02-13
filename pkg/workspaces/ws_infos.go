@@ -55,6 +55,9 @@ func GetFilesInWorkspaceInfo(activeWorkspace Workspace) ([]FileInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal .bmls: %w", err)
 	}
+	sort.Slice(workspace.Files, func(i, j int) bool {
+		return workspace.Files[i].VersionTag < workspace.Files[j].VersionTag
+	})
 	return workspace.Files, nil
 }
 
@@ -78,11 +81,11 @@ func GetWorkspaceInfo(workspacePath string) (WorkspaceInfos, error) {
 }
 
 // UpdateVersionTags update the version tag of each file in the workspace's .bmls file.
-func UpdateVersionTags(activeWorkspace string, files []FileInfo) error {
-	if activeWorkspace == "" {
+func UpdateVersionTags(activeWorkspace Workspace, files []FileInfo) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
