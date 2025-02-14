@@ -9,15 +9,35 @@ interface CompareViewProps {
   components: Component[] | null;
   monitor: Monitor;
   isVisible: boolean;
+  insertIsVisible: boolean;
+  updateIsVisible: boolean;
+  deleteIsVisible: boolean;
+  equalIsVisible: boolean;
   toggleVisibility: () => void;
+  toggleOperatorVisibility: (operator: string) => void;
   loadComponents: () => void;
 }
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
   components: null,
   monitor: { isLoading: false, error: null },
-  isVisible: true,
+  isVisible: false,
+  insertIsVisible: true,
+  updateIsVisible: true,
+  deleteIsVisible: true,
+  equalIsVisible: true,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
+  toggleOperatorVisibility: (operator: string) =>
+    set((state) => ({
+      insertIsVisible:
+        operator === 'INSERT' ? !state.insertIsVisible : state.insertIsVisible,
+      updateIsVisible:
+        operator === 'UPDATE' ? !state.updateIsVisible : state.updateIsVisible,
+      deleteIsVisible:
+        operator === 'DELETE' ? !state.deleteIsVisible : state.deleteIsVisible,
+      equalIsVisible:
+        operator === 'EQUAL' ? !state.equalIsVisible : state.equalIsVisible,
+    })),
   loadComponents: async () => {
     set({ monitor: { isLoading: true, error: null } });
     try {

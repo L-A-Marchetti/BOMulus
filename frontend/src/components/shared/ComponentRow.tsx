@@ -1,6 +1,6 @@
-import { core } from "../../../wailsjs/go/models";
+import { core } from '../../../wailsjs/go/models';
 
-type Component = core.Component
+type Component = core.Component;
 
 type ComponentRowProps = {
   components: Component[] | undefined;
@@ -14,13 +14,20 @@ export default function ComponentRow({
   color,
 }: ComponentRowProps) {
   return (
-    components?.map((component) => (
-      <tr style={{backgroundColor: color}}>
-        <td>{isUpdate ? component.OldQuantity + '->' + component.NewQuantity : component.quantity}</td>
-        <td>{component.mpn}</td>
-        <td>{component.designator}</td>
-        <td>{component.user_description}</td>
-      </tr>
-    ))
+    <>
+      {components?.map((component) => (
+        <tr style={{ backgroundColor: color }}>
+          <td>
+            {isUpdate
+              ? component.OldQuantity + '->' + component.NewQuantity
+              : component.quantity}
+          </td>
+          <td>{component.mpn}</td>
+          <td>{component.designator}</td>
+          <td>{component.user_description}</td>
+          <td>v</td>
+        </tr>
+      ))}
+    </>
   );
 }

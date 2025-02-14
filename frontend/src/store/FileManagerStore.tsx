@@ -257,6 +257,8 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       set({ compareMonitor: { isLoading: false, error: null } });
       FileManagerStore.getState().toggleVisibility();
       CompareViewStore.getState().loadComponents();
+      if (!CompareViewStore.getState().isVisible)
+        CompareViewStore.getState().toggleVisibility();
     } catch (err) {
       set({ compareMonitor: { isLoading: false, error: String(err) } });
     }
