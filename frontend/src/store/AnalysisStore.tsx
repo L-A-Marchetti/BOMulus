@@ -10,7 +10,7 @@ interface AnalysisProps {
   analysisStatus: AnalysisStatus | null;
   monitor: Monitor;
   runAnalysis: () => void;
-  getAnalysisStatus: () => void;
+  getAnalysisStatus: () => Promise<void>;
 }
 
 export const AnalysisStore = create<AnalysisProps>((set) => ({
@@ -26,6 +26,12 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
     try {
       await RunAnalysis(activeWorkspace);
       set({ monitor: { isLoading: false, error: null } });
+      const refresh = setInterval(async () => {
+        await AnalysisStore.getState().getAnalysisStatus();
+        if (AnalysisStore.getState().analysisStatus?.Completed) {
+          clearInterval(refresh);
+        }
+      }, 100);
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
     }
@@ -34,15 +40,14 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
     set({ monitor: { isLoading: true, error: null } });
     try {
       const analysisStatus: AnalysisStatus = await GetAnalysisState();
+      const errors = [analysisStatus.DigikeyErr, analysisStatus.MouserErr]
+        .filter(Boolean)
+        .join(' | ');
       set({
         analysisStatus,
         monitor: {
           isLoading: false,
-          error: analysisStatus.DigikeyErr
-            ? analysisStatus.DigikeyErr
-            : analysisStatus.MouserErr
-              ? analysisStatus.MouserErr
-              : null,
+          error: errors || null,
         },
       });
     } catch (err) {
