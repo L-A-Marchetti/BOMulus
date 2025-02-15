@@ -60,8 +60,8 @@ func (a *App) PriceCalculator(activeWorkspacePath string, quantity float64) (com
 /*╔══════════════ ANALYSIS FUNCTIONS ══════════════╗*/
 
 // RunAnalysis initiates the analysis of components by calling the AnalyzeComponents function.
-func (a *App) RunAnalysis(activeWorkspacePath string) error {
-	return components.AnalyzeComponents(activeWorkspacePath) // Delegate analysis to the components package
+func (a *App) RunAnalysis(activeWorkspace workspaces.Workspace) error {
+	return components.AnalyzeComponents(activeWorkspace) // Delegate analysis to the components package
 }
 
 // StopAnalysis send the done message to the analysis goroutine to stop it.

@@ -31,7 +31,7 @@ var done chan struct{}
 
 // AnalyzeComponents analyzes the components and updates their state.
 // Mouser and DigiKey requests are processed independently with their own rate limits.
-func AnalyzeComponents(activeWorkspacePath string) error {
+func AnalyzeComponents(activeWorkspace workspaces.Workspace) error {
 	errChan := make(chan error, 1)
 	if done != nil {
 		done = nil
@@ -95,7 +95,7 @@ func AnalyzeComponents(activeWorkspacePath string) error {
 					log.Print(err) // Log Mouser rate limit errors
 					continue
 				}
-				if err := APIRequest(activeWorkspacePath, batch, &done); err != nil {
+				if err := APIRequest(activeWorkspace.WorkspaceInfos.Path, batch, &done); err != nil {
 					log.Println(err)
 					core.AnalysisState.MouserErr = err.Error()
 					//errChan <- err // Send error to channel if analysis fails
@@ -126,7 +126,7 @@ func AnalyzeComponents(activeWorkspacePath string) error {
 					log.Print(err) // Log DigiKey rate limit errors
 					continue
 				}
-				if err := APIRequestToDigiKey(activeWorkspacePath, i, &done); err != nil {
+				if err := APIRequestToDigiKey(activeWorkspace.WorkspaceInfos.Path, i, &done); err != nil {
 					log.Println(err)
 					core.AnalysisState.DigikeyErr = err.Error()
 					//errChan <- err // Send error to channel if analysis fails
@@ -142,7 +142,7 @@ func AnalyzeComponents(activeWorkspacePath string) error {
 					core.AnalysisState.Current++
 					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(totalComponents) * 100
 					if config.ANALYZE_SAVE_STATE {
-						workspaces.UpdateBMLSComponents(activeWorkspacePath, core.Components[i])
+						workspaces.UpdateBMLSComponents(activeWorkspace.WorkspaceInfos.Path, core.Components[i])
 					}
 					mu.Unlock()
 				}

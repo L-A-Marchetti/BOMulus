@@ -76,7 +76,7 @@ export function PriceCalculator(
   arg2: number,
 ): Promise<components.PriceCalculationResult>;
 
-export function RunAnalysis(arg1: string): Promise<void>;
+export function RunAnalysis(arg1: workspaces.Workspace): Promise<void>;
 
 export function SetActiveWorkspace(arg1: workspaces.Workspace): Promise<void>;
 
