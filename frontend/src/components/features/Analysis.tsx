@@ -1,11 +1,13 @@
 // src/components/WSChooser/WSChooser.tsx
 import React from 'react';
 import { AnalysisStore } from '../../store/AnalysisStore';
+import { CompareViewStore } from '../../store/CompareViewStore';
 
 export function Analysis(): React.JSX.Element {
   const Analysis = AnalysisStore();
+  const CompareView = CompareViewStore();
 
-  return (
+  return CompareView.components ? (
     <div>
       <p
         onClick={() => {
@@ -22,5 +24,7 @@ export function Analysis(): React.JSX.Element {
         <></>
       )}
     </div>
+  ) : (
+    <></>
   );
 }

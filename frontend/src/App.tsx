@@ -6,6 +6,7 @@ import { WSCurrent } from './components/features/WSCurrent';
 import { FileManager } from './components/features/FileManager';
 import { CompareView } from './components/features/CompareView';
 import { Analysis } from './components/features/Analysis';
+import { Settings } from './components/features/Settings';
 
 function App(): React.JSX.Element {
   return (
@@ -13,6 +14,7 @@ function App(): React.JSX.Element {
       <WSChooser />
       <WSCreator />
       <WSCurrent />
+      <Settings />
       <FileManager />
       <Analysis />
       <CompareView />

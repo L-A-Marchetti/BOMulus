@@ -75,7 +75,7 @@
         "name": "bozo",
         "path": "/home/lam/Desktop/bozo",
         "createdAt": "2025-02-13T13:51:27.620816892+01:00",
-        "last_opened": "2025-02-15T10:04:07.203738169+01:00",
+        "last_opened": "2025-02-15T15:16:43.776287326+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",
@@ -86,10 +86,10 @@
     }
   ],
   "api_keys": {
-    "mouser_api_key": "",
+    "mouser_api_key": "a5ed8d21-eb53-4ab3-85fa-35284bb9689d",
     "bomulus_api_key": "",
-    "dk_client_id": "",
-    "dk_secret": ""
+    "dk_client_id": "GKubd91ZeTWlWCHRisguaBhyC5TtM03P",
+    "dk_secret": "rmlA3eiqzW9IC7Yx"
   },
   "analyze_save_state": true,
   "analysis_refresh_days": 3,
