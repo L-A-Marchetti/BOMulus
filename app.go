@@ -201,8 +201,8 @@ func (a *App) SetActiveWorkspace(activeWorkspace workspaces.Workspace) error {
 	return workspaces.UpdateLastOpened(activeWorkspace)
 }
 
-func (a *App) DeleteWorkspace(workspace workspaces.Workspace) error {
-	return workspaces.DeleteWorkspace(workspace)
+func (a *App) DeleteWorkspace(workspaceToDelete workspaces.Workspace) error {
+	return workspaces.DeleteWorkspace(workspaceToDelete)
 }
 
 func (a *App) DeleteBOMFile(activeWorkspace workspaces.Workspace, fileToDelete workspaces.FileInfo) {

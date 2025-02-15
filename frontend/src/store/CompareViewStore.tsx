@@ -51,6 +51,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
     set({ monitor: { isLoading: true, error: null } });
     try {
       const components: Component[] = await GetComponents();
+      console.log('loaded');
       set({ components, monitor: { isLoading: false, error: null } });
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });

@@ -9,7 +9,7 @@ export function Settings(): React.JSX.Element {
 
   useEffect(() => {
     Settings.loadSettings();
-  }, [WSChooser.activeWorkspace]);
+  }, []);
 
   return (
     <div>

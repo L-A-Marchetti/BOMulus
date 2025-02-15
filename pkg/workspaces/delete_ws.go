@@ -36,7 +36,7 @@ import (
 	"path/filepath"
 )
 
-func DeleteWorkspace(workspace Workspace) error {
+func DeleteWorkspace(workspaceToDelete Workspace) error {
 	// Update the root BOMulus file
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 	var bomulusFile BOMulusFile
@@ -52,7 +52,7 @@ func DeleteWorkspace(workspace Workspace) error {
 		}
 	}
 	for i, workspace := range bomulusFile.Workspaces {
-		if workspace.WorkspaceInfos.Path == workspace.WorkspaceInfos.Path {
+		if workspace.WorkspaceInfos.Path == workspaceToDelete.WorkspaceInfos.Path {
 			// Delete the workspace
 			if i == len(bomulusFile.Workspaces)-1 {
 				bomulusFile.Workspaces = bomulusFile.Workspaces[:i]
@@ -72,9 +72,9 @@ func DeleteWorkspace(workspace Workspace) error {
 		return fmt.Errorf("failed to write BOMulus.bmls: %w", err)
 	}
 	// Remove the workspace folder.
-	err = os.RemoveAll(workspace.WorkspaceInfos.Path)
+	err = os.RemoveAll(workspaceToDelete.WorkspaceInfos.Path)
 	if err != nil {
-		return fmt.Errorf("failed to delete directory %s: %w", workspace.WorkspaceInfos.Path, err)
+		return fmt.Errorf("failed to delete directory %s: %w", workspaceToDelete.WorkspaceInfos.Path, err)
 	}
 	return nil
 }

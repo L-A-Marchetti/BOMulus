@@ -2,9 +2,11 @@
 import React from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import ComponentRow from '../shared/ComponentRow';
+import { AnalysisStore } from '../../store/AnalysisStore';
 
 export function CompareView(): React.JSX.Element {
   const CompareView = CompareViewStore();
+  const Analysis = AnalysisStore();
   const Insert = CompareView.components?.filter(
     (component) => component.Operator === 'INSERT',
   );
@@ -20,9 +22,9 @@ export function CompareView(): React.JSX.Element {
 
   return CompareView.isVisible ? (
     <>
-      {CompareView.monitor.isLoading ? (
+      {CompareView.monitor.isLoading && !Analysis.analysisStatus ? (
         <p>Compare View is loading...</p>
-      ) : CompareView.monitor.error ? (
+      ) : CompareView.monitor.error && !Analysis.analysisStatus ? (
         <p>{CompareView.monitor.error}</p>
       ) : (
         <div>

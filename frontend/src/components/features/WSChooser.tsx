@@ -15,11 +15,10 @@ export function WSChooser(): React.JSX.Element {
       <h1>Choose a workspace</h1>
       <ul>
         {WSChooser.workspaces?.map((ws) => (
-          <li
-            key={ws.workspace_infos.name}
-            onClick={() => WSChooser.setActiveWorkspace(ws)}
-          >
-            {ws.workspace_infos.name}
+          <li key={ws.workspace_infos.name}>
+            <span onClick={() => WSChooser.setActiveWorkspace(ws)}>
+              {ws.workspace_infos.name}
+            </span>
             <span onClick={() => WSChooser.setWorkspaceToDelete(ws)}> x</span>
           </li>
         ))}

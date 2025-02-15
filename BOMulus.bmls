@@ -2,80 +2,10 @@
   "workspaces": [
     {
       "workspace_infos": {
-        "name": "bbbb",
-        "path": "/home/lam/Desktop/bbbb",
-        "createdAt": "2025-02-12T15:39:47.858723963+01:00",
-        "last_opened": "2025-02-13T13:50:40.228901358+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "zobi",
-        "path": "/home/lam/Desktop/zobi",
-        "createdAt": "2025-02-12T16:20:24.846028315+01:00",
-        "last_opened": "2025-02-13T09:13:56.717088445+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "last",
-        "path": "/home/lam/Desktop/last",
-        "createdAt": "2025-02-12T16:23:16.379647407+01:00",
-        "last_opened": "2025-02-13T09:36:48.727556372+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "oki",
-        "path": "/home/lam/Desktop/oki",
-        "createdAt": "2025-02-12T16:26:04.86365565+01:00",
-        "last_opened": "2025-02-12T18:09:48.711338294+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "zob",
-        "path": "/home/lam/Desktop/zob",
-        "createdAt": "2025-02-12T16:26:31.635737841+01:00",
-        "last_opened": "2025-02-12T17:13:53.59943495+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "bozo",
-        "path": "/home/lam/Desktop/bozo",
-        "createdAt": "2025-02-13T13:51:27.620816892+01:00",
-        "last_opened": "2025-02-15T16:40:02.272491623+01:00",
+        "name": "zozo",
+        "path": "/home/lam/Desktop/zozo",
+        "createdAt": "2025-02-15T18:51:24.805158409+01:00",
+        "last_opened": "2025-02-15T18:56:23.579156878+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",

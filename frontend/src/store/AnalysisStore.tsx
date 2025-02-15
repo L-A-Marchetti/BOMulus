@@ -3,6 +3,7 @@ import { RunAnalysis, GetAnalysisState } from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { WSChooserStore } from './WSChooserStore';
 import { core } from '../../wailsjs/go/models';
+import { CompareViewStore } from './CompareViewStore';
 
 type AnalysisStatus = core.AnalysisStatus;
 
@@ -24,8 +25,7 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
         monitor: { isLoading: false, error: 'No active workspace found.' },
       });
     try {
-      await RunAnalysis(activeWorkspace);
-      set({ monitor: { isLoading: false, error: null } });
+      RunAnalysis(activeWorkspace);
       const refresh = setInterval(async () => {
         await AnalysisStore.getState().getAnalysisStatus();
         if (AnalysisStore.getState().analysisStatus?.Completed) {
@@ -37,16 +37,16 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
     }
   },
   getAnalysisStatus: async () => {
-    set({ monitor: { isLoading: true, error: null } });
     try {
       const analysisStatus: AnalysisStatus = await GetAnalysisState();
+      CompareViewStore.getState().loadComponents();
       const errors = [analysisStatus.DigikeyErr, analysisStatus.MouserErr]
         .filter(Boolean)
         .join(' | ');
       set({
         analysisStatus,
         monitor: {
-          isLoading: false,
+          isLoading: errors ? false : true,
           error: errors || null,
         },
       });
