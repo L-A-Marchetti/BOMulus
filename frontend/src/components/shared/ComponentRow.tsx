@@ -1,4 +1,6 @@
 import { core } from '../../../wailsjs/go/models';
+import { CompareViewStore } from '../../store/CompareViewStore';
+import ComponentDetails from './ComponentDetails';
 
 type Component = core.Component;
 
@@ -13,20 +15,44 @@ export default function ComponentRow({
   isUpdate,
   color,
 }: ComponentRowProps) {
+  const CompareView = CompareViewStore();
+
   return (
     <>
       {components?.map((component) => (
-        <tr style={{ backgroundColor: color }}>
-          <td>
-            {isUpdate
-              ? component.OldQuantity + '->' + component.NewQuantity
-              : component.quantity}
-          </td>
-          <td>{component.mpn}</td>
-          <td>{component.designator}</td>
-          <td>{component.user_description}</td>
-          <td>v</td>
-        </tr>
+        <>
+          <tr style={{ backgroundColor: color }} key={component.id}>
+            <td>
+              {isUpdate
+                ? `${component.OldQuantity} -> ${component.NewQuantity}`
+                : component.quantity}
+            </td>
+            <td>{component.mpn}</td>
+            <td>{component.designator}</td>
+            <td>{component.user_description}</td>
+            <td>
+              {component.analyzed && (
+                <button
+                  onClick={() =>
+                    CompareView.toggleComponentDetails(component.id)
+                  }
+                >
+                  {CompareView.expandedComponents.includes(component.id)
+                    ? 'Close'
+                    : 'Open'}
+                </button>
+              )}
+            </td>
+            <td>Bookmark</td>
+          </tr>
+          {CompareView.expandedComponents.includes(component.id) && (
+            <tr>
+              <td colSpan={6}>
+                <ComponentDetails component={component} />
+              </td>
+            </tr>
+          )}
+        </>
       ))}
     </>
   );

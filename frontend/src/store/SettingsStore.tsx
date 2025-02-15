@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { GetSavedAPIKeys } from '../../wailsjs/go/main/App';
+import {
+  GetSavedAPIKeys,
+  GetAnalyzeSaveState,
+  GetAnalysisRefreshDays,
+} from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { workspaces } from '../../wailsjs/go/models';
 
@@ -12,7 +16,7 @@ interface SettingsProps {
   analyzeSaveState: boolean;
   analysisRefreshDays: number;
   toggleVisibility: () => void;
-  loadApiKeys: () => void;
+  loadSettings: () => void;
 }
 
 export const SettingsStore = create<SettingsProps>((set) => ({
@@ -22,11 +26,18 @@ export const SettingsStore = create<SettingsProps>((set) => ({
   analyzeSaveState: false,
   analysisRefreshDays: 0,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
-  loadApiKeys: async () => {
+  loadSettings: async () => {
     set({ monitor: { isLoading: true, error: null } });
     try {
       const apiKeys: APIKeys = await GetSavedAPIKeys();
-      set({ apiKeys, monitor: { isLoading: false, error: null } });
+      const analyzeSaveState: boolean = await GetAnalyzeSaveState();
+      const analysisRefreshDays: number = await GetAnalysisRefreshDays();
+      set({
+        apiKeys,
+        analyzeSaveState,
+        analysisRefreshDays,
+        monitor: { isLoading: false, error: null },
+      });
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
     }

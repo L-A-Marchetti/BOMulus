@@ -8,7 +8,7 @@ export function Settings(): React.JSX.Element {
   const WSChooser = WSChooserStore();
 
   useEffect(() => {
-    Settings.loadApiKeys();
+    Settings.loadSettings();
   }, [WSChooser.activeWorkspace]);
 
   return (

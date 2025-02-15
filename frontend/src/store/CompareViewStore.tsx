@@ -13,8 +13,10 @@ interface CompareViewProps {
   updateIsVisible: boolean;
   deleteIsVisible: boolean;
   equalIsVisible: boolean;
+  expandedComponents: number[];
   toggleVisibility: () => void;
   toggleOperatorVisibility: (operator: string) => void;
+  toggleComponentDetails: (componentId: number) => void;
   loadComponents: () => void;
 }
 
@@ -26,6 +28,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   updateIsVisible: true,
   deleteIsVisible: true,
   equalIsVisible: true,
+  expandedComponents: [],
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   toggleOperatorVisibility: (operator: string) =>
     set((state) => ({
@@ -37,6 +40,12 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         operator === 'DELETE' ? !state.deleteIsVisible : state.deleteIsVisible,
       equalIsVisible:
         operator === 'EQUAL' ? !state.equalIsVisible : state.equalIsVisible,
+    })),
+  toggleComponentDetails: (componentId) =>
+    set((state) => ({
+      expandedComponents: state.expandedComponents.includes(componentId)
+        ? state.expandedComponents.filter((id) => id !== componentId) // Ferme si déjà ouvert
+        : [...state.expandedComponents, componentId], // Ajoute si fermé
     })),
   loadComponents: async () => {
     set({ monitor: { isLoading: true, error: null } });
