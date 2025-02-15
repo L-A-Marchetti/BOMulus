@@ -46,11 +46,7 @@ export default function ComponentRow({
             <td>Bookmark</td>
           </tr>
           {CompareView.expandedComponents.includes(component.id) && (
-            <tr>
-              <td colSpan={6}>
-                <ComponentDetails component={component} />
-              </td>
-            </tr>
+            <ComponentDetails component={component} />
           )}
         </>
       ))}
