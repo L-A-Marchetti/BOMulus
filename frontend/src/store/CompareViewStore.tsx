@@ -25,6 +25,7 @@ interface CompareViewProps {
   warningMoq: number[];
   selectedWarnings: string[];
   searchQuery: string;
+  sortOrder: string;
   toggleVisibility: () => void;
   toggleOperatorVisibility: (operator: string) => void;
   toggleComponentDetails: (componentId: number) => void;
@@ -33,6 +34,7 @@ interface CompareViewProps {
   toggleWarningFilter: (warning: string) => void;
   filterComponents: (components: Component[]) => Component[];
   setSearchQuery: (searchQuery: string) => void;
+  setSortOrder: (order: string) => void;
 }
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
@@ -55,6 +57,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   warningMoq: [],
   selectedWarnings: [],
   searchQuery: '',
+  sortOrder: 'default',
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   toggleOperatorVisibility: (operator: string) =>
     set((state) => ({
@@ -176,6 +179,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       warningMismatchMpn,
       warningMoq,
       searchQuery,
+      sortOrder,
     } = CompareViewStore.getState();
     let filteredComponents = [...components];
     if (selectedWarnings.includes('outOfStock')) {
@@ -216,11 +220,59 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         return matchesMpn || matchesDesignators || matchesDescriptions;
       });
     }
-
+    if (sortOrder === 'price-unit-asc') {
+      filteredComponents.sort((a, b) => {
+        const priceA =
+          parseFloat(
+            a.calculated_price.best_unit_price.replace(/[^0-9.-]+/g, ''),
+          ) || 0;
+        const priceB =
+          parseFloat(
+            b.calculated_price.best_unit_price.replace(/[^0-9.-]+/g, ''),
+          ) || 0;
+        return priceA - priceB;
+      });
+    } else if (sortOrder === 'price-unit-desc') {
+      filteredComponents.sort((a, b) => {
+        const priceA =
+          parseFloat(
+            a.calculated_price.best_unit_price.replace(/[^0-9.-]+/g, ''),
+          ) || 0;
+        const priceB =
+          parseFloat(
+            b.calculated_price.best_unit_price.replace(/[^0-9.-]+/g, ''),
+          ) || 0;
+        return priceB - priceA;
+      });
+    } else if (sortOrder === 'price-asc') {
+      filteredComponents.sort((a, b) => {
+        const priceA =
+          parseFloat(a.calculated_price.best_price.replace(/[^0-9.-]+/g, '')) ||
+          0;
+        const priceB =
+          parseFloat(b.calculated_price.best_price.replace(/[^0-9.-]+/g, '')) ||
+          0;
+        return priceA - priceB;
+      });
+    } else if (sortOrder === 'price-desc') {
+      filteredComponents.sort((a, b) => {
+        const priceA =
+          parseFloat(a.calculated_price.best_price.replace(/[^0-9.-]+/g, '')) ||
+          0;
+        const priceB =
+          parseFloat(b.calculated_price.best_price.replace(/[^0-9.-]+/g, '')) ||
+          0;
+        return priceB - priceA;
+      });
+    }
     return filteredComponents;
   },
   setSearchQuery: (searchQuery: string) =>
     set({
       searchQuery: searchQuery,
+    }),
+  setSortOrder: (order: string) =>
+    set({
+      sortOrder: order,
     }),
 }));

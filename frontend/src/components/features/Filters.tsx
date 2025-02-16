@@ -67,6 +67,18 @@ export function Filters(): React.JSX.Element {
           placeholder="Search Query"
         />
         {' | '}
+        <select
+          onChange={(e) =>
+            CompareViewStore.getState().setSortOrder(e.target.value)
+          }
+          value={CompareViewStore.getState().sortOrder}
+        >
+          <option value="default">Sort</option>
+          <option value="price-asc">Price (Low to High)</option>
+          <option value="price-desc">Price (High to Low)</option>
+          <option value="price-unit-asc">Unit Price (Low to High)</option>
+          <option value="price-unit-desc">Unit Price (High to Low)</option>
+        </select>
       </div>
     </>
   ) : (
