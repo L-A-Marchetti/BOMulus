@@ -97,7 +97,13 @@ export default function ComponentRow({
                 : component.quantity}
             </td>
             <td>{HighlightText(component.mpn)}</td>
-            <td>{HighlightText(component.designator)}</td>
+            <td>
+              {HighlightText(
+                component.designators
+                  .map((designator) => designator.designator)
+                  .join(', '),
+              )}
+            </td>
             <td>{HighlightText(component.user_description)}</td>
             <td>
               {component.analyzed && (
