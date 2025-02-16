@@ -3,7 +3,6 @@ import React from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import ComponentRow from '../shared/ComponentRow';
 import { AnalysisStore } from '../../store/AnalysisStore';
-import { Filters } from './Filters';
 
 export function CompareView(): React.JSX.Element {
   const CompareView = CompareViewStore();
@@ -20,7 +19,7 @@ export function CompareView(): React.JSX.Element {
           <table>
             {CompareView.insertIsVisible && CompareView.insert ? (
               <ComponentRow
-                components={CompareView.insert}
+                components={CompareView.filterComponents(CompareView.insert)}
                 isUpdate={false}
                 color="LightGreen"
               />
@@ -29,7 +28,7 @@ export function CompareView(): React.JSX.Element {
             )}
             {CompareView.updateIsVisible && CompareView.update ? (
               <ComponentRow
-                components={CompareView.update}
+                components={CompareView.filterComponents(CompareView.update)}
                 isUpdate={true}
                 color="MediumPurple"
               />
@@ -38,7 +37,7 @@ export function CompareView(): React.JSX.Element {
             )}
             {CompareView.deleteIsVisible && CompareView.delete ? (
               <ComponentRow
-                components={CompareView.delete}
+                components={CompareView.filterComponents(CompareView.delete)}
                 isUpdate={false}
                 color="LightCoral"
               />
@@ -47,7 +46,7 @@ export function CompareView(): React.JSX.Element {
             )}
             {CompareView.equalIsVisible && CompareView.equal ? (
               <ComponentRow
-                components={CompareView.equal}
+                components={CompareView.filterComponents(CompareView.equal)}
                 isUpdate={false}
                 color="LightGray"
               />

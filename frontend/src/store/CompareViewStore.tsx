@@ -23,11 +23,14 @@ interface CompareViewProps {
   warningMessage: number[];
   warningMismatchMpn: number[];
   warningMoq: number[];
+  selectedWarnings: string[];
   toggleVisibility: () => void;
   toggleOperatorVisibility: (operator: string) => void;
   toggleComponentDetails: (componentId: number) => void;
   loadComponents: () => void;
   componentHasAWarning: (componentId: number) => boolean;
+  toggleWarningFilter: (warning: string) => void;
+  filterComponents: (components: Component[]) => Component[];
 }
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
@@ -48,6 +51,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   warningMessage: [],
   warningMismatchMpn: [],
   warningMoq: [],
+  selectedWarnings: [],
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   toggleOperatorVisibility: (operator: string) =>
     set((state) => ({
@@ -152,5 +156,52 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
     if (CompareViewStore.getState().warningOutOfStock.includes(componentId))
       return true;
     return false;
+  },
+  toggleWarningFilter: (warning) =>
+    set((state) => {
+      const selectedWarnings = state.selectedWarnings.includes(warning)
+        ? state.selectedWarnings.filter((w) => w !== warning)
+        : [...state.selectedWarnings, warning];
+      return { selectedWarnings };
+    }),
+  filterComponents: (components: Component[]) => {
+    const {
+      selectedWarnings,
+      warningOutOfStock,
+      warningLifeCycle,
+      warningMessage,
+      warningMismatchMpn,
+      warningMoq,
+    } = CompareViewStore.getState();
+    let filteredComponents = [...components];
+    if (selectedWarnings.length === 0) {
+      return filteredComponents;
+    }
+    if (selectedWarnings.includes('outOfStock')) {
+      filteredComponents = filteredComponents.filter((component) =>
+        warningOutOfStock.includes(component.id),
+      );
+    }
+    if (selectedWarnings.includes('lifeCycle')) {
+      filteredComponents = filteredComponents.filter((component) =>
+        warningLifeCycle.includes(component.id),
+      );
+    }
+    if (selectedWarnings.includes('message')) {
+      filteredComponents = filteredComponents.filter((component) =>
+        warningMessage.includes(component.id),
+      );
+    }
+    if (selectedWarnings.includes('mismatchMpn')) {
+      filteredComponents = filteredComponents.filter((component) =>
+        warningMismatchMpn.includes(component.id),
+      );
+    }
+    if (selectedWarnings.includes('moq')) {
+      filteredComponents = filteredComponents.filter((component) =>
+        warningMoq.includes(component.id),
+      );
+    }
+    return filteredComponents;
   },
 }));

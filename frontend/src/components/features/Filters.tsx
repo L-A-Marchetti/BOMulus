@@ -39,7 +39,28 @@ export function Filters(): React.JSX.Element {
           }}
         >
           {CompareView.equal?.length}
-        </span>{' '}
+        </span>
+        {' | '}
+        <span onClick={() => CompareView.toggleWarningFilter('outOfStock')}>
+          Out Of Stock {CompareView.warningOutOfStock.length}
+        </span>
+        {' | '}
+        <span onClick={() => CompareView.toggleWarningFilter('lifeCycle')}>
+          Lifecycle Status {CompareView.warningLifeCycle.length}
+        </span>
+        {' | '}
+        <span onClick={() => CompareView.toggleWarningFilter('message')}>
+          Manufacturer Messages {CompareView.warningMessage.length}
+        </span>
+        {' | '}
+        <span onClick={() => CompareView.toggleWarningFilter('mismatchMpn')}>
+          Mismatching Mpn {CompareView.warningMismatchMpn.length}
+        </span>
+        {' | '}
+        <span onClick={() => CompareView.toggleWarningFilter('moq')}>
+          Minimum Order of Quantity {CompareView.warningMoq.length}
+        </span>
+        {' | '}
       </div>
     </>
   ) : (
