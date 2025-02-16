@@ -30,6 +30,7 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
         await AnalysisStore.getState().getAnalysisStatus();
         if (AnalysisStore.getState().analysisStatus?.Completed) {
           clearInterval(refresh);
+          set({ monitor: { isLoading: false, error: null } });
         }
       }, 100);
     } catch (err) {

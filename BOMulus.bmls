@@ -5,7 +5,21 @@
         "name": "zozo",
         "path": "/home/lam/Desktop/zozo",
         "createdAt": "2025-02-15T18:51:24.805158409+01:00",
-        "last_opened": "2025-02-16T17:11:34.982989638+01:00",
+        "last_opened": "2025-02-16T17:29:26.145634597+01:00",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "kouille",
+        "path": "/home/lam/Desktop/kouille",
+        "createdAt": "2025-02-16T17:29:45.169489501+01:00",
+        "last_opened": "2025-02-16T17:42:36.122199323+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",

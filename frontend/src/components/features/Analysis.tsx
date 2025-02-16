@@ -17,7 +17,12 @@ export function Analysis(): React.JSX.Element {
         Analyze
       </p>
       {Analysis.monitor.isLoading ? (
-        <p>Analysis is loading...</p>
+        <p>
+          Analysis is loading...
+          {Analysis.analysisStatus?.Progress
+            ? Math.round(Analysis.analysisStatus?.Progress) + ' %'
+            : ''}
+        </p>
       ) : Analysis.monitor.error ? (
         <p>{Analysis.monitor.error}</p>
       ) : (
