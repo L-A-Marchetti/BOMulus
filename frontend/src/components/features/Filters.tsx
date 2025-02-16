@@ -61,6 +61,12 @@ export function Filters(): React.JSX.Element {
           Minimum Order of Quantity {CompareView.warningMoq.length}
         </span>
         {' | '}
+        <input
+          onChange={(e) => CompareView.setSearchQuery(e.target.value)}
+          value={CompareView.searchQuery}
+          placeholder="Search Query"
+        />
+        {' | '}
       </div>
     </>
   ) : (

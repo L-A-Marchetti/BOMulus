@@ -24,6 +24,7 @@ interface CompareViewProps {
   warningMismatchMpn: number[];
   warningMoq: number[];
   selectedWarnings: string[];
+  searchQuery: string;
   toggleVisibility: () => void;
   toggleOperatorVisibility: (operator: string) => void;
   toggleComponentDetails: (componentId: number) => void;
@@ -31,6 +32,7 @@ interface CompareViewProps {
   componentHasAWarning: (componentId: number) => boolean;
   toggleWarningFilter: (warning: string) => void;
   filterComponents: (components: Component[]) => Component[];
+  setSearchQuery: (searchQuery: string) => void;
 }
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
@@ -52,6 +54,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   warningMismatchMpn: [],
   warningMoq: [],
   selectedWarnings: [],
+  searchQuery: '',
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   toggleOperatorVisibility: (operator: string) =>
     set((state) => ({
@@ -172,11 +175,9 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       warningMessage,
       warningMismatchMpn,
       warningMoq,
+      searchQuery,
     } = CompareViewStore.getState();
     let filteredComponents = [...components];
-    if (selectedWarnings.length === 0) {
-      return filteredComponents;
-    }
     if (selectedWarnings.includes('outOfStock')) {
       filteredComponents = filteredComponents.filter((component) =>
         warningOutOfStock.includes(component.id),
@@ -202,6 +203,24 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         warningMoq.includes(component.id),
       );
     }
+    if (searchQuery.length > 0) {
+      const query = searchQuery.toLowerCase();
+      filteredComponents = filteredComponents.filter((component) => {
+        const matchesMpn = component.mpn?.toLowerCase().includes(query);
+        const matchesDesignators = component.designators?.some((d) =>
+          d.designator.toLowerCase().includes(query),
+        );
+        const matchesDescriptions = component.user_description
+          ?.toLowerCase()
+          .includes(query);
+        return matchesMpn || matchesDesignators || matchesDescriptions;
+      });
+    }
+
     return filteredComponents;
   },
+  setSearchQuery: (searchQuery: string) =>
+    set({
+      searchQuery: searchQuery,
+    }),
 }));
