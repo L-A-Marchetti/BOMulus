@@ -3,22 +3,11 @@ import React from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import ComponentRow from '../shared/ComponentRow';
 import { AnalysisStore } from '../../store/AnalysisStore';
+import { Filters } from './Filters';
 
 export function CompareView(): React.JSX.Element {
   const CompareView = CompareViewStore();
   const Analysis = AnalysisStore();
-  const Insert = CompareView.components?.filter(
-    (component) => component.Operator === 'INSERT',
-  );
-  const Update = CompareView.components?.filter(
-    (component) => component.Operator === 'UPDATE',
-  );
-  const Delete = CompareView.components?.filter(
-    (component) => component.Operator === 'DELETE',
-  );
-  const Equal = CompareView.components?.filter(
-    (component) => component.Operator === 'EQUAL',
-  );
 
   return CompareView.isVisible ? (
     <>
@@ -29,64 +18,36 @@ export function CompareView(): React.JSX.Element {
       ) : (
         <div>
           <table>
-            <tr
-              onClick={() => {
-                CompareView.toggleOperatorVisibility('INSERT');
-              }}
-            >
-              INSERT{Insert?.length}
-            </tr>
-            {CompareView.insertIsVisible ? (
+            {CompareView.insertIsVisible && CompareView.insert ? (
               <ComponentRow
-                components={Insert}
+                components={CompareView.insert}
                 isUpdate={false}
                 color="LightGreen"
               />
             ) : (
               <></>
             )}
-            <tr
-              onClick={() => {
-                CompareView.toggleOperatorVisibility('UPDATE');
-              }}
-            >
-              UPDATE{Update?.length}
-            </tr>
-            {CompareView.updateIsVisible ? (
+            {CompareView.updateIsVisible && CompareView.update ? (
               <ComponentRow
-                components={Update}
+                components={CompareView.update}
                 isUpdate={true}
                 color="MediumPurple"
               />
             ) : (
               <></>
             )}
-            <tr
-              onClick={() => {
-                CompareView.toggleOperatorVisibility('DELETE');
-              }}
-            >
-              DELETE{Delete?.length}
-            </tr>
-            {CompareView.deleteIsVisible ? (
+            {CompareView.deleteIsVisible && CompareView.delete ? (
               <ComponentRow
-                components={Delete}
+                components={CompareView.delete}
                 isUpdate={false}
                 color="LightCoral"
               />
             ) : (
               <></>
             )}
-            <tr
-              onClick={() => {
-                CompareView.toggleOperatorVisibility('EQUAL');
-              }}
-            >
-              EQUAL{Equal?.length}
-            </tr>
-            {CompareView.equalIsVisible ? (
+            {CompareView.equalIsVisible && CompareView.equal ? (
               <ComponentRow
-                components={Equal}
+                components={CompareView.equal}
                 isUpdate={false}
                 color="LightGray"
               />

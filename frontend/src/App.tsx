@@ -7,6 +7,7 @@ import { FileManager } from './components/features/FileManager';
 import { CompareView } from './components/features/CompareView';
 import { Analysis } from './components/features/Analysis';
 import { Settings } from './components/features/Settings';
+import { Filters } from './components/features/Filters';
 
 function App(): React.JSX.Element {
   return (
@@ -17,6 +18,7 @@ function App(): React.JSX.Element {
       <Settings />
       <FileManager />
       <Analysis />
+      <Filters />
       <CompareView />
     </div>
   );

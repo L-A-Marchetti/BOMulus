@@ -7,6 +7,10 @@ type Component = core.Component;
 
 interface CompareViewProps {
   components: Component[] | null;
+  insert: Component[] | null;
+  update: Component[] | null;
+  delete: Component[] | null;
+  equal: Component[] | null;
   monitor: Monitor;
   isVisible: boolean;
   insertIsVisible: boolean;
@@ -28,6 +32,10 @@ interface CompareViewProps {
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
   components: null,
+  insert: null,
+  update: null,
+  delete: null,
+  equal: null,
   monitor: { isLoading: false, error: null },
   isVisible: false,
   insertIsVisible: true,
@@ -62,6 +70,18 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
     set({ monitor: { isLoading: true, error: null } });
     try {
       const components: Component[] = await GetComponents();
+      const insert = components.filter(
+        (component) => component.Operator === 'INSERT',
+      );
+      const update = components.filter(
+        (component) => component.Operator === 'UPDATE',
+      );
+      const del = components.filter(
+        (component) => component.Operator === 'DELETE',
+      );
+      const equal = components.filter(
+        (component) => component.Operator === 'EQUAL',
+      );
       const warningOutOfStock: number[] = [];
       const warningLifeCycle: number[] = [];
       const warningMessage: number[] = [];
@@ -105,6 +125,10 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       });
       set({
         components,
+        insert,
+        update,
+        delete: del,
+        equal,
         warningOutOfStock,
         warningLifeCycle,
         warningMessage,

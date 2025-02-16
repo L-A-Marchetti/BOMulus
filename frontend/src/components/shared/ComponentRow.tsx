@@ -1,3 +1,4 @@
+import { comment } from 'postcss';
 import { core } from '../../../wailsjs/go/models';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import ComponentDetails from './ComponentDetails';
@@ -30,6 +31,54 @@ export default function ComponentRow({
             }}
             key={component.id}
           >
+            <td
+              style={{
+                backgroundColor: CompareView.componentHasAWarning(component.id)
+                  ? 'yellow'
+                  : '',
+              }}
+            >
+              {CompareView.warningLifeCycle.includes(component.id) ? (
+                <>
+                  Lifecycle
+                  <br />
+                </>
+              ) : (
+                ''
+              )}
+              {CompareView.warningMessage.includes(component.id) ? (
+                <>
+                  Message
+                  <br />
+                </>
+              ) : (
+                ''
+              )}
+              {CompareView.warningMismatchMpn.includes(component.id) ? (
+                <>
+                  Mismatching Mpn
+                  <br />
+                </>
+              ) : (
+                ''
+              )}
+              {CompareView.warningMoq.includes(component.id) ? (
+                <>
+                  MOQ
+                  <br />
+                </>
+              ) : (
+                ''
+              )}
+              {CompareView.warningOutOfStock.includes(component.id) ? (
+                <>
+                  Out Of Stock
+                  <br />
+                </>
+              ) : (
+                ''
+              )}
+            </td>
             <td style={{ textAlign: 'center' }}>
               <div style={{ whiteSpace: 'nowrap' }}>
                 {component.calculated_price.best_price ? (

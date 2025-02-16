@@ -5,7 +5,6 @@ import { WSChooserStore } from '../../store/WSChooserStore';
 
 export function Settings(): React.JSX.Element {
   const Settings = SettingsStore();
-  const WSChooser = WSChooserStore();
 
   useEffect(() => {
     Settings.loadSettings();
