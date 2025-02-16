@@ -1,7 +1,7 @@
-import { comment } from 'postcss';
 import { core } from '../../../wailsjs/go/models';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import ComponentDetails from './ComponentDetails';
+import { HighlightText } from '../../utils/HightlightText';
 
 type Component = core.Component;
 
@@ -96,9 +96,9 @@ export default function ComponentRow({
                 ? `${component.OldQuantity} -> ${component.NewQuantity}`
                 : component.quantity}
             </td>
-            <td>{component.mpn}</td>
-            <td>{component.designator}</td>
-            <td>{component.user_description}</td>
+            <td>{HighlightText(component.mpn)}</td>
+            <td>{HighlightText(component.designator)}</td>
+            <td>{HighlightText(component.user_description)}</td>
             <td>
               {component.analyzed && (
                 <button
