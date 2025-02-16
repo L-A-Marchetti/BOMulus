@@ -22,7 +22,19 @@ export default function ComponentRow({
       {components?.map((component) => (
         <>
           <tr style={{ backgroundColor: color }} key={component.id}>
-            <td>
+            <td style={{ textAlign: 'center' }}>
+              <div style={{ whiteSpace: 'nowrap' }}>
+                {component.calculated_price.best_price ? (
+                  <>
+                    {component.calculated_price.best_supplier?.charAt(0)}{' '}
+                    {component.calculated_price?.is_moq_not_reached
+                      ? `< ${component.calculated_price.moq} | $${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                      : `$${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`}
+                  </>
+                ) : (
+                  '-'
+                )}
+              </div>
               {isUpdate
                 ? `${component.OldQuantity} -> ${component.NewQuantity}`
                 : component.quantity}
