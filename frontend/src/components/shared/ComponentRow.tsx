@@ -21,7 +21,15 @@ export default function ComponentRow({
     <>
       {components?.map((component) => (
         <>
-          <tr style={{ backgroundColor: color }} key={component.id}>
+          <tr
+            style={{
+              backgroundColor: color,
+              border: CompareView.componentHasAWarning(component.id)
+                ? '5px solid yellow'
+                : '',
+            }}
+            key={component.id}
+          >
             <td style={{ textAlign: 'center' }}>
               <div style={{ whiteSpace: 'nowrap' }}>
                 {component.calculated_price.best_price ? (

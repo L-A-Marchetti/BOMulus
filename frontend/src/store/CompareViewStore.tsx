@@ -14,10 +14,16 @@ interface CompareViewProps {
   deleteIsVisible: boolean;
   equalIsVisible: boolean;
   expandedComponents: number[];
+  warningOutOfStock: number[];
+  warningLifeCycle: number[];
+  warningMessage: number[];
+  warningMismatchMpn: number[];
+  warningMoq: number[];
   toggleVisibility: () => void;
   toggleOperatorVisibility: (operator: string) => void;
   toggleComponentDetails: (componentId: number) => void;
   loadComponents: () => void;
+  componentHasAWarning: (componentId: number) => boolean;
 }
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
@@ -29,6 +35,11 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   deleteIsVisible: true,
   equalIsVisible: true,
   expandedComponents: [],
+  warningOutOfStock: [],
+  warningLifeCycle: [],
+  warningMessage: [],
+  warningMismatchMpn: [],
+  warningMoq: [],
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   toggleOperatorVisibility: (operator: string) =>
     set((state) => ({
@@ -44,17 +55,78 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   toggleComponentDetails: (componentId) =>
     set((state) => ({
       expandedComponents: state.expandedComponents.includes(componentId)
-        ? state.expandedComponents.filter((id) => id !== componentId) // Ferme si déjà ouvert
-        : [...state.expandedComponents, componentId], // Ajoute si fermé
+        ? state.expandedComponents.filter((id) => id !== componentId)
+        : [...state.expandedComponents, componentId],
     })),
   loadComponents: async () => {
     set({ monitor: { isLoading: true, error: null } });
     try {
       const components: Component[] = await GetComponents();
-      console.log('loaded');
-      set({ components, monitor: { isLoading: false, error: null } });
+      const warningOutOfStock: number[] = [];
+      const warningLifeCycle: number[] = [];
+      const warningMessage: number[] = [];
+      const warningMismatchMpn: number[] = [];
+      const warningMoq: number[] = [];
+      components.forEach((component) => {
+        const operator = component.Operator || '';
+        if (
+          component.analyzed &&
+          operator !== 'DELETE' &&
+          component.availability?.every((avail) => avail.value.trim() === '')
+        ) {
+          warningOutOfStock.push(component.id);
+        }
+        if (
+          component.analyzed &&
+          operator !== 'DELETE' &&
+          component.lifecycle_status?.some(
+            (lcs) =>
+              lcs.value !== '' &&
+              lcs.value !== 'New Product' &&
+              lcs.value !== 'New at Mouser' &&
+              lcs.value !== 'Active',
+          )
+        ) {
+          warningLifeCycle.push(component.id);
+        }
+        if (
+          component.analyzed &&
+          operator !== 'DELETE' &&
+          component.info_messages?.some((msg) => msg.trim() !== '')
+        ) {
+          warningMessage.push(component.id);
+        }
+        if (component.analyzed && component.mismatch_mpn === true) {
+          warningMismatchMpn.push(component.id);
+        }
+        if (component.calculated_price?.is_moq_not_reached) {
+          warningMoq.push(component.id);
+        }
+      });
+      set({
+        components,
+        warningOutOfStock,
+        warningLifeCycle,
+        warningMessage,
+        warningMismatchMpn,
+        warningMoq,
+        monitor: { isLoading: false, error: null },
+      });
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
     }
+  },
+  componentHasAWarning: (componentId: number) => {
+    if (CompareViewStore.getState().warningLifeCycle.includes(componentId))
+      return true;
+    if (CompareViewStore.getState().warningMessage.includes(componentId))
+      return true;
+    if (CompareViewStore.getState().warningMismatchMpn.includes(componentId))
+      return true;
+    if (CompareViewStore.getState().warningMoq.includes(componentId))
+      return true;
+    if (CompareViewStore.getState().warningOutOfStock.includes(componentId))
+      return true;
+    return false;
   },
 }));
