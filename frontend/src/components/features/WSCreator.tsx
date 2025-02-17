@@ -9,7 +9,7 @@ export function WSCreator(): React.JSX.Element {
   const WSChooser = WSChooserStore();
 
   return WSCreator.isVisible ? (
-    <div className='flex flex-col w-full justify-center items-center bg-neutral-700'>
+    <div>
       <input
         placeholder="Workspace name"
         value={WSCreator.workspaceName || ''}
@@ -33,7 +33,7 @@ export function WSCreator(): React.JSX.Element {
     </div>
   ) : WSChooser.isVisible ? (
     <div>
-      <DarkCard onClick={WSCreator.toggleVisibility} /> 
+      <DarkCard addWs={WSCreator.toggleVisibility} importWs={() => {}} />
     </div>
   ) : (
     <></>

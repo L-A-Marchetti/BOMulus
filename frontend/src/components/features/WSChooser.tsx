@@ -4,6 +4,7 @@ import { WSChooserStore } from '../../store/WSChooserStore';
 import Modal from '../shared/Modal';
 import WorkspaceCard from '../shared/WorkspaceCard';
 import { WSCreator } from './WSCreator';
+import Spinner from '../shared/Spinner';
 
 export function WSChooser(): React.JSX.Element {
   const WSChooser = WSChooserStore();
@@ -13,7 +14,7 @@ export function WSChooser(): React.JSX.Element {
   }, []);
 
   return WSChooser.isVisible ? (
-    <div className="flex items-center justify-center w-full h-full gap-8 flex-wrap">
+    <div className="flex items-center justify-start w-full h-full gap-8 flex-wrap max-w-212">
       {WSChooser.workspaces?.map((ws) => (
         <WorkspaceCard
           workspaceName={ws.workspace_infos.name}
@@ -36,7 +37,7 @@ export function WSChooser(): React.JSX.Element {
         <></>
       )}
       {WSChooser.monitor.isLoading ? (
-        <p>Workspace module is loading...</p>
+        <Spinner text="Workspace module is loading..." />
       ) : (
         <></>
       )}

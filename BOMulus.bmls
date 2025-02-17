@@ -2,48 +2,6 @@
   "workspaces": [
     {
       "workspace_infos": {
-        "name": "zozo",
-        "path": "/home/lam/Desktop/zozo",
-        "createdAt": "2025-02-15T18:51:24.805158409+01:00",
-        "last_opened": "2025-02-17T16:03:20.316415283+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "kouille",
-        "path": "/home/lam/Desktop/kouille",
-        "createdAt": "2025-02-16T17:29:45.169489501+01:00",
-        "last_opened": "2025-02-17T12:06:14.408691849+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "kiki",
-        "path": "/home/lam/Desktop/kiki",
-        "createdAt": "2025-02-17T11:51:32.845101612+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
         "name": "cucu",
         "path": "/home/lam/Desktop/cucu",
         "createdAt": "2025-02-17T11:51:37.269680841+01:00",
@@ -75,6 +33,34 @@
         "name": "noix",
         "path": "/home/lam/Desktop/noix",
         "createdAt": "2025-02-17T11:51:47.798070434+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "Compressor VCA",
+        "path": "/home/lam/Desktop/Compressor VCA",
+        "createdAt": "2025-02-17T20:23:24.168055811+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "mimi",
+        "path": "/home/lam/Desktop/mimi",
+        "createdAt": "2025-02-17T20:29:36.355148893+01:00",
         "last_opened": "0001-01-01T00:00:00Z",
         "production_quantity": "1",
         "last_comparison": {

@@ -7,7 +7,11 @@ type WorkspaceCardProps = {
   deleteWs: () => void;
 };
 
-export default function WorkspaceCard({ workspaceName, openWs, deleteWs }: WorkspaceCardProps) {
+export default function WorkspaceCard({
+  workspaceName,
+  openWs,
+  deleteWs,
+}: WorkspaceCardProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
@@ -43,6 +47,9 @@ export default function WorkspaceCard({ workspaceName, openWs, deleteWs }: Works
             <ul className="py-2">
               <li>
                 <a
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                   href="#"
                   className="block px-4 py-2 text-sm hover:bg-neutral-600 text-neutral-200 hover:text-white"
                 >
@@ -51,6 +58,9 @@ export default function WorkspaceCard({ workspaceName, openWs, deleteWs }: Works
               </li>
               <li>
                 <a
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                   href="#"
                   className="block px-4 py-2 text-sm hover:bg-neutral-600 text-neutral-200 hover:text-white"
                 >

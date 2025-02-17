@@ -12,9 +12,10 @@ import { Filters } from './components/features/Filters';
 function App(): React.JSX.Element {
   return (
     <div className="flex items-center justify-center h-screen gap-8">
-      <div className='flex w-full scale-90'>
-      <WSCreator />
-      <WSChooser />
+      <div className="flex w-full max-w-235">
+        <WSCreator />
+        <div className="w-8"></div>
+        <WSChooser />
       </div>
       <WSCurrent />
       {/*<Settings />*/}
