@@ -5,7 +5,7 @@
         "name": "zozo",
         "path": "/home/lam/Desktop/zozo",
         "createdAt": "2025-02-15T18:51:24.805158409+01:00",
-        "last_opened": "2025-02-16T17:29:26.145634597+01:00",
+        "last_opened": "2025-02-17T16:03:20.316415283+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",
@@ -19,7 +19,63 @@
         "name": "kouille",
         "path": "/home/lam/Desktop/kouille",
         "createdAt": "2025-02-16T17:29:45.169489501+01:00",
-        "last_opened": "2025-02-16T17:42:36.122199323+01:00",
+        "last_opened": "2025-02-17T12:06:14.408691849+01:00",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "kiki",
+        "path": "/home/lam/Desktop/kiki",
+        "createdAt": "2025-02-17T11:51:32.845101612+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "cucu",
+        "path": "/home/lam/Desktop/cucu",
+        "createdAt": "2025-02-17T11:51:37.269680841+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "bouille",
+        "path": "/home/lam/Desktop/bouille",
+        "createdAt": "2025-02-17T11:51:42.715611853+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "workspace_infos": {
+        "name": "noix",
+        "path": "/home/lam/Desktop/noix",
+        "createdAt": "2025-02-17T11:51:47.798070434+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",

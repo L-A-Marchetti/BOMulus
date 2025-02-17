@@ -2,6 +2,8 @@
 import React, { useEffect } from 'react';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import Modal from '../shared/Modal';
+import WorkspaceCard from '../shared/WorkspaceCard';
+import { WSCreator } from './WSCreator';
 
 export function WSChooser(): React.JSX.Element {
   const WSChooser = WSChooserStore();
@@ -11,18 +13,14 @@ export function WSChooser(): React.JSX.Element {
   }, []);
 
   return WSChooser.isVisible ? (
-    <div>
-      <h1>Choose a workspace</h1>
-      <ul>
-        {WSChooser.workspaces?.map((ws) => (
-          <li key={ws.workspace_infos.name}>
-            <span onClick={() => WSChooser.setActiveWorkspace(ws)}>
-              {ws.workspace_infos.name}
-            </span>
-            <span onClick={() => WSChooser.setWorkspaceToDelete(ws)}> x</span>
-          </li>
-        ))}
-      </ul>
+    <div className="flex items-center justify-center w-full h-full gap-8 flex-wrap">
+      {WSChooser.workspaces?.map((ws) => (
+        <WorkspaceCard
+          workspaceName={ws.workspace_infos.name}
+          openWs={() => WSChooser.setActiveWorkspace(ws)}
+          deleteWs={() => WSChooser.setWorkspaceToDelete(ws)}
+        />
+      ))}
       {WSChooser.workspaceToDelete ? (
         <Modal
           title={`Delete ${WSChooser.workspaceToDelete?.workspace_infos.name}?`}

@@ -11,11 +11,13 @@ import { Filters } from './components/features/Filters';
 
 function App(): React.JSX.Element {
   return (
-    <div>
-      <WSChooser />
+    <div className="flex items-center justify-center h-screen gap-8">
+      <div className='flex w-full scale-90'>
       <WSCreator />
+      <WSChooser />
+      </div>
       <WSCurrent />
-      <Settings />
+      {/*<Settings />*/}
       <FileManager />
       <Analysis />
       <Filters />
