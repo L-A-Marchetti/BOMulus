@@ -12,16 +12,21 @@ export function WSCurrent(): React.JSX.Element {
   const FileManager = FileManagerStore();
   const CompareView = CompareViewStore();
 
-  return !WSCreator.isVisible && !WSChooser.isVisible && !FileManager.isVisible ? (
-    <div className='flex items-center justify-center w-full'>
-      <Banner text={`Current Workspace ${WSChooser.activeWorkspace?.workspace_infos.name}`} onClick={() => {
-            WSChooser.loadWorkspaces();
-            WSChooser.toggleVisibility();
-            {
-              FileManager.isVisible ? FileManager.toggleVisibility() : {};
-              CompareView.isVisible ? CompareView.toggleVisibility() : {};
-            }
-          }}/>
+  return !WSCreator.isVisible &&
+    !WSChooser.isVisible &&
+    !FileManager.isVisible ? (
+    <div className="flex items-center justify-center w-full">
+      <Banner
+        text={`Current Workspace ${WSChooser.activeWorkspace?.workspace_infos.name}`}
+        onClick={() => {
+          WSChooser.loadWorkspaces();
+          WSChooser.toggleVisibility();
+          {
+            FileManager.isVisible ? FileManager.toggleVisibility() : {};
+            CompareView.isVisible ? CompareView.toggleVisibility() : {};
+          }
+        }}
+      />
     </div>
   ) : (
     <></>

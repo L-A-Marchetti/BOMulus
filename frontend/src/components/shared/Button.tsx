@@ -1,18 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 type ButtonProps = {
   text: string;
   bg: string;
   bgHover: string;
-  txtColor :string;
+  txtColor: string;
   onClick: () => void;
 };
 
-export default function Button({ text, bg, bgHover, txtColor, onClick }: ButtonProps) {
+export default function Button({
+  text,
+  bg,
+  bgHover,
+  txtColor,
+  onClick,
+}: ButtonProps) {
   const [opacity, setOpacity] = useState(false);
 
   useEffect(() => {
-    setOpacity(true)
+    setOpacity(true);
   }, []);
   return (
     <button

@@ -16,19 +16,21 @@ function App(): React.JSX.Element {
   const WSCreate = WSCreatorStore();
   return (
     <div className="flex items-center justify-center h-screen gap-8 scale-95">
-      {WSChoose.isVisible || WSCreate.isVisible ? <div className="flex w-full max-w-235">
-        <WSCreator />
-        <WSChooser />
-      </div> : (
-        <div className='w-full flex flex-col gap-8'>
+      {WSChoose.isVisible || WSCreate.isVisible ? (
+        <div className="flex w-full max-w-235">
+          <WSCreator />
+          <WSChooser />
+        </div>
+      ) : (
+        <div className="w-full flex flex-col gap-8">
           <WSCurrent />
-      {/*<Settings />*/}
-      <FileManager />
-      {/*<Analysis />*/}
-      {/*<Filters />*/}
-      {/*<CompareView />*/}
-      </div>
-    )}
+          {/*<Settings />*/}
+          <FileManager />
+          {/*<Analysis />*/}
+          {/*<Filters />*/}
+          {/*<CompareView />*/}
+        </div>
+      )}
     </div>
   );
 }

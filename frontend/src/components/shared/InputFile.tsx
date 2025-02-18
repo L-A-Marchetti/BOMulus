@@ -15,10 +15,12 @@ export default function InputFile({
   const [opacity, setOpacity] = useState(false);
 
   useEffect(() => {
-    setOpacity(true)
+    setOpacity(true);
   }, []);
   return (
-    <div className={`w-full mx-auto transition ${opacity ? 'opacity-100' : 'opacity-0'}`}>
+    <div
+      className={`w-full mx-auto transition ${opacity ? 'opacity-100' : 'opacity-0'}`}
+    >
       <div className="flex h-20">
         <span className="inline-flex items-center px-3 text-sm border border-e-0 rounded-s-md bg-neutral-600 text-neutral-400 border-neutral-600">
           <img src={ws_path} className="w-4 h-4 text-neutral-400" />

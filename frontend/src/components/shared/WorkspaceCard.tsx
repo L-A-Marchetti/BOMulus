@@ -16,7 +16,7 @@ export default function WorkspaceCard({
   const [opacity, setOpacity] = useState(false);
 
   useEffect(() => {
-    setOpacity(true)
+    setOpacity(true);
   }, []);
 
   return (

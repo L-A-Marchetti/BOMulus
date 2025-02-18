@@ -13,7 +13,7 @@ export function WSCreator(): React.JSX.Element {
   const WSChooser = WSChooserStore();
 
   return WSCreator.isVisible ? (
-    <div className="w-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-8">
       <Input
         placeHolder="Workspace name"
         type="text"
@@ -32,18 +32,30 @@ export function WSCreator(): React.JSX.Element {
         placeHolder="Select a workspace path"
       />
       {WSCreator.monitor.isLoading ? (
-        <Spinner text='Workspace creator module is loading...' />
+        <Spinner text="Workspace creator module is loading..." />
       ) : (
         <></>
       )}
       {WSCreator.monitor.error ? <p>{WSCreator.monitor.error}</p> : <></>}
-      <div className='flex gap-3'>
-      <Button onClick={WSCreator.toggleVisibility} text="Cancel" bg='bg-neutral-700' bgHover='hover:bg-neutral-900' txtColor='text-neutral-400'/>
-      <Button onClick={WSCreator.createWorkspace} text="Create" bg='bg-emerald-700' bgHover='hover:bg-emerald-900' txtColor='text-white'/>
+      <div className="flex gap-8">
+        <Button
+          onClick={WSCreator.toggleVisibility}
+          text="Cancel"
+          bg="bg-neutral-700"
+          bgHover="hover:bg-neutral-900"
+          txtColor="text-neutral-400"
+        />
+        <Button
+          onClick={WSCreator.createWorkspace}
+          text="Create"
+          bg="bg-emerald-700"
+          bgHover="hover:bg-emerald-900"
+          txtColor="text-white"
+        />
       </div>
     </div>
   ) : WSChooser.isVisible ? (
-    <div className='mr-8'>
+    <div className="mr-8">
       <DarkCard addWs={WSCreator.toggleVisibility} importWs={() => {}} />
     </div>
   ) : (
