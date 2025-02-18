@@ -6,6 +6,7 @@ import DarkCard from '../shared/DarkCard';
 import Input from '../shared/Input';
 import InputFile from '../shared/InputFile';
 import Button from '../shared/Button';
+import Spinner from '../shared/Spinner';
 
 export function WSCreator(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
@@ -31,7 +32,7 @@ export function WSCreator(): React.JSX.Element {
         placeHolder="Select a workspace path"
       />
       {WSCreator.monitor.isLoading ? (
-        <p>Workspace creator module is loading...</p>
+        <Spinner text='Workspace creator module is loading...' />
       ) : (
         <></>
       )}

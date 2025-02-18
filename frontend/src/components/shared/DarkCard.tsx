@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import add from '/src/assets/images/add_circle.svg';
 import imp from '/src/assets/images/import_folder.svg';
 
@@ -7,8 +8,13 @@ type DarkCardProps = {
 };
 
 export default function DarkCard({ addWs, importWs }: DarkCardProps) {
+  const [opacity, setOpacity] = useState(false);
+
+  useEffect(() => {
+    setOpacity(true)
+  }, []);
   return (
-    <div className="w-full h-full transition rounded-lg bg-neutral-800 border-3 border-neutral-700 hover:scale-95 group">
+    <div className={`w-full h-full transition rounded-lg bg-neutral-800 border-3 border-neutral-700 hover:scale-95 group ${opacity ? 'opacity-100' : 'opacity-0'}`}>
       <div className="h-full flex flex-col items-center justify-center">
         <a
           href="#"

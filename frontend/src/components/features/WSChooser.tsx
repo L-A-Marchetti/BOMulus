@@ -14,7 +14,7 @@ export function WSChooser(): React.JSX.Element {
   }, []);
 
   return WSChooser.isVisible ? (
-    <div className={`flex items-center justify-start w-full h-full gap-8 flex-wrap max-w-212 opacity-100 transition-opacity`}>
+    <div className={`flex items-center justify-start w-full h-full gap-8 flex-wrap max-w-212`}>
       {WSChooser.workspaces?.map((ws) => (
         <WorkspaceCard
           workspaceName={ws.workspace_infos.name}
@@ -41,7 +41,7 @@ export function WSChooser(): React.JSX.Element {
       ) : (
         <></>
       )}
-      {WSChooser.monitor.error ? <p>{WSChooser.monitor.error}</p> : <></>}
+      {WSChooser.monitor.error ? <Modal title='Error' text={WSChooser.monitor.error} onCancel={() => {}} onConfirm={() => {}}/> : <></>}
     </div>
   ) : (
     <></>

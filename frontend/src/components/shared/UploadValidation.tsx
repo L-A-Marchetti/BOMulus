@@ -11,7 +11,7 @@ export default function UploadValidation(): React.JSX.Element {
   const file = FileManager.filesToValidate[0];
 
   return (
-    <div role="dialog" aria-modal="true">
+    <div role="dialog" aria-modal="true" className='h-50'>
       <p onClick={FileManager.cancelValidation}>Cancel</p>
       <p onClick={FileManager.confirmValidation}>Validate</p>
       <div>
