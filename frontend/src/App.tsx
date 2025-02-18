@@ -14,7 +14,6 @@ function App(): React.JSX.Element {
     <div className="flex items-center justify-center h-screen gap-8">
       <div className="flex w-full max-w-235">
         <WSCreator />
-        <div className="w-8"></div>
         <WSChooser />
       </div>
       <WSCurrent />

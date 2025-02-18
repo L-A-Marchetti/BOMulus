@@ -5,7 +5,7 @@
         "name": "cucu",
         "path": "/home/lam/Desktop/cucu",
         "createdAt": "2025-02-17T11:51:37.269680841+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
+        "last_opened": "2025-02-17T22:14:46.164538939+01:00",
         "production_quantity": "1",
         "last_comparison": {
           "v1": "",
@@ -47,20 +47,6 @@
         "name": "Compressor VCA",
         "path": "/home/lam/Desktop/Compressor VCA",
         "createdAt": "2025-02-17T20:23:24.168055811+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "mimi",
-        "path": "/home/lam/Desktop/mimi",
-        "createdAt": "2025-02-17T20:29:36.355148893+01:00",
         "last_opened": "0001-01-01T00:00:00Z",
         "production_quantity": "1",
         "last_comparison": {
