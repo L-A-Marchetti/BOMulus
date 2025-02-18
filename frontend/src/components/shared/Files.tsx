@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import add from '/src/assets/images/add_circle.svg';
-import imp from '/src/assets/images/import_folder.svg';
 import { workspaces } from '../../../wailsjs/go/models';
 import { FileManagerStore } from '../../store/FileManagerStore';
 
@@ -55,7 +53,7 @@ export default function Files(file: FilesProps) {
         <a
           href="#"
           onClick={() => FileManager.deleteFile(file.file)}
-          className="transition w-full h-full flex items-center justify-center hover:bg-neutral-700 hover:w-full px-3"
+          className="transition w-full h-full flex items-center justify-center hover:bg-red-300 rounded-r-md hover:w-full px-3"
         >
           x
         </a></>)}

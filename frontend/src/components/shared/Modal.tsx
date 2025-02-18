@@ -12,7 +12,7 @@ export default function Modal({
   onCancel,
 }: ModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="scale-105 fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="relative p-4 w-full max-w-md bg-neutral-900 rounded-lg shadow-sm">
         <button
           type="button"

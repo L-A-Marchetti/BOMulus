@@ -12,7 +12,7 @@ export default function Spinner({ text }: SpinnerProps) {
   }, []);
 
   return (
-    <div className={`transition fixed inset-0 z-50 flex items-center justify-center bg-black/50 ${opacity ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`transition fixed inset-0 z-50 flex items-center justify-center ${opacity ? 'opacity-100' : 'opacity-0'}`}>
       <div
         role="status"
         className="flex flex-col justify-center items-center gap-6"
