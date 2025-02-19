@@ -3,6 +3,7 @@ import React from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import ComponentRow from '../shared/ComponentRow';
 import { AnalysisStore } from '../../store/AnalysisStore';
+import Table from '../shared/Table';
 
 export function CompareView(): React.JSX.Element {
   const CompareView = CompareViewStore();
@@ -15,45 +16,43 @@ export function CompareView(): React.JSX.Element {
       ) : CompareView.monitor.error && !Analysis.analysisStatus ? (
         <p>{CompareView.monitor.error}</p>
       ) : (
-        <div>
-          <table>
-            {CompareView.insertIsVisible && CompareView.insert ? (
-              <ComponentRow
-                components={CompareView.filterComponents(CompareView.insert)}
-                isUpdate={false}
-                color="LightGreen"
-              />
-            ) : (
-              <></>
-            )}
-            {CompareView.updateIsVisible && CompareView.update ? (
-              <ComponentRow
-                components={CompareView.filterComponents(CompareView.update)}
-                isUpdate={true}
-                color="MediumPurple"
-              />
-            ) : (
-              <></>
-            )}
-            {CompareView.deleteIsVisible && CompareView.delete ? (
-              <ComponentRow
-                components={CompareView.filterComponents(CompareView.delete)}
-                isUpdate={false}
-                color="LightCoral"
-              />
-            ) : (
-              <></>
-            )}
-            {CompareView.equalIsVisible && CompareView.equal ? (
-              <ComponentRow
-                components={CompareView.filterComponents(CompareView.equal)}
-                isUpdate={false}
-                color="LightGray"
-              />
-            ) : (
-              <></>
-            )}
-          </table>
+        <div className="flex flex-col gap-8">
+          {CompareView.insertIsVisible && CompareView.insert ? (
+            <Table
+              components={CompareView.filterComponents(CompareView.insert)}
+              isUpdate={false}
+              color="bg-emerald-600"
+            />
+          ) : (
+            <></>
+          )}
+          {CompareView.updateIsVisible && CompareView.update ? (
+            <Table
+              components={CompareView.filterComponents(CompareView.update)}
+              isUpdate={true}
+              color="bg-purple-600"
+            />
+          ) : (
+            <></>
+          )}
+          {CompareView.deleteIsVisible && CompareView.delete ? (
+            <Table
+              components={CompareView.filterComponents(CompareView.delete)}
+              isUpdate={false}
+              color="bg-rose-600"
+            />
+          ) : (
+            <></>
+          )}
+          {CompareView.equalIsVisible && CompareView.equal ? (
+            <Table
+              components={CompareView.filterComponents(CompareView.equal)}
+              isUpdate={false}
+              color="bg-neutral-600"
+            />
+          ) : (
+            <></>
+          )}
         </div>
       )}
     </>

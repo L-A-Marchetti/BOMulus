@@ -28,7 +28,7 @@ function App(): React.JSX.Element {
           <FileManager />
           {/*<Analysis />*/}
           {/*<Filters />*/}
-          {/*<CompareView />*/}
+          <CompareView />
         </div>
       )}
     </div>

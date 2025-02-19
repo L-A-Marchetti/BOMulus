@@ -4,12 +4,11 @@ import { WSCreatorStore } from '../../store/WSCreatorStore';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import { useEffect } from 'react';
 import { FileManagerStore } from '../../store/FileManagerStore';
-import UploadValidation from '../shared/UploadValidation';
 import Button from '../shared/Button';
 import Files from '../shared/Files';
 import Spinner from '../shared/Spinner';
 import navigate_next from '/src/assets/images/navigate_next.svg';
-import Table from '../shared/Table';
+import ValidationTable from '../shared/ValidationTable';
 
 export function FileManager(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
@@ -24,7 +23,7 @@ export function FileManager(): React.JSX.Element {
     <div className="flex flex-col gap-8">
       {FileManager.isVisible ? (
         FileManager.filesToValidate ? (
-          <Table />
+          <ValidationTable />
         ) : (
           <>
             <div className="flex gap-8">

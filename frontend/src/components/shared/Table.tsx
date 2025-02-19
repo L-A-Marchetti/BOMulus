@@ -1,112 +1,137 @@
 import { useEffect, useState } from 'react';
-import { FileManagerStore } from '../../store/FileManagerStore';
-import Button from './Button';
-import SpinButton from './SpinButton';
+import { core } from '../../../wailsjs/go/models';
+import { CompareViewStore } from '../../store/CompareViewStore';
+import { HighlightText } from '../../utils/HightlightText';
+import ComponentDetails from './ComponentDetails';
 
-export default function Table() {
+type Component = core.Component;
+
+type TableProps = {
+  components: Component[] | undefined;
+  isUpdate: boolean;
+  color: string;
+};
+
+export default function Table({ components, isUpdate, color }: TableProps) {
   const [opacity, setOpacity] = useState(false);
-  const FileManager = FileManagerStore();
-  if (
-    !FileManager.filesToValidate ||
-    FileManager.filesToValidate.length === 0
-  ) {
-    return <p>No files to validate.</p>;
-  }
-  const file = FileManager.filesToValidate[0];
+  const CompareView = CompareViewStore();
 
   useEffect(() => {
     setOpacity(true);
   }, []);
-
   return (
-    <div
-      className={`w-full transition relative overflow-x-auto shadow-md sm:rounded-lg ${opacity ? 'opacity-100' : 'opacity-0'}`}
-    >
-      <table className="w-full text-sm text-left rtl:text-right text-neutral-500 dark:text-neutral-400">
-        <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-neutral-900 bg-white dark:text-white dark:bg-neutral-800">
-          File Validation
-          <p className="mt-1 text-sm font-normal text-neutral-500 dark:text-neutral-400">
-            Adjust column mappings using +/- buttons beside each header. Review
-            your data preview, then click "Validate" to confirm or "Cancel" to
-            abort. Make sure headers and columns align correctly with your data.
-          </p>
-          <div className="mt-6 flex gap-8">
-            <Button
-              onClick={FileManager.cancelValidation}
-              text="Cancel"
-              bg="bg-neutral-700"
-              bgHover="hover:bg-neutral-900"
-              txtColor="text-neutral-400"
-            />
-            <Button
-              onClick={FileManager.confirmValidation}
-              text="Validate"
-              bg="bg-emerald-700"
-              bgHover="hover:bg-emerald-900"
-              txtColor="text-white"
-            />
-          </div>
-        </caption>
-        <thead className="text-xs text-neutral-700 uppercase bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-400">
-          <tr>
-            <th scope="col" colSpan={5} className="px-6 py-3 text-center">
-              <SpinButton
-                label="Header"
-                less={() => {
-                  FileManager.validationControl('Header', '-');
-                }}
-                more={() => {
-                  FileManager.validationControl('Header', '+');
-                }}
-              />
-            </th>
-          </tr>
-          <tr>
-            {[
-              'Quantity',
-              'MPN',
-              'Description',
-              'Designator',
-              'Manufacturer',
-            ].map((column, index) => (
-              <th key={index} scope="col" className="px-6 py-3">
-                <SpinButton
-                  label={column}
-                  less={() => {
-                    FileManager.validationControl(column, '-');
-                  }}
-                  more={() => {
-                    FileManager.validationControl(column, '+');
-                  }}
-                />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {file.content.slice(file.filters.header).map((row, rowIndex) => (
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <table className="w-full text-xs text-left rtl:text-right text-white">
+        {components?.map((component) => (
+          <>
             <tr
-              key={rowIndex}
-              className="bg-white border-b dark:bg-neutral-800 dark:border-neutral-700 border-neutral-200"
+              className={`border-b-0 ${color} border-neutral-700`}
+              style={{
+                border: CompareView.componentHasAWarning(component.id)
+                  ? '5px solid yellow'
+                  : '',
+              }}
+              key={component.id}
             >
-              <td className="px-6 py-4 text-xs">
-                {row[file.filters.quantity] || 'N/A'}
+              <td
+                className="px-6 py-4"
+                style={{
+                  backgroundColor: CompareView.componentHasAWarning(
+                    component.id,
+                  )
+                    ? 'yellow'
+                    : '',
+                }}
+              >
+                {CompareView.warningLifeCycle.includes(component.id) ? (
+                  <>
+                    Lifecycle
+                    <br />
+                  </>
+                ) : (
+                  ''
+                )}
+                {CompareView.warningMessage.includes(component.id) ? (
+                  <>
+                    Message
+                    <br />
+                  </>
+                ) : (
+                  ''
+                )}
+                {CompareView.warningMismatchMpn.includes(component.id) ? (
+                  <>
+                    Mismatching Mpn
+                    <br />
+                  </>
+                ) : (
+                  ''
+                )}
+                {CompareView.warningMoq.includes(component.id) ? (
+                  <>
+                    MOQ
+                    <br />
+                  </>
+                ) : (
+                  ''
+                )}
+                {CompareView.warningOutOfStock.includes(component.id) ? (
+                  <>
+                    Out Of Stock
+                    <br />
+                  </>
+                ) : (
+                  ''
+                )}
               </td>
-              <td className="px-6 py-4 text-xs">
-                {row[file.filters.mpn] || 'N/A'}
+              <td className="px-6 py-4" style={{ textAlign: 'center' }}>
+                <div style={{ whiteSpace: 'nowrap' }}>
+                  {component.calculated_price.best_price ? (
+                    <>
+                      {component.calculated_price.best_supplier?.charAt(0)}{' '}
+                      {component.calculated_price?.is_moq_not_reached
+                        ? `< ${component.calculated_price.moq} | $${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`
+                        : `$${parseFloat(component.calculated_price.best_price).toFixed(2)} | $${parseFloat(component.calculated_price.best_unit_price).toFixed(2)}/u`}
+                    </>
+                  ) : (
+                    '-'
+                  )}
+                </div>
+                {isUpdate
+                  ? `${component.OldQuantity} -> ${component.NewQuantity}`
+                  : component.quantity}
               </td>
-              <td className="px-6 py-4 text-xs">
-                {row[file.filters.description] || 'N/A'}
+              <td className="px-6 py-4">{HighlightText(component.mpn)}</td>
+              <td className="px-6 py-4">
+                {HighlightText(
+                  component.designators
+                    .map((designator) => designator.designator)
+                    .join(', '),
+                )}
               </td>
-              <td className="px-6 py-4 text-xs">
-                {row[file.filters.designator] || 'N/A'}
+              <td className="px-6 py-4">
+                {HighlightText(component.user_description)}
               </td>
-              <td className="px-6 py-4 text-xs">
-                {row[file.filters.manufacturer] || 'N/A'}
+              <td className="px-6 py-4">
+                {component.analyzed && (
+                  <button
+                    onClick={() =>
+                      CompareView.toggleComponentDetails(component.id)
+                    }
+                  >
+                    {CompareView.expandedComponents.includes(component.id)
+                      ? 'Close'
+                      : 'Open'}
+                  </button>
+                )}
               </td>
+              <td className="px-6 py-4">Bookmark</td>
             </tr>
-          ))}
-        </tbody>
+            {CompareView.expandedComponents.includes(component.id) && (
+              <ComponentDetails component={component} />
+            )}
+          </>
+        ))}
       </table>
     </div>
   );
