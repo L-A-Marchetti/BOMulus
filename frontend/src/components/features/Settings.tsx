@@ -2,17 +2,32 @@
 import React, { useEffect } from 'react';
 import { SettingsStore } from '../../store/SettingsStore';
 import { WSChooserStore } from '../../store/WSChooserStore';
+import Button from '../shared/Button';
+import { CompareViewStore } from '../../store/CompareViewStore';
+import { FileManager } from './FileManager';
+import { FileManagerStore } from '../../store/FileManagerStore';
 
 export function Settings(): React.JSX.Element {
   const Settings = SettingsStore();
+  const CompareView = CompareViewStore();
+  const FileManager = FileManagerStore();
 
   useEffect(() => {
     Settings.loadSettings();
   }, []);
 
-  return (
-    <div>
-      <p onClick={() => Settings.toggleVisibility()}>Settings</p>
+  return !FileManager.isVisible ? (
+    <div className="w-full">
+      <Button
+        onClick={() => {
+          CompareView.toggleVisibility();
+          Settings.toggleVisibility();
+        }}
+        text="Settings"
+        bg="bg-neutral-700"
+        bgHover="hover:bg-neutral-900"
+        txtColor="text-neutral-400"
+      />
       {Settings.isVisible &&
         (Settings.monitor.isLoading ? (
           <p>Settings are loading...</p>
@@ -50,5 +65,7 @@ export function Settings(): React.JSX.Element {
           </div>
         ))}
     </div>
+  ) : (
+    <></>
   );
 }

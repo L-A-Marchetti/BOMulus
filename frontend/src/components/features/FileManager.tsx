@@ -9,18 +9,24 @@ import Files from '../shared/Files';
 import Spinner from '../shared/Spinner';
 import navigate_next from '/src/assets/images/navigate_next.svg';
 import ValidationTable from '../shared/ValidationTable';
+import { AnalysisStore } from '../../store/AnalysisStore';
+import { CompareViewStore } from '../../store/CompareViewStore';
+import { SettingsStore } from '../../store/SettingsStore';
 
 export function FileManager(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
   const WSChooser = WSChooserStore();
   const FileManager = FileManagerStore();
+  const Analysis = AnalysisStore();
+  const CompareView = CompareViewStore();
+  const Settings = SettingsStore();
 
   useEffect(() => {
     FileManager.loadFiles();
   }, [WSChooser.activeWorkspace]);
 
-  return !WSCreator.isVisible && !WSChooser.isVisible ? (
-    <div className="flex flex-col gap-8">
+  return !WSCreator.isVisible && !WSChooser.isVisible && !Settings.isVisible ? (
+    <div className=" flex flex-col gap-8 w-full">
       {FileManager.isVisible ? (
         FileManager.filesToValidate ? (
           <ValidationTable />
@@ -28,7 +34,10 @@ export function FileManager(): React.JSX.Element {
           <>
             <div className="flex gap-8">
               <Button
-                onClick={FileManager.toggleVisibility}
+                onClick={() => {
+                  FileManager.toggleVisibility();
+                  CompareView.toggleVisibility();
+                }}
                 text="Back"
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
@@ -99,7 +108,10 @@ export function FileManager(): React.JSX.Element {
         )
       ) : (
         <Button
-          onClick={FileManager.toggleVisibility}
+          onClick={() => {
+            FileManager.toggleVisibility();
+            if (CompareView.isVisible) CompareView.toggleVisibility();
+          }}
           text="File Manager"
           bg="bg-neutral-700"
           bgHover="hover:bg-neutral-900"

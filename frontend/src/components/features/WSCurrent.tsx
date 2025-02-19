@@ -15,7 +15,7 @@ export function WSCurrent(): React.JSX.Element {
   return !WSCreator.isVisible &&
     !WSChooser.isVisible &&
     !FileManager.isVisible ? (
-    <div className="flex items-center justify-center w-full">
+    <div className="flex items-center justify-center w-full mt-8">
       <Banner
         text={`Current Workspace ${WSChooser.activeWorkspace?.workspace_infos.name}`}
         onClick={() => {

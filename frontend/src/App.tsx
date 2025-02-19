@@ -24,9 +24,11 @@ function App(): React.JSX.Element {
       ) : (
         <div className="w-full flex flex-col gap-8">
           <WSCurrent />
-          {/*<Settings />*/}
-          <FileManager />
-          {/*<Analysis />*/}
+          <div className="w-full flex gap-8 items-center justify-center">
+            <FileManager />
+            <Analysis />
+            <Settings />
+          </div>
           {/*<Filters />*/}
           <CompareView />
         </div>
