@@ -19,6 +19,7 @@ export function WSCreator(): React.JSX.Element {
         type="text"
         onChange={WSCreator.setWorkspaceName}
         value={WSCreator.workspaceName || ''}
+        h="h-20"
       />
       <InputFile
         onClick={WSCreator.chooseDirectory}
@@ -44,6 +45,8 @@ export function WSCreator(): React.JSX.Element {
           bg="bg-neutral-700"
           bgHover="hover:bg-neutral-900"
           txtColor="text-neutral-400"
+          h="h-20"
+          img={null}
         />
         <Button
           onClick={WSCreator.createWorkspace}
@@ -51,6 +54,8 @@ export function WSCreator(): React.JSX.Element {
           bg="bg-emerald-700"
           bgHover="hover:bg-emerald-900"
           txtColor="text-white"
+          h="h-20"
+          img={null}
         />
       </div>
     </div>

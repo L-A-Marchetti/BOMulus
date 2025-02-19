@@ -20,28 +20,24 @@ export default function Table({ components, isUpdate, color }: TableProps) {
     setOpacity(true);
   }, []);
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div
+      className={` transition relative overflow-x-auto shadow-md sm:rounded-lg`}
+    >
       <table className="w-full text-xs text-left rtl:text-right text-white">
         {components?.map((component) => (
           <>
             <tr
-              className={`border-b-0 ${color} border-neutral-700`}
-              style={{
-                border: CompareView.componentHasAWarning(component.id)
-                  ? '5px solid yellow'
-                  : '',
-              }}
+              className={`${color} ${
+                CompareView.componentHasAWarning(component.id)
+                  ? 'border-3 border-yellow-300'
+                  : 'border-b-0 border-neutral-700'
+              }`}
               key={component.id}
             >
               <td
-                className="px-6 py-4"
-                style={{
-                  backgroundColor: CompareView.componentHasAWarning(
-                    component.id,
-                  )
-                    ? 'yellow'
-                    : '',
-                }}
+                className={`px-6 py-4 ${
+                  CompareView.componentHasAWarning(component.id) ? '' : ''
+                }`}
               >
                 {CompareView.warningLifeCycle.includes(component.id) ? (
                   <>

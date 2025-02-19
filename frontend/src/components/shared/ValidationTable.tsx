@@ -37,6 +37,8 @@ export default function ValidationTable() {
               bg="bg-neutral-700"
               bgHover="hover:bg-neutral-900"
               txtColor="text-neutral-400"
+              h="h-20"
+              img={null}
             />
             <Button
               onClick={FileManager.confirmValidation}
@@ -44,6 +46,8 @@ export default function ValidationTable() {
               bg="bg-emerald-700"
               bgHover="hover:bg-emerald-900"
               txtColor="text-white"
+              h="h-20"
+              img={null}
             />
           </div>
         </caption>

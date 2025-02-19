@@ -21,7 +21,7 @@ export function CompareView(): React.JSX.Element {
             <Table
               components={CompareView.filterComponents(CompareView.insert)}
               isUpdate={false}
-              color="bg-emerald-600"
+              color="bg-emerald-900"
             />
           ) : (
             <></>
@@ -30,7 +30,7 @@ export function CompareView(): React.JSX.Element {
             <Table
               components={CompareView.filterComponents(CompareView.update)}
               isUpdate={true}
-              color="bg-purple-600"
+              color="bg-purple-900"
             />
           ) : (
             <></>
@@ -39,7 +39,7 @@ export function CompareView(): React.JSX.Element {
             <Table
               components={CompareView.filterComponents(CompareView.delete)}
               isUpdate={false}
-              color="bg-rose-600"
+              color="bg-rose-900"
             />
           ) : (
             <></>
@@ -48,7 +48,7 @@ export function CompareView(): React.JSX.Element {
             <Table
               components={CompareView.filterComponents(CompareView.equal)}
               isUpdate={false}
-              color="bg-neutral-600"
+              color="bg-neutral-700"
             />
           ) : (
             <></>

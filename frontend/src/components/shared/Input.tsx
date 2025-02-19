@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import ws_name from '/src/assets/images/ws_name.svg';
 
 type InputProps = {
+  h: string;
   placeHolder: string;
   type: string;
   value: string;
@@ -9,6 +10,7 @@ type InputProps = {
 };
 
 export default function Input({
+  h,
   placeHolder,
   type,
   value,
@@ -23,7 +25,7 @@ export default function Input({
     <div
       className={`w-full mx-auto transition ${opacity ? 'opacity-100' : 'opacity-0'}`}
     >
-      <div className="flex h-20">
+      <div className={`flex ${h}`}>
         <span className="inline-flex items-center px-3 text-sm border border-e-0 rounded-s-md bg-neutral-600 text-neutral-400 border-neutral-600">
           <img src={ws_name} className="w-4 h-4 text-neutral-400" />
         </span>

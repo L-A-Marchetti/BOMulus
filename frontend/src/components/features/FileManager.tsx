@@ -42,6 +42,8 @@ export function FileManager(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
+                h="h-20"
+                img={null}
               />
               <Button
                 onClick={FileManager.uploadFiles}
@@ -49,6 +51,8 @@ export function FileManager(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
+                h="h-20"
+                img={null}
               />
             </div>
             {FileManager.monitor.error ? (
@@ -66,7 +70,7 @@ export function FileManager(): React.JSX.Element {
                     FileManager.selectedFiles[1] === file ? (
                       <div className="w-full h-15 border-3 border-neutral-600 bg-neutral-700 rounded-lg animate-pulse"></div>
                     ) : (
-                      <Files file={file} />
+                      <Files file={file} key={file.path} />
                     ),
                   )}
                   <hr className="my-4 text-neutral-600" />
@@ -97,6 +101,8 @@ export function FileManager(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
+                h="h-20"
+                img={null}
               />
             )}
             {FileManager.compareMonitor.error ? (
@@ -116,6 +122,8 @@ export function FileManager(): React.JSX.Element {
           bg="bg-neutral-700"
           bgHover="hover:bg-neutral-900"
           txtColor="text-neutral-400"
+          h="h-20"
+          img={null}
         />
       )}
     </div>

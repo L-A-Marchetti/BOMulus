@@ -29,7 +29,7 @@ function App(): React.JSX.Element {
             <Analysis />
             <Settings />
           </div>
-          {/*<Filters />*/}
+          <Filters />
           <CompareView />
         </div>
       )}
