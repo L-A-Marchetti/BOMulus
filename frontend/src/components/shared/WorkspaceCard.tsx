@@ -23,7 +23,7 @@ export default function WorkspaceCard({
     <a
       href="#"
       onClick={openWs}
-      className={`w-full transition max-w-65 rounded-lg bg-neutral-700 hover:scale-105 hover:bg-neutral-600 aspect-square ${opacity ? 'opacity-100' : 'opacity-0'}`}
+      className={`w-full transition max-w-61 rounded-lg bg-neutral-700 hover:scale-105 hover:bg-neutral-600 aspect-square ${opacity ? 'opacity-100' : 'opacity-0'}`}
     >
       <div className="flex justify-end px-4 pt-4">
         <button

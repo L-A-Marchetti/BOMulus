@@ -15,7 +15,7 @@ function App(): React.JSX.Element {
   const WSChoose = WSChooserStore();
   const WSCreate = WSCreatorStore();
   return (
-    <div className="flex items-center justify-center min-h-screen gap-8 scale-95 origin-top">
+    <div className="flex items-center justify-center min-h-screen gap-8 px-8">
       {WSChoose.isVisible || WSCreate.isVisible ? (
         <div className="flex w-full max-w-235">
           <WSCreator />

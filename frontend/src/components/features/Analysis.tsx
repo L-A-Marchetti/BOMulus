@@ -21,6 +21,7 @@ export function Analysis(): React.JSX.Element {
         bgHover="hover:bg-neutral-900"
         txtColor="text-neutral-400"
         h="h-20"
+        img={null}
       />
       {Analysis.monitor.isLoading ? (
         <p>
