@@ -23,7 +23,7 @@ export function Settings(): React.JSX.Element {
     <div className="w-full">
       <Button
         onClick={() => {
-          CompareView.toggleVisibility();
+          if (CompareView.isVisible) CompareView.toggleVisibility();
           Settings.toggleVisibility();
         }}
         text={Settings.isVisible ? 'Back' : 'Settings'}

@@ -16,7 +16,7 @@ interface AnalysisProps {
 
 export const AnalysisStore = create<AnalysisProps>((set) => ({
   analysisStatus: null,
-  monitor: { isLoading: false, error: null },
+  monitor: { isLoading: true, error: null },
   runAnalysis: async () => {
     set({ monitor: { isLoading: true, error: null } });
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;

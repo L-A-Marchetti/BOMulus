@@ -12,9 +12,9 @@ import Input from '../shared/Input';
 export function Filters(): React.JSX.Element {
   const CompareView = CompareViewStore();
 
-  return CompareView.isVisible ? (
+  return CompareView.isVisible && CompareView.components ? (
     <>
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div className="flex flex-col items-center justify-center gap-8 px-8">
         <div className="flex items-center justify-center w-full gap-8">
           <div className="flex items-center justify-center w-full">
             <Button

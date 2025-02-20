@@ -1,7 +1,6 @@
 // src/components/WSChooser/WSChooser.tsx
 import React from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
-import ComponentRow from '../shared/ComponentRow';
 import { AnalysisStore } from '../../store/AnalysisStore';
 import Table from '../shared/Table';
 import Spinner from '../shared/Spinner';
