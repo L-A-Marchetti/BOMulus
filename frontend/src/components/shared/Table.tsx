@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import { HighlightText } from '../../utils/HightlightText';
 import ComponentDetails from './ComponentDetails';
+import moq from '/src/assets/images/moq.svg';
+import lifecycle from '/src/assets/images/lifecycle.svg';
+import manmessage from '/src/assets/images/manmessage.svg';
+import outofstock from '/src/assets/images/outofstock.svg';
+import mismatchingmpn from '/src/assets/images/mismatchingmpn.svg';
 
 export default function Table() {
   const [opacity, setOpacity] = useState(false);
@@ -61,59 +66,62 @@ export default function Table() {
               components?.map((component) => (
                 <>
                   <tr
-                    className={`hover:scale-95 transition ${
-                      CompareView.componentHasAWarning(component.id)
-                        ? 'border-3 border-yellow-300'
-                        : 'border-b-1 border-neutral-700'
-                    }`}
+                    className={`hover:scale-95 transition`}
                     key={component.id}
                   >
-                    <td
-                      className={`px-6 py-4 ${
-                        CompareView.componentHasAWarning(component.id) ? '' : ''
-                      }`}
-                    >
-                      <div className={`w-2 h-10 ${color}`}></div>
-                      {CompareView.warningLifeCycle.includes(component.id) ? (
-                        <>
-                          Lifecycle
-                          <br />
-                        </>
-                      ) : (
-                        ''
-                      )}
-                      {CompareView.warningMessage.includes(component.id) ? (
-                        <>
-                          Message
-                          <br />
-                        </>
-                      ) : (
-                        ''
-                      )}
-                      {CompareView.warningMismatchMpn.includes(component.id) ? (
-                        <>
-                          Mismatching Mpn
-                          <br />
-                        </>
-                      ) : (
-                        ''
-                      )}
-                      {CompareView.warningMoq.includes(component.id) ? (
-                        <>
-                          MOQ
-                          <br />
-                        </>
-                      ) : (
-                        ''
-                      )}
-                      {CompareView.warningOutOfStock.includes(component.id) ? (
-                        <>
-                          Out Of Stock
-                          <br />
-                        </>
-                      ) : (
-                        ''
-                      )}
+                    <td className={`px-6 py-4`}>
+                      <div className="flex items-center justify-start gap-2">
+                        {CompareView.componentHasAWarning(component.id) ? (
+                          <div className={`w-2 h-10 bg-yellow-500`}></div>
+                        ) : (
+                          <></>
+                        )}
+                        <div className={`w-2 h-10 ${color}`}></div>
+                        {CompareView.warningLifeCycle.includes(component.id) ? (
+                          <>
+                            <img src={lifecycle} />
+                            <br />
+                          </>
+                        ) : (
+                          ''
+                        )}
+                        {CompareView.warningMessage.includes(component.id) ? (
+                          <>
+                            <img src={manmessage} />
+                            <br />
+                          </>
+                        ) : (
+                          ''
+                        )}
+                        {CompareView.warningMismatchMpn.includes(
+                          component.id,
+                        ) ? (
+                          <>
+                            <img src={mismatchingmpn} />
+                            <br />
+                          </>
+                        ) : (
+                          ''
+                        )}
+                        {CompareView.warningMoq.includes(component.id) ? (
+                          <>
+                            <img src={moq} />
+                            <br />
+                          </>
+                        ) : (
+                          ''
+                        )}
+                        {CompareView.warningOutOfStock.includes(
+                          component.id,
+                        ) ? (
+                          <>
+                            <img src={outofstock} />
+                            <br />
+                          </>
+                        ) : (
+                          ''
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4" style={{ textAlign: 'center' }}>
                       <div style={{ whiteSpace: 'nowrap' }}>
@@ -138,7 +146,7 @@ export default function Table() {
                       {HighlightText(component.mpn)}
                     </td>
                     <td className="px-6 py-4">
-                      {HighlightText(component.designator)}
+                      {/*HighlightText(component.designator)*/}
                     </td>
 
                     <td className="px-6 py-4">
