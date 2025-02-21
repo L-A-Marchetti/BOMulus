@@ -2,9 +2,24 @@ import React, { useState } from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
-export default function Radial() {
+export type RadialData = {
+  value: number;
+  label: string;
+  color: string;
+};
+
+type RadialProps = {
+  title: string;
+  data: RadialData[];
+};
+
+export default function Radial({ title, data }: RadialProps) {
+  const series = data.map((item) => item.value);
+  const labels = data.map((item) => item.label);
+  const colors = data.map((item) => item.color);
   const [chartOptions] = useState<ApexOptions>({
-    colors: ['#1C64F2', '#16BDCA', '#FDBA8C'],
+    labels,
+    colors,
     chart: {
       type: 'radialBar',
       height: 350,
@@ -31,7 +46,6 @@ export default function Radial() {
         },
       },
     },
-    labels: ['Done', 'In progress', 'To do'],
     legend: {
       show: true,
       position: 'bottom',
@@ -56,18 +70,16 @@ export default function Radial() {
       },
     },
     title: {
-      text: 'BOM Coverage',
-      align: 'center',
+      text: title,
+      align: 'left',
       style: {
         color: 'white',
       },
     },
   });
 
-  const [series] = useState<number[]>([90, 85, 70]);
-
   return (
-    <div className="w-65 h-75">
+    <div className="w-66 h-75">
       <Chart
         options={chartOptions}
         series={series}
