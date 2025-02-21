@@ -3,6 +3,7 @@ import Spinner from '../shared/Spinner';
 import { CalculatorStore } from '../../store/CalculatorStore';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import Radial, { RadialData } from '../shared/Radial';
+import Donut from '../shared/Donut';
 
 export function Calculator(): React.JSX.Element {
   const Calculator = CalculatorStore();
@@ -31,6 +32,16 @@ export function Calculator(): React.JSX.Element {
           totalComponents) *
         100
       : 0;
+  const inStockCount = CompareView.components?.filter(
+    (component) =>
+      component.availability?.some((stock) => stock.value !== '') &&
+      component.analyzed,
+  ).length;
+  const outOfStockCount = CompareView.components?.filter(
+    (component) =>
+      component.availability?.every((stock) => stock.value === '') &&
+      component.analyzed,
+  ).length;
 
   const bomCoverage: RadialData[] = [
     {
@@ -56,10 +67,24 @@ export function Calculator(): React.JSX.Element {
     },
   ];
 
+  const availability: RadialData[] = [
+    {
+      value: inStockCount || 0,
+      label: 'In Stock',
+      color: '#16BDCA',
+    },
+    {
+      value: outOfStockCount || 0,
+      label: 'Out of Stock',
+      color: '#E74694',
+    },
+  ];
+
   return CompareView.isVisible ? (
     <>
-      <div className="px-8">
+      <div className="px-8 flex items-center justify-center gap-8">
         <Radial title="BOM Coverage" data={bomCoverage} />
+        <Donut title="Availability" data={availability} />
       </div>
       <div className="flex items-center justify-center mx-8 gap-8">
         <input
