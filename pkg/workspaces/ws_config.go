@@ -86,11 +86,11 @@ func GetApiCount() (int, error) {
 // GetProductionQuantity retrieves the production quantity in the specified .bmls file.
 // It reads the .bmls file, unmarshals its content, and updates the
 // global configuration with the production quantity value.
-func GetProductionQuantity(workspacePath string) (string, error) {
-	if workspacePath == "" {
+func GetProductionQuantity(activeWorkspace Workspace) (string, error) {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return "", fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(workspacePath, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(workspacePath), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -109,11 +109,11 @@ func GetProductionQuantity(workspacePath string) (string, error) {
 // SetProductionQuantity update the production quantity in the specified .bmls file.
 // It reads the .bmls file, unmarshals its content, and updates the
 // global configuration with the production quantity value.
-func SetProductionQuantity(activeWorkspace string, productionQuantity string) error {
-	if activeWorkspace == "" {
+func SetProductionQuantity(activeWorkspace Workspace, productionQuantity string) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)
@@ -145,7 +145,7 @@ func SetProductionQuantity(activeWorkspace string, productionQuantity string) er
 		}
 	}
 	for i, workspace := range bomulusFile.Workspaces {
-		if workspace.WorkspaceInfos.Path == activeWorkspace {
+		if workspace.WorkspaceInfos.Path == activeWorkspace.WorkspaceInfos.Path {
 			bomulusFile.Workspaces[i].WorkspaceInfos.ProductionQuantity = productionQuantity
 			break
 		}

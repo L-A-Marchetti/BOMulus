@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { GetComponents } from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { core } from '../../wailsjs/go/models';
+import { CalculatorStore } from './CalculatorStore';
 
 type Component = core.Component;
 

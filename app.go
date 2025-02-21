@@ -51,8 +51,8 @@ func (a *App) GetComponent(i int) core.Component {
 	return core.Components[i]
 }
 
-func (a *App) PriceCalculator(activeWorkspacePath string, quantity float64) (components.PriceCalculationResult, error) {
-	return components.QuantityPrice(activeWorkspacePath, int(quantity))
+func (a *App) PriceCalculator(activeWorkspace workspaces.Workspace, quantity float64) (components.PriceCalculationResult, error) {
+	return components.QuantityPrice(activeWorkspace, int(quantity))
 }
 
 /*╚══════════════════════════════════════════════╝*/
@@ -328,15 +328,15 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 }
 
 // GetProductionQuantity retrieves the selected production quantity by delegating to workspaces package.
-func (a *App) GetProductionQuantity(activeWorkspacePath string) (string, error) {
+func (a *App) GetProductionQuantity(activeWorkspace workspaces.Workspace) (string, error) {
 	//activeWorkspace := a.GetActiveWorkspace()
-	return workspaces.GetProductionQuantity(activeWorkspacePath) // Delegate to workspaces package
+	return workspaces.GetProductionQuantity(activeWorkspace) // Delegate to workspaces package
 }
 
 // SetProductionQuantity sets the selected production quantity by updating BOMulus.bmls.
-func (a *App) SetProductionQuantity(activeWorkspacePath, productionQuantity string) error {
+func (a *App) SetProductionQuantity(activeWorkspace workspaces.Workspace, productionQuantity string) error {
 	config.PRODUCTION_QUANTITY = productionQuantity
-	return workspaces.SetProductionQuantity(activeWorkspacePath, productionQuantity)
+	return workspaces.SetProductionQuantity(activeWorkspace, productionQuantity)
 }
 
 // GetApiPriority retrieves the user API priority by delegating to workspaces package.

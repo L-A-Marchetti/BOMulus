@@ -47,7 +47,9 @@ export function GetLastComparison(
   arg1: workspaces.Workspace,
 ): Promise<workspaces.Comparison>;
 
-export function GetProductionQuantity(arg1: string): Promise<string>;
+export function GetProductionQuantity(
+  arg1: workspaces.Workspace,
+): Promise<string>;
 
 export function GetRecentWorkspaces(): Promise<Array<workspaces.Workspace>>;
 
@@ -72,7 +74,7 @@ export function OpenImportFileDialog(): Promise<void>;
 export function OpenMultipleFilesDialog(): Promise<Array<string>>;
 
 export function PriceCalculator(
-  arg1: string,
+  arg1: workspaces.Workspace,
   arg2: number,
 ): Promise<components.PriceCalculationResult>;
 
@@ -87,7 +89,7 @@ export function SetAnalyzeSaveState(arg1: boolean): Promise<void>;
 export function SetApiPriority(arg1: Array<string>): Promise<void>;
 
 export function SetProductionQuantity(
-  arg1: string,
+  arg1: workspaces.Workspace,
   arg2: string,
 ): Promise<void>;
 

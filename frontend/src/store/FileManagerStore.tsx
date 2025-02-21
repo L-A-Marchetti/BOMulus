@@ -14,6 +14,7 @@ import { WSChooserStore } from './WSChooserStore';
 import { workspaces } from '../../wailsjs/go/models';
 import { core } from '../../wailsjs/go/models';
 import { CompareViewStore } from './CompareViewStore';
+import { CalculatorStore } from './CalculatorStore';
 type FileInfo = workspaces.FileInfo;
 type XlsmFile = core.XlsmFile;
 
@@ -257,6 +258,7 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       set({ compareMonitor: { isLoading: false, error: null } });
       FileManagerStore.getState().toggleVisibility();
       CompareViewStore.getState().loadComponents();
+      CalculatorStore.getState().getProductionQuantity();
       if (!CompareViewStore.getState().isVisible)
         CompareViewStore.getState().toggleVisibility();
     } catch (err) {

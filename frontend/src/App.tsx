@@ -10,6 +10,7 @@ import { Settings } from './components/features/Settings';
 import { Filters } from './components/features/Filters';
 import { WSChooserStore } from './store/WSChooserStore';
 import { WSCreatorStore } from './store/WSCreatorStore';
+import { Calculator } from './components/features/Calculator';
 
 function App(): React.JSX.Element {
   const WSChoose = WSChooserStore();
@@ -29,6 +30,7 @@ function App(): React.JSX.Element {
             <Analysis />
             <Settings />
           </div>
+          <Calculator />
           <Filters />
           <CompareView />
         </div>

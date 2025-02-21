@@ -4,16 +4,22 @@ import { CompareViewStore } from '../../store/CompareViewStore';
 import { AnalysisStore } from '../../store/AnalysisStore';
 import Table from '../shared/Table';
 import Spinner from '../shared/Spinner';
+import { CalculatorStore } from '../../store/CalculatorStore';
 
 export function CompareView(): React.JSX.Element {
   const CompareView = CompareViewStore();
   const Analysis = AnalysisStore();
+  const Calculator = CalculatorStore();
 
   return CompareView.isVisible ? (
     <>
-      {CompareView.monitor.isLoading && !Analysis.analysisStatus ? (
+      {CompareView.monitor.isLoading &&
+      !Analysis.analysisStatus &&
+      !Calculator.monitor.isLoading ? (
         <Spinner text="Compare View is loading..." />
-      ) : CompareView.monitor.error && !Analysis.analysisStatus ? (
+      ) : CompareView.monitor.error &&
+        !Analysis.analysisStatus &&
+        !Calculator.monitor.isLoading ? (
         <p>{CompareView.monitor.error}</p>
       ) : (
         <Table />
