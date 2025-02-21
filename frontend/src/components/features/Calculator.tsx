@@ -80,11 +80,35 @@ export function Calculator(): React.JSX.Element {
     },
   ];
 
+  const functionsPrice: RadialData[] = [
+    {
+      value: 150,
+      label: 'Not Assaigned',
+      color: '#1C64F2',
+    },
+    {
+      value: 340,
+      label: 'Audio',
+      color: '#16BDCA',
+    },
+    {
+      value: 214,
+      label: 'Alimentation',
+      color: '#FDBA8C',
+    },
+    {
+      value: 64,
+      label: 'HF',
+      color: '#E74694',
+    },
+  ];
+
   return CompareView.isVisible ? (
     <>
       <div className="px-8 flex items-center justify-center gap-8">
         <Radial title="BOM Coverage" data={bomCoverage} />
-        <Donut title="Availability" data={availability} />
+        <Donut title="Availability" isPrice={false} data={availability} />
+        <Donut title="Functions Pricing" isPrice={true} data={functionsPrice} />
       </div>
       <div className="flex items-center justify-center mx-8 gap-8">
         <input

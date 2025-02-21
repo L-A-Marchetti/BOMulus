@@ -5,10 +5,11 @@ import { RadialData } from './Radial';
 
 type DonutProps = {
   title: string;
+  isPrice: boolean;
   data: RadialData[];
 };
 
-export default function Donut({ title, data }: DonutProps) {
+export default function Donut({ title, isPrice, data }: DonutProps) {
   const series = data.map((item) => item.value);
   const labels = data.map((item) => item.label);
   const colors = data.map((item) => item.color);
@@ -57,7 +58,7 @@ export default function Donut({ title, data }: DonutProps) {
               color: 'white',
               fontSize: '13px',
               formatter: function (value) {
-                return value + ' Components';
+                return isPrice ? '$' + value : value + ' Components';
               },
             },
           },
