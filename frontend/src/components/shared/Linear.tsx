@@ -1,0 +1,121 @@
+import React, { useState } from 'react';
+import Chart from 'react-apexcharts';
+import { ApexOptions } from 'apexcharts';
+import { RadialData } from './Radial';
+
+type LinearProps = {
+  title: string;
+  isPrice: boolean;
+  data: RadialData[];
+};
+
+export default function Linear({ title, isPrice, data }: LinearProps) {
+  //const series = data.map((item) => item.value);
+  const labels = data.map((item) => item.label);
+  const colors = data.map((item) => item.color);
+  const series = [
+    {
+      name: 'Price',
+      data: [1500, 1418],
+      color: '#1A56DB',
+    },
+    {
+      name: 'Compliance',
+      data: [643, 813],
+      color: '#7E3BF2',
+    },
+  ];
+  const [chartOptions] = useState<ApexOptions>({
+    series,
+    tooltip: {
+      theme: 'dark',
+      enabled: true,
+      x: {
+        show: true,
+      },
+    },
+    grid: {
+      show: false,
+      strokeDashArray: 4,
+      padding: {
+        left: 2,
+        right: 2,
+        top: -26,
+      },
+    },
+    chart: {
+      height: '100%',
+      width: '100%',
+      type: 'area',
+      dropShadow: {
+        enabled: false,
+      },
+      toolbar: {
+        show: false,
+      },
+    },
+    legend: {
+      show: true,
+      position: 'bottom',
+      offsetY: 27,
+      labels: {
+        colors: 'white',
+      },
+      itemMargin: {
+        horizontal: 10,
+      },
+      markers: {
+        size: 5,
+        offsetX: -5,
+      },
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        opacityFrom: 0.55,
+        opacityTo: 0,
+        shade: '#1C64F2',
+        gradientToColors: ['#1C64F2'],
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: 6,
+    },
+    xaxis: {
+      categories: ['v1', 'v2'],
+      labels: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+    },
+    yaxis: {
+      show: false,
+      labels: {
+        formatter: function (value) {
+          return '$' + value;
+        },
+      },
+    },
+    title: {
+      text: title,
+      align: 'left',
+      style: {
+        color: 'white',
+      },
+    },
+  });
+
+  return (
+    <div className="w-full h-75 flex-[1_1_0%]">
+      <Chart options={chartOptions} type="area" series={series} height={276} />
+    </div>
+  );
+}

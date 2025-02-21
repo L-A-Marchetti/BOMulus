@@ -4,6 +4,7 @@ import { CalculatorStore } from '../../store/CalculatorStore';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import Radial, { RadialData } from '../shared/Radial';
 import Donut from '../shared/Donut';
+import Linear from '../shared/Linear';
 
 export function Calculator(): React.JSX.Element {
   const Calculator = CalculatorStore();
@@ -105,10 +106,11 @@ export function Calculator(): React.JSX.Element {
 
   return CompareView.isVisible ? (
     <>
-      <div className="px-8 flex items-center justify-center gap-8">
+      <div className="px-8 flex items-center justify-center gap-8 flex-wrap">
         <Radial title="BOM Coverage" data={bomCoverage} />
         <Donut title="Availability" isPrice={false} data={availability} />
         <Donut title="Functions Pricing" isPrice={true} data={functionsPrice} />
+        <Linear title="BOM Evolution" isPrice={false} data={bomCoverage} />
       </div>
       <div className="flex items-center justify-center mx-8 gap-8">
         <input
