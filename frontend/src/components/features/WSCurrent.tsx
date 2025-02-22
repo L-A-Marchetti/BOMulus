@@ -6,6 +6,7 @@ import { FileManagerStore } from '../../store/FileManagerStore';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import Banner from '../shared/Banner';
 import { SettingsStore } from '../../store/SettingsStore';
+import { FunctionManagerStore } from '../../store/FunctionManagerStore';
 
 export function WSCurrent(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
@@ -13,11 +14,13 @@ export function WSCurrent(): React.JSX.Element {
   const FileManager = FileManagerStore();
   const CompareView = CompareViewStore();
   const Settings = SettingsStore();
+  const FunctionManager = FunctionManagerStore();
 
   return !WSCreator.isVisible &&
     !WSChooser.isVisible &&
     !FileManager.isVisible &&
-    !Settings.isVisible ? (
+    !Settings.isVisible &&
+    !FunctionManager.isVisible ? (
     <div className="flex items-center justify-center w-full mt-8 px-8">
       <Banner
         text={`Current Workspace ${WSChooser.activeWorkspace?.workspace_infos.name}`}

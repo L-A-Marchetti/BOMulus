@@ -3,6 +3,7 @@ import { GetComponents } from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { core } from '../../wailsjs/go/models';
 import { CalculatorStore } from './CalculatorStore';
+import { FunctionManagerStore } from './FunctionManagerStore';
 
 type Component = core.Component;
 
@@ -133,6 +134,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         if (component.calculated_price?.is_moq_not_reached) {
           warningMoq.push(component.id);
         }
+        FunctionManagerStore.getState().loadDesignators();
       });
       set({
         components,

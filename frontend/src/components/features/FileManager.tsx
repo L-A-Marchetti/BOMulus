@@ -12,20 +12,24 @@ import ValidationTable from '../shared/ValidationTable';
 import { AnalysisStore } from '../../store/AnalysisStore';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import { SettingsStore } from '../../store/SettingsStore';
+import { FunctionManagerStore } from '../../store/FunctionManagerStore';
 
 export function FileManager(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
   const WSChooser = WSChooserStore();
   const FileManager = FileManagerStore();
-  const Analysis = AnalysisStore();
   const CompareView = CompareViewStore();
   const Settings = SettingsStore();
+  const FunctionManager = FunctionManagerStore();
 
   useEffect(() => {
     FileManager.loadFiles();
   }, [WSChooser.activeWorkspace]);
 
-  return !WSCreator.isVisible && !WSChooser.isVisible && !Settings.isVisible ? (
+  return !WSCreator.isVisible &&
+    !WSChooser.isVisible &&
+    !Settings.isVisible &&
+    !FunctionManager.isVisible ? (
     <div className=" flex flex-col gap-8 w-full">
       {FileManager.isVisible ? (
         FileManager.filesToValidate ? (

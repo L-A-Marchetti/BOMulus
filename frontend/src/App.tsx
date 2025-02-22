@@ -11,6 +11,7 @@ import { Filters } from './components/features/Filters';
 import { WSChooserStore } from './store/WSChooserStore';
 import { WSCreatorStore } from './store/WSCreatorStore';
 import { Calculator } from './components/features/Calculator';
+import { FunctionManager } from './components/features/FunctionManager';
 
 function App(): React.JSX.Element {
   const WSChoose = WSChooserStore();
@@ -27,6 +28,7 @@ function App(): React.JSX.Element {
           <WSCurrent />
           <div className="w-full flex gap-8 items-center justify-center px-8">
             <FileManager />
+            <FunctionManager />
             <Analysis />
             <Settings />
           </div>

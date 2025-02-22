@@ -104,7 +104,7 @@ export function Calculator(): React.JSX.Element {
     },
   ];
 
-  return CompareView.isVisible ? (
+  return CompareView.isVisible && CompareView.components ? (
     <>
       <div className="px-8 flex items-center justify-center gap-8 flex-wrap">
         <Radial title="BOM Coverage" data={bomCoverage} />

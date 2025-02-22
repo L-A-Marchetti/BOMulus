@@ -9,21 +9,23 @@ import { FileManagerStore } from '../../store/FileManagerStore';
 import Input from '../shared/Input';
 import SpinButton from '../shared/SpinButton';
 import Spinner from '../shared/Spinner';
+import { FunctionManagerStore } from '../../store/FunctionManagerStore';
 
 export function Settings(): React.JSX.Element {
   const Settings = SettingsStore();
   const CompareView = CompareViewStore();
   const FileManager = FileManagerStore();
+  const FunctionManager = FunctionManagerStore();
 
   useEffect(() => {
     Settings.loadSettings();
   }, []);
 
-  return !FileManager.isVisible ? (
+  return !FileManager.isVisible && !FunctionManager.isVisible ? (
     <div className="w-full">
       <Button
         onClick={() => {
-          if (CompareView.isVisible) CompareView.toggleVisibility();
+          CompareView.toggleVisibility();
           Settings.toggleVisibility();
         }}
         text={Settings.isVisible ? 'Back' : 'Settings'}
