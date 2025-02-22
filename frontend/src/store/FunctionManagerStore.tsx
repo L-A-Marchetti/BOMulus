@@ -14,6 +14,7 @@ interface FunctionManagerProps {
   isVisible: boolean;
   name: string;
   color: string;
+  searchQueries: { name: string; query: string }[];
   toggleVisibility: () => void;
   toggleFunctionExpand: (name: string) => void;
   toggleDesignatorSelection: (designator: Designator) => void;
@@ -23,6 +24,7 @@ interface FunctionManagerProps {
   createFunction: () => void;
   assignToFunction: (functionName: string) => void;
   removeDesignator: (designator: Designator) => void;
+  setSearchQueries: (functionName: string, query: string) => void;
 }
 
 export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
@@ -34,6 +36,7 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
   isVisible: false,
   name: '',
   color: '#000000',
+  searchQueries: [],
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   toggleFunctionExpand: (name: string) =>
     set((state) => ({
@@ -125,5 +128,18 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
             : d,
       );
       return { designators: updatedDesignators };
+    }),
+  setSearchQueries: (functionName: string, query: string) =>
+    set((state) => {
+      const updatedQueries = new Map(
+        state.searchQueries.map(({ name, query }) => [name, query]),
+      );
+      updatedQueries.set(functionName, query);
+      return {
+        searchQueries: Array.from(updatedQueries, ([name, query]) => ({
+          name,
+          query,
+        })),
+      };
     }),
 }));

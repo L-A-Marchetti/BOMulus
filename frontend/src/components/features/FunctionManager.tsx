@@ -40,8 +40,32 @@ export function FunctionManager(): React.JSX.Element {
             <>
               <div className="flex items-start justify-center gap-8">
                 <ul className="flex w-full gap-2 flex-col">
+                  <input
+                    type="text"
+                    onChange={(e) =>
+                      FunctionManager.setSearchQueries(
+                        'not assigned',
+                        e.target.value,
+                      )
+                    }
+                    placeholder="Search Designators"
+                    value={
+                      FunctionManager.searchQueries.find(
+                        (s) => s.name === 'not assigned',
+                      )?.query || ''
+                    }
+                  />{' '}
                   {FunctionManager.designators
-                    ?.filter((d) => d.label.name === 'not assigned')
+                    ?.filter((d) => {
+                      const query =
+                        FunctionManager.searchQueries.find(
+                          (s) => s.name === 'not assigned',
+                        )?.query || '';
+                      return (
+                        d.label.name === 'not assigned' &&
+                        d.designator.toLowerCase().includes(query.toLowerCase())
+                      );
+                    })
                     .map((d) => (
                       <li>
                         <label
@@ -98,7 +122,7 @@ export function FunctionManager(): React.JSX.Element {
                   </li>
                   {FunctionManager.functions?.map((f) => (
                     <li>
-                      <label
+                      <div
                         onClick={() => {
                           if (FunctionManager.selectedDesignators.length > 0) {
                             FunctionManager.assignToFunction(f.name);
@@ -128,8 +152,38 @@ export function FunctionManager(): React.JSX.Element {
                         {FunctionManager.expandedFunctions.includes(f.name) &&
                         FunctionManager.selectedDesignators.length === 0 ? (
                           <div className="flex flex-col items-start justify-start w-full">
+                            <input
+                              className="w-full my-3"
+                              type="search"
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => {
+                                FunctionManager.setSearchQueries(
+                                  f.name,
+                                  e.target.value,
+                                );
+                              }}
+                              placeholder="Search Designators"
+                              value={
+                                FunctionManager.searchQueries.find(
+                                  (s) => s.name === f.name,
+                                )?.query || ''
+                              }
+                            />
                             {FunctionManager.designators
-                              ?.filter((d) => d.label.name.includes(f.name))
+                              ?.filter(
+                                (d) =>
+                                  d.label.name.includes(f.name) &&
+                                  (!FunctionManager.searchQueries.find(
+                                    (s) => s.name === f.name,
+                                  )?.query ||
+                                    d.designator
+                                      .toLowerCase()
+                                      .includes(
+                                        FunctionManager.searchQueries
+                                          .find((s) => s.name === f.name)
+                                          ?.query.toLowerCase() || '',
+                                      )),
+                              )
                               .map((d) => (
                                 <li className="w-full">
                                   <label
@@ -162,7 +216,7 @@ export function FunctionManager(): React.JSX.Element {
                         ) : (
                           <></>
                         )}
-                      </label>
+                      </div>
                     </li>
                   ))}
                 </ul>
