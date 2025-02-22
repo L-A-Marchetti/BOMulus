@@ -40,27 +40,29 @@ export function FunctionManager(): React.JSX.Element {
             <>
               <div className="flex items-start justify-center gap-8">
                 <ul className="flex w-full gap-2 flex-col">
-                  {FunctionManager.designators?.map((d) => (
-                    <li>
-                      <label
-                        onClick={() =>
-                          FunctionManager.toggleDesignatorSelection(d)
-                        }
-                        className={`inline-flex items-center justify-between w-full py-2 px-5 border-2 rounded-lg cursor-pointer hover:text-neutral-300 bg-neutral-800 hover:bg-neutral-700 ${FunctionManager.selectedDesignators.includes(d) ? 'border-blue-600 text-neutral-300' : 'border-neutral-700 text-neutral-400'}`}
-                      >
-                        <div className="flex items-center justify-center w-full">
-                          <span
-                            style={{ backgroundColor: d.label.color }}
-                            className={`flex w-3 h-3 mr-3 rounded-full aspect-square`}
-                          ></span>
-                          <div className="w-full text-ws font-semibold">
-                            {d.designator}
+                  {FunctionManager.designators
+                    ?.filter((d) => d.label.name === 'not assigned')
+                    .map((d) => (
+                      <li>
+                        <label
+                          onClick={() =>
+                            FunctionManager.toggleDesignatorSelection(d)
+                          }
+                          className={`inline-flex items-center justify-between w-full py-2 px-5 border-2 rounded-lg cursor-pointer hover:text-neutral-300 bg-neutral-800 hover:bg-neutral-700 ${FunctionManager.selectedDesignators.includes(d) ? 'border-blue-600 text-neutral-300' : 'border-neutral-700 text-neutral-400'}`}
+                        >
+                          <div className="flex items-center justify-center w-full">
+                            <span
+                              style={{ backgroundColor: d.label.color }}
+                              className={`flex w-3 h-3 mr-3 rounded-full aspect-square`}
+                            ></span>
+                            <div className="w-full text-ws font-semibold">
+                              {d.designator}
+                            </div>
+                            <div className="w-full text-sm">{d.label.name}</div>
                           </div>
-                          <div className="w-full text-sm">{d.label.name}</div>
-                        </div>
-                      </label>
-                    </li>
-                  ))}
+                        </label>
+                      </li>
+                    ))}
                 </ul>
                 <ul className="flex w-full gap-2 flex-col">
                   <li>
@@ -130,7 +132,13 @@ export function FunctionManager(): React.JSX.Element {
                               ?.filter((d) => d.label.name.includes(f.name))
                               .map((d) => (
                                 <li className="w-full">
-                                  <label className="inline-flex items-center justify-between w-full py-2 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg cursor-pointer dark:hover:text-neutral-300 dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 hover:text-neutral-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800 dark:hover:bg-neutral-700">
+                                  <label
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      FunctionManager.removeDesignator(d);
+                                    }}
+                                    className="inline-flex items-center justify-between w-full py-2 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg cursor-pointer dark:hover:text-neutral-300 dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 hover:text-neutral-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+                                  >
                                     <div className="flex items-center justify-center w-full">
                                       <span
                                         style={{

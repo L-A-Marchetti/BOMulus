@@ -22,6 +22,7 @@ interface FunctionManagerProps {
   setColor: (color: string) => void;
   createFunction: () => void;
   assignToFunction: (functionName: string) => void;
+  removeDesignator: (designator: Designator) => void;
 }
 
 export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
@@ -109,5 +110,20 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
         designators: updatedDesignators,
         selectedDesignators: [],
       };
+    }),
+  removeDesignator: (designator: Designator) =>
+    set((state) => {
+      if (!state.designators) return state;
+      const updatedDesignators = state.designators.map(
+        (d): Designator =>
+          d.designator === designator.designator
+            ? {
+                ...d,
+                label: { name: 'not assigned', color: '#ffffff' },
+                convertValues: d.convertValues,
+              }
+            : d,
+      );
+      return { designators: updatedDesignators };
     }),
 }));
