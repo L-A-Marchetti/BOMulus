@@ -42,8 +42,12 @@ export function FunctionManager(): React.JSX.Element {
                 <ul className="flex w-full gap-2 flex-col">
                   {FunctionManager.designators?.map((d) => (
                     <li>
-                      <input type="checkbox" value="" className="hidden peer" />
-                      <label className="inline-flex items-center justify-between w-full py-2 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg cursor-pointer dark:hover:text-neutral-300 dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 hover:text-neutral-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800 dark:hover:bg-neutral-700">
+                      <label
+                        onClick={() =>
+                          FunctionManager.toggleDesignatorSelection(d)
+                        }
+                        className={`inline-flex items-center justify-between w-full py-2 px-5 border-2 rounded-lg cursor-pointer hover:text-neutral-300 bg-neutral-800 hover:bg-neutral-700 ${FunctionManager.selectedDesignators.includes(d) ? 'border-blue-600 text-neutral-300' : 'border-neutral-700 text-neutral-400'}`}
+                      >
                         <div className="flex items-center justify-center w-full">
                           <span
                             style={{ backgroundColor: d.label.color }}
@@ -60,7 +64,7 @@ export function FunctionManager(): React.JSX.Element {
                 </ul>
                 <ul className="flex w-full gap-2 flex-col">
                   <li>
-                    <label className="inline-flex items-center justify-between w-full py-2 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 dark:text-neutral-400 dark:bg-neutral-800">
+                    <label className="inline-flex items-center justify-between w-full py-3 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 dark:text-neutral-400 dark:bg-neutral-800">
                       <div className="flex flex-col items-center justify-center gap-3 w-full">
                         <div className="flex items-center justify-center w-full gap-3">
                           <Input
@@ -92,12 +96,15 @@ export function FunctionManager(): React.JSX.Element {
                   </li>
                   {FunctionManager.functions?.map((f) => (
                     <li>
-                      <input type="checkbox" value="" className="hidden peer" />
                       <label
-                        onClick={() =>
-                          FunctionManager.toggleFunctionExpand(f.name)
-                        }
-                        className="flex gap-3 flex-col items-center justify-between w-full py-2 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg cursor-pointer dark:hover:text-neutral-300 dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 hover:text-neutral-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+                        onClick={() => {
+                          if (FunctionManager.selectedDesignators.length > 0) {
+                            FunctionManager.assignToFunction(f.name);
+                          } else {
+                            FunctionManager.toggleFunctionExpand(f.name);
+                          }
+                        }}
+                        className={`${FunctionManager.selectedDesignators.length > 0 ? 'animate-pulse' : ''} flex gap-3 flex-col items-center justify-between w-full py-2 px-5 text-neutral-500 bg-white border-2 border-neutral-200 rounded-lg cursor-pointer dark:hover:text-neutral-300 dark:border-neutral-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-600 hover:text-neutral-600 dark:peer-checked:text-neutral-300 peer-checked:text-neutral-600 hover:bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800 dark:hover:bg-neutral-700`}
                       >
                         <div className="flex items-center justify-center w-full">
                           <span
@@ -116,7 +123,8 @@ export function FunctionManager(): React.JSX.Element {
                             / {FunctionManager.designators?.length} assigned
                           </div>
                         </div>
-                        {FunctionManager.expandedFunctions.includes(f.name) ? (
+                        {FunctionManager.expandedFunctions.includes(f.name) &&
+                        FunctionManager.selectedDesignators.length === 0 ? (
                           <div className="flex flex-col items-start justify-start w-full">
                             {FunctionManager.designators
                               ?.filter((d) => d.label.name.includes(f.name))

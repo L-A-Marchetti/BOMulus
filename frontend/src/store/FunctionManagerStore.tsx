@@ -7,6 +7,7 @@ type Designator = core.Designator;
 
 interface FunctionManagerProps {
   designators: Designator[] | null;
+  selectedDesignators: Designator[];
   functions: { name: string; color: string }[] | null;
   expandedFunctions: string[];
   monitor: Monitor;
@@ -15,14 +16,17 @@ interface FunctionManagerProps {
   color: string;
   toggleVisibility: () => void;
   toggleFunctionExpand: (name: string) => void;
+  toggleDesignatorSelection: (designator: Designator) => void;
   loadDesignators: () => void;
   setName: (name: string) => void;
   setColor: (color: string) => void;
   createFunction: () => void;
+  assignToFunction: (functionName: string) => void;
 }
 
 export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
   designators: null,
+  selectedDesignators: [],
   functions: null,
   expandedFunctions: [],
   monitor: { isLoading: false, error: null },
@@ -35,6 +39,12 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
       expandedFunctions: state.expandedFunctions.includes(name)
         ? state.expandedFunctions.filter((id) => id !== name)
         : [...state.expandedFunctions, name],
+    })),
+  toggleDesignatorSelection: (designator: Designator) =>
+    set((state) => ({
+      selectedDesignators: state.selectedDesignators.includes(designator)
+        ? state.selectedDesignators.filter((id) => id !== designator)
+        : [...state.selectedDesignators, designator],
     })),
   loadDesignators: () => {
     set({ monitor: { isLoading: true, error: null } });
@@ -71,8 +81,33 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
   createFunction: () => {
     set((state) => ({
       functions: state.functions
-        ? [...state.functions, { name: state.name, color: state.color }] // Utilisation correcte des propriétés de l'état
+        ? [...state.functions, { name: state.name, color: state.color }]
         : [{ name: state.name, color: state.color }],
     }));
   },
+  assignToFunction: (functionName: string) =>
+    set((state) => {
+      if (!state.functions || !state.designators) return state;
+      const selectedFunction = state.functions.find(
+        (f) => f.name === functionName,
+      );
+      if (!selectedFunction) return state;
+      const updatedDesignators: Designator[] = state.designators.map(
+        (d): Designator =>
+          state.selectedDesignators.includes(d)
+            ? {
+                ...d,
+                label: {
+                  name: selectedFunction.name,
+                  color: selectedFunction.color,
+                },
+                convertValues: d.convertValues,
+              }
+            : d,
+      );
+      return {
+        designators: updatedDesignators,
+        selectedDesignators: [],
+      };
+    }),
 }));
