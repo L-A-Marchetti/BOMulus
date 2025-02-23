@@ -5,10 +5,12 @@ import { CompareViewStore } from '../../store/CompareViewStore';
 import Radial, { RadialData } from '../shared/Radial';
 import Donut from '../shared/Donut';
 import Linear from '../shared/Linear';
+import { FunctionManagerStore } from '../../store/FunctionManagerStore';
 
 export function Calculator(): React.JSX.Element {
   const Calculator = CalculatorStore();
   const CompareView = CompareViewStore();
+  const FunctionManager = FunctionManagerStore();
   const totalComponents = CompareView.components?.length || 0;
   const mouserCount = CompareView.components?.filter(
     (component) =>
@@ -81,28 +83,32 @@ export function Calculator(): React.JSX.Element {
     },
   ];
 
-  const functionsPrice: RadialData[] = [
-    {
-      value: 150,
-      label: 'Not Assaigned',
-      color: '#1C64F2',
-    },
-    {
-      value: 340,
-      label: 'Audio',
-      color: '#16BDCA',
-    },
-    {
-      value: 214,
-      label: 'Alimentation',
-      color: '#FDBA8C',
-    },
-    {
-      value: 64,
-      label: 'HF',
-      color: '#E74694',
-    },
-  ];
+  const functionsPrice: RadialData[] = FunctionManager.functions
+    ? FunctionManager.functions.map((func) => {
+        const totalBestUnitPrice = FunctionManager.designators
+          ?.filter((d) => d.label.name === func.name)
+          .reduce((acc, d) => {
+            const component = CompareView.components?.find((comp) =>
+              comp.designators.includes(d),
+            );
+            if (component && component.Operator !== 'DELETE') {
+              return (
+                acc +
+                (parseFloat(component?.calculated_price?.best_unit_price) || 0)
+              );
+            }
+            return acc;
+          }, 0);
+
+        return {
+          value: totalBestUnitPrice
+            ? parseFloat(totalBestUnitPrice.toFixed(2))
+            : 0,
+          label: func.name,
+          color: func.color,
+        };
+      })
+    : [];
 
   return CompareView.isVisible && CompareView.components ? (
     <>
