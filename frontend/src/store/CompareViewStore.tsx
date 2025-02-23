@@ -99,7 +99,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       const warningMessage: number[] = [];
       const warningMismatchMpn: number[] = [];
       const warningMoq: number[] = [];
-      components.forEach((component) => {
+      components.forEach(async (component) => {
         const operator = component.Operator || '';
         if (
           component.analyzed &&
@@ -134,7 +134,6 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         if (component.calculated_price?.is_moq_not_reached) {
           warningMoq.push(component.id);
         }
-        FunctionManagerStore.getState().loadDesignators();
       });
       set({
         components,
@@ -149,6 +148,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         warningMoq,
         monitor: { isLoading: false, error: null },
       });
+      FunctionManagerStore.getState().loadDesignators();
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
     }

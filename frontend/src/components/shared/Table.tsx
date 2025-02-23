@@ -142,11 +142,26 @@ export default function Table() {
                     <td className="px-6 py-4">
                       {HighlightText(component.mpn)}
                     </td>
-                    {/* 
-                    <td className="px-6 py-4">
-                      {HighlightText(component.designator)}
-                    </td>*/}
-
+                    <td className="px-6 py-4 text-[10px]">
+                      <div className="flex items-center justify-start flex-wrap gap-1">
+                        {component.designators.map((d, index) => (
+                          <>
+                            <div className="flex items-center justify-start">
+                              {d.label.name !== 'not assigned' ? (
+                                <span
+                                  key={d.designator}
+                                  style={{ backgroundColor: d.label.color }}
+                                  className="flex w-2 h-2 mr-1 rounded-full aspect-square"
+                                />
+                              ) : (
+                                <></>
+                              )}
+                              {HighlightText(d.designator)}
+                            </div>
+                          </>
+                        ))}
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       {HighlightText(component.user_description)}
                     </td>

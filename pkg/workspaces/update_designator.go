@@ -9,21 +9,23 @@ import (
 	"strings"
 )
 
-func UpdateDesignator(d core.Designator) {
+func UpdateDesignators(designators []core.Designator) {
 	for i := range core.Components {
 		for j := range core.Components[i].Designators {
-			if d.Designator == core.Components[i].Designators[j].Designator {
-				core.Components[i].Designators[j] = d
+			for _, d := range designators {
+				if d.Designator == core.Components[i].Designators[j].Designator {
+					core.Components[i].Designators[j] = d
+				}
 			}
 		}
 	}
 }
 
-func UpdateBMLSDesignators(activeWorkspace string) error {
-	if activeWorkspace == "" {
+func UpdateBMLSDesignators(activeWorkspace Workspace) error {
+	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
 	}
-	bmlsFilePath := filepath.Join(activeWorkspace, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace), " ", "_")))
+	bmlsFilePath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fmt.Sprintf("%s.bmls", strings.ReplaceAll(filepath.Base(activeWorkspace.WorkspaceInfos.Path), " ", "_")))
 	var workspace Workspace
 	// Read the .bmls file
 	data, err := os.ReadFile(bmlsFilePath)

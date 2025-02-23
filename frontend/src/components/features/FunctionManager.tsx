@@ -19,18 +19,35 @@ export function FunctionManager(): React.JSX.Element {
       <div
         className={`w-full flex flex-col gap-8 ${FunctionManager.isVisible ? 'mt-8' : ''}`}
       >
-        <Button
-          onClick={() => {
-            CompareView.toggleVisibility();
-            FunctionManager.toggleVisibility();
-          }}
-          text={FunctionManager.isVisible ? 'Back' : 'Function Manager'}
-          bg="bg-neutral-700"
-          bgHover="hover:bg-neutral-900"
-          txtColor="text-neutral-400"
-          h="h-20"
-          img={null}
-        />
+        <div className="flex items-center justify-center gap-8">
+          <Button
+            onClick={() => {
+              CompareView.toggleVisibility();
+              FunctionManager.toggleVisibility();
+            }}
+            text={FunctionManager.isVisible ? 'Back' : 'Function Manager'}
+            bg="bg-neutral-700"
+            bgHover="hover:bg-neutral-900"
+            txtColor="text-neutral-400"
+            h="h-20"
+            img={null}
+          />
+          {FunctionManager.isVisible ? (
+            <Button
+              onClick={() => {
+                FunctionManager.saveDesignators();
+              }}
+              text={'Save'}
+              bg="bg-emerald-700"
+              bgHover="hover:bg-emerald-900"
+              txtColor="text-white"
+              h="h-20"
+              img={null}
+            />
+          ) : (
+            <></>
+          )}
+        </div>
         {FunctionManager.isVisible ? (
           FunctionManager.monitor.isLoading ? (
             <Spinner text="Function Manager is loading..." />
@@ -41,7 +58,7 @@ export function FunctionManager(): React.JSX.Element {
               <div className="flex items-start justify-center gap-8">
                 <ul className="flex w-full gap-2 flex-col">
                   <input
-                    type="text"
+                    type="search"
                     onChange={(e) =>
                       FunctionManager.setSearchQueries(
                         'not assigned',

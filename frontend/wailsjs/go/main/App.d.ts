@@ -101,13 +101,11 @@ export function TestDKCredentials(arg1: string, arg2: string): Promise<boolean>;
 
 export function TestMouserAPIKey(arg1: string): Promise<boolean>;
 
-export function UpdateBMLSDesignators(arg1: string): Promise<void>;
-
-export function UpdateDesignator(
-  arg1: string,
-  arg2: string,
-  arg3: string,
+export function UpdateBMLSDesignators(
+  arg1: workspaces.Workspace,
 ): Promise<void>;
+
+export function UpdateDesignators(arg1: Array<core.Designator>): Promise<void>;
 
 export function UpdateLastComparison(
   arg1: workspaces.Workspace,

@@ -154,8 +154,8 @@ export function UpdateBMLSDesignators(arg1) {
   return window['go']['main']['App']['UpdateBMLSDesignators'](arg1);
 }
 
-export function UpdateDesignator(arg1, arg2, arg3) {
-  return window['go']['main']['App']['UpdateDesignator'](arg1, arg2, arg3);
+export function UpdateDesignators(arg1) {
+  return window['go']['main']['App']['UpdateDesignators'](arg1);
 }
 
 export function UpdateLastComparison(arg1, arg2, arg3) {

@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { Monitor } from '../types/global';
 import { core } from '../../wailsjs/go/models';
 import { CompareViewStore } from './CompareViewStore';
+import { WSChooserStore } from './WSChooserStore';
+import {
+  UpdateDesignators,
+  UpdateBMLSDesignators,
+} from '../../wailsjs/go/main/App';
 
 type Designator = core.Designator;
 
@@ -25,6 +30,7 @@ interface FunctionManagerProps {
   assignToFunction: (functionName: string) => void;
   removeDesignator: (designator: Designator) => void;
   setSearchQueries: (functionName: string, query: string) => void;
+  saveDesignators: () => void;
 }
 
 export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
@@ -53,6 +59,7 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
   loadDesignators: () => {
     set({ monitor: { isLoading: true, error: null } });
     const components = CompareViewStore.getState().components;
+
     if (!components)
       return set({
         monitor: { isLoading: false, error: 'Components are not loaded...' },
@@ -142,4 +149,25 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
         })),
       };
     }),
+  saveDesignators: async () => {
+    set({ monitor: { isLoading: true, error: null } });
+    const activeWorkspace = WSChooserStore.getState().activeWorkspace;
+    if (!activeWorkspace)
+      return set({
+        monitor: { isLoading: false, error: 'No active workspace found.' },
+      });
+    const designators = FunctionManagerStore.getState().designators;
+    if (!designators)
+      return set({
+        monitor: { isLoading: false, error: 'No designators found.' },
+      });
+    try {
+      await UpdateDesignators(designators);
+      await UpdateBMLSDesignators(activeWorkspace);
+      set({ monitor: { isLoading: false, error: null } });
+      CompareViewStore.getState().loadComponents();
+    } catch (err) {
+      set({ monitor: { isLoading: false, error: String(err) } });
+    }
+  },
 }));

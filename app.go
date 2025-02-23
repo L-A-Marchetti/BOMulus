@@ -256,19 +256,12 @@ func (a *App) GetLastComparison(activeWorkspace workspaces.Workspace) (workspace
 	return workspaces.GetLastComparison(activeWorkspace)
 }
 
-func (a *App) UpdateDesignator(designator, function, color string) {
-	d := core.Designator{
-		Designator: designator,
-		Label: core.Label{
-			Name:  function,
-			Color: color,
-		},
-	}
-	workspaces.UpdateDesignator(d)
+func (a *App) UpdateDesignators(designators []core.Designator) {
+	workspaces.UpdateDesignators(designators)
 }
 
-func (a *App) UpdateBMLSDesignators(activeWorkspacePath string) error {
-	return workspaces.UpdateBMLSDesignators(activeWorkspacePath)
+func (a *App) UpdateBMLSDesignators(activeWorkspace workspaces.Workspace) error {
+	return workspaces.UpdateBMLSDesignators(activeWorkspace)
 }
 
 /*╚══════════════════════════════════════════════╝*/
