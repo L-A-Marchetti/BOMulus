@@ -13,16 +13,21 @@ export function CompareView(): React.JSX.Element {
 
   return CompareView.isVisible ? (
     <>
-      {CompareView.monitor.isLoading &&
+      {CompareView.monitor.error &&
       !Analysis.analysisStatus &&
       !Calculator.monitor.isLoading ? (
-        <Spinner text="Compare View is loading..." />
-      ) : CompareView.monitor.error &&
-        !Analysis.analysisStatus &&
-        !Calculator.monitor.isLoading ? (
         <p>{CompareView.monitor.error}</p>
       ) : (
-        <Table />
+        <>
+          {CompareView.monitor.isLoading &&
+          !Analysis.analysisStatus &&
+          !Calculator.monitor.isLoading ? (
+            <Spinner text="Compare View is loading..." />
+          ) : (
+            <></>
+          )}
+          <Table />
+        </>
       )}
     </>
   ) : (

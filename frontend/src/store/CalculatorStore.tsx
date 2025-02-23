@@ -19,6 +19,7 @@ interface CalculatorProps {
   toggleVisibility: () => void;
   setProductionQuantity: (productionQuantity: number, init: boolean) => void;
   getProductionQuantity: () => void;
+  reset: () => void;
 }
 
 export const CalculatorStore = create<CalculatorProps>((set) => ({
@@ -88,4 +89,11 @@ export const CalculatorStore = create<CalculatorProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
+  reset: () =>
+    set({
+      productionQuantity: 1,
+      calculationResult: null,
+      monitor: { isLoading: false, error: null },
+      isVisible: true,
+    }),
 }));

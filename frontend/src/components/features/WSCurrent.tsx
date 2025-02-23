@@ -7,6 +7,8 @@ import { CompareViewStore } from '../../store/CompareViewStore';
 import Banner from '../shared/Banner';
 import { SettingsStore } from '../../store/SettingsStore';
 import { FunctionManagerStore } from '../../store/FunctionManagerStore';
+import { CalculatorStore } from '../../store/CalculatorStore';
+import { AnalysisStore } from '../../store/AnalysisStore';
 
 export function WSCurrent(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
@@ -15,6 +17,8 @@ export function WSCurrent(): React.JSX.Element {
   const CompareView = CompareViewStore();
   const Settings = SettingsStore();
   const FunctionManager = FunctionManagerStore();
+  const Calculator = CalculatorStore();
+  const Analysis = AnalysisStore();
 
   return !WSCreator.isVisible &&
     !WSChooser.isVisible &&
@@ -31,6 +35,11 @@ export function WSCurrent(): React.JSX.Element {
             FileManager.isVisible ? FileManager.toggleVisibility() : {};
             CompareView.isVisible ? CompareView.toggleVisibility() : {};
           }
+          FunctionManager.reset();
+          FileManager.reset();
+          CompareView.reset();
+          Calculator.reset();
+          Analysis.reset();
         }}
       />
     </div>

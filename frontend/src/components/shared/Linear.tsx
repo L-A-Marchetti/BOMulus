@@ -1,30 +1,14 @@
 import React, { useState } from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { RadialData } from './Radial';
 
 type LinearProps = {
   title: string;
-  isPrice: boolean;
-  data: RadialData[];
+  data: ApexAxisChartSeries;
 };
 
-export default function Linear({ title, isPrice, data }: LinearProps) {
-  //const series = data.map((item) => item.value);
-  const labels = data.map((item) => item.label);
-  const colors = data.map((item) => item.color);
-  const series = [
-    {
-      name: 'Price',
-      data: [1500, 1418],
-      color: '#1A56DB',
-    },
-    {
-      name: 'Compliance',
-      data: [643, 813],
-      color: '#7E3BF2',
-    },
-  ];
+export default function Linear({ title, data }: LinearProps) {
+  const series = data;
   const [chartOptions] = useState<ApexOptions>({
     series,
     tooltip: {
@@ -100,7 +84,7 @@ export default function Linear({ title, isPrice, data }: LinearProps) {
       show: false,
       labels: {
         formatter: function (value) {
-          return '$' + value;
+          return '$' + value.toFixed(2);
         },
       },
     },

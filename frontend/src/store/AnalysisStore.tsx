@@ -12,6 +12,7 @@ interface AnalysisProps {
   monitor: Monitor;
   runAnalysis: () => void;
   getAnalysisStatus: () => Promise<void>;
+  reset: () => void;
 }
 
 export const AnalysisStore = create<AnalysisProps>((set) => ({
@@ -32,7 +33,7 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
           clearInterval(refresh);
           set({ monitor: { isLoading: false, error: null } });
         }
-      }, 100);
+      }, 2000);
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
     }
@@ -55,4 +56,6 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
+  reset: () =>
+    set({ analysisStatus: null, monitor: { isLoading: false, error: null } }),
 }));

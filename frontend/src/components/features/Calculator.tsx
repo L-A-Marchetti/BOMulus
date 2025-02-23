@@ -83,6 +83,22 @@ export function Calculator(): React.JSX.Element {
     },
   ];
 
+  const series: ApexAxisChartSeries = [
+    {
+      name: 'Price',
+      data: [
+        Calculator.calculationResult?.OldPrice || 0,
+        Calculator.calculationResult?.orderPrice || 0,
+      ],
+      color: '#1A56DB',
+    },
+    {
+      name: 'Compliance',
+      data: [643, 813],
+      color: '#7E3BF2',
+    },
+  ];
+
   const functionsPrice: RadialData[] = FunctionManager.functions
     ? FunctionManager.functions.map((func) => {
         const totalBestUnitPrice = FunctionManager.designators
@@ -116,7 +132,7 @@ export function Calculator(): React.JSX.Element {
         <Radial title="BOM Coverage" data={bomCoverage} />
         <Donut title="Availability" isPrice={false} data={availability} />
         <Donut title="Functions Pricing" isPrice={true} data={functionsPrice} />
-        <Linear title="BOM Evolution" isPrice={false} data={bomCoverage} />
+        <Linear title="BOM Evolution" data={series} />
       </div>
       <div className="flex items-center justify-center mx-8 gap-8">
         <input

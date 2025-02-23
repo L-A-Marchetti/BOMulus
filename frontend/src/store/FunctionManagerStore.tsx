@@ -31,6 +31,7 @@ interface FunctionManagerProps {
   removeDesignator: (designator: Designator) => void;
   setSearchQueries: (functionName: string, query: string) => void;
   saveDesignators: () => void;
+  reset: () => void;
 }
 
 export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
@@ -170,4 +171,16 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
+  reset: () =>
+    set({
+      designators: null,
+      selectedDesignators: [],
+      functions: null,
+      expandedFunctions: [],
+      monitor: { isLoading: false, error: null },
+      isVisible: false,
+      name: '',
+      color: '#000000',
+      searchQueries: [],
+    }),
 }));

@@ -37,6 +37,7 @@ interface CompareViewProps {
   filterComponents: (components: Component[]) => Component[];
   setSearchQuery: (searchQuery: string) => void;
   setSortOrder: (order: string) => void;
+  reset: () => void;
 }
 
 export const CompareViewStore = create<CompareViewProps>((set) => ({
@@ -277,5 +278,28 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   setSortOrder: (order: string) =>
     set({
       sortOrder: order,
+    }),
+  reset: () =>
+    set({
+      components: null,
+      insert: null,
+      update: null,
+      delete: null,
+      equal: null,
+      monitor: { isLoading: false, error: null },
+      isVisible: false,
+      insertIsVisible: true,
+      updateIsVisible: true,
+      deleteIsVisible: true,
+      equalIsVisible: true,
+      expandedComponents: [],
+      warningOutOfStock: [],
+      warningLifeCycle: [],
+      warningMessage: [],
+      warningMismatchMpn: [],
+      warningMoq: [],
+      selectedWarnings: [],
+      searchQuery: '',
+      sortOrder: 'default',
     }),
 }));

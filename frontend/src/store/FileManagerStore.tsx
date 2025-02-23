@@ -35,6 +35,7 @@ interface FileManagerProps {
   moveFile: (direction: string, file: FileInfo) => void;
   selectFile: (file: FileInfo) => void;
   compare: () => void;
+  reset: () => void;
 }
 
 export const FileManagerStore = create<FileManagerProps>((set) => ({
@@ -264,5 +265,15 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
     } catch (err) {
       set({ compareMonitor: { isLoading: false, error: String(err) } });
     }
+  },
+  reset: () => {
+    set({
+      files: null,
+      filesToValidate: null,
+      selectedFiles: [null, null],
+      monitor: { isLoading: false, error: null },
+      compareMonitor: { isLoading: false, error: null },
+      isVisible: false,
+    });
   },
 }));

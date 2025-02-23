@@ -2,11 +2,11 @@
   "workspaces": [
     {
       "workspace_infos": {
-        "name": "cucu",
-        "path": "/home/lam/Desktop/cucu",
-        "createdAt": "2025-02-17T11:51:37.269680841+01:00",
-        "last_opened": "2025-02-23T10:22:26.751908709+01:00",
-        "production_quantity": "133",
+        "name": "ws",
+        "path": "/home/lam/Desktop/ws",
+        "createdAt": "2025-02-23T16:16:03.423460227+01:00",
+        "last_opened": "2025-02-23T16:54:46.899459827+01:00",
+        "production_quantity": "139",
         "last_comparison": {
           "v1": "",
           "v2": ""
@@ -16,67 +16,11 @@
     },
     {
       "workspace_infos": {
-        "name": "bouille",
-        "path": "/home/lam/Desktop/bouille",
-        "createdAt": "2025-02-17T11:51:42.715611853+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "noix",
-        "path": "/home/lam/Desktop/noix",
-        "createdAt": "2025-02-17T11:51:47.798070434+01:00",
-        "last_opened": "2025-02-23T11:10:53.321851308+01:00",
-        "production_quantity": "130",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "Compressor VCA",
-        "path": "/home/lam/Desktop/Compressor VCA",
-        "createdAt": "2025-02-17T20:23:24.168055811+01:00",
-        "last_opened": "0001-01-01T00:00:00Z",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "Bonjoir",
-        "path": "/home/lam/Desktop/Bonjoir",
-        "createdAt": "2025-02-18T13:56:53.225800915+01:00",
-        "last_opened": "2025-02-19T23:40:23.699358577+01:00",
-        "production_quantity": "1",
-        "last_comparison": {
-          "v1": "",
-          "v2": ""
-        }
-      },
-      "files": null
-    },
-    {
-      "workspace_infos": {
-        "name": "Alimentation",
-        "path": "/home/lam/Desktop/Alimentation",
-        "createdAt": "2025-02-18T14:57:04.813138217+01:00",
-        "last_opened": "2025-02-19T23:41:57.974448167+01:00",
-        "production_quantity": "1",
+        "name": "another",
+        "path": "/home/lam/Desktop/another",
+        "createdAt": "2025-02-23T16:42:58.258895636+01:00",
+        "last_opened": "2025-02-23T16:55:02.840471281+01:00",
+        "production_quantity": "3",
         "last_comparison": {
           "v1": "",
           "v2": ""
