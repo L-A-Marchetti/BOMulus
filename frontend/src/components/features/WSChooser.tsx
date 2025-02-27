@@ -19,7 +19,7 @@ export function WSChooser(): React.JSX.Element {
     >
       {WSChooser.workspaces?.map((ws) => (
         <WorkspaceCard
-          key={ws.workspace_infos.path}
+          key={ws.ID}
           workspaceName={ws.workspace_infos.name}
           openWs={() => WSChooser.setActiveWorkspace(ws)}
           deleteWs={() => WSChooser.setWorkspaceToDelete(ws)}

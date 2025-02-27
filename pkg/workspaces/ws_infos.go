@@ -36,9 +36,13 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // GetFilesInWorkspaceInfo returns the list of files in the specified workspace's .bmls file.
+/*
 func GetFilesInWorkspaceInfo(activeWorkspace Workspace) ([]FileInfo, error) {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return nil, fmt.Errorf("no active workspace set")
@@ -60,6 +64,24 @@ func GetFilesInWorkspaceInfo(activeWorkspace Workspace) ([]FileInfo, error) {
 	})
 	return workspace.Files, nil
 }
+*/
+
+func GetFilesInWorkspaceInfo(activeWorkspace Workspace) ([]FileInfo, error) {
+	var files []FileInfo
+	if err := Workspaces.Model(&activeWorkspace).
+		Preload("Components", func(db *gorm.DB) *gorm.DB {
+			return db.Preload(clause.Associations).
+			Preload("PriceBreaks.Value")
+		}).
+		Association("Files").Find(&files); err != nil {
+		return nil, err
+	}
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].VersionTag < files[j].VersionTag
+	})
+	return files, nil
+}
+
 
 // GetWorkspaceInfo returns infos from a specified workspace's .bmls file.
 func GetWorkspaceInfo(workspacePath string) (WorkspaceInfos, error) {
@@ -81,6 +103,7 @@ func GetWorkspaceInfo(workspacePath string) (WorkspaceInfos, error) {
 }
 
 // UpdateVersionTags update the version tag of each file in the workspace's .bmls file.
+/*
 func UpdateVersionTags(activeWorkspace Workspace, files []FileInfo) error {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
@@ -109,6 +132,14 @@ func UpdateVersionTags(activeWorkspace Workspace, files []FileInfo) error {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+*/
+
+func UpdateVersionTags(files []FileInfo) error {
+	if err := Workspaces.Save(&files).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // UpdateLastComparison update the last comparison the workspace's .bmls file.
@@ -158,6 +189,7 @@ func GetLastComparison(activeWorkspace Workspace) (Comparison, error) {
 }
 
 // GetRecentWorkspaces returns the 3 most recently created workspaces.
+/*
 func GetRecentWorkspaces() ([]Workspace, error) {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 	var bomulusFile BOMulusFile
@@ -179,4 +211,19 @@ func GetRecentWorkspaces() ([]Workspace, error) {
 		return bomulusFile.Workspaces[:6], nil
 	}
 	return bomulusFile.Workspaces, nil
+}
+	*/
+
+func GetRecentWorkspaces() ([]Workspace, error) {
+	var workspaces []Workspace
+	if err := Workspaces.Find(&workspaces).Error; err != nil {
+		return nil, err
+	}
+	sort.Slice(workspaces, func(i, j int) bool {
+		return workspaces[i].WorkspaceInfos.LastOpened.After(workspaces[j].WorkspaceInfos.LastOpened)
+	})
+	if len(workspaces) > 6 {
+		return workspaces[:6], nil
+	}
+	return workspaces, nil
 }

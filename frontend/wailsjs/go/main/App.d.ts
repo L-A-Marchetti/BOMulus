@@ -33,8 +33,6 @@ export function GetAnalyzeSaveState(): Promise<boolean>;
 
 export function GetApiCount(): Promise<number>;
 
-export function GetApiPriority(): Promise<Array<string>>;
-
 export function GetComponent(arg1: number): Promise<core.Component>;
 
 export function GetComponents(): Promise<Array<core.Component>>;
@@ -46,10 +44,6 @@ export function GetFilesInWorkspaceInfo(
 export function GetLastComparison(
   arg1: workspaces.Workspace,
 ): Promise<workspaces.Comparison>;
-
-export function GetProductionQuantity(
-  arg1: workspaces.Workspace,
-): Promise<string>;
 
 export function GetRecentWorkspaces(): Promise<Array<workspaces.Workspace>>;
 
@@ -114,6 +108,5 @@ export function UpdateLastComparison(
 ): Promise<void>;
 
 export function UpdateVersionTags(
-  arg1: workspaces.Workspace,
-  arg2: Array<workspaces.FileInfo>,
+  arg1: Array<workspaces.FileInfo>,
 ): Promise<void>;

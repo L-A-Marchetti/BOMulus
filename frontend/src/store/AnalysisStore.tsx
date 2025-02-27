@@ -33,7 +33,7 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
           clearInterval(refresh);
           set({ monitor: { isLoading: false, error: null } });
         }
-      }, 2000);
+      }, 100);
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
     }

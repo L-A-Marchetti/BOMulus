@@ -26,16 +26,14 @@ package workspaces
 
 import (
 	"core"
-	"encoding/json"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
+
+	"gorm.io/gorm"
 )
 
 // UpdateBMLSComponents updates the .bmls file with information about analyzed components.
 // This function searches for a component in the current workspace's .bmls file and updates
 // it with the provided analyzed component if a match is found.
+/*
 func UpdateBMLSComponents(activeWorkspace string, analyzedComponent core.Component) error {
 	if activeWorkspace == "" {
 		return fmt.Errorf("no active workspace set")
@@ -74,4 +72,30 @@ func UpdateBMLSComponents(activeWorkspace string, analyzedComponent core.Compone
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+*/
+
+func UpdateBMLSComponents(activeWorkspace Workspace, analyzedComponent core.Component) error {
+    files, err := GetFilesInWorkspaceInfo(activeWorkspace)
+    if err != nil {
+        return err
+    }
+    for _, file := range files {
+        for j := range file.Components {
+            if file.Components[j].Mpn == analyzedComponent.Mpn {
+                analyzedComponent.Id = file.Components[j].Id
+                analyzedComponent.FileInfoID = file.Components[j].FileInfoID
+
+                if file.Components[j].Quantity != analyzedComponent.Quantity {
+                    analyzedComponent.Quantity = file.Components[j].Quantity
+                    analyzedComponent.CalculatedPrice = file.Components[j].CalculatedPrice
+                }
+
+                if err := Workspaces.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&analyzedComponent).Error; err != nil {
+                    return err
+                }
+            }
+        }
+    }
+    return nil
 }

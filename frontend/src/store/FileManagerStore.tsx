@@ -54,6 +54,7 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
         monitor: { isLoading: false, error: 'No active workspace found.' },
       });
     try {
+      console.log('GetFilesInWorkspaceInfo');
       const files: FileInfo[] = await GetFilesInWorkspaceInfo(activeWorkspace);
       set({ files: files, monitor: { isLoading: false, error: null } });
     } catch (err) {
@@ -208,7 +209,7 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
         },
       });
     try {
-      await UpdateVersionTags(activeWorkspace, files);
+      await UpdateVersionTags(files);
       set({ monitor: { isLoading: false, error: null } });
     } catch (err) {
       set({ monitor: { isLoading: false, error: String(err) } });
@@ -247,15 +248,16 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
         compareMonitor: { isLoading: false, error: 'No files selected.' },
       });
     try {
+      console.log(filesToCompare[0].components);
       await BtnCompare(
         filesToCompare[0].components,
         filesToCompare[1].components,
       );
-      await UpdateLastComparison(
+      /*await UpdateLastComparison(
         activeWorkspace,
         filesToCompare[0],
         filesToCompare[1],
-      );
+      );*/
       set({ compareMonitor: { isLoading: false, error: null } });
       FileManagerStore.getState().toggleVisibility();
       CompareViewStore.getState().loadComponents();

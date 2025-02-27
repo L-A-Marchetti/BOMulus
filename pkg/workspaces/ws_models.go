@@ -11,7 +11,7 @@ type WorkspaceInfos struct {
 	CreatedAt          time.Time  `json:"createdAt"`
 	LastOpened         time.Time  `json:"last_opened"`
 	ProductionQuantity string     `json:"production_quantity"`
-	LastComparison     Comparison `json:"last_comparison"`
+	LastComparison     Comparison `json:"last_comparison" gorm:"embedded"`
 }
 
 type Comparison struct {
@@ -20,24 +20,28 @@ type Comparison struct {
 }
 
 type Workspace struct {
-	WorkspaceInfos WorkspaceInfos `json:"workspace_infos"`
-	Files          []FileInfo     `json:"files"`
+	ID             uint `gorm:"primaryKey"`
+	WorkspaceInfos WorkspaceInfos `json:"workspace_infos" gorm:"embedded"`
+	Files          []FileInfo     `json:"files" gorm:"foreignKey:WorkspaceID"`
 }
 
 type BOMulusFile struct {
-	Workspaces          []Workspace `json:"workspaces"`
-	ApiKeys             APIKeys     `json:"api_keys"`
-	AnalyzeSaveState    bool        `json:"analyze_save_state"`
-	AnalysisRefreshDays int         `json:"analysis_refresh_days"`
-	ApiPriority         []string    `json:"api_priority"`
+	ID                  uint           `gorm:"primaryKey"`
+	Workspaces          []Workspace    `json:"workspaces" gorm:"-"`
+	ApiKeys             APIKeys        `json:"api_keys" gorm:"embedded"`
+	AnalyzeSaveState    bool           `json:"analyze_save_state"`
+	AnalysisRefreshDays int            `json:"analysis_refresh_days"`
+	//ApiPriority         []string    `json:"api_priority"`
 }
 
 type FileInfo struct {
-	VersionTag int              `json:"version_tag"`
-	Name       string           `json:"name"`
-	Path       string           `json:"path"`
-	Components []core.Component `json:"components"`
-	Filters    core.Filter      `json:"filters"`
+	ID          uint `gorm:"primaryKey"`
+	WorkspaceID uint
+	VersionTag  int              `json:"version_tag"`
+	Name        string           `json:"name"`
+	Path        string           `json:"path" gorm:"-"`
+	Components  []core.Component `json:"components" gorm:"foreignKey:FileInfoID"`
+	Filters     core.Filter      `json:"filters" gorm:"foreignKey:FileInfoID"`
 }
 
 type APIKeys struct {

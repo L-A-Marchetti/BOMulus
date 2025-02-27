@@ -28,15 +28,14 @@
 package workspaces
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
 // CreateWorkspace creates a new workspace at the specified path with the given name.
+/*
 func CreateWorkspace(path string, name string) error {
 	fullPath := filepath.Join(path, name)
 	// Create the workspace directory
@@ -71,6 +70,28 @@ func CreateWorkspace(path string, name string) error {
 	err = UpdateBOMulusFile(workspaceInfos, APIKeys{}, true, true, 3, []string{"Digikey", "Mouser", "BOMulus"})
 	if err != nil {
 		return fmt.Errorf("failed to update BOMulus.bmls: %w", err)
+	}
+	return nil
+}
+*/
+
+func CreateWorkspace(path, name string) error {
+	fullPath := filepath.Join(path, name)
+	err := os.MkdirAll(fullPath, 0755)
+	if err != nil {
+		return fmt.Errorf("failed to create workspace directory: %w", err)
+	}
+	workspace := Workspace{
+		WorkspaceInfos: WorkspaceInfos{
+			Name:      name,
+			Path:      fullPath,
+			CreatedAt: time.Now(),
+			LastOpened: time.Now(),
+			ProductionQuantity: "1",
+		},
+	}
+	if err := Workspaces.Create(&workspace).Error; err != nil {
+		return err
 	}
 	return nil
 }

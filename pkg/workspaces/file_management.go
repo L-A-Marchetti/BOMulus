@@ -52,6 +52,7 @@ import (
 )
 
 // AddFileToWorkspace copies a file to the specified workspace directory and updates the .bmls file.
+/*
 func AddFileToWorkspace(activeWorkspace Workspace, file core.XlsmFile) error {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
@@ -77,6 +78,48 @@ func AddFileToWorkspace(activeWorkspace Workspace, file core.XlsmFile) error {
 	}
 	// Update the .bmls file with the new file information
 	return UpdateBMLSWithNewFile(activeWorkspace.WorkspaceInfos.Path, fileName, destPath, file)
+}
+*/
+
+func AddFileToWorkspace(activeWorkspace Workspace, file core.XlsmFile) error {
+	fileName := filepath.Base(file.Path)
+	destPath := filepath.Join(activeWorkspace.WorkspaceInfos.Path, fileName)
+	// Open the source file
+	srcFile, err := os.Open(file.Path)
+	if err != nil {
+		return fmt.Errorf("error opening source file: %w", err)
+	}
+	defer srcFile.Close()
+	// Create the destination file
+	destFile, err := os.Create(destPath)
+	if err != nil {
+		return fmt.Errorf("error creating destination file: %w", err)
+	}
+	defer destFile.Close()
+	// Copy the content of the file
+	_, err = io.Copy(destFile, srcFile)
+	if err != nil {
+		return fmt.Errorf("error copying file: %w", err)
+	}
+	core.ComponentsDetection(&file)
+	files, err := GetFilesInWorkspaceInfo(activeWorkspace)
+	if err != nil {
+		return err
+	}
+	versionTag := 1
+	for range files {
+		versionTag++
+	}
+	activeWorkspace.Files = append(activeWorkspace.Files, FileInfo{
+		VersionTag: versionTag,
+		Name:       fileName,
+		Components: file.Components,
+		Filters:    file.Filters,
+	})
+	if err := Workspaces.Save(activeWorkspace).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // updateBMLSWithNewFile updates the .bmls file with information about the newly added file.

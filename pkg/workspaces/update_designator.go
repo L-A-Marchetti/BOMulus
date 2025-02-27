@@ -2,11 +2,6 @@ package workspaces
 
 import (
 	"core"
-	"encoding/json"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func UpdateDesignators(designators []core.Designator) {
@@ -20,7 +15,7 @@ func UpdateDesignators(designators []core.Designator) {
 		}
 	}
 }
-
+/*
 func UpdateBMLSDesignators(activeWorkspace Workspace) error {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
@@ -55,4 +50,33 @@ func UpdateBMLSDesignators(activeWorkspace Workspace) error {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+*/
+
+func UpdateBMLSDesignators(activeWorkspace Workspace) error {
+	var files []FileInfo
+	if err := Workspaces.Model(&activeWorkspace).
+		Preload("Components").
+		Preload("Components.Designators").
+		Association("Files").Find(&files); err != nil {
+		return err
+	}
+	for l := range core.Components {
+		for m := range core.Components[l].Designators {
+			for i := range files {
+				for j := range files[i].Components {
+					for k := range files[i].Components[j].Designators {
+						if files[i].Components[j].Designators[k].Designator == core.Components[l].Designators[m].Designator {
+							files[i].Components[j].Designators[k] = core.Components[l].Designators[m]
+							if err := Workspaces.Where("component_id = ?", files[i].Components[j].Id).Updates(&files[i].Components[j]).Error; err != nil {
+								return err
+							}
+							break
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
 }

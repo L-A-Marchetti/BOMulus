@@ -31,7 +31,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // GetAnalyzeSaveState retrieves the analyze save state from the BOMulus.bmls file.
@@ -86,6 +85,7 @@ func GetApiCount() (int, error) {
 // GetProductionQuantity retrieves the production quantity in the specified .bmls file.
 // It reads the .bmls file, unmarshals its content, and updates the
 // global configuration with the production quantity value.
+/*
 func GetProductionQuantity(activeWorkspace Workspace) (string, error) {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return "", fmt.Errorf("no active workspace set")
@@ -105,10 +105,12 @@ func GetProductionQuantity(activeWorkspace Workspace) (string, error) {
 	config.PRODUCTION_QUANTITY = workspace.WorkspaceInfos.ProductionQuantity
 	return workspace.WorkspaceInfos.ProductionQuantity, nil
 }
+*/
 
 // SetProductionQuantity update the production quantity in the specified .bmls file.
 // It reads the .bmls file, unmarshals its content, and updates the
 // global configuration with the production quantity value.
+/*
 func SetProductionQuantity(activeWorkspace Workspace, productionQuantity string) error {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
@@ -161,10 +163,19 @@ func SetProductionQuantity(activeWorkspace Workspace, productionQuantity string)
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
 }
+*/
+
+func SetProductionQuantity(activeWorkspace Workspace, productionQuantity string) error {
+	if err := Workspaces.Model(&activeWorkspace).Update("production_quantity", productionQuantity).Error; err != nil {
+		return err
+	}
+	return nil
+}
 
 // GetApiPriority retrieves the user api priority from the BOMulus.bmls file.
 // It reads the BOMulus.bmls file, unmarshals its content, and updates the
 // global configuration with the api priority array.
+/*
 func GetApiPriority() ([]string, error) {
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
 	var bomulusFile BOMulusFile
@@ -182,7 +193,7 @@ func GetApiPriority() ([]string, error) {
 	config.API_PRIORITY = bomulusFile.ApiPriority
 	return bomulusFile.ApiPriority, nil
 }
-
+*/
 // GetAnalysisRefreshDays retrieves the analysis refresh days from the BOMulus.bmls file.
 // It reads the BOMulus.bmls file, unmarshals its content, and updates the
 // global configuration with the analysis refresh days value.

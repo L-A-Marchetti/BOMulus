@@ -77,9 +77,11 @@ func UpdateBOMulusFile(newWorkspace Workspace, apiKeys APIKeys, analyzeSaveState
 	if analysisRefreshDays != -1 {
 		bomulusFile.AnalysisRefreshDays = analysisRefreshDays
 	}
+	/*
 	if apiPriority != nil {
 		bomulusFile.ApiPriority = apiPriority
 	}
+		*/
 	// Write updated data back to BOMulus.bmls
 	jsonData, err := json.MarshalIndent(bomulusFile, "", "  ")
 	if err != nil {

@@ -202,6 +202,8 @@ type ProductAttribute struct {
 }
 
 type PriceBreak struct {
+	ID 			uint  
+	MSPriceBreaksID uint
 	Quantity int    `json:"Quantity"`
 	Price    string `json:"Price"`
 	Currency string `json:"Currency"`

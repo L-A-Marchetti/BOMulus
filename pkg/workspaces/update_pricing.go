@@ -70,6 +70,7 @@ func UpdateBMLSPricing(activeWorkspace string, analyzedComponent core.Component)
 // UpdateAllBMLSPricing updates the .bmls file with information about analyzed components.
 // This function searches for a component in the current workspace's .bmls file and updates
 // it with the provided analyzed component if a match is found.
+/*
 func UpdateAllBMLSPricing(activeWorkspacePath string) error {
 	if activeWorkspacePath == "" {
 		return fmt.Errorf("no active workspace set")
@@ -101,4 +102,31 @@ func UpdateAllBMLSPricing(activeWorkspacePath string) error {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+*/
+
+func UpdateAllBMLSPricing(activeWorkspace Workspace) error {
+    var files []FileInfo
+	if err := Workspaces.Model(&activeWorkspace).
+		Preload("Components").
+		Preload("Components.CalculatedPrice").
+		Association("Files").Find(&files); err != nil {
+		return err
+	}
+
+    for _, coreComponent := range core.Components {
+        for _, file := range files {
+            for j := range file.Components {
+                if file.Components[j].Mpn == coreComponent.Mpn &&
+                    file.Components[j].Quantity == coreComponent.Quantity {                    
+                    file.Components[j].CalculatedPrice = coreComponent.CalculatedPrice
+                    if err := Workspaces.Where("component_id = ?", file.Components[j].Id).Updates(&file.Components[j].CalculatedPrice).Error; err != nil {
+                        return err
+                    }
+                    break
+                }
+            }
+        }
+    }
+    return nil
 }

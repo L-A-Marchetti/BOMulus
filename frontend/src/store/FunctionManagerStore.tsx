@@ -164,7 +164,7 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
       });
     try {
       await UpdateDesignators(designators);
-      await UpdateBMLSDesignators(activeWorkspace);
+      UpdateBMLSDesignators(activeWorkspace);
       set({ monitor: { isLoading: false, error: null } });
       CompareViewStore.getState().loadComponents();
     } catch (err) {

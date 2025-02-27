@@ -1,6 +1,8 @@
 {
+  "ID": 0,
   "workspaces": [
     {
+      "ID": 0,
       "workspace_infos": {
         "name": "ws",
         "path": "/home/lam/Desktop/ws",
@@ -15,12 +17,58 @@
       "files": null
     },
     {
+      "ID": 0,
       "workspace_infos": {
         "name": "another",
         "path": "/home/lam/Desktop/another",
         "createdAt": "2025-02-23T16:42:58.258895636+01:00",
         "last_opened": "2025-02-23T16:55:02.840471281+01:00",
         "production_quantity": "3",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "ID": 0,
+      "workspace_infos": {
+        "name": "ok",
+        "path": "/home/lam/Desktop/ok",
+        "createdAt": "2025-02-23T16:57:29.653467784+01:00",
+        "last_opened": "2025-02-25T10:04:48.216873689+01:00",
+        "production_quantity": "139",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "ID": 0,
+      "workspace_infos": {
+        "name": "test",
+        "path": "/home/lam/Desktop/test",
+        "createdAt": "2025-02-25T10:04:35.511848918+01:00",
+        "last_opened": "0001-01-01T00:00:00Z",
+        "production_quantity": "1",
+        "last_comparison": {
+          "v1": "",
+          "v2": ""
+        }
+      },
+      "files": null
+    },
+    {
+      "ID": 0,
+      "workspace_infos": {
+        "name": "VCA Compressor",
+        "path": "/home/lam/Desktop/VCA Compressor",
+        "createdAt": "2025-02-25T10:05:28.523361783+01:00",
+        "last_opened": "2025-02-25T10:14:07.529179771+01:00",
+        "production_quantity": "1350",
         "last_comparison": {
           "v1": "",
           "v2": ""
@@ -36,10 +84,5 @@
     "dk_secret": "rmlA3eiqzW9IC7Yx"
   },
   "analyze_save_state": true,
-  "analysis_refresh_days": 3,
-  "api_priority": [
-    "Digikey",
-    "Mouser",
-    "BOMulus"
-  ]
+  "analysis_refresh_days": 3
 }

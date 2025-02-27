@@ -74,7 +74,7 @@ export function FileManager(): React.JSX.Element {
                     FileManager.selectedFiles[1] === file ? (
                       <div className="w-full h-15 border-3 border-neutral-600 bg-neutral-700 rounded-lg animate-pulse"></div>
                     ) : (
-                      <Files file={file} key={file.path} />
+                      <Files file={file} key={file.ID} />
                     ),
                   )}
                   <hr className="my-4 text-neutral-600" />

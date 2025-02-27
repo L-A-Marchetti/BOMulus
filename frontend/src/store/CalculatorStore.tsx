@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import {
   SetProductionQuantity,
   PriceCalculator,
-  GetProductionQuantity,
 } from '../../wailsjs/go/main/App';
 import { Monitor } from '../types/global';
 import { WSChooserStore } from './WSChooserStore';
@@ -64,30 +63,19 @@ export const CalculatorStore = create<CalculatorProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
-  getProductionQuantity: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+  getProductionQuantity: () => {
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace)
       return set({
         monitor: { isLoading: false, error: 'No active workspace found.' },
       });
-    try {
-      const quantityFromBackend: string =
-        await GetProductionQuantity(activeWorkspace);
-      let productionQuantity = quantityFromBackend
-        ? parseInt(quantityFromBackend, 10)
-        : 1;
-      if (isNaN(productionQuantity) || productionQuantity <= 0) {
-        productionQuantity = 1;
-      }
-      set({ monitor: { isLoading: false, error: null } });
-      CalculatorStore.getState().setProductionQuantity(
-        productionQuantity,
-        true,
-      );
-    } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+    let productionQuantity = activeWorkspace.workspace_infos.production_quantity
+      ? parseInt(activeWorkspace.workspace_infos.production_quantity, 10)
+      : 1;
+    if (isNaN(productionQuantity) || productionQuantity <= 0) {
+      productionQuantity = 1;
     }
+    CalculatorStore.getState().setProductionQuantity(productionQuantity, true);
   },
   reset: () =>
     set({

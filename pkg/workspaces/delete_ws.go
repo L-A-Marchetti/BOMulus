@@ -30,12 +30,11 @@
 package workspaces
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 )
 
+/*
 func DeleteWorkspace(workspaceToDelete Workspace) error {
 	// Update the root BOMulus file
 	bomulusPath := filepath.Join("./", "BOMulus.bmls")
@@ -73,6 +72,18 @@ func DeleteWorkspace(workspaceToDelete Workspace) error {
 	}
 	// Remove the workspace folder.
 	err = os.RemoveAll(workspaceToDelete.WorkspaceInfos.Path)
+	if err != nil {
+		return fmt.Errorf("failed to delete directory %s: %w", workspaceToDelete.WorkspaceInfos.Path, err)
+	}
+	return nil
+}
+*/
+
+func DeleteWorkspace(workspaceToDelete Workspace) error {
+	if err := Workspaces.Delete(&workspaceToDelete).Error; err != nil {
+		return err
+	}
+	err := os.RemoveAll(workspaceToDelete.WorkspaceInfos.Path)
 	if err != nil {
 		return fmt.Errorf("failed to delete directory %s: %w", workspaceToDelete.WorkspaceInfos.Path, err)
 	}

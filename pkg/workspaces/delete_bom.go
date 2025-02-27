@@ -31,14 +31,7 @@
 
 package workspaces
 
-import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
-)
-
+/*
 func DeleteBOMFile(activeWorkspace Workspace, fileToDelete FileInfo) error {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
@@ -81,6 +74,24 @@ func DeleteBOMFile(activeWorkspace Workspace, fileToDelete FileInfo) error {
 	err = os.RemoveAll(fileToDelete.Path)
 	if err != nil {
 		return fmt.Errorf("failed to delete the BOM file %s: %w", fileToDelete.Path, err)
+	}
+	return nil
+}
+*/
+
+func DeleteBOMFile(activeWorkspace Workspace, fileToDelete FileInfo) error {
+	if err := Workspaces.Delete(&fileToDelete).Error; err != nil {
+		return err
+	}
+	files, err := GetFilesInWorkspaceInfo(activeWorkspace)
+	if err != nil {
+		return err
+	}
+	for i := range files {
+		files[i].VersionTag = i + 1
+	}
+	if err := Workspaces.Save(&files).Error; err != nil {
+		return err
 	}
 	return nil
 }

@@ -57,6 +57,8 @@ export namespace core {
     }
   }
   export class Parameter {
+    ID: number;
+    ComponentID: number;
     parameter: string;
     value: string;
 
@@ -66,11 +68,87 @@ export namespace core {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
       this.parameter = source['parameter'];
       this.value = source['value'];
     }
   }
+  export class MSDetail {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSDetail(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSCategory {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSCategory(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSManufacturer {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSManufacturer(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSDescription {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSDescription(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
   export class MSPricing {
+    ID: number;
+    ComponentID: number;
     best_supplier: string;
     best_price: string;
     best_unit_price: string;
@@ -83,6 +161,8 @@ export namespace core {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
       this.best_supplier = source['best_supplier'];
       this.best_price = source['best_price'];
       this.best_unit_price = source['best_unit_price'];
@@ -91,6 +171,8 @@ export namespace core {
     }
   }
   export class PriceBreak {
+    ID: number;
+    MSPriceBreaksID: number;
     Quantity: number;
     Price: string;
     Currency: string;
@@ -101,12 +183,16 @@ export namespace core {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.MSPriceBreaksID = source['MSPriceBreaksID'];
       this.Quantity = source['Quantity'];
       this.Price = source['Price'];
       this.Currency = source['Currency'];
     }
   }
   export class MSPriceBreaks {
+    ID: number;
+    ComponentID: number;
     supplier: string;
     value: PriceBreak[];
 
@@ -116,6 +202,8 @@ export namespace core {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
       this.supplier = source['supplier'];
       this.value = this.convertValues(source['value'], PriceBreak);
     }
@@ -138,16 +226,110 @@ export namespace core {
       return a;
     }
   }
-  export class MSValue {
+  export class MSReplacement {
+    ID: number;
+    ComponentID: number;
     supplier: string;
     value: string;
 
     static createFrom(source: any = {}) {
-      return new MSValue(source);
+      return new MSReplacement(source);
     }
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSCompliance {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSCompliance(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSLifeCycle {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSLifeCycle(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSDataSheet {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSDataSheet(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSAvailability {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSAvailability(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
+      this.supplier = source['supplier'];
+      this.value = source['value'];
+    }
+  }
+  export class MSImg {
+    ID: number;
+    ComponentID: number;
+    supplier: string;
+    value: string;
+
+    static createFrom(source: any = {}) {
+      return new MSImg(source);
+    }
+
+    constructor(source: any = {}) {
+      if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
       this.supplier = source['supplier'];
       this.value = source['value'];
     }
@@ -167,6 +349,8 @@ export namespace core {
     }
   }
   export class Designator {
+    ID: number;
+    ComponentID: number;
     designator: string;
     label: Label;
 
@@ -176,6 +360,8 @@ export namespace core {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.ComponentID = source['ComponentID'];
       this.designator = source['designator'];
       this.label = this.convertValues(source['label'], Label);
     }
@@ -200,16 +386,17 @@ export namespace core {
   }
   export class Component {
     id: number;
+    FileInfoID: number;
     quantity: number;
     mpn: string;
     designator: string;
     designators: Designator[];
-    image_path: MSValue[];
-    availability: MSValue[];
-    datasheet_url: MSValue[];
-    lifecycle_status: MSValue[];
-    rohs_status: MSValue[];
-    suggested_replacement: MSValue[];
+    image_path: MSImg[];
+    availability: MSAvailability[];
+    datasheet_url: MSDataSheet[];
+    lifecycle_status: MSLifeCycle[];
+    rohs_status: MSCompliance[];
+    suggested_replacement: MSReplacement[];
     price_breaks: MSPriceBreaks[];
     calculated_price: MSPricing;
     info_messages: string[];
@@ -217,11 +404,11 @@ export namespace core {
     sources: string[];
     mismatch_mpn: boolean;
     user_description: string;
-    supplier_description: MSValue[];
+    supplier_description: MSDescription[];
     user_manufacturer: string;
-    supplier_manufacturer: MSValue[];
-    category: MSValue[];
-    product_detail_url: MSValue[];
+    supplier_manufacturer: MSManufacturer[];
+    category: MSCategory[];
+    product_detail_url: MSDetail[];
     // Go type: time
     last_refresh: any;
     detailed_parameters: Parameter[];
@@ -236,21 +423,31 @@ export namespace core {
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
       this.id = source['id'];
+      this.FileInfoID = source['FileInfoID'];
       this.quantity = source['quantity'];
       this.mpn = source['mpn'];
       this.designator = source['designator'];
       this.designators = this.convertValues(source['designators'], Designator);
-      this.image_path = this.convertValues(source['image_path'], MSValue);
-      this.availability = this.convertValues(source['availability'], MSValue);
-      this.datasheet_url = this.convertValues(source['datasheet_url'], MSValue);
+      this.image_path = this.convertValues(source['image_path'], MSImg);
+      this.availability = this.convertValues(
+        source['availability'],
+        MSAvailability,
+      );
+      this.datasheet_url = this.convertValues(
+        source['datasheet_url'],
+        MSDataSheet,
+      );
       this.lifecycle_status = this.convertValues(
         source['lifecycle_status'],
-        MSValue,
+        MSLifeCycle,
       );
-      this.rohs_status = this.convertValues(source['rohs_status'], MSValue);
+      this.rohs_status = this.convertValues(
+        source['rohs_status'],
+        MSCompliance,
+      );
       this.suggested_replacement = this.convertValues(
         source['suggested_replacement'],
-        MSValue,
+        MSReplacement,
       );
       this.price_breaks = this.convertValues(
         source['price_breaks'],
@@ -267,17 +464,17 @@ export namespace core {
       this.user_description = source['user_description'];
       this.supplier_description = this.convertValues(
         source['supplier_description'],
-        MSValue,
+        MSDescription,
       );
       this.user_manufacturer = source['user_manufacturer'];
       this.supplier_manufacturer = this.convertValues(
         source['supplier_manufacturer'],
-        MSValue,
+        MSManufacturer,
       );
-      this.category = this.convertValues(source['category'], MSValue);
+      this.category = this.convertValues(source['category'], MSCategory);
       this.product_detail_url = this.convertValues(
         source['product_detail_url'],
-        MSValue,
+        MSDetail,
       );
       this.last_refresh = this.convertValues(source['last_refresh'], null);
       this.detailed_parameters = this.convertValues(
@@ -309,6 +506,8 @@ export namespace core {
   }
 
   export class Filter {
+    ID: number;
+    FileInfoID: number;
     header: number;
     quantity: number;
     mpn: number;
@@ -322,6 +521,8 @@ export namespace core {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.FileInfoID = source['FileInfoID'];
       this.header = source['header'];
       this.quantity = source['quantity'];
       this.mpn = source['mpn'];
@@ -403,6 +604,8 @@ export namespace workspaces {
     }
   }
   export class FileInfo {
+    ID: number;
+    WorkspaceID: number;
     version_tag: number;
     name: string;
     path: string;
@@ -415,6 +618,8 @@ export namespace workspaces {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
+      this.WorkspaceID = source['WorkspaceID'];
       this.version_tag = source['version_tag'];
       this.name = source['name'];
       this.path = source['path'];
@@ -489,6 +694,7 @@ export namespace workspaces {
     }
   }
   export class Workspace {
+    ID: number;
     workspace_infos: WorkspaceInfos;
     files: FileInfo[];
 
@@ -498,6 +704,7 @@ export namespace workspaces {
 
     constructor(source: any = {}) {
       if ('string' === typeof source) source = JSON.parse(source);
+      this.ID = source['ID'];
       this.workspace_infos = this.convertValues(
         source['workspace_infos'],
         WorkspaceInfos,

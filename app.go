@@ -244,8 +244,8 @@ func (a *App) GetFilesInWorkspaceInfo(activeWorkspace workspaces.Workspace) ([]w
 	return workspaces.GetFilesInWorkspaceInfo(activeWorkspace) // Delegate to workspaces package
 }
 
-func (a *App) UpdateVersionTags(activeWorkspace workspaces.Workspace, files []workspaces.FileInfo) error {
-	return workspaces.UpdateVersionTags(activeWorkspace, files)
+func (a *App) UpdateVersionTags(files []workspaces.FileInfo) error {
+	return workspaces.UpdateVersionTags(files)
 }
 
 func (a *App) UpdateLastComparison(activeWorkspace workspaces.Workspace, v1, v2 workspaces.FileInfo) error {
@@ -319,13 +319,13 @@ func (a *App) SetAnalyzeSaveState(state bool) error {
 	config.ANALYZE_SAVE_STATE = state
 	return nil
 }
-
+/*
 // GetProductionQuantity retrieves the selected production quantity by delegating to workspaces package.
 func (a *App) GetProductionQuantity(activeWorkspace workspaces.Workspace) (string, error) {
 	//activeWorkspace := a.GetActiveWorkspace()
 	return workspaces.GetProductionQuantity(activeWorkspace) // Delegate to workspaces package
 }
-
+*/
 // SetProductionQuantity sets the selected production quantity by updating BOMulus.bmls.
 func (a *App) SetProductionQuantity(activeWorkspace workspaces.Workspace, productionQuantity string) error {
 	config.PRODUCTION_QUANTITY = productionQuantity
@@ -333,10 +333,11 @@ func (a *App) SetProductionQuantity(activeWorkspace workspaces.Workspace, produc
 }
 
 // GetApiPriority retrieves the user API priority by delegating to workspaces package.
+/*
 func (a *App) GetApiPriority() ([]string, error) {
 	return workspaces.GetApiPriority() // Delegate to workspaces package
 }
-
+*/
 // SetApiPriority sets the user api priority by updating BOMulus.bmls.
 func (a *App) SetApiPriority(priority []string) error {
 	err := workspaces.UpdateBOMulusFile(workspaces.Workspace{}, workspaces.APIKeys{}, false, false, -1, priority)

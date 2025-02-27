@@ -27,14 +27,10 @@
 package workspaces
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 	"time"
 )
 
+/*
 func UpdateLastOpened(activeWorkspace Workspace) error {
 	if activeWorkspace.WorkspaceInfos.Path == "" {
 		return fmt.Errorf("no active workspace set")
@@ -87,4 +83,13 @@ func UpdateLastOpened(activeWorkspace Workspace) error {
 		return fmt.Errorf("failed to marshal updated workspace: %w", err)
 	}
 	return os.WriteFile(bmlsFilePath, jsonData, 0644)
+}
+*/
+
+func UpdateLastOpened(activeWorkspace Workspace) error {
+	if err := Workspaces.Model(&activeWorkspace).
+		Update("last_opened", time.Now()).Error; err != nil {
+		return err
+	}
+	return nil
 }

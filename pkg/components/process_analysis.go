@@ -36,7 +36,7 @@ import (
 
 // processAnalysis processes the API response and updates the component information
 // It handles both exact matches and alternative components
-func processAnalysis(activeWorkspacePath string, apiResponse ApiResponse, response Response, i int, batch []core.Component, supplier string, done *chan struct{}) {
+func processAnalysis(activeWorkspace workspaces.Workspace, apiResponse ApiResponse, response Response, i int, batch []core.Component, supplier string, done *chan struct{}) {
 	select {
 	case <-*done:
 		return // Exit if done signal is received
@@ -82,7 +82,7 @@ func processAnalysis(activeWorkspacePath string, apiResponse ApiResponse, respon
 					core.AnalysisState.Current++
 					core.AnalysisState.Progress = float64(core.AnalysisState.Current) / float64(len(core.Components)) * 100
 					if config.ANALYZE_SAVE_STATE {
-						workspaces.UpdateBMLSComponents(activeWorkspacePath, *currentComponent)
+						workspaces.UpdateBMLSComponents(activeWorkspace, *currentComponent)
 					}
 				}
 			}
@@ -130,18 +130,18 @@ func dkProcessComponent(existingComponent *core.Component, analyzed Product, isU
 	}
 	// Update component fields with analyzed data
 	component.Mpn = analyzed.ManufacturerProductNumber
-	component.ImagePath = append(component.ImagePath, core.MSValue{Supplier: supplier, Value: analyzed.PhotoUrl})
-	component.Availability = append(component.Availability, core.MSValue{Supplier: supplier, Value: strconv.Itoa(analyzed.QuantityAvailable)})
-	component.DataSheetUrl = append(component.DataSheetUrl, core.MSValue{Supplier: supplier, Value: analyzed.DatasheetUrl})
-	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.ProductStatus.Status})
-	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.Classifications.RohsStatus})
+	component.ImagePath = append(component.ImagePath, core.MSImg{Supplier: supplier, Value: analyzed.PhotoUrl})
+	component.Availability = append(component.Availability, core.MSAvailability{Supplier: supplier, Value: strconv.Itoa(analyzed.QuantityAvailable)})
+	component.DataSheetUrl = append(component.DataSheetUrl, core.MSDataSheet{Supplier: supplier, Value: analyzed.DatasheetUrl})
+	component.LifecycleStatus = append(component.LifecycleStatus, core.MSLifeCycle{Supplier: supplier, Value: analyzed.ProductStatus.Status})
+	component.ROHSStatus = append(component.ROHSStatus, core.MSCompliance{Supplier: supplier, Value: analyzed.Classifications.RohsStatus})
 	//component.SuggestedReplacement = analyzed.SuggestedReplacement
 	component.PriceBreaks = append(component.PriceBreaks, core.MSPriceBreaks{Supplier: supplier, Value: dkConsolidatePriceBreaks(analyzed.ProductVariations, currency)})
 	//component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
-	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description.ProductDescription + " | " + analyzed.Description.DetailedDescription})
-	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer.Name})
-	component.Category = append(component.Category, core.MSValue{Supplier: supplier, Value: analyzed.Category.Name})
-	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSValue{Supplier: supplier, Value: analyzed.ProductUrl})
+	component.SupplierDescription = append(component.SupplierDescription, core.MSDescription{Supplier: supplier, Value: analyzed.Description.ProductDescription + " | " + analyzed.Description.DetailedDescription})
+	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSManufacturer{Supplier: supplier, Value: analyzed.Manufacturer.Name})
+	component.Category = append(component.Category, core.MSCategory{Supplier: supplier, Value: analyzed.Category.Name})
+	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSDetail{Supplier: supplier, Value: analyzed.ProductUrl})
 	for i := range analyzed.Parameters {
 		component.DetailedParameters = append(component.DetailedParameters, core.Parameter{Parameter: analyzed.Parameters[i].ParameterText, Value: analyzed.Parameters[i].ValueText})
 	}
@@ -163,18 +163,18 @@ func processComponent(existingComponent *core.Component, analyzed Part, isUpdate
 	}
 	// Update component fields with analyzed data
 	component.Mpn = analyzed.ManufacturerPartNumber
-	component.ImagePath = append(component.ImagePath, core.MSValue{Supplier: supplier, Value: analyzed.ImagePath})
-	component.Availability = append(component.Availability, core.MSValue{Supplier: supplier, Value: analyzed.Availability})
-	component.DataSheetUrl = append(component.DataSheetUrl, core.MSValue{Supplier: supplier, Value: analyzed.DataSheetUrl})
-	component.LifecycleStatus = append(component.LifecycleStatus, core.MSValue{Supplier: supplier, Value: analyzed.LifecycleStatus})
-	component.ROHSStatus = append(component.ROHSStatus, core.MSValue{Supplier: supplier, Value: analyzed.ROHSStatus})
-	component.SuggestedReplacement = append(component.SuggestedReplacement, core.MSValue{Supplier: supplier, Value: analyzed.SuggestedReplacement})
+	component.ImagePath = append(component.ImagePath, core.MSImg{Supplier: supplier, Value: analyzed.ImagePath})
+	component.Availability = append(component.Availability, core.MSAvailability{Supplier: supplier, Value: analyzed.Availability})
+	component.DataSheetUrl = append(component.DataSheetUrl, core.MSDataSheet{Supplier: supplier, Value: analyzed.DataSheetUrl})
+	component.LifecycleStatus = append(component.LifecycleStatus, core.MSLifeCycle{Supplier: supplier, Value: analyzed.LifecycleStatus})
+	component.ROHSStatus = append(component.ROHSStatus, core.MSCompliance{Supplier: supplier, Value: analyzed.ROHSStatus})
+	component.SuggestedReplacement = append(component.SuggestedReplacement, core.MSReplacement{Supplier: supplier, Value: analyzed.SuggestedReplacement})
 	component.PriceBreaks = append(component.PriceBreaks, core.MSPriceBreaks{Supplier: supplier, Value: convertPriceBreaks(analyzed.PriceBreaks)})
 	component.InfoMessages = append(component.InfoMessages, analyzed.InfoMessages...)
-	component.SupplierDescription = append(component.SupplierDescription, core.MSValue{Supplier: supplier, Value: analyzed.Description})
-	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSValue{Supplier: supplier, Value: analyzed.Manufacturer})
-	component.Category = append(component.Category, core.MSValue{Supplier: supplier, Value: analyzed.Category})
-	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSValue{Supplier: supplier, Value: analyzed.ProductDetailUrl})
+	component.SupplierDescription = append(component.SupplierDescription, core.MSDescription{Supplier: supplier, Value: analyzed.Description})
+	component.SupplierManufacturer = append(component.SupplierManufacturer, core.MSManufacturer{Supplier: supplier, Value: analyzed.Manufacturer})
+	component.Category = append(component.Category, core.MSCategory{Supplier: supplier, Value: analyzed.Category})
+	component.ProductDetailUrl = append(component.ProductDetailUrl, core.MSDetail{Supplier: supplier, Value: analyzed.ProductDetailUrl})
 	// If updating an existing component, update the original
 	if isUpdate {
 		*existingComponent = component

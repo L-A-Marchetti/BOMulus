@@ -42,10 +42,6 @@ export function GetApiCount() {
   return window['go']['main']['App']['GetApiCount']();
 }
 
-export function GetApiPriority() {
-  return window['go']['main']['App']['GetApiPriority']();
-}
-
 export function GetComponent(arg1) {
   return window['go']['main']['App']['GetComponent'](arg1);
 }
@@ -60,10 +56,6 @@ export function GetFilesInWorkspaceInfo(arg1) {
 
 export function GetLastComparison(arg1) {
   return window['go']['main']['App']['GetLastComparison'](arg1);
-}
-
-export function GetProductionQuantity(arg1) {
-  return window['go']['main']['App']['GetProductionQuantity'](arg1);
 }
 
 export function GetRecentWorkspaces() {
@@ -162,6 +154,6 @@ export function UpdateLastComparison(arg1, arg2, arg3) {
   return window['go']['main']['App']['UpdateLastComparison'](arg1, arg2, arg3);
 }
 
-export function UpdateVersionTags(arg1, arg2) {
-  return window['go']['main']['App']['UpdateVersionTags'](arg1, arg2);
+export function UpdateVersionTags(arg1) {
+  return window['go']['main']['App']['UpdateVersionTags'](arg1);
 }
