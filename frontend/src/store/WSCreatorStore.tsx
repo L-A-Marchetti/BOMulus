@@ -15,6 +15,7 @@ interface WSCreatorProps {
   setWorkspaceName: (name: string) => void;
   chooseDirectory: () => void;
   createWorkspace: () => void;
+  resetMonitor: () => void;
 }
 
 export const WSCreatorStore = create<WSCreatorProps>((set) => ({
@@ -65,4 +66,5 @@ export const WSCreatorStore = create<WSCreatorProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
+  resetMonitor: () => set({ monitor: { isLoading: false, error: null } }),
 }));

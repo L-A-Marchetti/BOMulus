@@ -40,13 +40,14 @@ export function FileManager(): React.JSX.Element {
               <Button
                 onClick={() => {
                   FileManager.toggleVisibility();
-                  CompareView.toggleVisibility();
+                  if (CompareView.components && !CompareView.isVisible)
+                    CompareView.toggleVisibility();
                 }}
                 text="Back"
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
-                h="h-20"
+                h="h-15"
                 img={null}
               />
               <Button
@@ -55,7 +56,7 @@ export function FileManager(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
-                h="h-20"
+                h="h-15"
                 img={null}
               />
             </div>
@@ -72,7 +73,10 @@ export function FileManager(): React.JSX.Element {
                   {FileManager.files?.map((file) =>
                     FileManager.selectedFiles[0] === file ||
                     FileManager.selectedFiles[1] === file ? (
-                      <div className="w-full h-15 border-3 border-neutral-600 bg-neutral-700 rounded-lg animate-pulse"></div>
+                      <div
+                        key={file.ID}
+                        className="w-full h-15 border-3 border-neutral-600 bg-neutral-700 rounded-lg animate-pulse"
+                      ></div>
                     ) : (
                       <Files file={file} key={file.ID} />
                     ),
@@ -80,7 +84,10 @@ export function FileManager(): React.JSX.Element {
                   <hr className="my-4 text-neutral-600" />
                   <div className="flex gap-3">
                     {FileManager.selectedFiles[0] ? (
-                      <Files file={FileManager.selectedFiles[0]} />
+                      <Files
+                        key={FileManager.selectedFiles[0].ID}
+                        file={FileManager.selectedFiles[0]}
+                      />
                     ) : (
                       <div className="w-full h-15 border-3 border-neutral-600 bg-neutral-700 rounded-lg animate-pulse"></div>
                     )}
@@ -88,7 +95,10 @@ export function FileManager(): React.JSX.Element {
                       <img src={navigate_next} />
                     </div>
                     {FileManager.selectedFiles[1] ? (
-                      <Files file={FileManager.selectedFiles[1]} />
+                      <Files
+                        key={FileManager.selectedFiles[1].ID}
+                        file={FileManager.selectedFiles[1]}
+                      />
                     ) : (
                       <div className="w-full h-15 border-3 border-neutral-600 bg-neutral-700 rounded-lg animate-pulse"></div>
                     )}
@@ -105,7 +115,7 @@ export function FileManager(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
-                h="h-20"
+                h="h-15"
                 img={null}
               />
             )}
@@ -126,7 +136,7 @@ export function FileManager(): React.JSX.Element {
           bg="bg-neutral-700"
           bgHover="hover:bg-neutral-900"
           txtColor="text-neutral-400"
-          h="h-20"
+          h="h-15"
           img={null}
         />
       )}

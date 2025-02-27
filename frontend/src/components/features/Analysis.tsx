@@ -32,7 +32,7 @@ export function Analysis(): React.JSX.Element {
           bg="bg-neutral-700"
           bgHover="hover:bg-neutral-900"
           txtColor="text-neutral-400"
-          h="h-20"
+          h="h-15"
           img={null}
         />
       )}

@@ -27,7 +27,7 @@ export default function Button({
   return (
     <button
       onClick={onClick}
-      className={`w-full ${h} cursor-pointer py-2.5 px-5 text-sm font-medium rounded-lg focus:outline-none focus:z-10 ${bg} ${txtColor} hover:text-white ${bgHover} ${opacity ? 'opacity-100' : 'opacity-0'} hover:scale-95 transition`}
+      className={`w-full ${h} cursor-pointer py-2.5 px-5 text-sm font-medium rounded-lg focus:outline-none focus:z-10 ${bg} ${txtColor} hover:text-white ${bgHover} ${opacity ? 'opacity-100' : 'opacity-0'} hover:scale-99 transition`}
     >
       <div className="flex items-center justify-center">
         {img ? <img src={img} className="mr-2 h-5" /> : <></>}

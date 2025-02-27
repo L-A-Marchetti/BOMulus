@@ -25,14 +25,21 @@ export function Settings(): React.JSX.Element {
     <div className="w-full">
       <Button
         onClick={() => {
-          CompareView.toggleVisibility();
           Settings.toggleVisibility();
+          if (
+            Settings.isVisible &&
+            CompareView.components &&
+            !CompareView.isVisible
+          )
+            CompareView.toggleVisibility();
+          else if (!Settings.isVisible && CompareView.isVisible)
+            CompareView.toggleVisibility();
         }}
         text={Settings.isVisible ? 'Back' : 'Settings'}
         bg="bg-neutral-700"
         bgHover="hover:bg-neutral-900"
         txtColor="text-neutral-400"
-        h="h-20"
+        h="h-15"
         img={null}
       />
       {Settings.isVisible &&
@@ -49,7 +56,7 @@ export function Settings(): React.JSX.Element {
                 type="password"
                 onChange={() => {}}
                 value={Settings.apiKeys?.mouser_api_key || ''}
-                h="h-20"
+                h="h-15"
               />
               <Button
                 onClick={() => {}}
@@ -57,7 +64,7 @@ export function Settings(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
-                h="h-20"
+                h="h-15"
                 img={null}
               />
             </div>
@@ -68,14 +75,14 @@ export function Settings(): React.JSX.Element {
                 type="password"
                 onChange={() => {}}
                 value={Settings.apiKeys?.dk_client_id || ''}
-                h="h-20"
+                h="h-15"
               />
               <Input
                 placeHolder="Digikey Client Secret"
                 type="password"
                 onChange={() => {}}
                 value={Settings.apiKeys?.dk_secret || ''}
-                h="h-20"
+                h="h-15"
               />
               <Button
                 onClick={() => {}}
@@ -83,7 +90,7 @@ export function Settings(): React.JSX.Element {
                 bg="bg-neutral-700"
                 bgHover="hover:bg-neutral-900"
                 txtColor="text-neutral-400"
-                h="h-20"
+                h="h-15"
                 img={null}
               />
             </div>

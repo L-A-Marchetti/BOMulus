@@ -19,6 +19,7 @@ interface WSChooserProps {
   setActiveWorkspace: (workspace: Workspace) => void;
   setWorkspaceToDelete: (workspace: Workspace | null) => void;
   deleteWorkspace: () => void;
+  resetMonitor: () => void;
 }
 
 export const WSChooserStore = create<WSChooserProps>((set) => ({
@@ -66,4 +67,5 @@ export const WSChooserStore = create<WSChooserProps>((set) => ({
       set({ monitor: { isLoading: false, error: String(err) } });
     }
   },
+  resetMonitor: () => set({ monitor: { isLoading: false, error: null } }),
 }));

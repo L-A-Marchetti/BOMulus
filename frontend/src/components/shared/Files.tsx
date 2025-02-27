@@ -15,7 +15,7 @@ export default function Files(file: FilesProps) {
   }, []);
   return (
     <div
-      className={`w-full h-15 transition rounded-lg bg-neutral-800 border-3 border-neutral-700 hover:scale-95 group ${opacity ? 'opacity-100' : 'opacity-0'}`}
+      className={`w-full h-15 transition rounded-lg bg-neutral-800 border-3 border-neutral-700 hover:scale-99 group ${opacity ? 'opacity-100' : 'opacity-0'}`}
     >
       <div className={`h-full flex items-center justify-center`}>
         <a

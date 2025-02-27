@@ -1,5 +1,5 @@
 // src/components/WSChooser/WSChooser.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { WSCreatorStore } from '../../store/WSCreatorStore';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import DarkCard from '../shared/DarkCard';
@@ -7,6 +7,7 @@ import Input from '../shared/Input';
 import InputFile from '../shared/InputFile';
 import Button from '../shared/Button';
 import Spinner from '../shared/Spinner';
+import Error from '../shared/Error';
 
 export function WSCreator(): React.JSX.Element {
   const WSCreator = WSCreatorStore();
@@ -19,10 +20,11 @@ export function WSCreator(): React.JSX.Element {
         type="text"
         onChange={WSCreator.setWorkspaceName}
         value={WSCreator.workspaceName || ''}
-        h="h-20"
+        h="h-15"
       />
       <InputFile
         onClick={WSCreator.chooseDirectory}
+        h="h-15"
         value={
           WSCreator.workspacePath
             ? WSCreator.workspacePath.length > 30
@@ -37,7 +39,17 @@ export function WSCreator(): React.JSX.Element {
       ) : (
         <></>
       )}
-      {WSCreator.monitor.error ? <p>{WSCreator.monitor.error}</p> : <></>}
+      {WSCreator.monitor.error ? (
+        <Error
+          title="Error"
+          text={WSCreator.monitor.error}
+          onCancel={() => {
+            WSCreator.resetMonitor();
+          }}
+        />
+      ) : (
+        <></>
+      )}
       <div className="flex gap-8">
         <Button
           onClick={WSCreator.toggleVisibility}
@@ -45,7 +57,7 @@ export function WSCreator(): React.JSX.Element {
           bg="bg-neutral-700"
           bgHover="hover:bg-neutral-900"
           txtColor="text-neutral-400"
-          h="h-20"
+          h="h-15"
           img={null}
         />
         <Button
@@ -54,7 +66,7 @@ export function WSCreator(): React.JSX.Element {
           bg="bg-emerald-700"
           bgHover="hover:bg-emerald-900"
           txtColor="text-white"
-          h="h-20"
+          h="h-15"
           img={null}
         />
       </div>

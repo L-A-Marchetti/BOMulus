@@ -51,30 +51,27 @@ export default function WorkspaceCard({
           >
             <ul className="py-2">
               <li>
-                <a
+                <p
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
-                  href="#"
                   className="block px-4 py-2 text-sm hover:bg-neutral-600 text-neutral-200 hover:text-white"
                 >
                   Edit Name
-                </a>
+                </p>
               </li>
               <li>
-                <a
+                <p
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
-                  href="#"
                   className="block px-4 py-2 text-sm hover:bg-neutral-600 text-neutral-200 hover:text-white"
                 >
                   Export
-                </a>
+                </p>
               </li>
               <li>
-                <a
-                  href="#"
+                <p
                   onClick={(e) => {
                     e.stopPropagation();
                     deleteWs();
@@ -82,7 +79,7 @@ export default function WorkspaceCard({
                   className="block px-4 py-2 text-sm hover:bg-red-300 text-red-300 hover:text-black"
                 >
                   Delete
-                </a>
+                </p>
               </li>
             </ul>
           </div>

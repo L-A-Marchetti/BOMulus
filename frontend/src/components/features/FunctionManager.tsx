@@ -22,14 +22,21 @@ export function FunctionManager(): React.JSX.Element {
         <div className="flex items-center justify-center gap-8">
           <Button
             onClick={() => {
-              CompareView.toggleVisibility();
               FunctionManager.toggleVisibility();
+              if (
+                FunctionManager.isVisible &&
+                CompareView.components &&
+                !CompareView.isVisible
+              )
+                CompareView.toggleVisibility();
+              else if (!FunctionManager.isVisible && CompareView.isVisible)
+                CompareView.toggleVisibility();
             }}
             text={FunctionManager.isVisible ? 'Back' : 'Function Manager'}
             bg="bg-neutral-700"
             bgHover="hover:bg-neutral-900"
             txtColor="text-neutral-400"
-            h="h-20"
+            h="h-15"
             img={null}
           />
           {FunctionManager.isVisible ? (
@@ -41,7 +48,7 @@ export function FunctionManager(): React.JSX.Element {
               bg="bg-emerald-700"
               bgHover="hover:bg-emerald-900"
               txtColor="text-white"
-              h="h-20"
+              h="h-15"
               img={null}
             />
           ) : (

@@ -1,13 +1,16 @@
 // src/components/WSChooser/WSChooser.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import Modal from '../shared/Modal';
 import WorkspaceCard from '../shared/WorkspaceCard';
 import { WSCreator } from './WSCreator';
 import Spinner from '../shared/Spinner';
+import WorkspaceSkeleton from '../shared/WorkspaceSkeleton';
+import Error from '../shared/Error';
 
 export function WSChooser(): React.JSX.Element {
   const WSChooser = WSChooserStore();
+  const skeletons = Math.max(6 - (WSChooser.workspaces?.length || 0), 0);
 
   useEffect(() => {
     WSChooser.loadWorkspaces();
@@ -24,6 +27,9 @@ export function WSChooser(): React.JSX.Element {
           openWs={() => WSChooser.setActiveWorkspace(ws)}
           deleteWs={() => WSChooser.setWorkspaceToDelete(ws)}
         />
+      ))}
+      {Array.from({ length: skeletons }, (_, i) => (
+        <WorkspaceSkeleton key={`skeleton-${i}`} />
       ))}
       {WSChooser.workspaceToDelete ? (
         <Modal
@@ -45,11 +51,12 @@ export function WSChooser(): React.JSX.Element {
         <></>
       )}
       {WSChooser.monitor.error ? (
-        <Modal
+        <Error
           title="Error"
           text={WSChooser.monitor.error}
-          onCancel={() => {}}
-          onConfirm={() => {}}
+          onCancel={() => {
+            WSChooser.resetMonitor();
+          }}
         />
       ) : (
         <></>
