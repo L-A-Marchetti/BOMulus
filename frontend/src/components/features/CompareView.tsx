@@ -10,6 +10,7 @@ export function CompareView(): React.JSX.Element {
   const CompareView = CompareViewStore();
   const Analysis = AnalysisStore();
   const Calculator = CalculatorStore();
+  console.log(CompareView);
 
   return CompareView.isVisible ? (
     <>

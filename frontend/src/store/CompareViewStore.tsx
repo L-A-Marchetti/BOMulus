@@ -11,7 +11,7 @@ interface CompareViewProps {
   components: Component[] | null;
   insert: Component[] | null;
   update: Component[] | null;
-  delete: Component[] | null;
+  del: Component[] | null;
   equal: Component[] | null;
   monitor: Monitor;
   isVisible: boolean;
@@ -44,7 +44,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   components: null,
   insert: null,
   update: null,
-  delete: null,
+  del: null,
   equal: null,
   monitor: { isLoading: false, error: null },
   isVisible: false,
@@ -140,7 +140,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         components,
         insert,
         update,
-        delete: del,
+        del: del,
         equal,
         warningOutOfStock,
         warningLifeCycle,
@@ -284,7 +284,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       components: null,
       insert: null,
       update: null,
-      delete: null,
+      del: null,
       equal: null,
       monitor: { isLoading: false, error: null },
       isVisible: false,

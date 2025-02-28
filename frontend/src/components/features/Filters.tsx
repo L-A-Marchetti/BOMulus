@@ -51,7 +51,7 @@ export function Filters(): React.JSX.Element {
               onClick={() => {
                 CompareView.toggleOperatorVisibility('DELETE');
               }}
-              text={String(CompareView.delete?.length)}
+              text={String(CompareView.del?.length)}
               bg={
                 !CompareView.deleteIsVisible ? 'bg-neutral-900' : 'bg-rose-900'
               }

@@ -1,1 +1,16 @@
 @import 'tailwindcss';
+
+@layer components {
+  /* App.tsx */
+  .app {
+    @apply flex items-center justify-center min-h-screen gap-8;
+  }
+  .workspace_manager {
+    @apply flex w-full max-w-239 px-8;
+  }
+
+  /* WSChooser.tsx */
+  .workspace_chooser {
+    @apply flex items-center justify-start w-full h-full gap-8 flex-wrap max-w-212;
+  }
+}

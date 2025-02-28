@@ -7,65 +7,70 @@ import {
 import { workspaces } from '../../wailsjs/go/models';
 type Workspace = workspaces.Workspace;
 import { Monitor } from '../types/global';
+import { MonitorStore } from './MonitorStore';
 
 interface WSChooserProps {
   workspaces: Workspace[] | null;
-  monitor: Monitor;
   activeWorkspace: Workspace | null;
   workspaceToDelete: Workspace | null;
   isVisible: boolean;
+  WSManagerIsVisible: boolean;
   toggleVisibility: () => void;
+  toggleWSMVisibility: () => void;
   loadWorkspaces: () => void;
   setActiveWorkspace: (workspace: Workspace) => void;
   setWorkspaceToDelete: (workspace: Workspace | null) => void;
   deleteWorkspace: () => void;
-  resetMonitor: () => void;
 }
 
 export const WSChooserStore = create<WSChooserProps>((set) => ({
   workspaces: null,
-  monitor: { isLoading: false, error: null },
   activeWorkspace: null,
   workspaceToDelete: null,
   isVisible: true,
+  WSManagerIsVisible: true,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
+  toggleWSMVisibility: () =>
+    set((state) => ({ WSManagerIsVisible: !state.WSManagerIsVisible })),
   loadWorkspaces: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Workspace', null);
     try {
       const workspaces: Workspace[] = await GetRecentWorkspaces();
-      set({ workspaces, monitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'Workspace', null);
+      set({ workspaces, isVisible: true });
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'Workspace', String(err));
     }
   },
   setActiveWorkspace: async (workspace) => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Workspace', null);
     try {
       await SetActiveWorkspace(workspace);
+      Monitor.setMonitor(false, 'Workspace', null);
       set({
         activeWorkspace: workspace,
-        monitor: { isLoading: false, error: null },
         isVisible: false,
+        WSManagerIsVisible: false,
       });
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(true, 'Workspace', String(err));
     }
   },
   setWorkspaceToDelete: (workspace) => set({ workspaceToDelete: workspace }),
   deleteWorkspace: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Workspace', null);
     const state = WSChooserStore.getState();
     if (!state.workspaceToDelete) return;
     try {
       await DeleteWorkspace(state.workspaceToDelete);
-      set({
-        workspaceToDelete: null,
-        monitor: { isLoading: false, error: null },
-      });
+      Monitor.setMonitor(false, 'Workspace', null);
+      set({ workspaceToDelete: null });
       state.loadWorkspaces();
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'Workspace', String(err));
     }
   },
-  resetMonitor: () => set({ monitor: { isLoading: false, error: null } }),
 }));

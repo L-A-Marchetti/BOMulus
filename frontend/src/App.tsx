@@ -13,16 +13,20 @@ import { WSCreatorStore } from './store/WSCreatorStore';
 import { Calculator } from './components/features/Calculator';
 import { FunctionManager } from './components/features/FunctionManager';
 import { FileManagerStore } from './store/FileManagerStore';
+import { Monitor } from './components/features/Monitor';
+import { useShallow } from 'zustand/react/shallow';
 
 function App(): React.JSX.Element {
-  const WSChoose = WSChooserStore();
-  const WSCreate = WSCreatorStore();
+  console.log('App');
+  const WSManagerIsVisible = WSChooserStore(
+    useShallow((state) => state.WSManagerIsVisible),
+  );
   const FileManagerPadding = FileManagerStore();
 
   return (
-    <div className="flex items-center justify-center min-h-screen gap-8">
-      {WSChoose.isVisible || WSCreate.isVisible ? (
-        <div className="flex w-full max-w-239 px-8">
+    <div className="app">
+      {WSManagerIsVisible ? (
+        <div className="workspace_manager">
           <WSCreator />
           <WSChooser />
         </div>
@@ -42,6 +46,7 @@ function App(): React.JSX.Element {
           <CompareView />
         </div>
       )}
+      <Monitor />
     </div>
   );
 }
