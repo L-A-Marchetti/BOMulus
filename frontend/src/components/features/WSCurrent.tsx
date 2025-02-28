@@ -9,40 +9,90 @@ import { SettingsStore } from '../../store/SettingsStore';
 import { FunctionManagerStore } from '../../store/FunctionManagerStore';
 import { CalculatorStore } from '../../store/CalculatorStore';
 import { AnalysisStore } from '../../store/AnalysisStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export function WSCurrent(): React.JSX.Element {
-  const WSCreator = WSCreatorStore();
-  const WSChooser = WSChooserStore();
-  const FileManager = FileManagerStore();
-  const CompareView = CompareViewStore();
-  const Settings = SettingsStore();
-  const FunctionManager = FunctionManagerStore();
-  const Calculator = CalculatorStore();
-  const Analysis = AnalysisStore();
+  console.log('WSCurrent');
+  const { activeWorkspace, WSManagerIsVisible, loadWorkspaces } =
+    WSChooserStore(
+      useShallow((state) => ({
+        activeWorkspace: state.activeWorkspace,
+        WSManagerIsVisible: state.WSManagerIsVisible,
+        loadWorkspaces: state.loadWorkspaces,
+      })),
+    );
 
-  return !WSCreator.isVisible &&
-    !WSChooser.isVisible &&
-    !FileManager.isVisible &&
-    !Settings.isVisible &&
-    !FunctionManager.isVisible ? (
-    <div className="flex items-center justify-center w-full mt-8 px-8">
+  const {
+    isVisible: isFileManagerVisible,
+    reset: resetFileManager,
+    toggleVisibility: toggleFileManagerVisibility,
+  } = FileManagerStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+      reset: state.reset,
+      toggleVisibility: state.toggleVisibility,
+    })),
+  );
+
+  const {
+    isVisible: isCompareViewVisible,
+    reset: resetCompareView,
+    toggleVisibility: toggleCompareViewVisibility,
+  } = CompareViewStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+      reset: state.reset,
+      toggleVisibility: state.toggleVisibility,
+    })),
+  );
+
+  const { isVisible: isSettingsVisible } = SettingsStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+    })),
+  );
+
+  const { isVisible: isFunctionManagerVisible, reset: resetFunctionManager } =
+    FunctionManagerStore(
+      useShallow((state) => ({
+        isVisible: state.isVisible,
+        reset: state.reset,
+      })),
+    );
+
+  const { reset: resetCalculator } = CalculatorStore(
+    useShallow((state) => ({
+      reset: state.reset,
+    })),
+  );
+
+  const { reset: resetAnalysis } = AnalysisStore(
+    useShallow((state) => ({
+      reset: state.reset,
+    })),
+  );
+
+  return !WSManagerIsVisible &&
+    !isFileManagerVisible &&
+    !isSettingsVisible &&
+    !isFunctionManagerVisible ? (
+    <>
       <Banner
-        workspaceName={WSChooser.activeWorkspace?.workspace_infos.name || ''}
+        workspaceName={activeWorkspace?.workspace_infos.name || ''}
         onClick={() => {
-          WSChooser.loadWorkspaces();
-          WSChooser.toggleVisibility();
+          loadWorkspaces();
           {
-            FileManager.isVisible ? FileManager.toggleVisibility() : {};
-            CompareView.isVisible ? CompareView.toggleVisibility() : {};
+            isFileManagerVisible ? toggleFileManagerVisibility() : {};
+            isCompareViewVisible ? toggleCompareViewVisibility() : {};
           }
-          FunctionManager.reset();
-          FileManager.reset();
-          CompareView.reset();
-          Calculator.reset();
-          Analysis.reset();
+          resetFunctionManager();
+          resetFileManager();
+          resetCompareView();
+          resetCalculator();
+          resetAnalysis();
         }}
       />
-    </div>
+    </>
   ) : (
     <></>
   );

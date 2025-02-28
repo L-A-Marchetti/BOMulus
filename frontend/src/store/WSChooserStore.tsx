@@ -8,6 +8,7 @@ import { workspaces } from '../../wailsjs/go/models';
 type Workspace = workspaces.Workspace;
 import { Monitor } from '../types/global';
 import { MonitorStore } from './MonitorStore';
+import { FileManagerStore } from './FileManagerStore';
 
 interface WSChooserProps {
   workspaces: Workspace[] | null;
@@ -38,7 +39,7 @@ export const WSChooserStore = create<WSChooserProps>((set) => ({
     try {
       const workspaces: Workspace[] = await GetRecentWorkspaces();
       Monitor.setMonitor(false, 'Workspace', null);
-      set({ workspaces, isVisible: true });
+      set({ workspaces, isVisible: true, WSManagerIsVisible: true });
     } catch (err) {
       Monitor.setMonitor(false, 'Workspace', String(err));
     }

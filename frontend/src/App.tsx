@@ -21,7 +21,7 @@ function App(): React.JSX.Element {
   const WSManagerIsVisible = WSChooserStore(
     useShallow((state) => state.WSManagerIsVisible),
   );
-  const FileManagerPadding = FileManagerStore();
+  //const FileManagerPadding = FileManagerStore(useShallow((state) => state.filesToValidate));
 
   return (
     <div className="app">
@@ -33,17 +33,15 @@ function App(): React.JSX.Element {
       ) : (
         <div className="w-full flex flex-col gap-8">
           <WSCurrent />
-          <div
-            className={`w-full flex gap-8 items-center justify-center ${!FileManagerPadding.filesToValidate ? 'px-8' : ''}`}
-          >
+          <div className={`w-full flex gap-8 items-center justify-center`}>
             <FileManager />
-            <FunctionManager />
+            {/* <FunctionManager />
             <Analysis />
-            <Settings />
+            <Settings /> */}
           </div>
-          <Calculator />
+          {/* <Calculator />
           <Filters />
-          <CompareView />
+          <CompareView /> */}
         </div>
       )}
       <Monitor />

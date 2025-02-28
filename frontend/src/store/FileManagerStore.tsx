@@ -15,6 +15,7 @@ import { workspaces } from '../../wailsjs/go/models';
 import { core } from '../../wailsjs/go/models';
 import { CompareViewStore } from './CompareViewStore';
 import { CalculatorStore } from './CalculatorStore';
+import { MonitorStore } from './MonitorStore';
 type FileInfo = workspaces.FileInfo;
 type XlsmFile = core.XlsmFile;
 
@@ -22,8 +23,6 @@ interface FileManagerProps {
   files: FileInfo[] | null;
   filesToValidate: XlsmFile[] | null;
   selectedFiles: [FileInfo, FileInfo] | [FileInfo, null] | [null, null];
-  monitor: Monitor;
-  compareMonitor: Monitor;
   isVisible: boolean;
   toggleVisibility: () => void;
   loadFiles: () => void;
@@ -42,38 +41,44 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
   files: null,
   filesToValidate: null,
   selectedFiles: [null, null],
-  monitor: { isLoading: false, error: null },
-  compareMonitor: { isLoading: false, error: null },
   isVisible: false,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   loadFiles: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'File Manager', null);
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace)
-      return set({
-        monitor: { isLoading: false, error: 'No active workspace found.' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'File Manager',
+        'No active workspace found',
+      );
     try {
-      console.log('GetFilesInWorkspaceInfo');
       const files: FileInfo[] = await GetFilesInWorkspaceInfo(activeWorkspace);
-      set({ files: files, monitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'File Manager', null);
+      set({ files: files });
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(true, 'File Manager', String(err));
     }
   },
   uploadFiles: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'File Manager', null);
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace)
-      return set({
-        monitor: { isLoading: false, error: 'No active workspace found.' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'File Manager',
+        'No active workspace found',
+      );
     try {
       const filePaths: string[] = await OpenMultipleFilesDialog();
       if (!filePaths)
-        return set({
-          monitor: { isLoading: false, error: null },
-        });
+        return Monitor.setMonitor(
+          false,
+          'File Manager',
+          'No files to validate',
+        );
       const filesToValidate: XlsmFile[] = [];
       for (const filePath of filePaths) {
         try {
@@ -82,13 +87,14 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
               await HeaderFiltersFileValidation(filePath);
             if (initialFile) filesToValidate.push(initialFile);
           }
-          set({ filesToValidate, monitor: { isLoading: false, error: null } });
+          Monitor.setMonitor(false, 'File Manager', null);
+          set({ filesToValidate });
         } catch (err) {
-          set({ monitor: { isLoading: false, error: String(err) } });
+          Monitor.setMonitor(false, 'File Manager', String(err));
         }
       }
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'File Manager', String(err));
     }
   },
   validationControl: (key: string, sign: string) =>
@@ -130,21 +136,22 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       return { filesToValidate: [...state.filesToValidate] };
     }),
   confirmValidation: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'File Manager', null);
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     const filesToValidate = FileManagerStore.getState().filesToValidate;
     const file: XlsmFile | undefined = filesToValidate
       ? filesToValidate[0]
       : undefined;
     if (!file) {
-      return set({
-        monitor: { isLoading: false, error: 'No file to validate.' },
-      });
+      return Monitor.setMonitor(false, 'File Manager', 'No files to validate');
     }
     if (!activeWorkspace)
-      return set({
-        monitor: { isLoading: false, error: 'No active workspace found.' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'File Manager',
+        'No active workspace found',
+      );
     try {
       await AddFileToWorkspace(activeWorkspace, file);
       set((state) => {
@@ -154,9 +161,9 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
         };
       });
       FileManagerStore.getState().loadFiles();
-      set({ monitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'File Manager', null);
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(true, 'File Manager', String(err));
     }
   },
   cancelValidation: () =>
@@ -167,22 +174,26 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       };
     }),
   deleteFile: async (file: FileInfo) => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'File Manager', null);
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace)
-      return set({
-        monitor: { isLoading: false, error: 'No active workspace found.' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'File Manager',
+        'No active workspace found',
+      );
     try {
       await DeleteBOMFile(activeWorkspace, file);
       FileManagerStore.getState().loadFiles();
-      set({ monitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'File Manager', null);
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'File Manager', String(err));
     }
   },
   moveFile: async (direction: string, file: FileInfo) => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'File Manager', null);
     set((state) => {
       if (!state.files) return {};
       const currentIndex = state.files.indexOf(file);
@@ -202,17 +213,16 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
     const files = FileManagerStore.getState().files;
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace || !files)
-      return set({
-        monitor: {
-          isLoading: false,
-          error: 'No active workspace or no files found.',
-        },
-      });
+      return Monitor.setMonitor(
+        false,
+        'File Manager',
+        'No active workspace found or no files to validate found',
+      );
     try {
       await UpdateVersionTags(files);
-      set({ monitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'File Manager', null);
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'File Manager', String(err));
     }
   },
   selectFile: (file: FileInfo) =>
@@ -233,20 +243,18 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       return { selectedFiles: [file1, file] };
     }),
   compare: async () => {
-    set({ compareMonitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'File Manager', null);
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace)
-      return set({
-        compareMonitor: {
-          isLoading: false,
-          error: 'No active workspace found.',
-        },
-      });
+      return Monitor.setMonitor(
+        false,
+        'File Manager',
+        'No active workspace found',
+      );
     const filesToCompare = FileManagerStore.getState().selectedFiles;
     if (!filesToCompare[0] || !filesToCompare[1])
-      return set({
-        compareMonitor: { isLoading: false, error: 'No files selected.' },
-      });
+      return Monitor.setMonitor(false, 'File Manager', 'No files selected');
     try {
       console.log(filesToCompare[0].components);
       await BtnCompare(
@@ -258,14 +266,14 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
         filesToCompare[0],
         filesToCompare[1],
       );*/
-      set({ compareMonitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'File Manager', null);
       FileManagerStore.getState().toggleVisibility();
       CompareViewStore.getState().loadComponents();
       CalculatorStore.getState().getProductionQuantity();
       if (!CompareViewStore.getState().isVisible)
         CompareViewStore.getState().toggleVisibility();
     } catch (err) {
-      set({ compareMonitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(true, 'File Manager', String(err));
     }
   },
   reset: () => {
@@ -273,8 +281,6 @@ export const FileManagerStore = create<FileManagerProps>((set) => ({
       files: null,
       filesToValidate: null,
       selectedFiles: [null, null],
-      monitor: { isLoading: false, error: null },
-      compareMonitor: { isLoading: false, error: null },
       isVisible: false,
     });
   },

@@ -13,4 +13,13 @@
   .workspace_chooser {
     @apply flex items-center justify-start w-full h-full gap-8 flex-wrap max-w-212;
   }
+
+  /* FileManager.tsx */
+  .file_manager {
+    @apply flex flex-col gap-8 w-full;
+  }
+
+  .file_manager_button {
+    @apply px-8;
+  }
 }
