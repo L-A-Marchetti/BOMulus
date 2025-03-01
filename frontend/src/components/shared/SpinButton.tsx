@@ -13,7 +13,7 @@ export default function SpinButton({ label, more, less }: SpinButtonProps) {
     setOpacity(true);
   }, []);
   return (
-    <div className="w-full flex flex-col rounded-md shadow-xs" role="group">
+    <div className="w-full flex flex-col rounded-md" role="group">
       <button
         onClick={less}
         type="button"

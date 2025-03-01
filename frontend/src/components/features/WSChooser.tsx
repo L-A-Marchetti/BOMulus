@@ -1,5 +1,5 @@
 // src/components/WSChooser/tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import WorkspaceCard from '../shared/WorkspaceCard';
 import WorkspaceSkeleton from '../shared/WorkspaceSkeleton';
@@ -17,11 +17,14 @@ export function WSChooser(): React.JSX.Element {
       })),
     );
 
-  console.log('WSChooser', workspaces);
   const skeletons = Math.max(6 - (workspaces?.length || 0), 0);
 
-  return isVisible ? (
-    <div className="workspace_chooser">
+  useEffect(() => {
+    console.log('WSChooser', workspaces);
+  }, []);
+
+  return (
+    <div className={`workspace_chooser ${isVisible ? '' : 'hidden'}`}>
       {workspaces?.map((ws) => (
         <WorkspaceCard
           key={ws.ID}
@@ -35,7 +38,5 @@ export function WSChooser(): React.JSX.Element {
       ))}
       <WSDelete />
     </div>
-  ) : (
-    <></>
   );
 }

@@ -35,12 +35,12 @@ function App(): React.JSX.Element {
           <div className={`w-full flex gap-8 items-center justify-center`}>
             <FileManager />
             <FunctionManager />
-            {/* <Analysis />
-            <Settings /> */}
+            <Analysis />
+            <Settings />
           </div>
-          {/* <Calculator />
+          {/* <Calculator />*/}
           <Filters />
-          <CompareView /> */}
+          <CompareView />
         </div>
       )}
       <Monitor />

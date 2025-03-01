@@ -1,53 +1,84 @@
 // src/components/WSChooser/WSChooser.tsx
 import React, { useEffect } from 'react';
 import { SettingsStore } from '../../store/SettingsStore';
-import { WSChooserStore } from '../../store/WSChooserStore';
 import Button from '../shared/Button';
 import { CompareViewStore } from '../../store/CompareViewStore';
-import { FileManager } from './FileManager';
 import { FileManagerStore } from '../../store/FileManagerStore';
 import Input from '../shared/Input';
 import SpinButton from '../shared/SpinButton';
-import Spinner from '../shared/Spinner';
 import { FunctionManagerStore } from '../../store/FunctionManagerStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export function Settings(): React.JSX.Element {
-  const Settings = SettingsStore();
-  const CompareView = CompareViewStore();
-  const FileManager = FileManagerStore();
-  const FunctionManager = FunctionManagerStore();
+  const {
+    toggleVisibility,
+    isVisible,
+    apiKeys,
+    analyzeSaveState,
+    analysisRefreshDays,
+  } = SettingsStore(
+    useShallow((state) => ({
+      toggleVisibility: state.toggleVisibility,
+      isVisible: state.isVisible,
+      apiKeys: state.apiKeys,
+      analyzeSaveState: state.analyzeSaveState,
+      analysisRefreshDays: state.analysisRefreshDays,
+    })),
+  );
+
+  const {
+    components,
+    isVisible: compareVisible,
+    toggleVisibility: toggleCompare,
+  } = CompareViewStore(
+    useShallow((state) => ({
+      components: state.components,
+      isVisible: state.isVisible,
+      toggleVisibility: state.toggleVisibility,
+    })),
+  );
+
+  const { isVisible: fileManagerVisible } = FileManagerStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+    })),
+  );
+
+  const { isVisible: functionManagerVisible } = FunctionManagerStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+    })),
+  );
 
   useEffect(() => {
-    Settings.loadSettings();
+    console.log('Settings');
   }, []);
 
-  return !FileManager.isVisible && !FunctionManager.isVisible ? (
-    <div className="w-full">
-      <Button
-        onClick={() => {
-          Settings.toggleVisibility();
-          if (
-            Settings.isVisible &&
-            CompareView.components &&
-            !CompareView.isVisible
-          )
-            CompareView.toggleVisibility();
-          else if (!Settings.isVisible && CompareView.isVisible)
-            CompareView.toggleVisibility();
-        }}
-        text={Settings.isVisible ? 'Back' : 'Settings'}
-        bg="bg-neutral-700"
-        bgHover="hover:bg-neutral-900"
-        txtColor="text-neutral-400"
-        h="h-15"
-        img={null}
-      />
-      {Settings.isVisible &&
-        (Settings.monitor.isLoading ? (
-          <Spinner text="Settings are loading..." />
-        ) : Settings.monitor.error ? (
-          <p>{Settings.monitor.error}</p>
-        ) : (
+  // useEffect(() => {
+  //   loadSettings();
+  // }, []);
+
+  return (
+    <div
+      className={
+        !fileManagerVisible && !functionManagerVisible ? 'w-full' : 'hidden'
+      }
+    >
+      <div className={`w-full ${isVisible ? 'px-8' : 'pr-8'}`}>
+        <Button
+          onClick={() => {
+            toggleVisibility();
+            if (isVisible && components && !compareVisible) toggleCompare();
+            else if (!isVisible && compareVisible) toggleCompare();
+          }}
+          text={isVisible ? 'Back' : 'Settings'}
+          bg="bg-neutral-700"
+          bgHover="hover:bg-neutral-900"
+          txtColor="text-neutral-400"
+          h="h-15"
+          img={null}
+        />
+        <div className={isVisible ? '' : 'hidden'}>
           <div className="flex flex-col gap-8 mt-8">
             <div className="flex flex-col gap-4">
               <p className="text-xl">Mouser Api Key</p>
@@ -55,7 +86,7 @@ export function Settings(): React.JSX.Element {
                 placeHolder="Mouser Api Key"
                 type="password"
                 onChange={() => {}}
-                value={Settings.apiKeys?.mouser_api_key || ''}
+                value={apiKeys?.mouser_api_key || ''}
                 h="h-15"
               />
               <Button
@@ -74,14 +105,14 @@ export function Settings(): React.JSX.Element {
                 placeHolder="Digikey Client ID"
                 type="password"
                 onChange={() => {}}
-                value={Settings.apiKeys?.dk_client_id || ''}
+                value={apiKeys?.dk_client_id || ''}
                 h="h-15"
               />
               <Input
                 placeHolder="Digikey Client Secret"
                 type="password"
                 onChange={() => {}}
-                value={Settings.apiKeys?.dk_secret || ''}
+                value={apiKeys?.dk_secret || ''}
                 h="h-15"
               />
               <Button
@@ -100,7 +131,7 @@ export function Settings(): React.JSX.Element {
                   type="checkbox"
                   value=""
                   className="sr-only peer"
-                  checked={Settings.analyzeSaveState}
+                  checked={analyzeSaveState}
                   readOnly
                 />
                 <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
@@ -111,8 +142,7 @@ export function Settings(): React.JSX.Element {
               <div className="w-1/2">
                 <SpinButton
                   label={
-                    'Analysis Refresh Days: ' +
-                    String(Settings.analysisRefreshDays)
+                    'Analysis Refresh Days: ' + String(analysisRefreshDays)
                   }
                   more={() => {}}
                   less={() => {}}
@@ -120,9 +150,8 @@ export function Settings(): React.JSX.Element {
               </div>
             </div>
           </div>
-        ))}
+        </div>
+      </div>
     </div>
-  ) : (
-    <></>
   );
 }

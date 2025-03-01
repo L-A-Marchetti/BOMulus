@@ -7,7 +7,7 @@ type ModalProps = {
 export default function Error({ title, text, onCancel }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="relative p-4 w-full max-w-md bg-neutral-900 rounded-lg shadow-sm">
+      <div className="relative p-4 w-full max-w-md bg-neutral-900 rounded-lg">
         <button
           type="button"
           className="cursor-pointer absolute top-3 end-2.5 text-neutral-400 bg-transparent rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center hover:bg-neutral-600 hover:text-white"

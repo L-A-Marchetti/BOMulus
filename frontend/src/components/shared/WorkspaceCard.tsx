@@ -47,7 +47,7 @@ export default function WorkspaceCard({
         {isDropdownOpen && (
           <div
             onMouseLeave={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="absolute right-4 mt-10 z-10 text-base list-none divide-y divide-neutral-100 rounded-lg shadow-sm w-44 bg-neutral-700"
+            className="absolute right-4 mt-10 z-10 text-base list-none divide-y divide-neutral-100 rounded-lg w-44 bg-neutral-700"
           >
             <ul className="py-2">
               <li>

@@ -4,6 +4,7 @@ import { Monitor } from '../types/global';
 import { core } from '../../wailsjs/go/models';
 import { CalculatorStore } from './CalculatorStore';
 import { FunctionManagerStore } from './FunctionManagerStore';
+import { MonitorStore } from './MonitorStore';
 
 type Component = core.Component;
 
@@ -13,7 +14,6 @@ interface CompareViewProps {
   update: Component[] | null;
   del: Component[] | null;
   equal: Component[] | null;
-  monitor: Monitor;
   isVisible: boolean;
   insertIsVisible: boolean;
   updateIsVisible: boolean;
@@ -46,7 +46,6 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
   update: null,
   del: null,
   equal: null,
-  monitor: { isLoading: false, error: null },
   isVisible: false,
   insertIsVisible: true,
   updateIsVisible: true,
@@ -80,7 +79,8 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         : [...state.expandedComponents, componentId],
     })),
   loadComponents: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Compare View', null);
     try {
       const components: Component[] = await GetComponents();
       const insert = components.filter(
@@ -136,6 +136,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
           warningMoq.push(component.id);
         }
       });
+      Monitor.setMonitor(false, 'Compare View', null);
       set({
         components,
         insert,
@@ -147,11 +148,10 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         warningMessage,
         warningMismatchMpn,
         warningMoq,
-        monitor: { isLoading: false, error: null },
       });
       FunctionManagerStore.getState().loadDesignators();
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'Compare View', String(err));
     }
   },
   componentHasAWarning: (componentId: number) => {
@@ -286,7 +286,6 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       update: null,
       del: null,
       equal: null,
-      monitor: { isLoading: false, error: null },
       isVisible: false,
       insertIsVisible: true,
       updateIsVisible: true,

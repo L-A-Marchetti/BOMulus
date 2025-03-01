@@ -1,5 +1,5 @@
 // src/components/WSChooser/WSChooser.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import Button from '../shared/Button';
 import moq from '/src/assets/images/moq.svg';
@@ -8,25 +8,74 @@ import manmessage from '/src/assets/images/manmessage.svg';
 import outofstock from '/src/assets/images/outofstock.svg';
 import mismatchingmpn from '/src/assets/images/mismatchingmpn.svg';
 import Input from '../shared/Input';
+import { useShallow } from 'zustand/react/shallow';
 
 export function Filters(): React.JSX.Element {
-  const CompareView = CompareViewStore();
+  const {
+    isVisible,
+    components,
+    insert,
+    insertIsVisible,
+    update,
+    updateIsVisible,
+    del,
+    deleteIsVisible,
+    equal,
+    equalIsVisible,
+    warningOutOfStock,
+    warningLifeCycle,
+    warningMessage,
+    warningMismatchMpn,
+    warningMoq,
+    selectedWarnings,
+    searchQuery,
+    toggleOperatorVisibility,
+    toggleWarningFilter,
+    setSearchQuery,
+    setSortOrder,
+    sortOrder,
+  } = CompareViewStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+      components: state.components,
+      insert: state.insert,
+      insertIsVisible: state.insertIsVisible,
+      update: state.update,
+      updateIsVisible: state.updateIsVisible,
+      del: state.del,
+      deleteIsVisible: state.deleteIsVisible,
+      equal: state.equal,
+      equalIsVisible: state.equalIsVisible,
+      warningOutOfStock: state.warningOutOfStock,
+      warningLifeCycle: state.warningLifeCycle,
+      warningMessage: state.warningMessage,
+      warningMismatchMpn: state.warningMismatchMpn,
+      warningMoq: state.warningMoq,
+      selectedWarnings: state.selectedWarnings,
+      searchQuery: state.searchQuery,
+      toggleOperatorVisibility: state.toggleOperatorVisibility,
+      toggleWarningFilter: state.toggleWarningFilter,
+      setSearchQuery: state.setSearchQuery,
+      setSortOrder: state.setSortOrder,
+      sortOrder: state.sortOrder,
+    })),
+  );
 
-  return CompareView.isVisible && CompareView.components ? (
-    <>
+  useEffect(() => {
+    console.log('Filters');
+  }, []);
+
+  return (
+    <div className={isVisible && components ? '' : 'hidden'}>
       <div className="flex flex-col items-center justify-center gap-8 px-8">
         <div className="flex items-center justify-center w-full gap-8">
           <div className="flex items-center justify-center w-full">
             <Button
               onClick={() => {
-                CompareView.toggleOperatorVisibility('INSERT');
+                toggleOperatorVisibility('INSERT');
               }}
-              text={String(CompareView.insert?.length)}
-              bg={
-                !CompareView.insertIsVisible
-                  ? 'bg-neutral-900'
-                  : 'bg-emerald-900'
-              }
+              text={String(insert?.length)}
+              bg={!insertIsVisible ? 'bg-neutral-900' : 'bg-emerald-900'}
               bgHover="hover:bg-emerald-800"
               txtColor="text-white rounded-none rounded-l-lg"
               h="h-10"
@@ -34,14 +83,10 @@ export function Filters(): React.JSX.Element {
             />
             <Button
               onClick={() => {
-                CompareView.toggleOperatorVisibility('UPDATE');
+                toggleOperatorVisibility('UPDATE');
               }}
-              text={String(CompareView.update?.length)}
-              bg={
-                !CompareView.updateIsVisible
-                  ? 'bg-neutral-900'
-                  : 'bg-purple-900'
-              }
+              text={String(update?.length)}
+              bg={!updateIsVisible ? 'bg-neutral-900' : 'bg-purple-900'}
               bgHover="hover:bg-purple-800"
               txtColor="text-white rounded-none"
               h="h-10"
@@ -49,12 +94,10 @@ export function Filters(): React.JSX.Element {
             />
             <Button
               onClick={() => {
-                CompareView.toggleOperatorVisibility('DELETE');
+                toggleOperatorVisibility('DELETE');
               }}
-              text={String(CompareView.del?.length)}
-              bg={
-                !CompareView.deleteIsVisible ? 'bg-neutral-900' : 'bg-rose-900'
-              }
+              text={String(del?.length)}
+              bg={!deleteIsVisible ? 'bg-neutral-900' : 'bg-rose-900'}
               bgHover="hover:bg-rose-800"
               txtColor="text-white rounded-none"
               h="h-10"
@@ -62,14 +105,10 @@ export function Filters(): React.JSX.Element {
             />
             <Button
               onClick={() => {
-                CompareView.toggleOperatorVisibility('EQUAL');
+                toggleOperatorVisibility('EQUAL');
               }}
-              text={String(CompareView.equal?.length)}
-              bg={
-                !CompareView.equalIsVisible
-                  ? 'bg-neutral-900'
-                  : 'bg-neutral-700'
-              }
+              text={String(equal?.length)}
+              bg={!equalIsVisible ? 'bg-neutral-900' : 'bg-neutral-700'}
               bgHover="hover:bg-neutral-700"
               txtColor="text-white rounded-none rounded-r-lg"
               h="h-10"
@@ -78,10 +117,10 @@ export function Filters(): React.JSX.Element {
           </div>
           <div className="flex items-center justify-center w-full">
             <Button
-              text={String(CompareView.warningOutOfStock.length)}
-              onClick={() => CompareView.toggleWarningFilter('outOfStock')}
+              text={String(warningOutOfStock.length)}
+              onClick={() => toggleWarningFilter('outOfStock')}
               bg={
-                CompareView.selectedWarnings.includes('outOfStock')
+                selectedWarnings.includes('outOfStock')
                   ? 'bg-neutral-900'
                   : 'bg-neutral-600'
               }
@@ -91,10 +130,10 @@ export function Filters(): React.JSX.Element {
               img={outofstock}
             />
             <Button
-              text={String(CompareView.warningLifeCycle.length)}
-              onClick={() => CompareView.toggleWarningFilter('lifeCycle')}
+              text={String(warningLifeCycle.length)}
+              onClick={() => toggleWarningFilter('lifeCycle')}
               bg={
-                CompareView.selectedWarnings.includes('lifeCycle')
+                selectedWarnings.includes('lifeCycle')
                   ? 'bg-neutral-900'
                   : 'bg-neutral-600'
               }
@@ -104,10 +143,10 @@ export function Filters(): React.JSX.Element {
               img={lifecycle}
             />
             <Button
-              text={String(CompareView.warningMessage.length)}
-              onClick={() => CompareView.toggleWarningFilter('message')}
+              text={String(warningMessage.length)}
+              onClick={() => toggleWarningFilter('message')}
               bg={
-                CompareView.selectedWarnings.includes('message')
+                selectedWarnings.includes('message')
                   ? 'bg-neutral-900'
                   : 'bg-neutral-600'
               }
@@ -117,10 +156,10 @@ export function Filters(): React.JSX.Element {
               img={manmessage}
             />
             <Button
-              text={String(CompareView.warningMismatchMpn.length)}
-              onClick={() => CompareView.toggleWarningFilter('mismatchMpn')}
+              text={String(warningMismatchMpn.length)}
+              onClick={() => toggleWarningFilter('mismatchMpn')}
               bg={
-                CompareView.selectedWarnings.includes('mismatchMpn')
+                selectedWarnings.includes('mismatchMpn')
                   ? 'bg-neutral-900'
                   : 'bg-neutral-600'
               }
@@ -130,10 +169,10 @@ export function Filters(): React.JSX.Element {
               img={mismatchingmpn}
             />
             <Button
-              text={String(CompareView.warningMoq.length)}
-              onClick={() => CompareView.toggleWarningFilter('moq')}
+              text={String(warningMoq.length)}
+              onClick={() => toggleWarningFilter('moq')}
               bg={
-                CompareView.selectedWarnings.includes('moq')
+                selectedWarnings.includes('moq')
                   ? 'bg-neutral-900'
                   : 'bg-neutral-600'
               }
@@ -145,17 +184,15 @@ export function Filters(): React.JSX.Element {
           </div>
 
           <Input
-            onChange={CompareView.setSearchQuery}
-            value={CompareView.searchQuery}
+            onChange={setSearchQuery}
+            value={searchQuery}
             placeHolder="Search Query"
             type="search"
             h="h-10"
           />
           <select
-            onChange={(e) =>
-              CompareViewStore.getState().setSortOrder(e.target.value)
-            }
-            value={CompareViewStore.getState().sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            value={sortOrder}
             className="appearance-none h-10 bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           >
             <option value="default">Sort</option>
@@ -166,8 +203,6 @@ export function Filters(): React.JSX.Element {
           </select>
         </div>
       </div>
-    </>
-  ) : (
-    <></>
+    </div>
   );
 }

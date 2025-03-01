@@ -54,7 +54,7 @@ export default function Details({ component, onCancel }: DetailsProps) {
   )?.value;
   return (
     <td colSpan={6}>
-      <div className="relative rounded-lg shadow-sm">
+      <div className="relative rounded-lg">
         <button
           type="button"
           className="cursor-pointer z-50 absolute top-3 end-2.5 text-neutral-400 bg-transparent rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center hover:bg-neutral-600 hover:text-white"
@@ -76,7 +76,7 @@ export default function Details({ component, onCancel }: DetailsProps) {
           </svg>
         </button>
 
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="relative overflow-x-auto sm:rounded-lg">
           <table className="w-full text-tiny text-left rtl:text-right text-neutral-500 dark:text-neutral-400">
             <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-neutral-900 bg-white dark:text-white dark:bg-neutral-800">
               <div className="flex flex-col items-start justify-start gap-8">

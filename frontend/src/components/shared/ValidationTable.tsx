@@ -20,7 +20,7 @@ export default function ValidationTable() {
 
   return (
     <div
-      className={`w-full transition relative overflow-x-auto shadow-md sm:rounded-lg ${opacity ? 'opacity-100' : 'opacity-0'}`}
+      className={`w-full transition relative overflow-x-auto sm:rounded-lg ${opacity ? 'opacity-100' : 'opacity-0'}`}
     >
       <table className="w-full text-sm text-left rtl:text-right text-neutral-500 dark:text-neutral-400">
         <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-neutral-900 bg-white dark:text-white dark:bg-neutral-800">

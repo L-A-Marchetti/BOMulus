@@ -1,5 +1,5 @@
 // src/components/WSChooser/WSChooser.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { WSCreatorStore } from '../../store/WSCreatorStore';
 import { WSChooserStore } from '../../store/WSChooserStore';
 import { FileManagerStore } from '../../store/FileManagerStore';
@@ -12,7 +12,6 @@ import { AnalysisStore } from '../../store/AnalysisStore';
 import { useShallow } from 'zustand/react/shallow';
 
 export function WSCurrent(): React.JSX.Element {
-  console.log('WSCurrent');
   const { activeWorkspace, WSManagerIsVisible, loadWorkspaces } =
     WSChooserStore(
       useShallow((state) => ({
@@ -72,11 +71,21 @@ export function WSCurrent(): React.JSX.Element {
     })),
   );
 
-  return !WSManagerIsVisible &&
-    !isFileManagerVisible &&
-    !isSettingsVisible &&
-    !isFunctionManagerVisible ? (
-    <>
+  useEffect(() => {
+    console.log('WSCurrent');
+  }, []);
+
+  return (
+    <div
+      className={
+        !WSManagerIsVisible &&
+        !isFileManagerVisible &&
+        !isSettingsVisible &&
+        !isFunctionManagerVisible
+          ? ''
+          : 'hidden'
+      }
+    >
       <Banner
         workspaceName={activeWorkspace?.workspace_infos.name || ''}
         onClick={() => {
@@ -92,8 +101,6 @@ export function WSCurrent(): React.JSX.Element {
           resetAnalysis();
         }}
       />
-    </>
-  ) : (
-    <></>
+    </div>
   );
 }

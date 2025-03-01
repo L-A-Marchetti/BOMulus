@@ -4,14 +4,13 @@ import {
   GetAnalyzeSaveState,
   GetAnalysisRefreshDays,
 } from '../../wailsjs/go/main/App';
-import { Monitor } from '../types/global';
 import { workspaces } from '../../wailsjs/go/models';
+import { MonitorStore } from './MonitorStore';
 
 type APIKeys = workspaces.APIKeys;
 
 interface SettingsProps {
   apiKeys: APIKeys | null;
-  monitor: Monitor;
   isVisible: boolean;
   analyzeSaveState: boolean;
   analysisRefreshDays: number;
@@ -21,25 +20,25 @@ interface SettingsProps {
 
 export const SettingsStore = create<SettingsProps>((set) => ({
   apiKeys: null,
-  monitor: { isLoading: false, error: null },
   isVisible: false,
   analyzeSaveState: false,
   analysisRefreshDays: 0,
   toggleVisibility: () => set((state) => ({ isVisible: !state.isVisible })),
   loadSettings: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Setting Panel', null);
     try {
       const apiKeys: APIKeys = await GetSavedAPIKeys();
       const analyzeSaveState: boolean = await GetAnalyzeSaveState();
       const analysisRefreshDays: number = await GetAnalysisRefreshDays();
+      Monitor.setMonitor(false, 'Setting Panel', null);
       set({
         apiKeys,
         analyzeSaveState,
         analysisRefreshDays,
-        monitor: { isLoading: false, error: null },
       });
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'Setting Panel', String(err));
     }
   },
 }));

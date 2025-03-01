@@ -9,6 +9,7 @@ import Button from '../shared/Button';
 export function WSForm(): React.JSX.Element {
   const {
     setWorkspaceName,
+    isVisible,
     workspaceName,
     chooseDirectory,
     workspacePath,
@@ -17,6 +18,7 @@ export function WSForm(): React.JSX.Element {
   } = WSCreatorStore(
     useShallow((state) => ({
       setWorkspaceName: state.setWorkspaceName,
+      isVisible: state.isVisible,
       workspaceName: state.workspaceName,
       chooseDirectory: state.chooseDirectory,
       workspacePath: state.workspacePath,
@@ -26,7 +28,7 @@ export function WSForm(): React.JSX.Element {
   );
 
   return (
-    <div className="w-full flex flex-col gap-8">
+    <div className={`w-full flex flex-col gap-8 ${isVisible ? '' : 'hidden'}`}>
       <Input
         placeHolder="Workspace name"
         type="text"

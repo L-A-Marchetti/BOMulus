@@ -13,7 +13,6 @@ import { useShallow } from 'zustand/react/shallow';
 import { FilesList } from './FilesList';
 
 export function FileManager(): React.JSX.Element {
-  console.log('FileManager');
   const { isVisible: isWSCreatorVisible } = WSCreatorStore(
     useShallow((state) => ({
       isVisible: state.isVisible,
@@ -64,38 +63,40 @@ export function FileManager(): React.JSX.Element {
   );
 
   useEffect(() => {
+    console.log('FileManager');
     loadFiles();
   }, [activeWorkspace]);
 
-  return !isWSCreatorVisible &&
-    !isWSChooserVisible &&
-    !isSettingsVisible &&
-    !isFunctionManagerVisible ? (
-    <div className="file_manager">
-      {isFileManagerVisible ? (
-        filesToValidate ? (
-          <ValidationTable />
-        ) : (
-          <FilesList />
-        )
-      ) : (
-        <div className="file_manager_button">
-          <Button
-            onClick={() => {
-              toggleFMVisibility();
-              if (isCompareViewVisible) toggleCVVisibility();
-            }}
-            text="File Manager"
-            bg="bg-neutral-700"
-            bgHover="hover:bg-neutral-900"
-            txtColor="text-neutral-400"
-            h="h-15"
-            img={null}
-          />
-        </div>
-      )}
+  return (
+    <div
+      className={`file_manager ${
+        !isWSCreatorVisible &&
+        !isWSChooserVisible &&
+        !isSettingsVisible &&
+        !isFunctionManagerVisible
+          ? ''
+          : 'hidden'
+      }`}
+    >
+      <div className={isFileManagerVisible ? '' : 'hidden'}>
+        {filesToValidate ? <ValidationTable /> : <FilesList />}
+      </div>
+      <div
+        className={`file_manager_button ${isFileManagerVisible ? 'hidden' : ''}`}
+      >
+        <Button
+          onClick={() => {
+            toggleFMVisibility();
+            if (isCompareViewVisible) toggleCVVisibility();
+          }}
+          text="File Manager"
+          bg="bg-neutral-700"
+          bgHover="hover:bg-neutral-900"
+          txtColor="text-neutral-400"
+          h="h-15"
+          img={null}
+        />
+      </div>
     </div>
-  ) : (
-    <></>
   );
 }

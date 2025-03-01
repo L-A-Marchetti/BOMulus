@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import add from '/src/assets/images/add_circle.svg';
 import imp from '/src/assets/images/import_folder.svg';
+import { WSChooserStore } from '../../store/WSChooserStore';
+import { useShallow } from 'zustand/react/shallow';
 
 type DarkCardProps = {
   addWs: () => void;
@@ -8,15 +10,21 @@ type DarkCardProps = {
 };
 
 export default function DarkCard({ addWs, importWs }: DarkCardProps) {
+  const { isVisible: isWSChooserVisible } = WSChooserStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+    })),
+  );
+
   const [opacity, setOpacity] = useState(false);
 
   useEffect(() => {
     setOpacity(true);
   }, []);
   return (
-    <div className="mr-8">
+    <div className={`mr-8 ${isWSChooserVisible ? '' : 'hidden'}`}>
       <div
-        className={`w-full h-full transition rounded-lg bg-neutral-800 border-3 border-neutral-700 hover:scale-95 group ${opacity ? 'opacity-100' : 'opacity-0'}`}
+        className={`w-full h-full transition rounded-lg bg-neutral-800 border-3 border-neutral-700 hover:scale-99 group ${opacity ? 'opacity-100' : 'opacity-0'}`}
       >
         <div className="h-full flex flex-col items-center justify-center">
           <a

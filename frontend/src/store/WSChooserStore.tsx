@@ -9,6 +9,7 @@ type Workspace = workspaces.Workspace;
 import { Monitor } from '../types/global';
 import { MonitorStore } from './MonitorStore';
 import { FileManagerStore } from './FileManagerStore';
+import { SettingsStore } from './SettingsStore';
 
 interface WSChooserProps {
   workspaces: Workspace[] | null;
@@ -50,6 +51,7 @@ export const WSChooserStore = create<WSChooserProps>((set) => ({
     try {
       await SetActiveWorkspace(workspace);
       Monitor.setMonitor(false, 'Workspace', null);
+      SettingsStore.getState().loadSettings();
       set({
         activeWorkspace: workspace,
         isVisible: false,
