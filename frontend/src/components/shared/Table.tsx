@@ -15,6 +15,7 @@ export default function Table() {
     equal,
     equalIsVisible,
     filterComponents,
+    sortComponents,
   } = CompareViewStore(
     useShallow((state) => ({
       insert: state.insert,
@@ -29,13 +30,14 @@ export default function Table() {
       searchQuery: state.searchQuery,
       selectedWarnings: state.selectedWarnings,
       sortOrder: state.sortOrder,
+      sortComponents: state.sortComponents,
     })),
   );
 
   const categories = [
     {
       name: 'Insert',
-      components: insert,
+      components: insert ? sortComponents(insert) : null,
       filteredComponents: insert ? filterComponents(insert) : null,
       isVisible: insertIsVisible,
       color: 'bg-emerald-900',
@@ -43,7 +45,7 @@ export default function Table() {
     },
     {
       name: 'Update',
-      components: update,
+      components: update ? sortComponents(update) : null,
       filteredComponents: update ? filterComponents(update) : null,
       isVisible: updateIsVisible,
       color: 'bg-purple-900',
@@ -51,7 +53,7 @@ export default function Table() {
     },
     {
       name: 'Delete',
-      components: del,
+      components: del ? sortComponents(del) : null,
       filteredComponents: del ? filterComponents(del) : null,
       isVisible: deleteIsVisible,
       color: 'bg-rose-900',
@@ -59,7 +61,7 @@ export default function Table() {
     },
     {
       name: 'Equal',
-      components: equal,
+      components: equal ? sortComponents(equal) : null,
       filteredComponents: equal ? filterComponents(equal) : null,
       isVisible: equalIsVisible,
       color: 'bg-neutral-700',

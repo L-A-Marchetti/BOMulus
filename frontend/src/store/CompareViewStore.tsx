@@ -35,6 +35,7 @@ interface CompareViewProps {
   componentHasAWarning: (componentId: number) => boolean;
   toggleWarningFilter: (warning: string) => void;
   filterComponents: (components: Component[]) => Component[];
+  sortComponents: (components: Component[]) => Component[];
   setSearchQuery: (searchQuery: string) => void;
   setSortOrder: (order: string) => void;
   reset: () => void;
@@ -224,8 +225,13 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         return matchesMpn || matchesDesignators || matchesDescriptions;
       });
     }
+    return filteredComponents;
+  },
+  sortComponents: (components: Component[]) => {
+    const { sortOrder } = CompareViewStore.getState();
+    let sortedComponents = [...components];
     if (sortOrder === 'price-unit-asc') {
-      filteredComponents.sort((a, b) => {
+      sortedComponents.sort((a, b) => {
         const priceA =
           parseFloat(
             a.calculated_price.best_unit_price.replace(/[^0-9.-]+/g, ''),
@@ -237,7 +243,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         return priceA - priceB;
       });
     } else if (sortOrder === 'price-unit-desc') {
-      filteredComponents.sort((a, b) => {
+      sortedComponents.sort((a, b) => {
         const priceA =
           parseFloat(
             a.calculated_price.best_unit_price.replace(/[^0-9.-]+/g, ''),
@@ -249,7 +255,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         return priceB - priceA;
       });
     } else if (sortOrder === 'price-asc') {
-      filteredComponents.sort((a, b) => {
+      sortedComponents.sort((a, b) => {
         const priceA =
           parseFloat(a.calculated_price.best_price.replace(/[^0-9.-]+/g, '')) ||
           0;
@@ -259,7 +265,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         return priceA - priceB;
       });
     } else if (sortOrder === 'price-desc') {
-      filteredComponents.sort((a, b) => {
+      sortedComponents.sort((a, b) => {
         const priceA =
           parseFloat(a.calculated_price.best_price.replace(/[^0-9.-]+/g, '')) ||
           0;
@@ -269,7 +275,7 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
         return priceB - priceA;
       });
     }
-    return filteredComponents;
+    return sortedComponents;
   },
   setSearchQuery: (searchQuery: string) =>
     set({
