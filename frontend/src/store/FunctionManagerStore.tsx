@@ -7,6 +7,7 @@ import {
   UpdateDesignators,
   UpdateBMLSDesignators,
 } from '../../wailsjs/go/main/App';
+import { MonitorStore } from './MonitorStore';
 
 type Designator = core.Designator;
 
@@ -15,7 +16,6 @@ interface FunctionManagerProps {
   selectedDesignators: Designator[];
   functions: { name: string; color: string }[] | null;
   expandedFunctions: string[];
-  monitor: Monitor;
   isVisible: boolean;
   name: string;
   color: string;
@@ -39,7 +39,6 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
   selectedDesignators: [],
   functions: null,
   expandedFunctions: [],
-  monitor: { isLoading: false, error: null },
   isVisible: false,
   name: '',
   color: '#000000',
@@ -58,13 +57,16 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
         : [...state.selectedDesignators, designator],
     })),
   loadDesignators: () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Function Manager', null);
     const components = CompareViewStore.getState().components;
 
     if (!components)
-      return set({
-        monitor: { isLoading: false, error: 'Components are not loaded...' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'Function Manager',
+        'Components are not loaded...',
+      );
     const uniqueDesignators = new Map<string, Designator>();
     const functions = new Map<string, string>();
     for (const c of components) {
@@ -82,10 +84,10 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
         }
       }
     }
+    Monitor.setMonitor(false, 'Function Manager', null);
     set({
       designators: Array.from(uniqueDesignators.values()),
       functions: Array.from(functions, ([name, color]) => ({ name, color })),
-      monitor: { isLoading: false, error: null },
     });
   },
   setName: (name: string) => set({ name }),
@@ -151,24 +153,29 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
       };
     }),
   saveDesignators: async () => {
-    set({ monitor: { isLoading: true, error: null } });
+    const Monitor = MonitorStore.getState();
+    Monitor.setMonitor(true, 'Function Manager', null);
     const activeWorkspace = WSChooserStore.getState().activeWorkspace;
     if (!activeWorkspace)
-      return set({
-        monitor: { isLoading: false, error: 'No active workspace found.' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'Function Manager',
+        'No active workspace found...',
+      );
     const designators = FunctionManagerStore.getState().designators;
     if (!designators)
-      return set({
-        monitor: { isLoading: false, error: 'No designators found.' },
-      });
+      return Monitor.setMonitor(
+        false,
+        'Function Manager',
+        'No designators found...',
+      );
     try {
       await UpdateDesignators(designators);
       UpdateBMLSDesignators(activeWorkspace);
-      set({ monitor: { isLoading: false, error: null } });
+      Monitor.setMonitor(false, 'Function Manager', null);
       CompareViewStore.getState().loadComponents();
     } catch (err) {
-      set({ monitor: { isLoading: false, error: String(err) } });
+      Monitor.setMonitor(false, 'Function Manager', String(err));
     }
   },
   reset: () =>
@@ -177,7 +184,6 @@ export const FunctionManagerStore = create<FunctionManagerProps>((set) => ({
       selectedDesignators: [],
       functions: null,
       expandedFunctions: [],
-      monitor: { isLoading: false, error: null },
       isVisible: false,
       name: '',
       color: '#000000',

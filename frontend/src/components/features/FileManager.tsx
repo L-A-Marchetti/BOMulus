@@ -71,7 +71,7 @@ export function FileManager(): React.JSX.Element {
     !isWSChooserVisible &&
     !isSettingsVisible &&
     !isFunctionManagerVisible ? (
-    <div className="flex flex-col gap-8 w-full">
+    <div className="file_manager">
       {isFileManagerVisible ? (
         filesToValidate ? (
           <ValidationTable />
@@ -79,7 +79,7 @@ export function FileManager(): React.JSX.Element {
           <FilesList />
         )
       ) : (
-        <div className="px-8">
+        <div className="file_manager_button">
           <Button
             onClick={() => {
               toggleFMVisibility();
