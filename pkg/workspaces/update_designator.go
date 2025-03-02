@@ -68,7 +68,7 @@ func UpdateBMLSDesignators(activeWorkspace Workspace) error {
 					for k := range files[i].Components[j].Designators {
 						if files[i].Components[j].Designators[k].Designator == core.Components[l].Designators[m].Designator {
 							files[i].Components[j].Designators[k] = core.Components[l].Designators[m]
-							if err := Workspaces.Where("component_id = ?", files[i].Components[j].Id).Updates(&files[i].Components[j]).Error; err != nil {
+							if err := Workspaces.Where("component_id = ?", files[i].Components[j].Id).Updates(&files[i].Components[j].Designators[k]).Error; err != nil {
 								return err
 							}
 							break

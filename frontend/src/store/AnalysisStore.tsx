@@ -34,7 +34,7 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
           clearInterval(refresh);
           Monitor.setMonitor(false, 'Analysis', null);
         }
-      }, 200);
+      }, 500);
     } catch (err) {
       Monitor.setMonitor(false, 'Analysis', String(err));
     }

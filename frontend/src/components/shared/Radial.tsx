@@ -32,29 +32,27 @@ export default function Radial({ title, data }: RadialProps) {
         dataLabels: {
           show: true,
           name: {
-            fontSize: '13px',
+            fontSize: '10px',
           },
           value: {
-            offsetY: 3,
+            offsetY: -2,
             show: true,
             color: 'white',
+            fontSize: '11px',
           },
         },
         hollow: {
           margin: 0,
-          size: '42%',
+          size: '40%',
         },
       },
     },
     legend: {
       show: true,
-      position: 'bottom',
-      offsetY: -50,
+      position: 'right',
+      offsetY: 12,
       labels: {
         colors: 'white',
-      },
-      itemMargin: {
-        horizontal: 10,
       },
       markers: {
         size: 5,
@@ -74,17 +72,18 @@ export default function Radial({ title, data }: RadialProps) {
       align: 'left',
       style: {
         color: 'white',
+        fontSize: '12px',
       },
     },
   });
 
   return (
-    <div className="w-66 h-75">
+    <div className="h-40 w-71">
       <Chart
         options={chartOptions}
         series={series}
         type="radialBar"
-        height={350}
+        height={250}
       />
     </div>
   );

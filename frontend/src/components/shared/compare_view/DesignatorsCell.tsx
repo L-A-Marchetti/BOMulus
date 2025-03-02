@@ -10,7 +10,7 @@ type DesignatorsCellProps = {
 
 export default function DesignatorsCell({ designators }: DesignatorsCellProps) {
   return (
-    <td className={`px-6 py-4 text-[10px]`}>
+    <td className={`px-6 py-2 text-[10px]`}>
       <div className="flex items-center justify-start flex-wrap gap-1">
         {designators.map((d) => (
           <div key={d.ID} className="flex items-center justify-start">

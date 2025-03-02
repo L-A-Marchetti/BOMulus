@@ -40,7 +40,7 @@ export function UnassignedDesignators(): React.JSX.Element {
           );
         })
         .map((d) => (
-          <li>
+          <li key={d.ID}>
             <label
               onClick={() => toggleDesignatorSelection(d)}
               className={`inline-flex items-center justify-between w-full py-2 px-5 border-2 rounded-lg cursor-pointer hover:text-neutral-300 bg-neutral-800 hover:bg-neutral-700 ${selectedDesignators.includes(d) ? 'border-blue-600 text-neutral-300' : 'border-neutral-700 text-neutral-400'}`}

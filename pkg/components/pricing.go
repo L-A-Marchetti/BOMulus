@@ -114,7 +114,7 @@ func QuantityPrice(activeWorkspace workspaces.Workspace, quantity int) (PriceCal
 	}
 	result.Currency = currency
 	result.Quantity = quantity
-	go workspaces.UpdateAllBMLSPricing(activeWorkspace)
+	workspaces.UpdateAllBMLSPricing(activeWorkspace)
 	return result, nil
 }
 

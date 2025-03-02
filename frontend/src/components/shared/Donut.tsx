@@ -26,15 +26,15 @@ export default function Donut({ title, isPrice, data }: DonutProps) {
     },
     plotOptions: {
       pie: {
-        offsetY: 18,
+        offsetY: 15,
         donut: {
           labels: {
             show: true,
             name: {
               show: true,
               fontFamily: 'Inter, sans-serif',
-              offsetY: 20,
-              fontSize: '13px',
+              offsetY: 15,
+              fontSize: '10px',
             },
             total: {
               showAlways: false,
@@ -58,7 +58,7 @@ export default function Donut({ title, isPrice, data }: DonutProps) {
               color: 'white',
               fontSize: '13px',
               formatter: function (value) {
-                return isPrice ? '$' + value : value + ' Components';
+                return isPrice ? '$' + value : value;
               },
             },
           },
@@ -75,14 +75,14 @@ export default function Donut({ title, isPrice, data }: DonutProps) {
       enabled: false,
     },
     legend: {
-      position: 'bottom',
+      position: 'right',
       fontFamily: 'Inter, sans-serif',
-      offsetY: 24,
+      offsetY: 12,
       labels: {
         colors: 'white',
       },
       itemMargin: {
-        horizontal: 10,
+        horizontal: 0,
       },
       markers: {
         size: 5,
@@ -117,13 +117,14 @@ export default function Donut({ title, isPrice, data }: DonutProps) {
       align: 'left',
       style: {
         color: 'white',
+        fontSize: '12px',
       },
     },
   });
 
   return (
-    <div className="w-66 h-75">
-      <Chart options={chartOptions} series={series} type="donut" height={276} />
+    <div className="h-40 w-66">
+      <Chart options={chartOptions} series={series} type="donut" height={160} />
     </div>
   );
 }

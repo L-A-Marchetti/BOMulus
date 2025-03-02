@@ -25,7 +25,7 @@ export default function WarningCell({
   operatorColor,
 }: WarningCellProps) {
   return (
-    <td className={`px-6 py-4`}>
+    <td className={`px-6 py-2`}>
       <div className="flex items-center justify-start gap-2">
         {hasWarning ? (
           <div className={`min-w-2 h-10 bg-yellow-500`}></div>

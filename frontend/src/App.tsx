@@ -9,10 +9,8 @@ import { Analysis } from './components/features/Analysis';
 import { Settings } from './components/features/Settings';
 import { Filters } from './components/features/Filters';
 import { WSChooserStore } from './store/WSChooserStore';
-import { WSCreatorStore } from './store/WSCreatorStore';
 import { Calculator } from './components/features/Calculator';
 import { FunctionManager } from './components/features/FunctionManager';
-import { FileManagerStore } from './store/FileManagerStore';
 import { Monitor } from './components/features/Monitor';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -30,15 +28,15 @@ function App(): React.JSX.Element {
           <WSChooser />
         </div>
       ) : (
-        <div className="w-full flex flex-col gap-8">
+        <div className="compare_view">
           <WSCurrent />
-          <div className={`w-full flex gap-8 items-center justify-center`}>
+          <div className="menu">
             <FileManager />
             <FunctionManager />
             <Analysis />
             <Settings />
           </div>
-          {/* <Calculator />*/}
+          <Calculator />
           <Filters />
           <CompareView />
         </div>

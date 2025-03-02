@@ -40,8 +40,8 @@ export default function Linear({ title, data }: LinearProps) {
     },
     legend: {
       show: true,
-      position: 'bottom',
-      offsetY: 27,
+      position: 'right',
+      offsetY: 10,
       labels: {
         colors: 'white',
       },
@@ -93,13 +93,14 @@ export default function Linear({ title, data }: LinearProps) {
       align: 'left',
       style: {
         color: 'white',
+        fontSize: '12px',
       },
     },
   });
 
   return (
-    <div className="w-full h-75 flex-[1_1_0%]">
-      <Chart options={chartOptions} type="area" series={series} height={276} />
+    <div className="w-full h-40 flex-[1_1_0%]">
+      <Chart options={chartOptions} type="area" series={series} height={166} />
     </div>
   );
 }

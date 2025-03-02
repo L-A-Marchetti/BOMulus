@@ -8,6 +8,12 @@
   .workspace_manager {
     @apply flex w-full max-w-239 px-8;
   }
+  .compare_view {
+    @apply w-full flex flex-col gap-4;
+  }
+  .menu {
+    @apply w-full flex gap-4 items-center justify-center;
+  }
 
   /* WSChooser.tsx */
   .workspace_chooser {

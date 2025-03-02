@@ -1,46 +1,66 @@
-import React, { useEffect } from 'react';
-import Spinner from '../shared/Spinner';
+import React from 'react';
 import { CalculatorStore } from '../../store/CalculatorStore';
 import { CompareViewStore } from '../../store/CompareViewStore';
 import Radial, { RadialData } from '../shared/Radial';
 import Donut from '../shared/Donut';
 import Linear from '../shared/Linear';
 import { FunctionManagerStore } from '../../store/FunctionManagerStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export function Calculator(): React.JSX.Element {
-  const Calculator = CalculatorStore();
-  const CompareView = CompareViewStore();
-  const FunctionManager = FunctionManagerStore();
-  const totalComponents = CompareView.components?.length || 0;
-  const mouserCount = CompareView.components?.filter(
+  const { productionQuantity, setProductionQuantity, calculationResult } =
+    CalculatorStore(
+      useShallow((state) => ({
+        productionQuantity: state.productionQuantity,
+        setProductionQuantity: state.setProductionQuantity,
+        calculationResult: state.calculationResult,
+      })),
+    );
+
+  const { isVisible, components } = CompareViewStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+      components: state.components,
+    })),
+  );
+
+  const { functions, designators } = FunctionManagerStore(
+    useShallow((state) => ({
+      functions: state.functions,
+      designators: state.designators,
+    })),
+  );
+
+  const totalComponents = components?.length || 0;
+  const mouserCount = components?.filter(
     (component) =>
       component.analyzed &&
       !component.mismatch_mpn &&
       component.sources.some((source) => source === 'Mouser'),
   ).length;
-  const digikeyCount = CompareView.components?.filter(
+  const digikeyCount = components?.filter(
     (component) =>
       component.analyzed &&
       !component.mismatch_mpn &&
       component.sources.some((source) => source === 'Digikey'),
   ).length;
-  const unprocuredCount = CompareView.components?.filter(
+  const unprocuredCount = components?.filter(
     (component) => component.analyzed && component.mismatch_mpn === true,
   ).length;
   const coverage =
-    totalComponents > 0 && CompareView.components
-      ? (CompareView.components?.filter(
+    totalComponents > 0 && components
+      ? (components?.filter(
           (component) => component.analyzed && component.mismatch_mpn === false,
         ).length /
           totalComponents) *
         100
       : 0;
-  const inStockCount = CompareView.components?.filter(
+  const inStockCount = components?.filter(
     (component) =>
       component.availability?.some((stock) => stock.value !== '') &&
       component.analyzed,
   ).length;
-  const outOfStockCount = CompareView.components?.filter(
+  const outOfStockCount = components?.filter(
     (component) =>
       component.availability?.every((stock) => stock.value === '') &&
       component.analyzed,
@@ -87,8 +107,8 @@ export function Calculator(): React.JSX.Element {
     {
       name: 'Price',
       data: [
-        Calculator.calculationResult?.OldPrice || 0,
-        Calculator.calculationResult?.orderPrice || 0,
+        calculationResult?.OldPrice || 0,
+        calculationResult?.orderPrice || 0,
       ],
       color: '#1A56DB',
     },
@@ -99,12 +119,12 @@ export function Calculator(): React.JSX.Element {
     },
   ];
 
-  const functionsPrice: RadialData[] = FunctionManager.functions
-    ? FunctionManager.functions.map((func) => {
-        const totalBestUnitPrice = FunctionManager.designators
+  const functionsPrice: RadialData[] = functions
+    ? functions.map((func) => {
+        const totalBestUnitPrice = designators
           ?.filter((d) => d.label.name === func.name)
           .reduce((acc, d) => {
-            const component = CompareView.components?.find((comp) =>
+            const component = components?.find((comp) =>
               comp.designators.includes(d),
             );
             if (component && component.Operator !== 'DELETE') {
@@ -126,8 +146,8 @@ export function Calculator(): React.JSX.Element {
       })
     : [];
 
-  return (CompareView.isVisible &&
-    CompareView.components?.filter((component) => component.analyzed).length) ||
+  return (isVisible &&
+    components?.filter((component) => component.analyzed).length) ||
     0 > 0 ? (
     <>
       <div className="px-8 flex items-center justify-center gap-8 flex-wrap">
@@ -140,33 +160,23 @@ export function Calculator(): React.JSX.Element {
         <input
           className="text-2xl border-b-2 border-neutral-700 w-full outline-none"
           placeholder="Production Quantity"
-          value={String(Calculator.productionQuantity)}
+          value={String(productionQuantity)}
           onChange={(e) =>
-            Calculator.setProductionQuantity(
-              parseInt(e.target.value, 10),
-              false,
-            )
+            setProductionQuantity(parseInt(e.target.value, 10), false)
           }
         />
         <div>
           <p className="text-xs">Price per Board</p>
           <p className="text-2xl">
-            ${Calculator.calculationResult?.unitPrice.toFixed(2) || 0}
+            ${calculationResult?.unitPrice.toFixed(2) || 0}
           </p>
         </div>
         <div>
           <p className="text-xs">Order Price</p>
           <p className="text-2xl">
-            ${Calculator.calculationResult?.orderPrice.toFixed(2) || 0}
+            ${calculationResult?.orderPrice.toFixed(2) || 0}
           </p>
         </div>
-        {Calculator.monitor.isLoading ? (
-          <Spinner text="Calculator is loading..." />
-        ) : Calculator.monitor.error ? (
-          <p>{Calculator.monitor.error}</p>
-        ) : (
-          <></>
-        )}
       </div>
     </>
   ) : (

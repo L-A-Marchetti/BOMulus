@@ -75,9 +75,9 @@ export default function ComponentRow({
           newQuantity={component.NewQuantity}
           quantity={component.quantity}
         />
-        <td className="px-6 py-4">{HighlightText(component.mpn)}</td>
+        <td className="px-6 py-2">{HighlightText(component.mpn)}</td>
         <DesignatorsCell designators={component.designators} />
-        <td className="px-6 py-4">
+        <td className="px-6 py-2">
           {HighlightText(component.user_description)}
         </td>
       </tr>

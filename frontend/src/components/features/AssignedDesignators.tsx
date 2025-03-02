@@ -31,7 +31,7 @@ export function AssignedDesignators(): React.JSX.Element {
   return (
     <>
       {functions?.map((f) => (
-        <li>
+        <li key={f.name}>
           <div
             onClick={() => {
               if (selectedDesignators.length > 0) {
@@ -85,7 +85,7 @@ export function AssignedDesignators(): React.JSX.Element {
                           )),
                   )
                   .map((d) => (
-                    <li className="w-full">
+                    <div className="w-full" key={d.ID}>
                       <label
                         onClick={(e) => {
                           e.stopPropagation();
@@ -108,7 +108,7 @@ export function AssignedDesignators(): React.JSX.Element {
                           </div>
                         </div>
                       </label>
-                    </li>
+                    </div>
                   ))}
               </div>
             ) : (
