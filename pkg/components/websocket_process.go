@@ -215,6 +215,11 @@ func WebsocketProcess(analyzedComponent core.Component) {
 			    }
 			}
 			core.Components[i].Analyzed = true
+			if len(core.Components[i].Sources) == 1 && analyzedComponent.MismatchMpn {
+				core.Components[i].MismatchMpn = true
+			} else if !analyzedComponent.MismatchMpn {
+				core.Components[i].MismatchMpn = false
+			}
 			core.Components[i].LastRefresh = time.Now()   
 			productionQuantity, _ := strconv.Atoi(config.PRODUCTION_QUANTITY)
 			multisourcePriceCalculator(core.Components[i], productionQuantity, &currency, i)
