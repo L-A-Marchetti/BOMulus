@@ -6,9 +6,7 @@ import {
 } from '../../wailsjs/go/main/App';
 import { workspaces } from '../../wailsjs/go/models';
 type Workspace = workspaces.Workspace;
-import { Monitor } from '../types/global';
 import { MonitorStore } from './MonitorStore';
-import { FileManagerStore } from './FileManagerStore';
 import { SettingsStore } from './SettingsStore';
 
 interface WSChooserProps {

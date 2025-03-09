@@ -184,7 +184,6 @@ export const CompareViewStore = create<CompareViewProps>((set) => ({
       warningMismatchMpn,
       warningMoq,
       searchQuery,
-      sortOrder,
     } = CompareViewStore.getState();
     let filteredComponents = [...components];
     if (selectedWarnings.includes('outOfStock')) {
