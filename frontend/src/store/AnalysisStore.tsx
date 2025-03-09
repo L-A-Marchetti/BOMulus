@@ -71,8 +71,10 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
   startAnalysis: () => {
     let lastReloadTime = 0;
     let returnCount = 0;
-    const components: Component[] | null =
+    const allComponents: Component[] | null =
       CompareViewStore.getState().components;
+
+    const components = allComponents?.filter((comp) => comp.mpn !== '');
 
     const token = AnalysisStore.getState().token;
     if (!token) {
