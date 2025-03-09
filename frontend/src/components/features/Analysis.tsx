@@ -7,15 +7,21 @@ import { useShallow } from 'zustand/react/shallow';
 import Login from '../shared/Login';
 
 export function Analysis(): React.JSX.Element {
-  const { analysisStatus, startAnalysis, token, toggleLoginVisibility } =
-    AnalysisStore(
-      useShallow((state) => ({
-        analysisStatus: state.analysisStatus,
-        startAnalysis: state.startAnalysis,
-        token: state.token,
-        toggleLoginVisibility: state.toggleLoginVisibility,
-      })),
-    );
+  const {
+    analyzing,
+    analysisProgress,
+    startAnalysis,
+    token,
+    toggleLoginVisibility,
+  } = AnalysisStore(
+    useShallow((state) => ({
+      analyzing: state.analyzing,
+      analysisProgress: state.analysisProgress,
+      startAnalysis: state.startAnalysis,
+      token: state.token,
+      toggleLoginVisibility: state.toggleLoginVisibility,
+    })),
+  );
 
   const { components, isVisible } = CompareViewStore(
     useShallow((state) => ({
@@ -32,15 +38,15 @@ export function Analysis(): React.JSX.Element {
     <>
       <div className={components && isVisible ? 'w-full' : 'hidden'}>
         <div className="analysis">
-          {analysisStatus?.Progress ? (
+          {analyzing ? (
             <div className="progress_bar">
               <div
                 className="progress_bar_graph"
                 style={{
-                  width: Math.round(analysisStatus?.Progress / 2) + '%',
+                  width: analysisProgress + '%',
                 }}
               >
-                <div>{Math.round(analysisStatus?.Progress / 2) + ' %'}</div>
+                <div>{analysisProgress + ' %'}</div>
               </div>
             </div>
           ) : (

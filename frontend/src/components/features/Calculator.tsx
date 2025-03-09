@@ -36,13 +36,13 @@ export function Calculator(): React.JSX.Element {
     (component) =>
       component.analyzed &&
       !component.mismatch_mpn &&
-      component.sources.some((source) => source === 'Mouser'),
+      component.sources?.some((source) => source === 'Mouser'),
   ).length;
   const digikeyCount = components?.filter(
     (component) =>
       component.analyzed &&
       !component.mismatch_mpn &&
-      component.sources.some((source) => source === 'Digikey'),
+      component.sources?.some((source) => source === 'Digikey'),
   ).length;
   const unprocuredCount = components?.filter(
     (component) => component.analyzed && component.mismatch_mpn === true,

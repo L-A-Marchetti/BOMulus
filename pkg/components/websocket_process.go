@@ -197,6 +197,9 @@ func WebsocketProcess(analyzedComponent core.Component) {
 
 			// InfoMessages
 			core.Components[i].InfoMessages = append(core.Components[i].InfoMessages, analyzedComponent.InfoMessages...)
+
+			//DetailedParameters
+			core.Components[i].DetailedParameters = append(core.Components[i].DetailedParameters, analyzedComponent.DetailedParameters...)
 			
             // Sources
 			for _, newSource := range analyzedComponent.Sources {
