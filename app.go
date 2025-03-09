@@ -64,6 +64,10 @@ func (a *App) RunAnalysis(activeWorkspace workspaces.Workspace) error {
 	return components.AnalyzeComponents(activeWorkspace) // Delegate analysis to the components package
 }
 
+func (a *App) WebsocketProcess(analyzedComponent core.Component) {
+	components.WebsocketProcess(analyzedComponent)
+}
+
 // StopAnalysis send the done message to the analysis goroutine to stop it.
 func (a *App) StopAnalysis() {
 	components.StopAnalysis()

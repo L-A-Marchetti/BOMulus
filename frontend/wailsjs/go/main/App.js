@@ -157,3 +157,7 @@ export function UpdateLastComparison(arg1, arg2, arg3) {
 export function UpdateVersionTags(arg1) {
   return window['go']['main']['App']['UpdateVersionTags'](arg1);
 }
+
+export function WebsocketProcess(arg1) {
+  return window['go']['main']['App']['WebsocketProcess'](arg1);
+}

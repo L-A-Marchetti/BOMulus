@@ -1,11 +1,12 @@
 import { create } from 'zustand';
-import { RunAnalysis, GetAnalysisState } from '../../wailsjs/go/main/App';
+import { RunAnalysis, GetAnalysisState, WebsocketProcess } from '../../wailsjs/go/main/App';
 import { WSChooserStore } from './WSChooserStore';
 import { core } from '../../wailsjs/go/models';
 import { CompareViewStore } from './CompareViewStore';
 import { MonitorStore } from './MonitorStore';
 
 type AnalysisStatus = core.AnalysisStatus;
+type Component = core.Component;
 
 interface AnalysisProps {
   analysisStatus: AnalysisStatus | null;
@@ -51,7 +52,8 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
         const data = await response.json();
         set({ token: data.token });
         Monitor.setMonitor(false, 'Login', null);
-        alert('Connexion réussie !');
+        set({ loginIsVisible: false })
+        AnalysisStore.getState().startAnalysis();
       } else {
         const errorData = await response.json();
         Monitor.setMonitor(false, 'Login', errorData.error);
@@ -80,8 +82,12 @@ export const AnalysisStore = create<AnalysisProps>((set) => ({
       console.log('WebSocket connected !');
     };
 
-    ws.onmessage = (event) => {
+    ws.onmessage = async (event) => {
       console.log('Message received :', event.data);
+      const parsedData = JSON.parse(event.data);
+      const analyzedComponent: Component = parsedData;
+      await WebsocketProcess(analyzedComponent);
+      CompareViewStore.getState().loadComponents();
     };
 
     ws.onerror = (error) => {
